@@ -214,7 +214,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Domain model**
 
-- `Node`: Id (GUID), ParentId, Title, Note, Order key, CreatedAt, UpdatedAt, Deleted
+- `Node`: Id (GUID), ParentId, Title, Note, CreatedAt, UpdatedAt, Deleted; its position among its siblings is not stored on the node but follows from replaying the events
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - `Root`: implicit, with a fixed well-known id that is the same in every tree and on every device; it is never created by an event, so two event logs that are merged always refer to the same root
@@ -224,25 +224,33 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Event types (initial set)**
 
-- `NodeCreated(nodeId, parentId, orderKey, title)`
+- `NodeCreated(nodeId, parentId, afterNodeId, title)`
 - `NodeTitleChanged(nodeId, title)`
 - `NodeNoteChanged(nodeId, note)`
-- `NodeMoved(nodeId, newParentId, newOrderKey)`
+- `NodeMoved(nodeId, newParentId, afterNodeId)`
 - `NodeDeleted(nodeId)`
 - `NodeRestored(nodeId)`
 - `DeviceJoined(deviceId, deviceLabel, userId, userName)`
 - `DeviceLabelChanged(deviceId, label)`
 - `UserNameChanged(userId, userName)`
 
-Each event carries: `EventId` (GUID), `DeviceId`, `Timestamp` (UTC), `LocalSequence`, and after sync a `ServerSequence`.
+`afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent.
+
+Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Timestamp` (UTC, for display only), `LocalSequence`, and after sync a `ServerSequence`.
 
 **Ordering of siblings**
 
-- Use fractional indexing (string or decimal order keys) so that inserting between siblings does not require renumbering and merges cleanly
+- Position by reference: `NodeCreated` and `NodeMoved` place a node directly after a named sibling (`afterNodeId`), or first under its parent when empty
+- The projection replays all events of a tree in one agreed order, sorted by `Clock`, then `DeviceId`; every device computes the same order, independent of the order in which events arrived
+- The local and server sequence numbers only track sync progress; they never determine the tree
+- Two nodes placed after the same sibling at the same time are ordered by that agreed event order
+- If the referenced sibling is deleted, it stays in the projection as a tombstone, so the reference still resolves
+- If the referenced sibling is under a different parent at the time of replay, the node is placed first under its parent
 
 **Conflict resolution**
 
-- Events are commutative where possible; otherwise last-writer-wins per field using timestamp + device id as tiebreaker
+- Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`)
+- Wall-clock timestamps are never used to decide conflicts, because device clocks drift
 - Moves that would create a cycle are rejected on apply and re-parented to the root
 - Deleted nodes are tombstoned, never physically removed, to keep merges consistent
 - Merging always means taking the union of two event logs, with events identified by `EventId`; trees are never merged directly, the projection rebuilds the tree from the combined log
@@ -293,7 +301,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Timestamp` (UTC), `LocalSeque
 | ADR-1 | Blazor WebAssembly instead of JS framework | Developer is a C# developer; single language across stack |
 | ADR-2 | Event sourcing as data model | Enables offline-first and log-based sync with small, mergeable conflicts |
 | ADR-3 | Own ASP.NET Core sync service instead of BaaS | Full control over event model and merge rules; stays in .NET |
-| ADR-4 | Fractional indexing for sibling order | Avoids renumbering and merges well across devices |
+| ADR-4 | Sibling order by reference (`afterNodeId`) in the events, not by order keys on nodes | Fits event sourcing: the order follows from replaying the log; no growing keys |
 | ADR-5 | Tombstones instead of hard deletes | Deterministic merges, undo/restore possible |
 | ADR-6 | Sync transport behind `ISyncTransport` | The event exchange is independent of how bytes travel; server, file and later transports plug in without touching the event model |
 | ADR-7 | Device-to-device sync by encrypted file export/import | Must work without internet; manual sync is acceptable; a browser cannot discover devices on the local network; doubles as a backup |
@@ -303,6 +311,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Timestamp` (UTC), `LocalSeque
 | ADR-11 | Pairing (own devices) and sharing (other users) are separate actions; users and devices are recorded by `DeviceJoined` events | Makes visible where changes come from and whether a tree is private or shared |
 | ADR-12 | One key per tree with equal access for every holder; no read-only access and no revocation for now | Keeps the encryption design simple; per-user keys are a much larger design and are deferred |
 | ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
+| ADR-14 | Events are ordered by a Lamport clock plus device id, not by wall-clock time or arrival order | Every device must compute the same tree from the same events; device clocks drift and arrival order differs per device |
 
 ## 10. Quality Requirements
 
@@ -334,7 +343,9 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Timestamp` (UTC), `LocalSeque
 | Note | The optional longer body of a node |
 | Root | The invisible top node of the tree |
 | Parent / Children | The node directly above a node / the nodes directly below it |
-| Sibling Order | The order of the children under one parent |
+| Sibling Order | The order of the children under one parent; follows from replaying the events, each placing a node after a named sibling |
+| Lamport Clock | A logical counter carried by every event; a device sets it one higher than the highest clock it has seen, so events can be ordered the same way on every device |
+| Agreed Event Order | The order every device replays a tree's events in: by Lamport clock, then device id |
 | Collapse | Hide a node's children in the view; UI state of one device, not a domain event |
 | Zoom | Make a node the temporary root of the view |
 | Event | Immutable record of one change to the tree |
