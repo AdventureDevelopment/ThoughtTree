@@ -332,8 +332,10 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Envelopes are padded to size buckets (see Event envelope and encryption)
 - Events are pushed in batches after a short pause in editing rather than one by one, so the server does not see the rhythm of typing; the price is that other devices see changes a few seconds later
 - Priority: an observer of the running server (B) must not learn where the user is
-- Remaining leak accepted for B: when devices are online and roughly when trees are edited, and the IP address of each request
+- Remaining leak accepted for B: when devices are online and roughly when trees are edited, the IP address of each request, and over time the user's approximate time zone and changes of it when travelling
 - The IP address is mitigated outside the app: the user can use a VPN, or not switch on server sync at all and sync by file only; the app explains this where server sync is switched on
+- Sync requests send a neutral `Accept-Language` header, so they do not reveal the user's language and region
+- Known: even without server sync, the app contacts its static host on Azure to check for updates and so reveals the IP address; a VPN covers this; letting the user control update checks is a possible later step
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
 
