@@ -236,7 +236,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent.
 
-Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Timestamp` (UTC, for display only), `LocalSequence`, and after sync a `ServerSequence`.
+Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`), `LocalSequence`, and after sync a `ServerSequence`.
 
 **Ordering of siblings**
 
@@ -290,6 +290,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Desktop add-on: keyboard shortcuts such as Enter (new sibling), Tab / Shift+Tab (indent/outdent), arrows (navigate), Ctrl+Up/Down (move)
 - Tree switcher to move between the trees on a device
 - A node shows which device last changed it and when, using the device label; a full change history per node is possible later, since all events are kept
+- Times are shown in the viewing device's local time; the original local time of the change (from the offset in the timestamp) can be shown as well, for example when a change was made while travelling
 - Every tree is marked private or shared; a shared tree lists its users and their devices, and changes show the user as well as the device
 - "Pair my other device" and "Share with another user" are two separate actions with separate wording and a warning before sharing
 - UI state (collapsed nodes, current zoom, open tree) belongs to one device: it is stored locally per tree and never synced; only domain events go into the event log
