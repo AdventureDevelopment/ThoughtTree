@@ -296,16 +296,28 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 
 **Event versioning**
 
-- Events are never changed or rewritten once written (only their envelope may be re-encrypted); every event carries its event type and a schema version
-- Older versions are converted to the current shape when read (upcasting), so the projection only handles the current shape
+- Events are never changed or rewritten once written (only their envelope may be re-encrypted)
+- Every event carries a type name and a schema version; type names are fixed strings such as `node.created`, never .NET class names, so code can be renamed without breaking stored logs
+- Events are serialized as JSON inside the encrypted payload
+- Event versioning must be downward compatible: an older app must never miss anything it already knows about. Rules:
+  1. Existing events only grow: fields may be added, never removed or changed in meaning; an older app ignores fields it does not know
+  2. The structure of the tree comes only from the basic events (`NodeCreated`, `NodeMoved`, `NodeDeleted`, `NodeRestored`, `NodeTitleChanged`, `NodeNoteChanged`); a new feature that changes structure writes these events instead of an event of its own, so an older app always sees every node with its title and note in the right place
+  3. A new kind of information gets a new event type instead of being added to the meaning of an existing one; older apps skip it without anything else being affected
+  4. A missing field always means "unchanged", never "reset to a default", so an older app that writes an event without a newer field does not overwrite the information in that field
+- Because of these rules the schema version normally stays at 1; it is a safety net for a breaking change that cannot be avoided: newer apps convert such events to the current shape when reading them (upcasting), older apps treat them as unknown
+- Newer apps always read all older events
 - Unknown event types or newer versions from a newer app on another device are stored and synced unchanged, but skipped by the projection until the app is updated
 - The tree stays fully editable meanwhile; the app shows a warning that the tree contains changes from a newer app version and that some of them are not visible until the update
-- New fields are added as optional fields with a defined default, so older apps can still read the events they know
+- Three versions, each with its own purpose:
+  - Envelope format version: how an event is stored and encrypted; read by every device and the server
+  - Schema version: the shape of one event type; read by the projection
+  - App version: the installed release; recorded in snapshots and search index (see Persistence)
 
 **Persistence**
 
 - Client: IndexedDB (via a JS interop wrapper) with two stores: `events` and `snapshots`
 - Snapshots speed up startup; the projection replays only events after the latest snapshot
+- Snapshots and the search index record the app version whose projection built them; after an update they are discarded and rebuilt from the full log, so events skipped by the older version take effect
 - All local data is partitioned by tree: events, snapshots, key, account identity and search index are stored per tree id
 - The app asks the browser for persistent storage (`navigator.storage.persist()`) so local data is not evicted under storage pressure
 - The export file doubles as a backup; the app reminds the user to export when a tree has never been synced or exported for a while
@@ -390,7 +402,8 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
 | ADR-14 | Events are ordered by a Lamport clock plus device id, not by wall-clock time or arrival order | Every device must compute the same tree from the same events; device clocks drift and arrival order differs per device |
 | ADR-15 | Only `EventId`, envelope version, `KeyId` and server sequence stay in plaintext; event type, device, clock and data are encrypted | The server only needs to store, deduplicate and relay; everything else would reveal structure and activity. Accepted consequence: the server can never filter or compact events by type. `KeyId` keeps later key rotation possible |
-| ADR-16 | Events are versioned and upcast on read; unknown events are kept and synced but skipped | Devices run different app versions; the log must never be rewritten and no device may drop another device's events |
+| ADR-16 | Event versioning is downward compatible (events only grow, structure only through the basic events, new information in new event types, missing means unchanged); unknown events are kept and synced but skipped, and the tree stays editable with a warning | Devices run different app versions; an older device must keep working and never miss nodes or texts; no device may drop another device's events |
+| ADR-17 | Events are serialized as JSON with fixed type names | Readable and easy to debug; padding hides size differences anyway; type names independent of code |
 
 **Open decisions**
 
@@ -401,6 +414,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
 | Key backup | Whether to offer a recovery code so a tree survives the loss of all devices |
+| Serialization format | JSON for now (ADR-17); a compact binary format such as MessagePack if logs grow too large |
 
 ## 10. Quality Requirements
 
