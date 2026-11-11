@@ -75,7 +75,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Shared domain project** (.NET class library) containing events, aggregates and projections, used by client and server
 - **End-to-end encryption**: event payloads are encrypted on the device with the tree's key, handed over only by pairing or sharing; the server stores and relays ciphertext plus minimal routing metadata (account id, event id, sequence number)
 - **Several independent trees per device**: each tree has its own key, account identity and event log; nothing is shared between trees
-- **Deterministic replay**: every device orders a tree's events by Lamport clock and device id, so all devices compute the same tree from the same events
+- **Deterministic replay**: every device orders a tree's events by hybrid logical clock and device id, so all devices compute the same tree from the same events
 - **Touch-first UI**: the outliner is designed for phone and tablet gestures first; desktop keyboard shortcuts come as an add-on
 - **Pluggable sync transport**: the sync protocol ("send me your events since X") is independent of how the bytes travel; the Sync Engine talks to an `ISyncTransport` abstraction, with the server as the first transport
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
@@ -98,7 +98,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | --- | --- |
 | Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
 | Tree Manager | Lists, creates and switches trees; holds each tree's key, account identity and private/shared state |
-| Command Handler | Turns user actions into domain events; stamps them with the next Lamport clock value |
+| Command Handler | Turns user actions into domain events; stamps them with the next hybrid logical clock value and the change they replace |
 | Local Event Store | Append-only log in IndexedDB; tracks synced/unsynced events |
 | Projection | Builds the in-memory tree from events; incremental updates; snapshots |
 | Search | Client-side full-text search over the projection; optional local index |
@@ -124,7 +124,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 **Scenario: Editing a node offline**
 
 1. User edits a node's title in the Outline UI
-2. Command Handler creates a `NodeTitleChanged` event with the next Lamport clock value
+2. Command Handler creates a `NodeTitleChanged` event with the next hybrid logical clock value
 3. Local Event Store appends the event (marked unsynced)
 4. Projection applies the event; UI updates immediately
 
@@ -144,12 +144,19 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Scenario: Concurrent edits on two devices**
 
-1. Device A and device B both hold clock 41 and are offline
-2. On A the user renames node N to "Ideas"; the event gets clock 42 and A's device id
-3. On B the user renames the same node to "Thoughts"; the event also gets clock 42, with B's device id
-4. After the next sync both devices hold both events and replay them in the agreed order: clock 42, then device id
-5. Both devices show the title from the event that comes last in that order; the other title stays in the log and can be shown in the node's history
-6. Both devices raise their clock to at least 42, so their next events come after both renames
+1. Device A and device B are offline; both last saw the change of node N's title made by event E1
+2. On Monday A renames N to "Ideas"; the event gets A's clock (Monday) and names E1 as the change it replaces
+3. On Friday B renames N to "Thoughts"; the event gets B's clock (Friday) and also names E1
+4. After the next sync both devices hold both events and replay them in the agreed order; "Thoughts" comes later and is shown on both devices
+5. Because both renames replace the same change E1, both devices mark N as having a conflict and offer both titles
+6. The user picks a title on either device; this writes a new title change that names both renames as replaced, and the conflict disappears on all devices once they have synced
+
+**Scenario: Device with a clock far ahead**
+
+1. Device A's clock is three days ahead; it writes events with clocks three days in the future
+2. Device B receives them, accepts them and raises its own clock to theirs, so its later edits still come after A's events
+3. B warns that A's clock seems to be wrong
+4. Until real time catches up, B's clock counts on from A's time; the order stays the same on every device, but edits are no longer ordered by real time
 
 **Scenario: Event from a newer app version**
 
@@ -263,13 +270,16 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent.
 
-Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`), `LocalSequence`, and after sync a `ServerSequence`.
+Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock), `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`), `LocalSequence`, and after sync a `ServerSequence`.
 
 **Ordering of siblings**
 
 - Position by reference: `NodeCreated` and `NodeMoved` place a node directly after a named sibling (`afterNodeId`), or first under its parent when empty
 - The projection replays all events of a tree in one agreed order, sorted by `Clock`, then `DeviceId`; every device computes the same order, independent of the order in which events arrived
-- Each device keeps one Lamport clock per tree: a new event gets the highest clock seen in that tree plus one; events received by sync or file raise the clock to their highest value
+- `Clock` is a hybrid logical clock: a UTC time in milliseconds plus a counter. A new event gets the device's current UTC time, or, if the highest clock in the tree's local log is equal or later, that clock with the counter raised by one
+- The clock is not stored separately: it is always derived from the highest clock in the tree's local log, so events received by sync or file raise it automatically
+- Events from a device whose clock is far ahead are accepted like all others, so every device keeps the same order; the receiving device warns that the other device's clock seems wrong
+- `DeviceId` is compared as the lowercase text form of the GUID, character by character (ordinal), never by the binary GUID order of .NET
 - The local and server sequence numbers only track sync progress; they never determine the tree
 - Two nodes placed after the same sibling at the same time are ordered by that agreed event order
 - If the referenced sibling is deleted, it stays in the projection as a tombstone, so the reference still resolves
@@ -277,8 +287,12 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 
 **Conflict resolution**
 
-- Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`)
-- Wall-clock timestamps are never used to decide conflicts, because device clocks drift
+- Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`); with the hybrid clock this is usually the latest edit in real time
+- `Timestamp` is never used to decide anything; only `Clock` is, which stays consistent even when device clocks drift
+- Events that change a node's title, note or position name the change they replace (`replaces`, a list of event ids); a missing value means the event replaces nothing known
+- Conflict: two or more changes of the same field of the same node that no later change replaces; the projection shows the winner by agreed order and marks the node, offering all competing values
+- The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
+- A conflict marker is derived from the log by the projection, not stored
 - Moves that would create a cycle are rejected on apply and re-parented to the root
 - Deleted nodes are tombstoned, never physically removed, to keep merges consistent
 - Merging always means taking the union of two event logs, with events identified by `EventId`; trees are never merged directly, the projection rebuilds the tree from the combined log
@@ -400,7 +414,8 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | ADR-11 | Pairing (own devices) and sharing (other users) are separate actions; users and devices are recorded by `DeviceJoined` events | Makes visible where changes come from and whether a tree is private or shared |
 | ADR-12 | One key per tree with equal access for every holder; no read-only access and no revocation for now | Keeps the encryption design simple; per-user keys are a much larger design and are deferred |
 | ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
-| ADR-14 | Events are ordered by a Lamport clock plus device id, not by wall-clock time or arrival order | Every device must compute the same tree from the same events; device clocks drift and arrival order differs per device |
+| ADR-14 | Events are ordered by a hybrid logical clock plus device id, not by plain wall-clock time or arrival order | Every device must compute the same tree from the same events; the latest edit in real time should usually win, also after long offline periods; device clocks drift and arrival order differs per device |
+| ADR-18 | Concurrent changes of the same field are marked as conflicts and resolved by the user; changes name the change they replace | Last-writer-wins can still pick the wrong value (wrong device clock); the user sees and fixes it, and the fix is an ordinary event |
 | ADR-15 | Only `EventId`, envelope version, `KeyId` and server sequence stay in plaintext; event type, device, clock and data are encrypted | The server only needs to store, deduplicate and relay; everything else would reveal structure and activity. Accepted consequence: the server can never filter or compact events by type. `KeyId` keeps later key rotation possible |
 | ADR-16 | Event versioning is downward compatible (events only grow, structure only through the basic events, new information in new event types, missing means unchanged); unknown events are kept and synced but skipped, and the tree stays editable with a warning | Devices run different app versions; an older device must keep working and never miss nodes or texts; no device may drop another device's events |
 | ADR-17 | Events are serialized as JSON with fixed type names | Readable and easy to debug; padding hides size differences anyway; type names independent of code |
@@ -442,7 +457,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Multiple trees multiply the work: sync, search, snapshots and export all run per tree
 - The browser may delete local data: Safari removes storage of sites not used for a while unless the app is installed to the home screen; mitigated by persistent storage, installing the PWA and regular export
 - Losing every device that holds a tree loses the tree, because the server only holds ciphertext
-- Lamport clocks and replay order are easy to get subtly wrong; covered by property-based convergence tests
+- Hybrid clocks and replay order are easy to get subtly wrong; covered by property-based convergence tests
 - Old app versions on rarely used devices skip newer events and may show an outdated tree until updated
 
 ## 12. Glossary
@@ -457,8 +472,9 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | Root | The invisible top node of the tree |
 | Parent / Children | The node directly above a node / the nodes directly below it |
 | Sibling Order | The order of the children under one parent; follows from replaying the events, each placing a node after a named sibling |
-| Lamport Clock | A logical counter carried by every event; a device sets it one higher than the highest clock it has seen, so events can be ordered the same way on every device |
-| Agreed Event Order | The order every device replays a tree's events in: by Lamport clock, then device id |
+| Hybrid Logical Clock | The clock carried by every event: UTC time plus a counter; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
+| Conflict | Two or more changes of the same field of a node made without seeing each other; shown to the user, who picks the value |
+| Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
 | Collapse | Hide a node's children in the view; UI state of one device, not a domain event |
 | Zoom | Make a node the temporary root of the view |
 | Event | Immutable record of one change to the tree |
