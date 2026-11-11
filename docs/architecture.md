@@ -128,7 +128,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 3. Local Event Store appends the event (marked unsynced)
 4. Projection applies the event; UI updates immediately
 
-**Scenario: Coming back online**
+**Scenario: Coming back online (live sync mode)**
 
 1. Sync Engine detects connectivity
 2. Pushes all unsynced events to `POST /events`
@@ -136,7 +136,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 4. Applies remote events to the projection; resolves conflicts
 5. Server broadcasts new events to other devices via SignalR
 
-**Scenario: Real-time update on a second device**
+**Scenario: Real-time update on a second device (live sync mode only)**
 
 1. SignalR hub signals "new events available"
 2. Device pulls events since its last sequence number
@@ -340,6 +340,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Sync requests send a neutral `Accept-Language` header, so they do not reveal the user's language and region
 - Known: even without server sync, the app contacts its static host on Azure to check for updates and so reveals the IP address; a VPN covers this; letting the user control update checks is a possible later step
 - Manual and scheduled sync reduce what B sees: without a live connection, the server sees only the sync times, not when the user is online or writing
+- Scheduled sync runs at a random moment within a time window the user sets; the app converts the window to UTC once and keeps it fixed, so sync times show neither round local times nor the switch to and from daylight saving time nor travel; the price is that in summer the window shifts by an hour in local time
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
 
