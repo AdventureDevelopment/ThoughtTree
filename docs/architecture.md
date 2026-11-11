@@ -180,7 +180,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 4. The new device scans the QR code (or the user types the code)
 5. The new device asks the user what to do: add the tree next to the trees already on this device, merge one of this device's trees into it, or cancel
 6. Add: the tree is stored as a further tree with its own key; nothing else on the device changes
-7. Merge: the chosen local tree gives up its own key and account identity and adopts the ones from the QR code; its events are kept and merged with the other device's events on the next sync
+7. Merge: the chosen local tree gives up its own key and account identity and adopts the ones from the QR code; its events are kept, their envelopes are re-encrypted with the adopted key, and they are merged with the other device's events on the next sync
 8. The new device takes over the user identity from the QR code and writes a `DeviceJoined` event, so the tree knows this device belongs to the same user
 9. The devices now exchange the tree's events by file, or through the server if server sync is switched on for that tree
 
@@ -284,14 +284,15 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 **Event envelope and encryption**
 
 - An event is stored and transmitted as an envelope: a few plaintext fields plus one encrypted payload
-- Plaintext: `EventId`, envelope format version and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
+- Plaintext: `EventId`, envelope format version, `KeyId` (which key of the tree encrypted the payload) and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
 - Encrypted: everything else, including event type, `DeviceId`, `Clock`, `Timestamp` and the event data, so the server learns neither content nor structure nor which device wrote what
 - Encryption with AES-GCM (256-bit key, fresh random nonce per event) via the Web Crypto API; `EventId` and account id are bound to the ciphertext as additional authenticated data, so the server cannot move or swap events unnoticed
 - The same envelopes are used in IndexedDB, on the server and in the export file
+- An envelope may be re-encrypted, for example when a local tree is merged into a received one and adopts its key; this does not count as rewriting the log, because the event inside stays unchanged
 
 **Event versioning**
 
-- Events are never changed or rewritten once written; every event carries its event type and a schema version
+- Events are never changed or rewritten once written (only their envelope may be re-encrypted); every event carries its event type and a schema version
 - Older versions are converted to the current shape when read (upcasting), so the projection only handles the current shape
 - Unknown event types or newer versions from a newer app on another device are stored and synced unchanged, but skipped by the projection until the app is updated
 - New fields are added as optional fields with a defined default, so older apps can still read the events they know
@@ -368,7 +369,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | ADR-12 | One key per tree with equal access for every holder; no read-only access and no revocation for now | Keeps the encryption design simple; per-user keys are a much larger design and are deferred |
 | ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
 | ADR-14 | Events are ordered by a Lamport clock plus device id, not by wall-clock time or arrival order | Every device must compute the same tree from the same events; device clocks drift and arrival order differs per device |
-| ADR-15 | Only `EventId`, envelope version and server sequence stay in plaintext; event type, device, clock and data are encrypted | The server only needs to store, deduplicate and relay; everything else would reveal structure and activity |
+| ADR-15 | Only `EventId`, envelope version, `KeyId` and server sequence stay in plaintext; event type, device, clock and data are encrypted | The server only needs to store, deduplicate and relay; everything else would reveal structure and activity. Accepted consequence: the server can never filter or compact events by type. `KeyId` keeps later key rotation possible |
 | ADR-16 | Events are versioned and upcast on read; unknown events are kept and synced but skipped | Devices run different app versions; the log must never be rewritten and no device may drop another device's events |
 
 **Open decisions**
