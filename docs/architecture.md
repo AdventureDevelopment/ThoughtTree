@@ -79,6 +79,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Touch-first UI**: the outliner is designed for phone and tablet gestures first; desktop keyboard shortcuts come as an add-on
 - **Pluggable sync transport**: the sync protocol ("send me your events since X") is independent of how the bytes travel; the Sync Engine talks to an `ISyncTransport` abstraction, with the server as the first transport
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
+- **User controls when to sync**: server sync runs only when the user wants it: live (continuous, with real-time updates), manual (on request), or scheduled at times the user plans; the mode is chosen per tree and per device
+- **Later distribution as a store app or downloadable package**: adds reliable background sync at planned times and control over updates, which a PWA in the browser cannot fully provide
 
 ## 5. Building Block View
 
@@ -199,8 +201,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 1. On any device the user switches on server sync
 2. The device contacts the Sync Service with the account identity; the first device to do so registers the account, later devices prove membership with the account secret
 3. Sync Service issues a device token for this device and this tree; a device that syncs several trees holds one token per tree
-4. The device pushes its event log and pulls events it does not have yet
-5. Other paired devices join the same way whenever the user switches server sync on there
+4. The user chooses the sync mode for this tree on this device: live, manual or scheduled
+5. The device pushes its event log and pulls events it does not have yet
+6. Other paired devices join the same way whenever the user switches server sync on there
 
 **Scenario: Device-to-device sync without internet**
 
@@ -336,6 +339,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - The IP address is mitigated outside the app: the user can use a VPN, or not switch on server sync at all and sync by file only; the app explains this where server sync is switched on
 - Sync requests send a neutral `Accept-Language` header, so they do not reveal the user's language and region
 - Known: even without server sync, the app contacts its static host on Azure to check for updates and so reveals the IP address; a VPN covers this; letting the user control update checks is a possible later step
+- Manual and scheduled sync reduce what B sees: without a live connection, the server sees only the sync times, not when the user is online or writing
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
 
@@ -418,6 +422,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Conflict rules for moves are non-trivial; need thorough tests
 - Single developer: scope creep towards task management (the MLO trap)
 - A shared key cannot be taken back: anyone who has received a tree's key keeps access to that tree
+- Background sync in a PWA is limited: browsers decide themselves when periodic background sync runs, and some (Safari, iOS) do not support it; scheduled sync may only run while the app is open until a store app or package exists
 - Multiple trees multiply the work: sync, search, snapshots and export all run per tree
 - The browser may delete local data: Safari removes storage of sites not used for a while unless the app is installed to the home screen; mitigated by persistent storage, installing the PWA and regular export
 - Losing every device that holds a tree loses the tree, because the server only holds ciphertext
