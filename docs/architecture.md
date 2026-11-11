@@ -42,7 +42,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Source control: private GitHub repository `AdventureDevelopment/ThoughtTree`
 - Single developer, incremental delivery
 - Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible (Static Web Apps for the PWA, Container Apps or Functions for the sync service); target cost near zero for a single user
-- Server storage stays minimal: an append-only encrypted event log per user; concrete store (Azure Table Storage, Blob Storage or SQLite) is an open decision
+- Server storage stays minimal: an append-only encrypted event log per account (one account per tree); concrete store (Azure Table Storage, Blob Storage or SQLite) is an open decision
 - Development process: trunk-based development on `main` with feature flags (Microsoft.FeatureManagement) instead of long-lived feature branches
 - CI/CD via GitHub Actions: every push builds and tests, deploys automatically to a test environment on Azure; promotion to production is a manual approval step
 
@@ -50,8 +50,10 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Business context**
 
-- User interacts with the ThoughtTree PWA on one or more devices
-- Devices synchronise through a central sync service over HTTPS/WebSockets
+- User interacts with the ThoughtTree PWA on one or more devices; every device works on its own
+- Devices can exchange a tree's events directly as an encrypted file, without internet
+- Devices can optionally synchronise a tree through a central sync service over HTTPS/WebSockets
+- Other users can receive a tree that is shared with them and then work on it like the owner
 
 **Technical context**
 
@@ -60,7 +62,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Browser / OS | Service Worker, IndexedDB, Web App Manifest, Web Crypto API | Installability, offline cache, local persistence, client-side encryption |
 | Sync Service (ASP.NET Core on Azure) | REST + SignalR | Push/pull of encrypted events, real-time notifications |
 | Authentication (initially device tokens, later optional OpenID Connect) | Bearer token | Identifies which account's event log a device may access; kept behind an `IAuthProvider` abstraction so it can be swapped |
-| Other devices of the same user | Pairing flow (e.g. QR code or passphrase) | Shares the end-to-end encryption key; no server involvement in key material |
+| Other devices (own or of other users) | Pairing or sharing flow (QR code or typed code) | Hands over a tree's key and account identity; no server involvement in key material |
+| File transfer of the OS (share sheet, AirDrop, Nearby Share, USB) | File download / file picker, Web Share API where available | Carries the encrypted export file between devices |
 
 ## 4. Solution Strategy
 
@@ -70,7 +73,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Sync by exchanging event logs** instead of whole documents, which keeps conflicts small and mergeable
 - **ASP.NET Core backend** as a thin event store and relay (REST for push/pull, SignalR for live updates)
 - **Shared domain project** (.NET class library) containing events, aggregates and projections, used by client and server
-- **End-to-end encryption**: event payloads are encrypted on the device with a user key shared only via device pairing; the server stores and relays ciphertext plus minimal routing metadata (account id, sequence number)
+- **End-to-end encryption**: event payloads are encrypted on the device with the tree's key, handed over only by pairing or sharing; the server stores and relays ciphertext plus minimal routing metadata (account id, event id, sequence number)
+- **Several independent trees per device**: each tree has its own key, account identity and event log; nothing is shared between trees
+- **Deterministic replay**: every device orders a tree's events by Lamport clock and device id, so all devices compute the same tree from the same events
 - **Touch-first UI**: the outliner is designed for phone and tablet gestures first; desktop keyboard shortcuts come as an add-on
 - **Pluggable sync transport**: the sync protocol ("send me your events since X") is independent of how the bytes travel; the Sync Engine talks to an `ISyncTransport` abstraction, with the server as the first transport
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
@@ -90,12 +95,15 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Component | Responsibility |
 | --- | --- |
 | Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
-| Command Handler | Turns user actions into domain events |
+| Tree Manager | Lists, creates and switches trees; holds each tree's key, account identity and private/shared state |
+| Command Handler | Turns user actions into domain events; stamps them with the next Lamport clock value |
 | Local Event Store | Append-only log in IndexedDB; tracks synced/unsynced events |
 | Projection | Builds the in-memory tree from events; incremental updates; snapshots |
 | Search | Client-side full-text search over the projection; optional local index |
 | Crypto | Key generation and storage, encryption/decryption of event payloads (Web Crypto API), device pairing payloads |
-| Sync Engine | Push unsynced encrypted events, pull remote events, decrypt, apply and resolve conflicts |
+| Sync Engine | Exchanges events through an `ISyncTransport`: push unsynced encrypted events, pull remote events, decrypt, merge and apply |
+| Server Transport | `ISyncTransport` over the Sync API and Sync Hub |
+| File Transport | `ISyncTransport` that writes the encrypted export file and reads an imported one |
 | Auth Client | Device token handling behind `IAuthProvider`; swappable for OIDC later |
 | Service Worker | Caches app shell and assets for offline start |
 
@@ -114,7 +122,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 **Scenario: Editing a node offline**
 
 1. User edits a node's title in the Outline UI
-2. Command Handler creates `NodeTitleChanged` event
+2. Command Handler creates a `NodeTitleChanged` event with the next Lamport clock value
 3. Local Event Store appends the event (marked unsynced)
 4. Projection applies the event; UI updates immediately
 
@@ -131,6 +139,22 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 1. SignalR hub signals "new events available"
 2. Device pulls events since its last sequence number
 3. Projection updates the tree
+
+**Scenario: Concurrent edits on two devices**
+
+1. Device A and device B both hold clock 41 and are offline
+2. On A the user renames node N to "Ideas"; the event gets clock 42 and A's device id
+3. On B the user renames the same node to "Thoughts"; the event also gets clock 42, with B's device id
+4. After the next sync both devices hold both events and replay them in the agreed order: clock 42, then device id
+5. Both devices show the title from the event that comes last in that order; the other title stays in the log and can be shown in the node's history
+6. Both devices raise their clock to at least 42, so their next events come after both renames
+
+**Scenario: Event from a newer app version**
+
+1. Device A runs a newer app version and writes an event type or event version that device B does not know
+2. Device B receives the event by sync or file, stores it in its Local Event Store and keeps it for further sync
+3. The projection on B skips the event and the app suggests updating
+4. After the update B replays the log again and the event takes effect
 
 **Scenario: First device setup**
 
@@ -242,6 +266,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 
 - Position by reference: `NodeCreated` and `NodeMoved` place a node directly after a named sibling (`afterNodeId`), or first under its parent when empty
 - The projection replays all events of a tree in one agreed order, sorted by `Clock`, then `DeviceId`; every device computes the same order, independent of the order in which events arrived
+- Each device keeps one Lamport clock per tree: a new event gets the highest clock seen in that tree plus one; events received by sync or file raise the clock to their highest value
 - The local and server sequence numbers only track sync progress; they never determine the tree
 - Two nodes placed after the same sibling at the same time are ordered by that agreed event order
 - If the referenced sibling is deleted, it stays in the projection as a tombstone, so the reference still resolves
@@ -256,11 +281,28 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Merging always means taking the union of two event logs, with events identified by `EventId`; trees are never merged directly, the projection rebuilds the tree from the combined log
 - This also covers two devices that were used on their own before pairing: their top-level nodes become siblings under the shared root
 
+**Event envelope and encryption**
+
+- An event is stored and transmitted as an envelope: a few plaintext fields plus one encrypted payload
+- Plaintext: `EventId`, envelope format version and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
+- Encrypted: everything else, including event type, `DeviceId`, `Clock`, `Timestamp` and the event data, so the server learns neither content nor structure nor which device wrote what
+- Encryption with AES-GCM (256-bit key, fresh random nonce per event) via the Web Crypto API; `EventId` and account id are bound to the ciphertext as additional authenticated data, so the server cannot move or swap events unnoticed
+- The same envelopes are used in IndexedDB, on the server and in the export file
+
+**Event versioning**
+
+- Events are never changed or rewritten once written; every event carries its event type and a schema version
+- Older versions are converted to the current shape when read (upcasting), so the projection only handles the current shape
+- Unknown event types or newer versions from a newer app on another device are stored and synced unchanged, but skipped by the projection until the app is updated
+- New fields are added as optional fields with a defined default, so older apps can still read the events they know
+
 **Persistence**
 
 - Client: IndexedDB (via a JS interop wrapper) with two stores: `events` and `snapshots`
 - Snapshots speed up startup; the projection replays only events after the latest snapshot
 - All local data is partitioned by tree: events, snapshots, key, account identity and search index are stored per tree id
+- The app asks the browser for persistent storage (`navigator.storage.persist()`) so local data is not evicted under storage pressure
+- The export file doubles as a backup; the app reminds the user to export when a tree has never been synced or exported for a while
 
 **Search**
 
@@ -281,6 +323,19 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - HTTPS everywhere
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
+
+**Feature flags**
+
+- Unfinished features are switched off by feature flags (Microsoft.FeatureManagement), in the client and on the server
+- Flags are set per environment through configuration; production only switches a feature on once it is complete
+- Flags never change the event model: events of a feature that is switched off are still stored, synced and replayed
+
+**Testing**
+
+- The Domain project carries most of the logic and is covered by unit tests without browser or server
+- Property-based tests check convergence: the same set of events, in any arrival order and with duplicates, always gives the same tree
+- Further property-based tests cover moves that would create cycles, references to deleted or moved siblings, and replay after snapshots
+- The Sync Service is tested with integration tests against the chosen store; the client with component tests and a few end-to-end tests in a browser
 
 **UI / UX**
 
@@ -313,6 +368,18 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | ADR-12 | One key per tree with equal access for every holder; no read-only access and no revocation for now | Keeps the encryption design simple; per-user keys are a much larger design and are deferred |
 | ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
 | ADR-14 | Events are ordered by a Lamport clock plus device id, not by wall-clock time or arrival order | Every device must compute the same tree from the same events; device clocks drift and arrival order differs per device |
+| ADR-15 | Only `EventId`, envelope version and server sequence stay in plaintext; event type, device, clock and data are encrypted | The server only needs to store, deduplicate and relay; everything else would reveal structure and activity |
+| ADR-16 | Events are versioned and upcast on read; unknown events are kept and synced but skipped | Devices run different app versions; the log must never be rewritten and no device may drop another device's events |
+
+**Open decisions**
+
+| Topic | Options |
+| --- | --- |
+| Server event store | Azure Table Storage, Blob Storage or SQLite |
+| Sync service hosting | Azure Container Apps or Azure Functions |
+| Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
+| Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
+| Key backup | Whether to offer a recovery code so a tree survives the loss of all devices |
 
 ## 10. Quality Requirements
 
@@ -322,6 +389,11 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | Edit a node | UI reflects change in under 50 ms |
 | Reconnect after 1 day offline | All local changes synced without data loss |
 | Concurrent edit on two devices | Both edits preserved or deterministically resolved |
+| Same events arrive in a different order on two devices | Both devices show exactly the same tree |
+| Search in a tree with 10,000 nodes | First results within 200 ms |
+| Import an export file with 10,000 events | Merged and visible within 5 s |
+| Attacker reads the whole server store | Learns no note content, no tree structure and no device labels |
+| Device used with no internet for weeks | Works fully; nothing is lost when it syncs again |
 
 ## 11. Risks and Technical Debt
 
@@ -332,6 +404,10 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Single developer: scope creep towards task management (the MLO trap)
 - A shared key cannot be taken back: anyone who has received a tree's key keeps access to that tree
 - Multiple trees multiply the work: sync, search, snapshots and export all run per tree
+- The browser may delete local data: Safari removes storage of sites not used for a while unless the app is installed to the home screen; mitigated by persistent storage, installing the PWA and regular export
+- Losing every device that holds a tree loses the tree, because the server only holds ciphertext
+- Lamport clocks and replay order are easy to get subtly wrong; covered by property-based convergence tests
+- Old app versions on rarely used devices skip newer events and may show an outdated tree until updated
 
 ## 12. Glossary
 
@@ -363,5 +439,11 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | Sharing | Giving a tree to another user by handing over its key and account identity; every user of a shared tree can read and change all of it |
 | Key | The end-to-end encryption key of one tree; exists only on devices that hold that tree |
 | Account | The identity of one tree towards the sync server (account id and account secret); one account per tree |
+| Account Secret | Secret created on the device with a tree; proves to the sync server that a device may join that tree's account |
 | Device Token | Credential that lets a device access a tree's event log on the sync server |
+| Event Envelope | The stored and transmitted form of an event: a few plaintext fields plus the encrypted payload |
+| Upcasting | Converting an event written in an older schema version to the current shape when it is read |
+| Sync Transport | The way events travel between devices (`ISyncTransport`): through the server or as an export file |
+| Export File | An encrypted file containing a tree's events, used for device-to-device sync and as a backup |
+| Feature Flag | A switch that keeps an unfinished feature off in an environment |
 | PWA | Progressive Web App: installable, offline-capable web application |
