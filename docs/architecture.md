@@ -331,6 +331,9 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Store as little as possible: the server keeps no receive times and no IP addresses; logging and telemetry (for example Application Insights) are configured not to record IP addresses, and logs are kept only briefly
 - Envelopes are padded to size buckets (see Event envelope and encryption)
 - Events are pushed in batches after a short pause in editing rather than one by one, so the server does not see the rhythm of typing; the price is that other devices see changes a few seconds later
+- Priority: an observer of the running server (B) must not learn where the user is
+- Remaining leak accepted for B: when devices are online and roughly when trees are edited, and the IP address of each request
+- The IP address is mitigated outside the app: the user can use a VPN, or not switch on server sync at all and sync by file only; the app explains this where server sync is switched on
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
 
