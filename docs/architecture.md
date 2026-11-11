@@ -157,6 +157,14 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 5. Because both renames replace the same change E1, both devices mark N as having a conflict and offer both titles
 6. The user picks a title on either device; this writes a new title change that names both renames as replaced, and the conflict disappears on all devices once they have synced
 
+**Scenario: Deleting a node that another device changed**
+
+1. Device A and device B are offline
+2. On A the user deletes node N with its subtree; the deletion records what A had seen from each device
+3. On B the user adds a child to N and renames one of N's children
+4. After the next sync, N is deleted on both devices, but marked as a conflict, because the deletion had not seen B's changes
+5. The user sees the conflict, for example in a list of conflicts of the tree, and chooses: keep N deleted, or restore N with B's changes
+
 **Scenario: Device with a clock far ahead**
 
 1. Device A's clock is three days ahead; it writes events with clocks three days in the future
@@ -269,7 +277,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - `NodeTitleChanged(nodeId, title)`
 - `NodeNoteChanged(nodeId, note)`
 - `NodeMoved(nodeId, newParentId, afterNodeId)`
-- `NodeDeleted(nodeId)`
+- `NodeDeleted(nodeId, seen)`
 - `NodeRestored(nodeId)`
 - `DeviceJoined(deviceId, deviceLabel, userId, userName)`
 - `DeviceLabelChanged(deviceId, label)`
@@ -299,6 +307,9 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - Events that change a node's title, note or position name the change they replace (`replaces`, a list of event ids); a missing value means the event replaces nothing known
 - Conflict: two or more changes of the same field of the same node that no later change replaces; the projection shows the winner by agreed order and marks the node, offering all competing values
 - The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
+- Delete conflict: a deletion conflicts with every change to the deleted node or anywhere in its subtree (including nodes created or moved into it) that the deleting device had not seen when it deleted
+- To decide this, `NodeDeleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
+- The node stays deleted in the projection, but is marked with a conflict listing the unseen changes; the user either keeps it deleted (a new deletion that has seen them) or restores it (`NodeRestored`) together with the changes
 - A conflict marker is derived from the log by the projection, not stored
 - Moves that would create a cycle are rejected on apply and re-parented to the root
 - Deleted nodes are tombstoned, never physically removed, to keep merges consistent
