@@ -17,6 +17,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Multiple trees per device: a device can hold several independent trees side by side, each with its own key and event log (for example a private and a work tree)
 - See where changes come from: every device has a label (for example "Tablet"), and a node shows which device last changed it and when
 - Explicit sharing: pairing another device of one's own and sharing a tree with another user are two separate actions; every tree shows whether it is private or shared, and with whom
+- Usable where VPNs are blocked: file-only sync stays a full alternative, the user controls app updates, and the sync server can be self-hosted
+- Honest about protection: the app states plainly what it protects (content) and what it does not hide (that and when ThoughtTree is used)
 
 **Quality goals**
 
@@ -42,6 +44,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Source control: private GitHub repository `AdventureDevelopment/ThoughtTree`
 - Single developer, incremental delivery
 - Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible (Static Web Apps for the PWA, Container Apps or Functions for the sync service); target cost near zero for a single user
+- The sync service (and the static app) must also be deployable by others on their own server, without Azure
 - Server storage stays minimal: an append-only encrypted event log per account (one account per tree); concrete store (Azure Table Storage, Blob Storage or SQLite) is an open decision
 - Development process: trunk-based development on `main` with feature flags (Microsoft.FeatureManagement) instead of long-lived feature branches
 - CI/CD via GitHub Actions: every push builds and tests, deploys automatically to a test environment on Azure; promotion to production is a manual approval step
@@ -81,6 +84,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
 - **User controls when to sync**: server sync runs only when the user wants it: live (continuous, with real-time updates), manual (on request), or scheduled at times the user plans; the mode is chosen per tree and per device
 - **Later distribution as a store app or downloadable package**: adds reliable background sync at planned times and control over updates, which a PWA in the browser cannot fully provide
+- **Self-hostable sync server**: the server address is configurable per tree; the sync service and the static app are also offered as a package that anyone can run on a server they trust
+- **User controls app updates**: the app checks for and applies updates only when the user allows it
+- **Later option: sync through a cloud folder** the user already uses; the app writes the encrypted export file there, which looks like ordinary file sync on the network; needs the store app or downloadable package
 
 ## 5. Building Block View
 
@@ -107,7 +113,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Server Transport | `ISyncTransport` over the Sync API and Sync Hub |
 | File Transport | `ISyncTransport` that writes the encrypted export file and reads an imported one |
 | Auth Client | Device token handling behind `IAuthProvider`; swappable for OIDC later |
-| Service Worker | Caches app shell and assets for offline start |
+| Service Worker | Caches app shell and assets for offline start; applies app updates only when the user allows it |
 
 **Level 2 – Server**
 
@@ -205,7 +211,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Scenario: Switching on server sync (optional)**
 
-1. On any device the user switches on server sync
+1. On any device the user switches on server sync and chooses the server: the default service or a self-hosted one, by its address
 2. The device contacts the Sync Service with the account identity; the first device to do so registers the account, later devices prove membership with the account secret
 3. Sync Service issues a device token for this device and this tree; a device that syncs several trees holds one token per tree
 4. The user chooses the sync mode for this tree on this device: live, manual or scheduled
@@ -230,6 +236,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | User device (browser / installed PWA) | Blazor WASM app, Service Worker, IndexedDB (events, snapshots, key) |
 | Azure Static Web Apps (free tier) | Blazor WASM static files |
 | Sync service on Azure | ASP.NET Core Sync Service; hosting on Container Apps or Functions is an open decision |
+| Self-hosted server (optional) | Package with the sync service, its storage and the static app, run by a user or someone they trust on their own server |
 | Event log storage on Azure | Append-only encrypted event log per account; Table Storage, Blob Storage or SQLite is an open decision |
 
 **Environments**
@@ -365,7 +372,11 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - Remaining leak accepted for B: when devices are online and roughly when trees are edited, the IP address of each request, and over time the user's approximate time zone and changes of it when travelling
 - The IP address is mitigated outside the app: the user can use a VPN, or not switch on server sync at all and sync by file only; the app explains this where server sync is switched on
 - Sync requests send a neutral `Accept-Language` header, so they do not reveal the user's language and region
-- Known: even without server sync, the app contacts its static host on Azure to check for updates and so reveals the IP address; a VPN covers this; letting the user control update checks is a possible later step
+- Even without server sync, the app contacts its static host when it checks for updates and so reveals the IP address
+- Requirement: the user controls updates, for example "check for updates only when I ask"; the app applies an update only when the user allows it
+- Limitation in the browser: when an installed PWA is opened while online, the browser itself checks the static host for a new service worker (at most about once a day) and the app cannot switch this off; full control over update checks needs the self-hosted package (the browser then contacts that server) or the later store app or downloadable package
+- Where VPNs are blocked or risky, the user can stay without any server contact apart from installing and updating: file-only sync, updates only on request; or use a self-hosted server they trust
+- A network observer (for example an internet provider) can still see that a device connects to the sync server or the static host; the app says so in plain words and does not promise to hide that ThoughtTree is used
 - Manual and scheduled sync reduce what B sees: without a live connection, the server sees only the sync times, not when the user is online or writing
 - Scheduled sync runs at a random moment within a time window the user sets; the app converts the window to UTC once and keeps it fixed, so sync times show neither round local times nor the switch to and from daylight saving time nor travel; the price is that in summer the window shifts by an hour in local time
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
@@ -394,6 +405,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - A node shows which device last changed it and when, using the device label; a full change history per node is possible later, since all events are kept
 - Times are shown in the viewing device's local time; the original local time of the change (from the offset in the timestamp) can be shown as well, for example when a change was made while travelling
 - Every tree is marked private or shared; a shared tree lists its users and their devices, and changes show the user as well as the device
+- A short, plain explanation of what ThoughtTree protects and what it does not, shown when server sync is switched on and available at any time
 - "Pair my other device" and "Share with another user" are two separate actions with separate wording and a warning before sharing
 - UI state (collapsed nodes, current zoom, open tree) belongs to one device: it is stored locally per tree and never synced; only domain events go into the event log
 
