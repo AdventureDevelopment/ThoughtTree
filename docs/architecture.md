@@ -299,6 +299,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Events are never changed or rewritten once written (only their envelope may be re-encrypted); every event carries its event type and a schema version
 - Older versions are converted to the current shape when read (upcasting), so the projection only handles the current shape
 - Unknown event types or newer versions from a newer app on another device are stored and synced unchanged, but skipped by the projection until the app is updated
+- The tree stays fully editable meanwhile; the app shows a warning that the tree contains changes from a newer app version and that some of them are not visible until the update
 - New fields are added as optional fields with a defined default, so older apps can still read the events they know
 
 **Persistence**
