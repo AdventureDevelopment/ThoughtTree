@@ -198,7 +198,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 1. On any device the user switches on server sync
 2. The device contacts the Sync Service with the account identity; the first device to do so registers the account, later devices prove membership with the account secret
-3. Sync Service issues a device token for this device
+3. Sync Service issues a device token for this device and this tree; a device that syncs several trees holds one token per tree
 4. The device pushes its event log and pulls events it does not have yet
 5. Other paired devices join the same way whenever the user switches server sync on there
 
@@ -287,6 +287,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Plaintext: `EventId`, envelope format version, `KeyId` (which key of the tree encrypted the payload) and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
 - Encrypted: everything else, including event type, `DeviceId`, `Clock`, `Timestamp` and the event data, so the server learns neither content nor structure nor which device wrote what
 - Encryption with AES-GCM (256-bit key, fresh random nonce per event) via the Web Crypto API; `EventId` and account id are bound to the ciphertext as additional authenticated data, so the server cannot move or swap events unnoticed
+- Before encryption the payload is padded to a fixed size bucket (for example 256 B, 1 KB, 4 KB, 16 KB), so the size of an envelope does not reveal the length of titles and notes
 - The same envelopes are used in IndexedDB, on the server and in the export file
 - An envelope may be re-encrypted, for example when a local tree is merged into a received one and adopts its key; this does not count as rewriting the log, because the event inside stays unchanged
 
@@ -322,6 +323,14 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 - Server registration uses an account secret that is created on the device and shared only through pairing
 - Events are scoped per account; no cross-account access
 - HTTPS everywhere
+- Device tokens are issued per device and tree, so the server gets no ready-made link between the trees of one device
+
+**Metadata protection**
+
+- Threat model: (A) someone who obtains the stored server data, and (B) someone who can observe the running server, including the cloud provider and the operator
+- Store as little as possible: the server keeps no receive times and no IP addresses; logging and telemetry (for example Application Insights) are configured not to record IP addresses, and logs are kept only briefly
+- Envelopes are padded to size buckets (see Event envelope and encryption)
+- Events are pushed in batches after a short pause in editing rather than one by one, so the server does not see the rhythm of typing; the price is that other devices see changes a few seconds later
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
 
@@ -393,7 +402,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (Lamport clock), `Time
 | Same events arrive in a different order on two devices | Both devices show exactly the same tree |
 | Search in a tree with 10,000 nodes | First results within 200 ms |
 | Import an export file with 10,000 events | Merged and visible within 5 s |
-| Attacker reads the whole server store | Learns no note content, no tree structure and no device labels |
+| Attacker reads the whole server store | Learns no note content, no tree structure, no device labels, no note lengths, no IP addresses and no times of use |
 | Device used with no internet for weeks | Works fully; nothing is lost when it syncs again |
 
 ## 11. Risks and Technical Debt
