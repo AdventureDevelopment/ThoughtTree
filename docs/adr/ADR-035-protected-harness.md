@@ -4,7 +4,7 @@ id: ADR-035 · status: Accepted
 
 applies_to: `tests/**`, `.github/**`
 
-- **MUST NOT** change or delete stored test data in `tests/data/formats`; it is append-only
+- **MUST NOT** change or delete stored test data in `tests/data/formats` or regression seeds in `tests/data/regression-seeds`; both are append-only
 - **MUST NOT** change the reference model (`tests/ThoughtTree.Domain.Model`) or the invariant catalogue without human approval
 - **MUST NOT** accept new or changed snapshot files (`*.verified.*`) automatically, in CI or by an agent; changes need human approval
 - **MUST NOT** delete gate tests or weaken assertions without human approval
@@ -16,7 +16,7 @@ applies_to: `tests/**`, `.github/**`
 verify:
 
 ```bash
-git diff --diff-filter=DM origin/main -- tests/data/formats | wc -l   # expect 0
+git diff --diff-filter=DM origin/main -- tests/data/formats tests/data/regression-seeds | wc -l   # expect 0
 git diff origin/main -- tests/ThoughtTree.Domain.Model | wc -l   # expect 0 unless approved
 git diff --diff-filter=DM origin/main -- '*.verified.*' | wc -l   # expect 0 unless approved
 ```

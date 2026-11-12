@@ -6,7 +6,7 @@ applies_to: `src/**`
 
 - **MUST** keep domain logic (events, projection, conflicts, clock, and the command logic that decides which events a user action writes) in ThoughtTree.Domain, used by the client only
 - **MUST** share only ThoughtTree.Contracts (envelope, export format, API data) between client and server
-- **MUST NOT** reference ThoughtTree.Domain from the server
+- **MUST NOT** reference ThoughtTree.Domain from the server projects (ThoughtTree.Server, ThoughtTree.Server.Core)
 - **MUST NOT** use browser, JavaScript interop, storage, network or async I/O in ThoughtTree.Domain; these APIs are listed in Domain's banned API file
 
 verify:

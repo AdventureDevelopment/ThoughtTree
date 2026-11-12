@@ -102,7 +102,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | ThoughtTree.Client (Blazor WASM) | UI, local event store, projections, sync client |
 | ThoughtTree.Domain (class library) | Event definitions, tree, projection, conflict detection, hybrid logical clock, validation; used by the client only |
 | ThoughtTree.Contracts (class library) | Event envelope, export file format, API data; shared by client and server |
-| ThoughtTree.Server (ASP.NET Core) | Registration, device tokens, encrypted event store per account, sync API, SignalR hub |
+| ThoughtTree.Server.Core (class library) | Server logic independent of ASP.NET Core: registration, device tokens, duplicate detection, encrypted event store per account |
+| ThoughtTree.Server (ASP.NET Core) | Thin layer of endpoints around the core: sync API, SignalR hub |
 
 **Level 2 – Client**
 
@@ -589,6 +590,15 @@ Layer 2 – Format tests:
 - The API is a format too: it carries a version in its address (for example `/v1/events`); the new server handles requests of old clients, the new client works with an older server or says clearly that the server needs updating
 - Pairing and sharing codes: user name and server address have a maximum length; a test checks that the largest possible code fits into a QR code that phones read reliably
 
+Layer 3 – Simulation tests:
+
+- Deterministic simulation: the whole system minus browser and real network runs in one process; a seed controls everything, so the same seed gives exactly the same run
+- Simulated: devices of several users with the real client logic on in-memory storage; the real server core with an in-memory store; network (delays, lost, duplicated and reordered messages, unreachable or restarting server); files (export and import, the same file twice, old files late); clocks (offsets, jumps, days ahead); users (random actions from the layer 1 generators, including pairing, sharing, merging trees and changing the server); failures (app closed while writing, full storage, rejected token, app update in mid-run)
+- Checked continuously: INV-4, INV-8, the no-gap rule, the server holds only envelopes; checked after a final full sync: INV-1, INV-5, INV-9
+- A failure reports the seed with a command to repeat it, a shortened run with only the steps that still fail, and a readable timeline per device naming the broken invariant
+- Every push runs the regression seeds plus a few new random ones within about 1 to 2 minutes; nightly runs use thousands of seeds and long runs; a seed that failed once is added to the regression list (`tests/data/regression-seeds`), which is append-only
+- Tooling: own harness built on CsCheck, so its generators and shrinking work for whole runs
+
 Layer 0 – compiler as the first gate:
 
 - Nullable reference types on, warnings treated as errors, .NET analyzers at a strict level, `dotnet format` checked in CI
@@ -669,6 +679,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-036](adr/ADR-036-user-controlled-updates.md) | User-controlled app updates | `src/ThoughtTree.Client/**` |
 | [ADR-037](adr/ADR-037-api-versioning.md) | Versioned, compatible sync API | `src/ThoughtTree.Server/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**` |
 | [ADR-038](adr/ADR-038-local-storage-migration.md) | Local storage migrations without loss | `src/ThoughtTree.Client/**` |
+| [ADR-039](adr/ADR-039-controlled-concurrency.md) | No uncontrolled concurrency or timers | `src/**` |
+| [ADR-040](adr/ADR-040-server-core-library.md) | Server logic as a library | `src/ThoughtTree.Server*/**` |
 
 **Open decisions**
 
