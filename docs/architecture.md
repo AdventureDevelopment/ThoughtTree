@@ -46,7 +46,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Must work offline; network is optional and intermittent
 - Source control: private GitHub repository `AdventureDevelopment/ThoughtTree`
 - Single developer, incremental delivery
-- Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible (Static Web Apps for the PWA, Container Apps or Functions for the sync service); target cost near zero for a single user
+- Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible (Azure Container Apps, scaling to zero); target cost near zero for a single user
 - The sync service (and the static app) must also be deployable by others on their own server, without Azure
 - Server storage stays minimal: an append-only encrypted event log per account (one account per tree); concrete store (Azure Table Storage, Blob Storage or SQLite) is an open decision
 - Development process: trunk-based development on `main` with feature flags (Microsoft.FeatureManagement) instead of long-lived feature branches
@@ -266,11 +266,12 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Node | Content |
 | --- | --- |
-| User device (browser / installed PWA) | Blazor WASM app, Service Worker, IndexedDB (events, snapshots, key) |
-| Azure Static Web Apps (free tier) | Blazor WASM static files |
-| Sync service on Azure | ASP.NET Core Sync Service; hosting on Container Apps or Functions is an open decision |
-| Self-hosted server (optional) | Package with the sync service, its storage and the static app, run by a user or someone they trust on their own server |
-| Event log storage on Azure | Append-only encrypted event log per account; Table Storage, Blob Storage or SQLite is an open decision |
+| User device (browser / installed PWA) | Blazor WASM app, Service Worker, local storage (events, snapshots, tree access) |
+| ThoughtTree container image | One image: ASP.NET Core server serving the sync API, the SignalR hub and the static client app from one origin; store chosen by configuration |
+| Azure Container Apps (test and production) | The container image, scaling to zero; store: the chosen Azure store (not SQLite, because file locking on Azure file shares is unreliable) |
+| Event log storage on Azure | Append-only encrypted event log per account; Table Storage or Blob Storage is an open decision |
+| Self-hosted server (optional) | The same container image on any server, with SQLite on a volume, behind a reverse proxy that provides HTTPS (example: Docker Compose with Caddy); backups of the volume contain only encrypted data |
+| Container registry | GitHub Container Registry; public image, amd64 and arm64, version tags such as `1.4.2` and `1.4` |
 
 **Environments**
 
@@ -757,6 +758,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-044](adr/ADR-044-abuse-protection.md) | Abuse protection and registration modes | `src/ThoughtTree.Server*/**` |
 | [ADR-045](adr/ADR-045-strict-csp.md) | Strict Content Security Policy | `src/**`, `infra/**` |
 | [ADR-046](adr/ADR-046-infrastructure-as-code.md) | Infrastructure as code with Bicep, deployment without stored secrets | `infra/**`, `.github/**` |
+| [ADR-047](adr/ADR-047-one-container-image.md) | One container image everywhere | `src/ThoughtTree.Server*/**`, `infra/**`, `.github/**` |
+| [ADR-048](adr/ADR-048-image-supply-chain.md) | Hardened image and supply chain | `src/ThoughtTree.Server*/**`, `.github/**` |
 
 **Open decisions**
 
@@ -764,7 +767,6 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | --- | --- |
 | Server event store | Azure Table Storage, Blob Storage or SQLite. To consider: Table Storage records a time on every row that cannot be switched off, and Blob Storage records creation and change times, which conflicts with storing no times of use unless events are packed into larger chunks; SQLite stores no such times; the self-hosted package needs a store that runs without Azure; later binary data needs blob storage |
 | Local storage engine | IndexedDB, or SQLite compiled to WebAssembly on the Origin Private File System (in a Web Worker). SQLite offers full-text search (FTS5), real transactions, the same engine in tests, simulation, later native apps and the self-hosted server, and simpler queries; costs about 1 MB extra download, worker interop, and is less mature, especially on Safari. Decided by a spike before the first release, with criteria: reliable in Chromium, Safari on iPhone and iPad and Firefox; no data loss when the app is closed while writing; start time with 100,000 events; download size; effort of the worker interop. Storage stays engine-neutral behind its interface until then |
-| Sync service hosting | Azure Container Apps or Azure Functions |
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
 | Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-022). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted nodes may be removed |
