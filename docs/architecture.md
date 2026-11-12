@@ -284,7 +284,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - `Node`: Id (GUID), ParentId, Title, Note, CreatedAt, UpdatedAt, Deleted; its position among its siblings is not stored on the node but follows from replaying the events
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
-- `Root`: implicit, with a fixed well-known id that is the same in every tree and on every device; it is never created by an event, so two event logs that are merged always refer to the same root
+- Top level: a node without a parent is a top-level node; a tree can have one or several; there is no special root node, every node is created by `node.created`
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
 - A tree is private while all devices that have joined it belong to one user, and shared as soon as a device of another user has joined; this is derived from the `device.joined` events, not stored as a flag
@@ -293,17 +293,17 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Type name | Data |
 | --- | --- |
-| `node.created` | `nodeId`, `parentId`, `afterNodeId`, `title`, `note` (optional) |
+| `node.created` | `nodeId`, `parentId` (empty for a top-level node), `afterNodeId`, `title`, `note` (optional) |
 | `node.title-changed` | `nodeId`, `title`, `replaces` |
 | `node.note-changed` | `nodeId`, `note`, `replaces` |
-| `node.moved` | `nodeId`, `parentId`, `afterNodeId`, `replaces` |
+| `node.moved` | `nodeId`, `parentId` (empty to move to top level), `afterNodeId`, `replaces` |
 | `node.deleted` | `nodeId`, `seen` |
 | `node.restored` | `nodeId` |
 | `device.joined` | `deviceId`, `deviceLabel`, `userId`, `userName` |
 | `device.label-changed` | `label`; a device can only rename itself, so the device is the one that wrote the event |
 | `user.name-changed` | `userId`, `userName` |
 
-- `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent
+- `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent, or first top-level node when the parent is empty
 - `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
 - Title and note changes carry the full text; one event is written per editing session (when the user leaves the field or after a short pause), not per keystroke, so the log does not grow with every edit
 
@@ -361,10 +361,10 @@ Example of an event before encryption:
 - To decide this, `node.deleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
 - The node stays deleted in the projection, but is marked with a conflict listing the unseen changes; the user either keeps it deleted (a new deletion that has seen them) or restores it (`node.restored`) together with the changes
 - A conflict marker is derived from the log by the projection, not stored
-- Moves that would create a cycle are rejected on apply and re-parented to the root
+- Moves that would create a cycle are rejected on apply and the node is placed at top level
 - Deleted nodes are tombstoned, never physically removed, to keep merges consistent
 - Merging always means taking the union of two event logs, with events identified by `EventId`; trees are never merged directly, the projection rebuilds the tree from the combined log
-- This also covers two devices that were used on their own before pairing: their top-level nodes become siblings under the shared root
+- This also covers two devices that were used on their own before pairing: their top-level nodes simply sit side by side at top level
 
 **Event envelope and encryption**
 
@@ -486,7 +486,7 @@ Example of an event before encryption:
 | ADR-6 | Sync transport behind `ISyncTransport` | The event exchange is independent of how bytes travel; server, file and later transports plug in without touching the event model |
 | ADR-7 | Device-to-device sync by encrypted file export/import | Must work without internet; manual sync is acceptable; a browser cannot discover devices on the local network; doubles as a backup |
 | ADR-8 | Standalone first: key and account identity are created on the device, server sync is optional per tree | A device must work with no internet, account or server |
-| ADR-9 | Merging means the union of event logs, never a merge of trees; the root is implicit with a fixed id | One merge rule for server sync, file sync and pairing of devices that started on their own |
+| ADR-9 | Merging means the union of event logs, never a merge of trees; there is no special root node, nodes without a parent are top-level nodes | One merge rule for server sync, file sync and pairing of devices that started on their own |
 | ADR-10 | Multiple trees per device, each with its own key, account identity and event log | Follows from keys being independent of devices; allows separate trees and sharing one tree without exposing the others |
 | ADR-11 | Pairing (own devices) and sharing (other users) are separate actions; users and devices are recorded by `device.joined` events | Makes visible where changes come from and whether a tree is private or shared |
 | ADR-12 | One key per tree with equal access for every holder; no read-only access and no revocation for now | Keeps the encryption design simple; per-user keys are a much larger design and are deferred |
@@ -548,7 +548,7 @@ Example of an event before encryption:
 | Node | A single item in the tree, with a title and an optional note |
 | Title | The short text on a node's line |
 | Note | The optional longer body of a node |
-| Root | The invisible top node of the tree |
+| Top-level Node | A node without a parent; a tree can have several |
 | Parent / Children | The node directly above a node / the nodes directly below it |
 | Sibling Order | The order of the children under one parent; follows from replaying the events, each placing a node after a named sibling |
 | Hybrid Logical Clock | The clock carried by every event: UTC time plus a counter; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
