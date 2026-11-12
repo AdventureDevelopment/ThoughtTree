@@ -97,6 +97,16 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 ## 5. Building Block View
 
+**Architectural style: functional core, hexagonal shell**
+
+- Domain (core): pure functions; commands plus current state give events, events plus state give the new state; no interfaces to the outside world
+- Application: use cases and UI state; defines the ports it needs (event store, transport, crypto, clock, files and sharing), calls Domain and stores the resulting events
+- Adapters: implement the ports (browser storage, Web Crypto, files, server and file transport) and their fakes for tests
+- UI: Razor components that read state from the application layer and forward user input to use cases
+- Server in the same style: Server.Core with its ports (store, clock), store adapters, ASP.NET Core as the outermost shell
+- Dependency rule: dependencies only point inwards (UI → Application → Domain; adapters → Application); Domain depends on nothing; checked by architecture tests
+
+
 **Level 1 – System**
 
 | Building block | Responsibility |
@@ -806,6 +816,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-050](adr/ADR-050-dependency-licences.md) | Approved licences for dependencies | `**/*.csproj`, `**/package.json`, `Directory.Packages.props` |
 | [ADR-051](adr/ADR-051-user-reports.md) | User reports and feedback: sent by the user, untrusted input | `src/ThoughtTree.Client*/**`, `.github/**` |
 | [ADR-052](adr/ADR-052-untrusted-content.md) | Content is untrusted input | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**` |
+| [ADR-053](adr/ADR-053-functional-core-hexagonal-shell.md) | Functional core, hexagonal shell | `src/**` |
 
 **Open decisions**
 
