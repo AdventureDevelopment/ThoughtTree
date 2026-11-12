@@ -440,6 +440,7 @@ Example of an event before encryption:
 - Before encryption the payload is padded to a fixed size bucket (for example 256 B, 1 KB, 4 KB, 16 KB), so the size of an envelope does not reveal the length of titles and notes
 - The same envelopes are used in IndexedDB, on the server and in the export file
 - The export file has its own format version and a header with room for optional parts, so later additions (for example a protected key) do not break older apps
+- Readable export files are long-lived formats too: the JSON format carries its own format version, Markdown and OPML a version marker; every later version can import readable files of every earlier release
 - An envelope may be re-encrypted, for example when a local tree is merged into a received one and adopts its key; this does not count as rewriting the log, because the event inside stays unchanged
 
 **Event versioning**
@@ -619,7 +620,7 @@ Domain tests:
 
 Format tests:
 
-- Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs, encrypted and readable export files, pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
+- Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs, encrypted export files, readable export files (JSON, Markdown, OPML), pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
 - New reads old: the current version reads every stored version and gets exactly the expected tree
 - Old reads new: CI builds the previous release from its git tag and lets its Domain read data written by the current version; every node and every text must be there (INV-10)
 - Round trip: the current version writes and reads back without loss
