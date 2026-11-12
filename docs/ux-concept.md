@@ -51,6 +51,7 @@ Notes:
 
 - The idea lands in an inbox (decision D-1); no decision about its place is needed before typing
 - The next idea of a chain is a sibling; a space typed into its empty title nests it under the previous idea (decision D-2)
+- Backspace in an empty title moves it one level up; at the top level of the inbox it removes the empty line (decision D-3)
 - Tags are planned in the architecture only as a later tree feature (section 8, switches); this journey is a wish for them
 - Emojis in titles are already supported (section 8, text)
 - Design target U1 (new node within two taps of opening the app) applies directly
@@ -61,3 +62,4 @@ Notes:
 | --- | --- | --- | --- | --- |
 | D-1 | 2026-11-12 | 1 Principles (journey A) | A quickly captured idea lands in an inbox, to be sorted into the tree later; the user does not choose a place before typing | Journey A |
 | D-2 | 2026-11-12 | 1 Principles (journey A) | In a chain of ideas the next idea is a sibling by default; typing a space as the first character of an empty title nests it under the previous idea (as in MLO); accessible alternatives: a menu command, and Tab on a keyboard (ADR-033) | Journey A |
+| D-3 | 2026-11-12 | 1 Principles (journey A) | Backspace in an empty title moves the idea one level up; only at the top level (of the inbox or the current zoom) does it remove the empty line; accessible alternatives: a menu command, and Shift+Tab on a keyboard (ADR-033) | Journey A |
