@@ -63,12 +63,12 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-029: Text normalisation before writing
 
-**TL;DR:** (to be filled)
+**TL;DR:** We bet that Markdown is the right text format: simple to store, search and export, and comfortable enough to edit on a phone.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** Titles and notes stay plain text with light formatting; search, conflicts, readable export and downward compatibility stay simple; the editor can improve later without changing stored data.
+- **Assumption:** People can write Markdown on a phone, or an editor that shows formatting directly makes it comfortable; inline formatting in titles is wanted and does not get in the way of quick capture.
+- **Signal:** Feedback about editing and formatting; answers to "How is formatting text on your phone?" (easy / okay / annoying); in the usage summary, the share of titles and of notes with Markdown, and how often formatting is applied by toolbar versus typed.
+- **Review when:** repeated feedback calls formatting on the phone annoying · Markdown in titles is hardly used · a good touch editor is only available as a JavaScript library (same trigger as ADR-001; both bets are reviewed together).
 
 <a id="adr-030"></a>
 
