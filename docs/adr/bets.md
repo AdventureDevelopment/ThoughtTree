@@ -85,12 +85,12 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-044: Abuse protection and registration modes
 
-**TL;DR:** (to be filled)
+**TL;DR:** We bet that open registration would be abused, so the owner's server requires a join code, while limits protect servers that stay open.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** Strangers cannot fill the owner's server and its free tier; self-hosters choose between open and join code.
+- **Assumption:** Abuse of an open server is likely enough that the extra step is worth it; the step barely bothers legitimate users, because the join code travels in the pairing code.
+- **Signal:** Feedback about trouble joining a server; Azure costs; server counters: rejected registrations (missing or wrong join code), rate-limit hits, number of accounts and storage used.
+- **Review when:** Azure costs rise or the free tier is exceeded · many rejected registrations show someone probing · feedback says joining is too hard · the owner wants to offer a public, open server.
 
 <a id="adr-047"></a>
 

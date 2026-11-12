@@ -538,6 +538,7 @@ Example of an event before encryption:
 - HTTPS everywhere
 - Content is untrusted input: titles, notes, labels, imported files and feedback texts may come from other people (shared trees); Markdown is rendered without raw HTML; only the link schemes `node:`, `https:`, `http:` and `mailto:` are allowed, everything else is shown as plain text; a collection of known attack strings must render harmlessly (gate); the Content Security Policy is the second line of defence, not the only one
 - The server stores account secrets and device tokens only as hashes, so stolen server data cannot be used to join an account or push events
+- Server counters for operations and bet signals: rejected registrations, rate-limit hits, number of accounts, storage used; counts only, no IP addresses or account ids, nothing per user; kept in memory or stored as daily totals at most; visible only to the operator
 - Abuse protection on the server: maximum request size; maximum events and storage per account; rate limiting of registrations and requests in memory only (the IP address is used for the moment, never stored); registration mode per server: open, or only with a server join code that the operator hands out; the owner's default server uses "join code only"
 - Device tokens are issued per device and tree, so the server gets no ready-made link between the trees of one device
 

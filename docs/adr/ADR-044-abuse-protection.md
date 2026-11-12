@@ -8,6 +8,7 @@ applies_to: `src/ThoughtTree.Server*/**`
 - **MUST** rate-limit registrations and requests in memory only; **MUST NOT** store the IP addresses used for it
 - **MUST** support the registration modes "open" and "join code only", set per server
 - **MUST** reject oversized or malformed requests without storing them
+- **MAY** keep server counters (rejected registrations, rate-limit hits, accounts, storage used): counts only, no IP addresses or account ids, in memory or as daily totals, visible only to the operator
 
 verify:
 
