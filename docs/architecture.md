@@ -131,7 +131,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Component | Responsibility |
 | --- | --- |
-| Sync API (REST) | `POST /events` (push ciphertext), `GET /events?since=` (pull) |
+| Sync API (REST) | `POST /v1/events` (push ciphertext), `GET /v1/events?since=` (pull); versioned (ADR-037) |
 | Sync Hub (SignalR) | Notifies connected devices about new events |
 | Event Store | Persistent per-account append-only log of encrypted events (store to be decided: Table Storage, Blob Storage or SQLite) |
 | Registration | Registers an account on first contact; issues device tokens to devices that present the account secret |
@@ -578,6 +578,17 @@ Layer 1 – Domain tests:
 - Runs in under about 30 seconds on every push, with fixed seeds plus one new random seed; nightly runs use many more cases
 - Tooling: xUnit v3; CsCheck for property-based and model-based tests; Shouldly for assertions; LambdaTale v3 (bbv's port of xBehave.net to xUnit v3) for scenario tests; Verify for expected trees as text outlines; `FakeTimeProvider` for time; Stryker.NET for mutation testing (changed code via `--since`); Microsoft code coverage for information only; ArchUnitNET for architecture rules
 
+Layer 2 – Format tests:
+
+- Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs, encrypted and readable export files, pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
+- New reads old: the current version reads every stored version and gets exactly the expected tree
+- Old reads new: CI builds the previous release from its git tag and lets its Domain read data written by the current version; every node and every text must be there (INV-10)
+- Round trip: the current version writes and reads back without loss
+- Encryption: fixed test data (key, nonce, authenticated data) gives exactly the expected bytes; tampered envelopes (flipped byte, swapped `EventId`, other account id, wrong `KeyId`) are rejected; every encrypted size is one of the padding buckets; an unknown future envelope version leads to a clear request to update, not a crash
+- Local storage is a format too: a new app version opens the IndexedDB of the previous one and migrates it without loss; tested in real browsers in the end-to-end layer
+- The API is a format too: it carries a version in its address (for example `/v1/events`); the new server handles requests of old clients, the new client works with an older server or says clearly that the server needs updating
+- Pairing and sharing codes: user name and server address have a maximum length; a test checks that the largest possible code fits into a QR code that phones read reliably
+
 Layer 0 – compiler as the first gate:
 
 - Nullable reference types on, warnings treated as errors, .NET analyzers at a strict level, `dotnet format` checked in CI
@@ -656,6 +667,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-034](adr/ADR-034-replaceable-time-random.md) | Replaceable time and randomness | `src/**` |
 | [ADR-035](adr/ADR-035-protected-harness.md) | Protected test harness | `tests/**`, `.github/**` |
 | [ADR-036](adr/ADR-036-user-controlled-updates.md) | User-controlled app updates | `src/ThoughtTree.Client/**` |
+| [ADR-037](adr/ADR-037-api-versioning.md) | Versioned, compatible sync API | `src/ThoughtTree.Server/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**` |
+| [ADR-038](adr/ADR-038-local-storage-migration.md) | Local storage migrations without loss | `src/ThoughtTree.Client/**` |
 
 **Open decisions**
 
