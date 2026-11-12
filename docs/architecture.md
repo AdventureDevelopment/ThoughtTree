@@ -293,8 +293,18 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - A relation is identified by its three parts (from node, type, to node), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
 - Relations of a deleted node are hidden but kept, and come back when the node is restored
 - Relation types: a relation refers to a type id, never to a name, so renaming a type changes no relation; a type has a name, a name for the reverse direction (for example "supports" / "supported by") and whether it is symmetric; for symmetric types the two node ids are stored in a fixed order, so A–B and B–A are the same relation
-- Types are defined per tree by `relation-type.defined` events; there are no built-in types: when a tree is created the app writes the predefined types (initially `related`, `supports`, `contradicts`, `example_of`, `cites`, `depends_on`) as ordinary events, after which they can be renamed, removed or extended like any other type
+- Types are defined per tree by `relation-type.defined` events, their names by `label.set`; there are no built-in types: when a tree is created the app writes the predefined types (initially `related`, `supports`, `contradicts`, `example_of`, `cites`, `depends_on`) as ordinary events, after which they can be renamed, removed or extended like any other type
 - Predefined types have fixed ids that are the same in every tree, so merging two trees does not duplicate them
+
+**Internationalisation**
+
+- Structural elements that users can define (relation types now; tags, note kinds and similar later) carry no names themselves; their names are labels, one per language, set by `label.set` events, like a resource file inside the tree
+- Languages are identified by standard language tags such as `de`, `de-CH`, `en`
+- A device shows the label in this order: label in the tree for the device's language (`de-CH`), label in the tree for its base language (`de`), for predefined elements the app's own resource files, any label in the tree
+- Predefined elements need no special case: the app ships translations for their fixed ids in its resource files, as it does for its own texts; a tree can override or add languages with `label.set`
+- All structural elements later use the same label mechanism; exporting a tree's labels as a resource file for translation elsewhere, and importing it again, is a possible later feature
+- Content (titles and notes) is stored as written and never translated in the log
+- Translating content on the fly is a possible later feature; it must run on the device, or only after explicit consent with a clear warning, because sending plain text to an external translation service would break end-to-end encryption
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
 - Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
@@ -316,8 +326,10 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | `user.name-changed` | `userId`, `userName` |
 | `relation.added` | `fromNodeId`, `typeId`, `toNodeId` |
 | `relation.removed` | `fromNodeId`, `typeId`, `toNodeId` |
-| `relation-type.defined` | `typeId`, `name`, `reverseName`, `symmetric`, `replaces`; also used to rename or change a type |
+| `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are labels (see below) |
 | `relation-type.removed` | `typeId` |
+| `label.set` | `elementId`, `field` (for example `name`, `reverseName`), `language`, `text`, `replaces` |
+| `label.removed` | `elementId`, `field`, `language` |
 | `tree.server-changed` | `address` (empty for no server), `replaces` |
 
 - `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent, or first top-level node when the parent is empty
@@ -530,6 +542,7 @@ Example of an event before encryption:
 | ADR-23 | One parent per node, for good; no clones; links instead | Moves, cycle checks, delete conflicts, sibling order, zoom path and readable export all rely on a single parent |
 | ADR-24 | Relations between nodes are a separate concept from the tree, with their own events, identified by from, type and to | Allows any number of typed connections without touching the single-parent tree; older apps skip relation events without missing nodes |
 | ADR-25 | Relation types are referenced by id and defined per tree by events; the starting set is predefined (written as events at tree creation, with fixed ids), not built into the app | One mechanism for all types; the user owns and can change every type; fixed ids keep merges free of duplicates |
+| ADR-26 | Names of user-definable structural elements are translatable labels per language (`label.set`), with the app's resource files as fallback for predefined elements; content is never translated in the log | One translation mechanism for all present and future structural elements; users can translate their own elements; content stays as written |
 
 **Open decisions**
 
