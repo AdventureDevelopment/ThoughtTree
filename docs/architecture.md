@@ -310,6 +310,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Predefined elements need no special case: the app ships translations for their fixed ids in its resource files, as it does for its own texts; a tree can override or add languages with `label.set`
 - All structural elements later use the same label mechanism; exporting a tree's labels as a resource file for translation elsewhere, and importing it again, is a possible later feature
 - Content (titles and notes) is stored as written and never translated in the log
+- All text is normalised before it goes into an event (titles, notes, labels, names), by the Command Handler and by readable import: Unicode normalisation form NFC; line breaks in notes stored as `\n` only; line breaks in titles replaced by spaces; emoji sequences stay unchanged
+- Search and comparisons normalise as well, as a safeguard against events from a faulty or very old app
 - Translating content on the fly is a possible later feature; it must run on the device, or only after explicit consent with a clear warning, because sending plain text to an external translation service would break end-to-end encryption
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
 - Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
