@@ -40,12 +40,13 @@ Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. T
 
 The owner wakes up in bed, still half asleep; an idea comes up that must not be lost. Phone, probably one hand.
 
-1. Opens ThoughtTree from the home screen
-2. Types the title right away, often starting with an emoji
-3. **Key moment:** the idea is saved; from now on nothing can be lost
-4. Optionally adds context: more text (the note) and a tag
-5. If it is a chain of ideas, enters the next idea right away, without detours
-6. Where the idea belongs in the tree is decided later, not now
+1. Opens ThoughtTree from the home screen; it shows the place last worked on, with a clearly visible capture button (decision D-4)
+2. Taps the capture button: the inbox opens with a fresh, empty line
+3. Types the title right away, often starting with an emoji
+4. **Key moment:** the idea is saved; from now on nothing can be lost
+5. Optionally adds context: more text (the note) and a tag
+6. If it is a chain of ideas, enters the next idea right away, without detours
+7. Where the idea belongs in the tree is decided later, not now
 
 Notes:
 
@@ -63,3 +64,4 @@ Notes:
 | D-1 | 2026-11-12 | 1 Principles (journey A) | A quickly captured idea lands in an inbox, to be sorted into the tree later; the user does not choose a place before typing | Journey A |
 | D-2 | 2026-11-12 | 1 Principles (journey A) | In a chain of ideas the next idea is a sibling by default; typing a space as the first character of an empty title nests it under the previous idea (as in MLO); accessible alternatives: a menu command, and Tab on a keyboard (ADR-033) | Journey A |
 | D-3 | 2026-11-12 | 1 Principles (journey A) | Backspace in an empty title moves the idea one level up; only at the top level (of the inbox or the current zoom) does it remove the empty line; accessible alternatives: a menu command, and Shift+Tab on a keyboard (ADR-033) | Journey A |
+| D-4 | 2026-11-12 | 1 Principles (journey A) | On opening, the app shows the place last worked on (device state, ADR-013) together with a clearly visible capture button; one tap on it opens the inbox with a fresh, empty line, so typing starts after one tap (within U1) | Journey A |
