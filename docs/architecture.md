@@ -553,7 +553,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Maintainability | Reproducibility: every failure can be repeated from its seed; unreliable tests are fixed, never ignored | Gate |
 | Maintainability | Architecture rules: automated checks that Domain does not depend on the browser, the server does not reference Domain, only Contracts are shared | Gate |
 | Maintainability | Depth of Domain tests measured by mutation testing, not coverage alone; changed Domain code must reach the agreed mutation score | Gate (changed code), watch (overall) |
-| Performance | Targets of section 10 measured on reference data (for example 10,000 nodes, 100,000 events) and tracked; a clear regression fails the nightly run | Watch with threshold |
+| Performance | Download size budget and complexity checks on reference data (1,000, 10,000, 100,000 events); absolute timings are design targets, not tests | Gate |
 
 Harness for agentic development (the test harness is the specification the agents work towards):
 
@@ -573,14 +573,14 @@ Kinds of tests and loops: tests are not a numbered stack; they are grouped by ro
 | Role | Kinds |
 | --- | --- |
 | Specify: what the system should do, as acceptance criteria, written first | Domain specifications (scenario tests), UI specifications |
-| Secure: correctness and rules | Compiler and analyzers, Domain properties and invariants, formats, simulation, application layer, component rules, server |
-| Confirm: the whole system in real environments | End-to-end, deployment, performance, manual |
+| Secure: correctness and rules | Compiler and analyzers, Domain properties and invariants, formats, simulation, application layer, component rules, server, performance (size budget, complexity) |
+| Confirm: the whole system in real environments | End-to-end, deployment, manual |
 
 | Loop | Time | Contains |
 | --- | --- | --- |
 | Inner loop (the agent while working) | Seconds | Compiler; specifications, properties and component rules of the area being changed; UI specifications in Chromium |
-| Push gate | Within the time budget (for example 10 minutes) | All specifications and all securing tests, regression seeds, UI specifications in all three browsers, end-to-end smoke set |
-| Nightly | Hours | Long simulations, full end-to-end, performance, mutation testing |
+| Push gate | Within the time budget (for example 10 minutes) | All specifications and all securing tests (including size budget and complexity checks), regression seeds, UI specifications in all three browsers, end-to-end smoke set |
+| Nightly | Hours | Long simulations, full end-to-end, mutation testing |
 | After deployment | Minutes | Deployment smoke tests |
 | Before release | Manual | Real devices, screen reader, feel |
 
@@ -677,6 +677,14 @@ Deployment tests:
 - After each deployment to test: the app loads and its service worker registers; a version endpoint shows the deployed commit; the service worker file is served without caching; an account registers with the join code, an event is pushed and pulled, SignalR connects; HTTPS with HSTS and security headers are present, the page makes no requests to third parties, logging and telemetry record no IP addresses
 - After promotion to production: read-only checks (health, version, headers, service worker) plus one synthetic probe tree whose fixed events are pushed again on every check, so production data does not grow; if a check fails, the previous archived release is deployed again automatically
 - The self-hosted container image is built, published and checked with the same smoke tests as the test environment
+
+Performance tests:
+
+- Reference datasets, generated with fixed seeds: 10,000 nodes with 100,000 events; a deep tree (50 levels); a wide tree (2,000 children under one node); long notes; many relations; many conflicts
+- The app sets timing marks (`performance.mark`) for app start until the tree is visible, input until display, and search until first hits; tests read them, and they help diagnosis on real devices
+- Gate: a download size budget for the first load, measured exactly, with a fixed upper limit
+- Gate: complexity checks: replay, search and conflict detection are measured with 1,000, 10,000 and 100,000 events and the ratio is checked, so a quadratic algorithm fails regardless of the machine's speed
+- Absolute timings are not used as tests, because they are too unreliable on shared machines; the targets of section 10 are design targets, secured by the size budget and the complexity checks
 
 Compiler and analyzers (the first gate):
 
@@ -776,6 +784,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | Topic | Options |
 | --- | --- |
 | Server event store | Azure Table Storage, Blob Storage or SQLite. To consider: Table Storage records a time on every row that cannot be switched off, and Blob Storage records creation and change times, which conflicts with storing no times of use unless events are packed into larger chunks; SQLite stores no such times; the self-hosted package needs a store that runs without Azure; later binary data needs blob storage |
+| Blazor AOT compilation | Interpreted (smaller download) or AOT-compiled (much faster for heavy computation such as replaying 100,000 events, larger download); decided by measuring with the reference datasets, together with the storage spike |
 | Local storage engine | IndexedDB, or SQLite compiled to WebAssembly on the Origin Private File System (in a Web Worker). SQLite offers full-text search (FTS5), real transactions, the same engine in tests, simulation, later native apps and the self-hosted server, and simpler queries; costs about 1 MB extra download, worker interop, and is less mature, especially on Safari. Decided by a spike before the first release, with criteria: reliable in Chromium, Safari on iPhone and iPad and Firefox; no data loss when the app is closed while writing; start time with 100,000 events; download size; effort of the worker interop. Storage stays engine-neutral behind its interface until then |
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
