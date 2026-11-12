@@ -24,7 +24,7 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Outcome:** Devices sync without internet and without any server; the export file doubles as a backup.
 - **Assumption:** People without a usable server (no internet, VPNs blocked, privacy concerns) accept a manual step (export, hand over, import) and really use it.
 - **Signal:** Your own use; feedback about file sync; answers to "How do your devices sync?" (server / file / both / not at all); in the usage summary, the number of file imports in the last 30 days.
-- **Review when:** a store app or package with automatic discovery on the local network exists · feedback says the manual steps are too cumbersome · after the repository has been public for a while, nobody answers "file".
+- **Review when:** a store app or package with automatic discovery on the local network exists · feedback says the manual steps are too cumbersome · among the first 20 answers to the question, nobody answers "file".
 
 <a id="adr-012"></a>
 
@@ -70,11 +70,11 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Signal:** Feedback about editing and formatting; answers to "How is formatting text on your phone?" (easy / okay / annoying); in the usage summary, the share of titles and of notes with Markdown, and how often formatting is applied by toolbar versus typed.
 - **Review when:** repeated feedback calls formatting on the phone annoying · Markdown in titles is hardly used · a good touch editor is only available as a JavaScript library (same trigger as ADR-001; both bets are reviewed together).
 
-<a id="adr-030"></a>
+<a id="adr-057"></a>
 
-## ADR-030: Metadata protection
+## ADR-057: Sync modes, live preselected
 
-**TL;DR:** (Covers only the sync modes; the rest of ADR-030 is a constraint.) We bet that reliability matters more to users than hiding activity patterns, so live sync is preselected, while manual and scheduled remain available.
+**TL;DR:** We bet that reliability matters more to users than hiding activity patterns, so live sync is preselected, while manual and scheduled remain available.
 
 - **Outcome:** Changes reach other devices quickly and are not lost because they never left a device; users who care more about activity patterns can choose manual or scheduled sync.
 - **Assumption:** Most users prefer automatic sync and accept that the server sees when they are online; users of manual or scheduled sync notice the indicator and reminder and do not lose changes.
@@ -112,7 +112,7 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Outcome:** Problems, usability issues, performance data and bet signals reach the harness, with no telemetry.
 - **Assumption:** Enough willing users have a GitHub account or use the file route, accept that issues are public, trust the preview, and send reports concrete enough to reproduce problems.
 - **Signal:** Number of feedback issues per month; GitHub issues versus files; feedback about the feedback process; share of reports that led to a fix.
-- **Review when:** after the repository has been public for a while, hardly any feedback arrives · users have no GitHub account or do not want public issues (answer: the private inbox, ADR-055) · reports are mostly unusable · spam or abuse appears in issues.
+- **Review when:** the first public release has been followed by another release and fewer than five feedback issues have arrived · users have no GitHub account or do not want public issues (answer: the private inbox, ADR-055) · reports are mostly unusable · spam or abuse appears in issues.
 
 <a id="adr-055"></a>
 
@@ -123,4 +123,4 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Outcome:** Users without a GitHub account, or who do not want public issues, send feedback easily; the server cannot read it.
 - **Assumption:** Users with the permission use it responsibly; spam does not appear; more feedback arrives than through GitHub alone.
 - **Signal:** Server counters: inbox messages per day, rejected messages; share of feedback arriving privately versus as GitHub issues; feedback about the inbox itself.
-- **Review when:** the counters jump (switch the inbox off with the operations flag) · the experiment has run a while and the share can be raised to everyone or the inbox removed.
+- **Review when:** the counters jump (switch the inbox off with the operations flag) · 20 inbox messages have arrived or the next release ships: raise the share to everyone or remove the inbox.

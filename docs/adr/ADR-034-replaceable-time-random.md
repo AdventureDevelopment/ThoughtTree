@@ -6,7 +6,7 @@ applies_to: `src/**`
 
 - **MUST** obtain time only through `TimeProvider`
 - **MUST** obtain ids, nonces and random values only through a replaceable generator
-- **MUST NOT** call `DateTime.Now`, `DateTime.UtcNow`, `DateTimeOffset.Now`, `DateTimeOffset.UtcNow`, `Guid.NewGuid` or `new Random` outside the provider implementations
+- **MUST NOT** call `DateTime.Now`, `DateTime.UtcNow`, `DateTimeOffset.Now`, `DateTimeOffset.UtcNow`, `Stopwatch`, `Environment.TickCount`, `Guid.NewGuid`, `new Random`, `Random.Shared` or `RandomNumberGenerator` outside the provider implementations
 - **MUST** list these APIs in the banned API analyzer (`BannedSymbols.txt`), with the provider implementations as the only exemption
 
 verify:

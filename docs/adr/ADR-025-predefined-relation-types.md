@@ -2,7 +2,7 @@
 
 id: ADR-025 · status: Accepted · kind: bet ([bet card](bets.md#adr-025))
 
-applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
 - **MUST** reference relation types by id, never by name
 - **MUST** define types per tree by `relation-type.defined`; write the predefined set as events when a tree is created, with fixed ids

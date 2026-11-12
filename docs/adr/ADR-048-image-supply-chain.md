@@ -13,7 +13,7 @@ applies_to: `src/ThoughtTree.Server*/**`, `.github/**`
 verify:
 
 ```bash
-gh attestation verify oci://ghcr.io/adventuredevelopment/thoughttree:<version> --owner adventuredevelopment
+gh attestation verify oci://ghcr.io/adventuredevelopment/thoughttree:<version> --owner adventuredevelopment   # when: release
 ```
 
 why: Self-hosters run the image on their own machines; they must be able to trust where it comes from.

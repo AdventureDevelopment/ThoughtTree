@@ -2,7 +2,7 @@
 
 id: ADR-001 · status: Accepted · kind: bet ([bet card](bets.md#adr-001))
 
-applies_to: `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Client*/**`
 
 - **MUST** build the client in C# with Blazor WebAssembly, delivered as a PWA
 - **MUST NOT** add a JavaScript UI framework (React, Vue, Angular, Svelte, …)

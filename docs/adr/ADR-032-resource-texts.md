@@ -2,7 +2,7 @@
 
 id: ADR-032 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Client*/**`
 
 - **MUST** keep every user-visible text in resource files (`.resx`, `IStringLocalizer`), English and German
 - **MUST NOT** write user-visible text directly into components

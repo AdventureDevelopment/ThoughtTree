@@ -2,7 +2,7 @@
 
 id: ADR-028 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**`
+applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**`
 
 - **MUST** keep key, `KeyId`, account id and account secret (the tree access) outside the event log, stored only by the Tree Manager
 - **MUST** hand over exactly the tree access in pairing, sharing and key backup; pairing adds the user identity

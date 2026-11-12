@@ -2,7 +2,7 @@
 
 id: ADR-020 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Client*/**`
 
 - **MUST** authenticate only by device tokens, one per device and tree
 - **MUST NOT** add user accounts or logins (OpenID Connect, OAuth, …)

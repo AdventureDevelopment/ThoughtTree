@@ -2,7 +2,7 @@
 
 id: ADR-002 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
 - **MUST** record every change of a tree's content as an immutable event
 - **MUST** derive the tree only by replaying events (projection)

@@ -32,8 +32,11 @@ why: <one line>
 - Reviews are triggered by events (for example: the repository goes public, the store app exists, the first feedback on a topic arrives), not by dates
 
 - `applies_to` names the paths the rules govern; before changing a file, read every ADR whose `applies_to` matches it
-- `verify` is run by CI; most checks run the tests tagged with the ADR id, simple "must never appear" rules use `grep`
+- `verify` is run by CI (see the protection rules for how changes on `main` are compared); most checks run the tests tagged with the ADR id, simple "must never appear" rules use `grep`
 - Every test that secures an ADR carries its id: `[Trait("ADR", "ADR-0xx")]`, so `dotnet test --filter "ADR=ADR-0xx"` runs exactly those tests
 - `why` gives the reason in one line, for cases the rules do not cover
 - Creating, changing or superseding an ADR is a human decision; agents may propose one with status `Proposed`
-- Project layout assumed by `applies_to`: `src/ThoughtTree.Domain`, `src/ThoughtTree.Contracts`, `src/ThoughtTree.Client`, `src/ThoughtTree.Server`, `tests/…`, stored test data in `tests/data/formats`
+- Project layout assumed by `applies_to` (ADR-054): `src/ThoughtTree.Domain`, `src/ThoughtTree.Contracts`, `src/ThoughtTree.Client.App`, `src/ThoughtTree.Client`, `src/ThoughtTree.Server.Core`, `src/ThoughtTree.Server`; tests under `tests/specify`, `tests/secure`, `tests/confirm`, `tests/support`; stored test data in `tests/data`
+- Globs use `src/ThoughtTree.Client*/**` and `src/ThoughtTree.Server*/**` to cover both projects of a side; a CI check reports any `src/` project not covered by the ADRs of its layer
+- A `verify` with `dotnet test --filter` must match at least one test; CI fails on zero matches
+- A `verify` line runs in the push gate unless it is marked `# when: after deployment` or `# when: release`

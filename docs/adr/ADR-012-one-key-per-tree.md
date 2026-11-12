@@ -2,7 +2,7 @@
 
 id: ADR-012 · status: Accepted · kind: bet ([bet card](bets.md#adr-012))
 
-applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Domain/**`
+applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`
 
 - **MUST** use one random key per tree, the same for every holder
 - **MUST NOT** implement read-only roles, per-user keys or revocation (deferred)

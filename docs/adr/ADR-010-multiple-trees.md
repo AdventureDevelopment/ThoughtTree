@@ -2,10 +2,10 @@
 
 id: ADR-010 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Client*/**`
 
 - **MUST** partition all local data by tree id: events, snapshots, tree access, device token, search index, settings
-- **MUST NOT** share keys, events or indexes between trees
+- **MUST NOT** share keys, events or indexes between trees; the only exception is merging a whole tree into another, which moves its events into the target tree's log, re-encrypted with the target's key
 
 verify:
 

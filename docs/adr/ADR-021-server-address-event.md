@@ -2,7 +2,7 @@
 
 id: ADR-021 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
 - **MUST** record the tree's server address, and its join code if any, by `tree.server-changed`
 - **MUST** keep whether a device uses the server, and its sync mode, on the device

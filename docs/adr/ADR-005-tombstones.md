@@ -2,7 +2,7 @@
 
 id: ADR-005 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
+applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**`
 
 - **MUST** mark deleted nodes as deleted (tombstone) and keep their data, children and relations
 - **MUST NOT** physically remove nodes or events

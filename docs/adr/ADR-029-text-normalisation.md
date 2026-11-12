@@ -2,7 +2,7 @@
 
 id: ADR-029 · status: Accepted · kind: bet ([bet card](bets.md#adr-029))
 
-applies_to: `src/ThoughtTree.Domain/**`
+applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
 - **MUST** normalise all text to Unicode NFC before it enters an event (titles, notes, labels, names)
 - **MUST** store line breaks in notes as `\n`; replace line breaks in titles by spaces

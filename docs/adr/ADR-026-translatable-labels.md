@@ -2,7 +2,7 @@
 
 id: ADR-026 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
 - **MUST** give user-definable structural elements their names only through `label.set` / `label.removed`, per language
 - **MUST** show labels in this order: device language, its base language, app resource files (predefined elements), any label

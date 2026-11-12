@@ -782,7 +782,7 @@ Feedback, reports and signals:
 - From the tree shape in a report the harness generates a synthetic dataset of the same shape to reproduce the slowdown; once the cause is found, the dataset joins the reference datasets and its complexity check becomes a gate
 - Signals for bets (ADRs of kind `bet`) through the feedback form: each bet can define a few optional signal questions with fixed answer choices, shown in the feedback form; users can also tick "include usage summary": counts and shares computed on the device from one tree the user chooses (for example sync mode in use, conflicts resolved in the last 30 days, uses of predefined versus own relation types without names, share of titles with Markdown, median taps to capture); never content, names or timestamps; never automatic or by default; shared trees are excluded, because they contain other people's activity (only the number of trees and of shared trees on the device may be counted); shown in the preview like everything else
 - Local usage counters: the counts needed for usage summaries are kept on the device only, per tree, as daily totals for at most 30 days; never synced, never sent except in a usage summary the user ticks
-- Every signal is defined in its bet's card with exactly the numbers it collects; a new signal needs human approval
+- Every signal is defined in its bet card with exactly the numbers it collects; a new signal needs human approval
 - A regular agent review (for example monthly, as an issue) counts signal answers per bet and, when a review trigger has occurred, proposes a review of the ADR with the numbers; the decision stays with the owner
 - The report format is designed so that error reports (what went wrong and where in the code, without content) can use it later
 
@@ -837,52 +837,52 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 
 | ID | Decision | Applies to |
 | --- | --- | --- |
-| [ADR-001](adr/ADR-001-blazor-webassembly.md) | Client in Blazor WebAssembly | `src/ThoughtTree.Client/**` |
-| [ADR-002](adr/ADR-002-event-sourcing.md) | Event sourcing as data model | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-001](adr/ADR-001-blazor-webassembly.md) | Client in Blazor WebAssembly | `src/ThoughtTree.Client*/**` |
+| [ADR-002](adr/ADR-002-event-sourcing.md) | Event sourcing as data model | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-003](adr/ADR-003-own-sync-service.md) | Own ASP.NET Core sync service | `src/ThoughtTree.Server*/**` |
 | [ADR-004](adr/ADR-004-sibling-order-by-reference.md) | Sibling order by reference | `src/ThoughtTree.Domain/**` |
-| [ADR-005](adr/ADR-005-tombstones.md) | Tombstones instead of hard deletes | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**` |
-| [ADR-006](adr/ADR-006-event-exchange.md) | Event exchange behind ISyncTransport | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**` |
-| [ADR-007](adr/ADR-007-file-sync.md) | Device-to-device sync by encrypted file | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**` |
-| [ADR-008](adr/ADR-008-standalone-first.md) | Standalone first | `src/ThoughtTree.Client/**` |
+| [ADR-005](adr/ADR-005-tombstones.md) | Tombstones instead of hard deletes | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
+| [ADR-006](adr/ADR-006-event-exchange.md) | Event exchange behind ISyncTransport | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
+| [ADR-007](adr/ADR-007-file-sync.md) | Device-to-device sync by encrypted file | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-008](adr/ADR-008-standalone-first.md) | Standalone first | `src/ThoughtTree.Client*/**` |
 | [ADR-009](adr/ADR-009-merge-is-union.md) | Merging is the union of logs; no special root | `src/ThoughtTree.Domain/**` |
-| [ADR-010](adr/ADR-010-multiple-trees.md) | Multiple independent trees per device | `src/ThoughtTree.Client/**` |
-| [ADR-011](adr/ADR-011-pairing-and-sharing.md) | Pairing and sharing are separate | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
-| [ADR-012](adr/ADR-012-one-key-per-tree.md) | One key per tree, equal access | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Domain/**` |
-| [ADR-013](adr/ADR-013-device-local-state.md) | Device state is never synced | `src/ThoughtTree.Client/**` |
+| [ADR-010](adr/ADR-010-multiple-trees.md) | Multiple independent trees per device | `src/ThoughtTree.Client*/**` |
+| [ADR-011](adr/ADR-011-pairing-and-sharing.md) | Pairing and sharing are separate | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-012](adr/ADR-012-one-key-per-tree.md) | One key per tree, equal access | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**` |
+| [ADR-013](adr/ADR-013-device-local-state.md) | Device state is never synced | `src/ThoughtTree.Client*/**` |
 | [ADR-014](adr/ADR-014-hybrid-logical-clock.md) | Event order by hybrid logical clock | `src/ThoughtTree.Domain/**` |
-| [ADR-015](adr/ADR-015-envelope-plaintext.md) | Minimal plaintext in the envelope | `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**` |
+| [ADR-015](adr/ADR-015-envelope-plaintext.md) | Minimal plaintext in the envelope | `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
 | [ADR-016](adr/ADR-016-downward-compatible-events.md) | Downward-compatible event versioning | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-017](adr/ADR-017-json-fixed-type-names.md) | JSON with fixed type names | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
-| [ADR-018](adr/ADR-018-visible-conflicts.md) | Conflicts are visible and resolved by the user | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
-| [ADR-019](adr/ADR-019-readable-export.md) | Unencrypted export only as readable tree | `src/ThoughtTree.Client/**` |
-| [ADR-020](adr/ADR-020-no-server-accounts.md) | No user accounts on the server | `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Client/**` |
-| [ADR-021](adr/ADR-021-server-address-event.md) | Server address is a property of the tree | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
-| [ADR-022](adr/ADR-022-binary-blobs.md) | Binary data as separate blobs | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**` |
+| [ADR-018](adr/ADR-018-visible-conflicts.md) | Conflicts are visible and resolved by the user | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-019](adr/ADR-019-readable-export.md) | Unencrypted export only as readable tree | `src/ThoughtTree.Client*/**` |
+| [ADR-020](adr/ADR-020-no-server-accounts.md) | No user accounts on the server | `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-021](adr/ADR-021-server-address-event.md) | Server address is a property of the tree | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-022](adr/ADR-022-binary-blobs.md) | Binary data as separate blobs | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
 | [ADR-023](adr/ADR-023-one-parent.md) | One parent per node | `src/ThoughtTree.Domain/**` |
 | [ADR-024](adr/ADR-024-relations.md) | Relations separate from the tree | `src/ThoughtTree.Domain/**` |
-| [ADR-025](adr/ADR-025-predefined-relation-types.md) | Relation types defined per tree, predefined set | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
-| [ADR-026](adr/ADR-026-translatable-labels.md) | Translatable labels for structural elements | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-025](adr/ADR-025-predefined-relation-types.md) | Relation types defined per tree, predefined set | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-026](adr/ADR-026-translatable-labels.md) | Translatable labels for structural elements | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-027](adr/ADR-027-project-dependencies.md) | Domain and Contracts projects | `src/**` |
-| [ADR-028](adr/ADR-028-tree-access.md) | Tree access | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**` |
-| [ADR-029](adr/ADR-029-text-normalisation.md) | Text normalisation before writing | `src/ThoughtTree.Domain/**` |
-| [ADR-030](adr/ADR-030-metadata-protection.md) | Metadata protection | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**` |
-| [ADR-031](adr/ADR-031-switches.md) | Kinds of switches | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**` |
-| [ADR-032](adr/ADR-032-resource-texts.md) | App texts in resource files | `src/ThoughtTree.Client/**` |
-| [ADR-033](adr/ADR-033-accessible-ui.md) | Accessible, direction-neutral UI | `src/ThoughtTree.Client/**` |
+| [ADR-028](adr/ADR-028-tree-access.md) | Tree access | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-029](adr/ADR-029-text-normalisation.md) | Text normalisation before writing | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-030](adr/ADR-030-metadata-protection.md) | Metadata protection | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
+| [ADR-031](adr/ADR-031-switches.md) | Kinds of switches | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**` |
+| [ADR-032](adr/ADR-032-resource-texts.md) | App texts in resource files | `src/ThoughtTree.Client*/**` |
+| [ADR-033](adr/ADR-033-accessible-ui.md) | Accessible, direction-neutral UI | `src/ThoughtTree.Client*/**` |
 | [ADR-034](adr/ADR-034-replaceable-time-random.md) | Replaceable time and randomness | `src/**` |
 | [ADR-035](adr/ADR-035-protected-harness.md) | Protected test harness | `tests/**`, `.github/**` |
-| [ADR-036](adr/ADR-036-user-controlled-updates.md) | User-controlled app updates | `src/ThoughtTree.Client/**` |
-| [ADR-037](adr/ADR-037-api-versioning.md) | Versioned, compatible sync API | `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**` |
-| [ADR-038](adr/ADR-038-local-storage-migration.md) | Local storage migrations without loss | `src/ThoughtTree.Client/**` |
+| [ADR-036](adr/ADR-036-user-controlled-updates.md) | User-controlled app updates | `src/ThoughtTree.Client*/**` |
+| [ADR-037](adr/ADR-037-api-versioning.md) | Versioned, compatible sync API | `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-038](adr/ADR-038-local-storage-migration.md) | Local storage migrations without loss | `src/ThoughtTree.Client*/**` |
 | [ADR-039](adr/ADR-039-controlled-concurrency.md) | No uncontrolled concurrency or timers | `src/**` |
-| [ADR-040](adr/ADR-040-server-core-library.md) | Server logic as a library | `src/ThoughtTree.Server*/**` |
+| [ADR-040](adr/ADR-040-server-core-library.md) | Server logic as a library | `src/ThoughtTree.Server.Core/**`, `src/ThoughtTree.Server/**` |
 | [ADR-041](adr/ADR-041-client-application-layer.md) | Client application layer, thin components | `src/ThoughtTree.Client*/**` |
 | [ADR-042](adr/ADR-042-browser-adapters.md) | Browser APIs behind interfaces | `src/ThoughtTree.Client*/**` |
 | [ADR-043](adr/ADR-043-hashed-server-secrets.md) | Server secrets only as hashes | `src/ThoughtTree.Server*/**` |
 | [ADR-044](adr/ADR-044-abuse-protection.md) | Abuse protection and registration modes | `src/ThoughtTree.Server*/**` |
 | [ADR-045](adr/ADR-045-strict-csp.md) | Strict Content Security Policy | `src/**`, `infra/**` |
-| [ADR-046](adr/ADR-046-infrastructure-as-code.md) | Infrastructure as code with Bicep, deployment without stored secrets | `infra/**`, `.github/**` |
+| [ADR-046](adr/ADR-046-infrastructure-as-code.md) | Infrastructure as code, deployment without stored secrets | `infra/**`, `.github/**` |
 | [ADR-047](adr/ADR-047-one-container-image.md) | One container image everywhere | `src/ThoughtTree.Server*/**`, `infra/**`, `.github/**` |
 | [ADR-048](adr/ADR-048-image-supply-chain.md) | Hardened image and supply chain | `src/ThoughtTree.Server*/**`, `.github/**` |
 | [ADR-049](adr/ADR-049-apache-licence.md) | Apache 2.0, public from the first release | `**` |
@@ -892,6 +892,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-053](adr/ADR-053-functional-core-hexagonal-shell.md) | Functional core, hexagonal shell | `src/**` |
 | [ADR-054](adr/ADR-054-code-organisation.md) | Code organisation: boundaries, feature folders, test intents | `src/**`, `tests/**` |
 | [ADR-055](adr/ADR-055-private-feedback-inbox.md) | Private feedback inbox | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
+| [ADR-056](adr/ADR-056-server-store-migrations.md) | Server store migrations | `src/ThoughtTree.Server*/**`, `infra/**` |
+| [ADR-057](adr/ADR-057-sync-modes.md) | Sync modes, live preselected | `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 

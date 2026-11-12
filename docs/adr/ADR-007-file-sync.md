@@ -2,7 +2,7 @@
 
 id: ADR-007 · status: Accepted · kind: bet ([bet card](bets.md#adr-007))
 
-applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**`
+applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**`
 
 - **MUST** export the whole encrypted log by default; import by merging with duplicates skipped
 - **MUST** give the export file its own format version and a header with room for optional parts

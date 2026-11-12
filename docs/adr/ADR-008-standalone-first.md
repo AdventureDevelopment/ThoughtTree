@@ -2,7 +2,7 @@
 
 id: ADR-008 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Client*/**`
 
 - **MUST** create key and account identity of a tree on the device
 - **MUST** work fully with no network, server, account or login
