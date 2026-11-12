@@ -106,12 +106,12 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Component | Responsibility |
 | --- | --- |
 | Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
-| Tree Manager | Lists, creates and switches trees; holds each tree's key, account identity and private/shared state |
+| Tree Manager | Lists, creates, switches and deletes trees; the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, server address, sync mode; removes the key when a tree is deleted |
 | Command Handler | Turns user actions into domain events; stamps them with the next hybrid logical clock value and the change they replace |
 | Local Event Store | Append-only log in IndexedDB; tracks sync progress per destination (server, devices synced by file) |
 | Projection | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
 | Search | Client-side full-text search over the projection; optional local index |
-| Crypto | Key generation and storage, encryption/decryption of event payloads (Web Crypto API), device pairing payloads |
+| Crypto | Stateless operations with the Web Crypto API: creates keys, pads, encrypts and decrypts envelopes; stores nothing, the key is handed in for each operation |
 | Sync Engine | Exchanges events through an `ISyncTransport`: push unsynced encrypted events, pull remote events, decrypt, merge and apply |
 | Server Transport | `ISyncTransport` over the Sync API and Sync Hub |
 | File Transport | `ISyncTransport` that writes the encrypted export file and reads an imported one |
@@ -121,7 +121,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Update Control | Checks for and applies app updates only with the user's consent; triggers rebuilding snapshots and search index after an update |
 | Storage Guard | Requests persistent storage, warns when the app runs in a plain browser tab instead of being installed, reminds the user to export |
 | Readable Export/Import | Exports the current tree unencrypted as Markdown, OPML or JSON; imports such files as a new tree |
-| Auth Client | Holds and sends the device token of each tree |
+| Auth Client | Attaches the tree's device token, held by the Tree Manager, to sync requests |
 | Service Worker | Caches app shell and assets for offline start; applies app updates only when the user allows it |
 
 **Level 2 – Server**
