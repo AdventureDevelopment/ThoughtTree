@@ -218,19 +218,19 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 1. Pairing is for the user's own devices; it is optional, works without internet, and always concerns one tree
 2. On a device that holds the tree the user opens "Pair my other device"
-3. App renders a QR code containing the tree's key and account identity plus the user identity, generated locally (also shown as a typed code for devices without a camera)
+3. App renders a QR code containing the tree access (see Tree access) plus the user identity, generated locally (also shown as a typed code for devices without a camera)
 4. The new device scans the QR code (or the user types the code)
 5. The new device asks the user what to do: add the tree next to the trees already on this device, merge one of this device's trees into it, or cancel
 6. Add: the tree is stored as a further tree with its own key; nothing else on the device changes
 7. Merge: the chosen local tree gives up its own key and account identity and adopts the ones from the QR code; its events are kept, their envelopes are re-encrypted with the adopted key, and they are merged with the other device's events on the next sync
-8. The new device takes over the user identity from the QR code and writes a `device.joined` event, so the tree knows this device belongs to the same user
+8. The new device takes over the user identity from the QR code and writes a `device.joined` event, so the tree knows this device belongs to the same user; if the device already had a different user identity, the app asks whether both are the same person, and if so the device writes a new `device.joined` with the adopted identity in each of its other trees
 9. The devices now exchange the tree's events by file, or through the server if server sync is switched on for that tree
 
 **Scenario: Sharing a tree with another user**
 
 1. Sharing is a separate action from pairing; it works without internet and always concerns one tree
 2. On a device that holds the tree the user opens "Share with another user" and confirms a warning: the other user will be able to read and change the whole tree, and this cannot be taken back
-3. App renders a QR code containing the tree's key and account identity, marked as a share; it does not contain the user identity
+3. App renders a QR code containing the tree access, marked as a share; it does not contain the user identity, so the other user keeps their own
 4. The other user's device scans the QR code and stores the tree as a further tree next to its own; its own trees and its own user identity stay untouched
 5. The other user's device writes a `device.joined` event with its own user identity
 6. From then on the tree is shown as shared on all devices that hold it, with the list of users and their devices
@@ -289,7 +289,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
-- A tree is private while all devices that have joined it belong to one user, and shared as soon as a device of another user has joined; this is derived from the `device.joined` events, not stored as a flag
+- A tree is private while all devices that have joined it belong to one user, and shared as soon as a device of another user has joined; this is derived from the `device.joined` events, not stored as a flag; if a device has several `device.joined` events, the latest in the agreed order counts
 
 **Event types (initial set)**
 
@@ -448,6 +448,15 @@ Example of an event before encryption:
 - Scheduled sync runs at a random moment within a time window the user sets; the app converts the window to UTC once and keeps it fixed, so sync times show neither round local times nor the switch to and from daylight saving time nor travel; the price is that in summer the window shifts by an hour in local time
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
+
+**Tree access**
+
+- The event log restores a tree's content; the tree access restores the right to read and sync it; it is kept outside the log by the Tree Manager
+- Tree access consists of: key, `KeyId`, account id and account secret
+- Not part of it: device tokens (per device, can be requested again with the account secret), sync mode (a setting of each device), tree name (comes from the events)
+- Pairing, sharing and a future key backup all hand over exactly the tree access; pairing adds the user identity, sharing does not
+- The pairing and sharing code may additionally contain the server address, if the tree uses server sync, so the new device can fetch the log without the user typing the address
+- The code has its own format version, so later additions do not break pairing between old and new apps
 
 **Feature flags**
 
