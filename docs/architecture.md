@@ -81,7 +81,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Several independent trees per device**: each tree has its own key, account identity and event log; nothing is shared between trees
 - **Deterministic replay**: every device orders a tree's events by hybrid logical clock and device id, so all devices compute the same tree from the same events
 - **Touch-first UI**: the outliner is designed for phone and tablet gestures first; desktop keyboard shortcuts come as an add-on
-- **Pluggable sync transport**: the sync protocol ("send me your events since X") is independent of how the bytes travel; the Sync Engine talks to an `ISyncTransport` abstraction, with the server as the first transport
+- **Pluggable sync transport**: every exchange between two logs follows the same steps, independent of how the bytes travel; the Sync Engine talks to an `ISyncTransport` abstraction, with the server and the file as the first transports
 - **No gaps per device**: every transport delivers the events of a device without gaps: a device never holds a later event of device D without all earlier ones; conflict detection relies on this
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
 - **User controls when to sync**: server sync runs only when the user wants it: live (continuous, with real-time updates), manual (on request), or scheduled at times the user plans; the mode is chosen per tree and per device
@@ -107,7 +107,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
 | Tree Manager | Lists, creates and switches trees; holds each tree's key, account identity and private/shared state |
 | Command Handler | Turns user actions into domain events; stamps them with the next hybrid logical clock value and the change they replace |
-| Local Event Store | Append-only log in IndexedDB; tracks synced/unsynced events |
+| Local Event Store | Append-only log in IndexedDB; tracks sync progress per destination (server, devices synced by file) |
 | Projection | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
 | Search | Client-side full-text search over the projection; optional local index |
 | Crypto | Key generation and storage, encryption/decryption of event payloads (Web Crypto API), device pairing payloads |
@@ -139,13 +139,13 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 1. User edits a node's title in the Outline UI
 2. Command Handler creates a `NodeTitleChanged` event with the next hybrid logical clock value
-3. Local Event Store appends the event (marked unsynced)
+3. Local Event Store appends the event; it is not yet known to any sync destination
 4. Projection applies the event; UI updates immediately
 
 **Scenario: Coming back online (live sync mode)**
 
 1. Sync Engine detects connectivity
-2. Pushes all unsynced events to `POST /events`
+2. Pushes all events the server does not have yet to `POST /events`
 3. Pulls events since last known server sequence number
 4. Applies remote events to the projection; resolves conflicts
 5. Server broadcasts new events to other devices via SignalR
@@ -315,6 +315,21 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - Two nodes placed after the same sibling at the same time are ordered by that agreed event order
 - If the referenced sibling is deleted, it stays in the projection as a tombstone, so the reference still resolves
 - If the referenced sibling is under a different parent at the time of replay, the node is placed first under its parent
+
+**Event exchange**
+
+- Every exchange between two logs, whatever the transport, follows the same steps:
+  1. Find out what the other side already has
+  2. Send what it is missing
+  3. Receive what this side is missing
+  4. Recognise duplicates by `EventId` and skip them, so sending too much is always harmless
+- Only step 1 differs per transport:
+  - Server: by the server's sequence number; the device remembers up to which `ServerSequence` it has pulled, and which of its events the server has confirmed; the server cannot read device or clock, so its own numbering is the only option
+  - File: by default unknown, so the whole log is exported, which is always correct thanks to duplicate detection; later option: remember what a device had at the last import from it and export only what is newer
+- What a device has can be described like `seen`: for each device of the tree, the highest clock received from it; this works because every transport delivers a device's events without gaps
+- Sync progress is tracked per destination (the server, each device synced by file), not by one synced flag per event
+- The server stores each `EventId` only once, so pushing the same event again (for example after it reached the server through another device) is harmless
+- The exact `ISyncTransport` interface is left to the implementation
 
 **Conflict resolution**
 
