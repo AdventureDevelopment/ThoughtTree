@@ -92,7 +92,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
 - **User controls when to sync**: server sync runs only when the user wants it: live (continuous, with real-time updates), manual (on request), or scheduled at times the user plans; the mode is chosen per tree and per device
 - **Later distribution as a store app or downloadable package**: adds reliable background sync at planned times and control over updates, which a PWA in the browser cannot fully provide
-- **Self-hostable sync server**: each tree records its server address as an event, so all its devices agree on it; the sync service and the static app are also offered as a package that anyone can run on a server they trust
+- **Self-hostable sync server, one installation per server**: the sync service and the app are offered as one package that anyone can run on a server they trust; an app only syncs with the server it was loaded from, so its Content Security Policy can stay strict; using the hosted server and a self-hosted one on the same device means two installations, each with its own trees; each tree records its server as an event, so all its devices agree on it
 - **User controls app updates**: the app checks for and applies updates only when the user allows it
 - **Later option: sync through a cloud folder** the user already uses; the app writes the encrypted export file there, which looks like ordinary file sync on the network; needs the store app or downloadable package
 
@@ -291,13 +291,13 @@ docs/        architecture, ADRs
 
 **Scenario: Switching on server sync (optional)**
 
-1. On any device the user switches on server sync for the tree and chooses the server: the default service or a self-hosted one, by its address; the device writes a `tree.server-changed` event, so all devices of the tree learn the address
+1. On any device the user switches on server sync for the tree; the server is always the one this installation was loaded from (the hosted service, or a self-hosted server whose app the user opened); the device writes a `tree.server-changed` event with that address, so all devices of the tree learn it
 2. The device contacts the Sync Service with the account identity; the first device to do so registers the account, later devices prove membership with the account secret
 3. Sync Service issues a device token for this device and this tree; a device that syncs several trees holds one token per tree
 4. The user chooses the sync mode for this tree on this device: live, manual or scheduled; the dialog explains the trade-offs and preselects live
 5. The device pushes its event log and pulls events it does not have yet
-6. Other devices of the tree know the address from the event (or from the pairing code) and join the same way whenever the user switches server sync on there; each device decides for itself whether it uses the server
-7. Moving the tree to another server is a new `tree.server-changed` event; each device that uses the server pushes its whole log to the new one, duplicates are skipped
+6. Other devices of the tree learn the address from the event (or from the pairing code); a device whose installation belongs to that server joins the same way whenever the user switches server sync on there; a device whose installation belongs to another server can only sync that tree by file, and the app says which installation to use; each device decides for itself whether it uses the server
+7. Moving the tree to another server: the user brings the tree into the other server's installation by pairing (a typed code works on the same device too) and switches server sync on there; this writes a new `tree.server-changed` event, and every device then pushes its whole log to the new server, duplicates are skipped
 
 **Scenario: Device-to-device sync without internet**
 
@@ -1048,6 +1048,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Bet | An architecture decision that rests on an assumption; its bet card says what should improve, how we notice it and when we review it |
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
 | PWA | Progressive Web App: installable, offline-capable web application |
+| Installation | The app as loaded from one server (the hosted service or a self-hosted one), with its own local store and trees; it syncs only with that server |
 | Tree Access | What a device needs outside the event log to read and sync a tree: key, `KeyId`, account id, account secret |
 | User Identity | User id and user name of a person; carried to their other devices by pairing |
 | Tree Name | The title of the first visible top-level node |

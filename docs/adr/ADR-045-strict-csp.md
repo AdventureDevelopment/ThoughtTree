@@ -4,7 +4,7 @@ id: ADR-045 · status: Accepted · kind: constraint
 
 applies_to: `src/**`, `infra/**`
 
-- **MUST** serve the app with a strict Content Security Policy: scripts, styles, fonts and images only from its own origin; connections only to its own origin and the tree's sync server
+- **MUST** serve the app with a strict Content Security Policy: scripts, styles, fonts, images and connections only to its own origin, which is also its sync server (one installation per server, ADR-021)
 - **MUST** send `Referrer-Policy: no-referrer`
 - **MUST NOT** fetch link previews automatically
 - **MUST NOT** load anything from third parties (trackers, fonts, analytics, remote pictures in Markdown)
