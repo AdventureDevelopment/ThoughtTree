@@ -9,7 +9,7 @@ applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**`
 - **MUST** deliver the events of a device without gaps: never a later event of device D without all earlier ones
 - **MUST** track sync progress per destination, not by one synced flag per event
 - **MUST** store each `EventId` only once on the server, so repeated pushes are harmless
-- **MUST** reject an envelope whose `EventId` is known but whose content differs, on the server and on every device, and report it as a defect
+- **MUST** reject an envelope whose `EventId` is known but whose content differs, on the server and on every device, and report it as a defect (INV-13)
 - **MUST** give `ServerSequence` numbers gap-free per account and make them readable only in commit order
 - **MUST** store a pushed batch all or nothing, in the order sent; **MUST** send batches strictly one after another, each only after the previous one is confirmed
 

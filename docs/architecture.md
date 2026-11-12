@@ -692,6 +692,7 @@ Domain tests:
 | INV-10 | Older apps miss nothing: skipping unknown events still shows every node and text of the known events |
 | INV-11 | Normalised text: every text in every event is NFC; normalising twice changes nothing |
 | INV-12 | Symmetric relations are one: A–B and B–A of a symmetric type are the same relation |
+| INV-13 | One id, one content: envelopes with the same `EventId` are identical; a known id with different content is rejected and reported, never stored |
 
 - Reference model: a deliberately naive projection (sort all events, replay one by one) is the referee; property tests check that the real, optimised projection always gives exactly what the model gives; the model is protected like the stored test data and changes only with human approval
 - Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterNodeId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation
@@ -1053,7 +1054,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Tree Access | What a device needs outside the event log to read and sync a tree: key, `KeyId`, account id, account secret |
 | User Identity | User id and user name of a person; carried to their other devices by pairing |
 | Tree Name | The title of the first visible top-level node |
-| `EventId` | Globally unique id of an event; readable in the envelope; the same id must always carry the same content |
+| `EventId` | Globally unique id of an event; readable in the envelope; the same id must always carry the same content (INV-13) |
 | `KeyId` | Short random id of a tree's key, readable in the envelope |
 | `ServerSequence` | Gap-free number the server gives each envelope of an account, in commit order; used only to track sync progress |
 | `replaces` | List of event ids of the changes an event replaces; used to detect conflicts |
