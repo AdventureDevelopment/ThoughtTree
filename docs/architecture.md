@@ -733,6 +733,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | Topic | Options |
 | --- | --- |
 | Server event store | Azure Table Storage, Blob Storage or SQLite. To consider: Table Storage records a time on every row that cannot be switched off, and Blob Storage records creation and change times, which conflicts with storing no times of use unless events are packed into larger chunks; SQLite stores no such times; the self-hosted package needs a store that runs without Azure; later binary data needs blob storage |
+| Local storage engine | IndexedDB, or SQLite compiled to WebAssembly on the Origin Private File System (in a Web Worker). SQLite offers full-text search (FTS5), real transactions, the same engine in tests, simulation, later native apps and the self-hosted server, and simpler queries; costs about 1 MB extra download, worker interop, and is less mature, especially on Safari. Decided by a spike before the first release, with criteria: reliable in Chromium, Safari on iPhone and iPad and Firefox; no data loss when the app is closed while writing; start time with 100,000 events; download size; effort of the worker interop. Storage stays engine-neutral behind its interface until then |
 | Sync service hosting | Azure Container Apps or Azure Functions |
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
