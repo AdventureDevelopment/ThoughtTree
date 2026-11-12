@@ -81,6 +81,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Deterministic replay**: every device orders a tree's events by hybrid logical clock and device id, so all devices compute the same tree from the same events
 - **Touch-first UI**: the outliner is designed for phone and tablet gestures first; desktop keyboard shortcuts come as an add-on
 - **Pluggable sync transport**: the sync protocol ("send me your events since X") is independent of how the bytes travel; the Sync Engine talks to an `ISyncTransport` abstraction, with the server as the first transport
+- **No gaps per device**: every transport delivers the events of a device without gaps: a device never holds a later event of device D without all earlier ones; conflict detection relies on this
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
 - **User controls when to sync**: server sync runs only when the user wants it: live (continuous, with real-time updates), manual (on request), or scheduled at times the user plans; the mode is chosen per tree and per device
 - **Later distribution as a store app or downloadable package**: adds reliable background sync at planned times and control over updates, which a PWA in the browser cannot fully provide
@@ -324,6 +325,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - Encryption with AES-GCM (256-bit key, fresh random nonce per event) via the Web Crypto API; `EventId` and account id are bound to the ciphertext as additional authenticated data, so the server cannot move or swap events unnoticed
 - Before encryption the payload is padded to a fixed size bucket (for example 256 B, 1 KB, 4 KB, 16 KB), so the size of an envelope does not reveal the length of titles and notes
 - The same envelopes are used in IndexedDB, on the server and in the export file
+- The export file has its own format version and a header with room for optional parts, so later additions (for example a protected key) do not break older apps
 - An envelope may be re-encrypted, for example when a local tree is merged into a received one and adopts its key; this does not count as rewriting the log, because the event inside stays unchanged
 
 **Event versioning**
@@ -352,7 +354,8 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - Snapshots and the search index record the app version whose projection built them; after an update they are discarded and rebuilt from the full log, so events skipped by the older version take effect
 - All local data is partitioned by tree: events, snapshots, key, account identity and search index are stored per tree id
 - The app asks the browser for persistent storage (`navigator.storage.persist()`) so local data is not evicted under storage pressure
-- The export file doubles as a backup; the app reminds the user to export when a tree has never been synced or exported for a while
+- The export file doubles as a backup; the app reminds the user to export when a tree has never been synced or exported for a while, at an interval the user can set
+- Limitation: the export file is encrypted with the tree's key, so it only helps while a device with the key still exists (see open decision Key backup)
 
 **Search**
 
@@ -367,6 +370,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 
 - End-to-end encryption: event payloads are encrypted on the device with the key (Web Crypto API); the server stores and relays only ciphertext
 - The key never leaves the user's devices except through pairing (QR code or typed code); the server holds no key material
+- Each tree's key is random; it is stored extractable, because pairing and sharing must put it into a QR code (accepted trade-off: a non-extractable key would be safer against theft from the device)
 - Authentication by device token behind `IAuthProvider`; all sync endpoints require a valid token; OpenID Connect is an optional later upgrade
 - Server registration uses an account secret that is created on the device and shared only through pairing
 - Events are scoped per account; no cross-account access
@@ -451,7 +455,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 | Sync service hosting | Azure Container Apps or Azure Functions |
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
-| Key backup | Whether to offer a recovery code so a tree survives the loss of all devices |
+| Key backup | How a tree survives the loss of all devices: a passphrase-protected key in the export file, a recovery code, or both; the key stays random and is only wrapped for backup, so this does not affect the rest of the architecture |
 | Serialization format | JSON for now (ADR-17); a compact binary format such as MessagePack if logs grow too large |
 
 ## 10. Quality Requirements
