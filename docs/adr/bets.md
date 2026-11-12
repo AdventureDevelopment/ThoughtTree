@@ -96,12 +96,12 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-047: One container image everywhere
 
-**TL;DR:** (to be filled)
+**TL;DR:** We bet that one image everywhere is worth the cold start after idle, because what is tested is exactly what runs.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** One artifact for test, production and self-hosting; simple delivery; near-zero cost through scaling to zero.
+- **Assumption:** The cold start after idle (a few seconds) is acceptable, because the app starts from the PWA cache and only sync waits; the free monthly allowance of Container Apps covers normal use.
+- **Signal:** Feedback that sync is slow to start; Azure costs; server counters; the time from app start until the first sync completes (timing mark, visible in the diagnostics view and performance reports).
+- **Review when:** Azure costs exceed the free allowance · repeated feedback says the first sync is too slow · Azure changes the free allowance or scale-to-zero behaviour of Container Apps.
 
 <a id="adr-051"></a>
 

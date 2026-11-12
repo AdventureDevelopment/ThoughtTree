@@ -734,7 +734,7 @@ Deployment tests:
 Performance tests:
 
 - Reference datasets, generated with fixed seeds: 10,000 nodes with 100,000 events; a deep tree (50 levels); a wide tree (2,000 children under one node); long notes; many relations; many conflicts
-- The app sets timing marks (`performance.mark`) for app start until the tree is visible, input until display, and search until first hits; tests read them, and they help diagnosis on real devices
+- The app sets timing marks (`performance.mark`) for app start until the tree is visible, input until display, search until first hits, and app start until the first sync completes; tests read them, and they help diagnosis on real devices
 - Gate: a download size budget for the first load, measured exactly, with a fixed upper limit
 - Gate: complexity checks: replay, search and conflict detection are measured with 1,000, 10,000 and 100,000 events and the ratio is checked, so a quadratic algorithm fails regardless of the machine's speed
 - Diagnostics view: the app shows its timing marks and the shape of the tree on demand, only on the device
