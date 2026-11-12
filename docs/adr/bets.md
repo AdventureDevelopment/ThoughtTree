@@ -4,6 +4,8 @@ Bet cards for ADRs of kind `bet`: what each bet should achieve, what it assumes,
 
 Signals respect privacy (see the conventions in [README.md](README.md)). Reviews are triggered by events, not dates.
 
+<a id="adr-001"></a>
+
 ## ADR-001: Client in Blazor WebAssembly
 
 **TL;DR:** We bet that one language for everything is worth Blazor's cost in download size and speed on phones.
@@ -12,6 +14,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** Download size and speed are acceptable on phones, and one ecosystem outweighs JavaScript's richer UI libraries.
 - **Signal:** Room left in the size budget; performance reports and feedback; answers to "Does ThoughtTree start fast enough on your phone?" (yes / sometimes slow / too slow).
 - **Review when:** the size budget can't be kept · the storage and AOT spike misses the targets on a mid-range phone · several performance reports about start or input arrive · a key UI part (for example Markdown editing on the phone) is only available in good quality as a JavaScript library.
+
+<a id="adr-007"></a>
 
 ## ADR-007: Device-to-device sync by encrypted file
 
@@ -22,6 +26,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
 
+<a id="adr-012"></a>
+
 ## ADR-012: One key per tree, equal access
 
 **TL;DR:** (to be filled)
@@ -30,6 +36,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** (to be filled)
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
+
+<a id="adr-023"></a>
 
 ## ADR-023: One parent per node
 
@@ -40,6 +48,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
 
+<a id="adr-025"></a>
+
 ## ADR-025: Relation types defined per tree, predefined set
 
 **TL;DR:** (to be filled)
@@ -48,6 +58,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** (to be filled)
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
+
+<a id="adr-029"></a>
 
 ## ADR-029: Text normalisation before writing
 
@@ -58,6 +70,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
 
+<a id="adr-030"></a>
+
 ## ADR-030: Metadata protection
 
 **TL;DR:** (to be filled)
@@ -66,6 +80,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** (to be filled)
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
+
+<a id="adr-044"></a>
 
 ## ADR-044: Abuse protection and registration modes
 
@@ -76,6 +92,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
 
+<a id="adr-047"></a>
+
 ## ADR-047: One container image everywhere
 
 **TL;DR:** (to be filled)
@@ -84,6 +102,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** (to be filled)
 - **Signal:** (to be filled)
 - **Review when:** (to be filled)
+
+<a id="adr-051"></a>
 
 ## ADR-051: User reports and feedback: sent by the user, untrusted input
 
