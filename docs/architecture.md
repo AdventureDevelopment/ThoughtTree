@@ -583,34 +583,46 @@ Testing rules:
 
 ## 9. Architecture Decisions
 
-| ID | Decision | Rationale |
+Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.md): scope (`applies_to`), rules (MUST / MUST NOT / SHOULD), a `verify` command and a one-line reason.
+
+| ID | Decision | Applies to |
 | --- | --- | --- |
-| ADR-1 | Blazor WebAssembly instead of JS framework | Developer is a C# developer; single language across stack |
-| ADR-2 | Event sourcing as data model | Enables offline-first and log-based sync with small, mergeable conflicts |
-| ADR-3 | Own ASP.NET Core sync service instead of BaaS | Full control over event model and merge rules; stays in .NET |
-| ADR-4 | Sibling order by reference (`afterNodeId`) in the events, not by order keys on nodes | Fits event sourcing: the order follows from replaying the log; no growing keys |
-| ADR-5 | Tombstones instead of hard deletes | Deterministic merges, undo/restore possible |
-| ADR-6 | Sync transport behind `ISyncTransport` | The event exchange is independent of how bytes travel; server, file and later transports plug in without touching the event model |
-| ADR-7 | Device-to-device sync by encrypted file export/import | Must work without internet; manual sync is acceptable; a browser cannot discover devices on the local network; doubles as a backup |
-| ADR-8 | Standalone first: key and account identity are created on the device, server sync is optional per tree | A device must work with no internet, account or server |
-| ADR-9 | Merging means the union of event logs, never a merge of trees; there is no special root node, nodes without a parent are top-level nodes | One merge rule for server sync, file sync and pairing of devices that started on their own |
-| ADR-10 | Multiple trees per device, each with its own key, account identity and event log | Follows from keys being independent of devices; allows separate trees and sharing one tree without exposing the others |
-| ADR-11 | Pairing (own devices) and sharing (other users) are separate actions; users and devices are recorded by `device.joined` events | Makes visible where changes come from and whether a tree is private or shared |
-| ADR-12 | One key per tree with equal access for every holder; no read-only access and no revocation for now | Keeps the encryption design simple; per-user keys are a much larger design and are deferred |
-| ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
-| ADR-14 | Events are ordered by a hybrid logical clock plus device id, not by plain wall-clock time or arrival order | Every device must compute the same tree from the same events; the latest edit in real time should usually win, also after long offline periods; device clocks drift and arrival order differs per device |
-| ADR-15 | Only `EventId`, envelope version, `KeyId` and server sequence stay in plaintext; event type, device, clock and data are encrypted | The server only needs to store, deduplicate and relay; everything else would reveal structure and activity. Accepted consequence: the server can never filter or compact events by type. `KeyId` keeps later key rotation possible |
-| ADR-16 | Event versioning is downward compatible (events only grow, structure only through the basic events, new information in new event types, missing means unchanged); unknown events are kept and synced but skipped, and the tree stays editable with a warning | Devices run different app versions; an older device must keep working and never miss nodes or texts; no device may drop another device's events |
-| ADR-17 | Events are serialized as JSON with fixed type names | Readable and easy to debug; padding hides size differences anyway; type names independent of code |
-| ADR-18 | Concurrent changes of the same field are marked as conflicts and resolved by the user; changes name the change they replace | Last-writer-wins can still pick the wrong value (wrong device clock); the user sees and fixes it, and the fix is an ordinary event |
-| ADR-19 | Unencrypted export only as a readable tree (Markdown, OPML, JSON) without history, never as an unencrypted event log; import creates a new tree | Gives a backup without the key and a way to move notes in and out of ThoughtTree; the history stays protected |
-| ADR-20 | No user accounts or login (such as OpenID Connect) on the server; only device tokens per device and tree | A login would link all trees of a user to one identity on the server, which the per-tree tokens avoid on purpose |
-| ADR-21 | The server address is a property of the tree, recorded by `tree.server-changed`; whether a device uses the server and its sync mode stay per device | All devices of a tree must meet on the same server; moving to another server propagates like any change; each device can still stay on file sync |
-| ADR-22 | Binary data, once supported, is stored as separate encrypted blobs referenced from events by id; never inside events | Events are replayed, synced and kept forever and are padded for small sizes; blobs can be fetched only when needed |
-| ADR-23 | One parent per node, for good; no clones; links instead | Moves, cycle checks, delete conflicts, sibling order, zoom path and readable export all rely on a single parent |
-| ADR-24 | Relations between nodes are a separate concept from the tree, with their own events, identified by from, type and to | Allows any number of typed connections without touching the single-parent tree; older apps skip relation events without missing nodes |
-| ADR-25 | Relation types are referenced by id and defined per tree by events; the starting set is predefined (written as events at tree creation, with fixed ids), not built into the app | One mechanism for all types; the user owns and can change every type; fixed ids keep merges free of duplicates |
-| ADR-26 | Names of user-definable structural elements are translatable labels per language (`label.set`), with the app's resource files as fallback for predefined elements; content is never translated in the log | One translation mechanism for all present and future structural elements; users can translate their own elements; content stays as written |
+| [ADR-001](adr/ADR-001-blazor-webassembly.md) | Client in Blazor WebAssembly | `src/ThoughtTree.Client/**` |
+| [ADR-002](adr/ADR-002-event-sourcing.md) | Event sourcing as data model | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-003](adr/ADR-003-own-sync-service.md) | Own ASP.NET Core sync service | `src/ThoughtTree.Server/**` |
+| [ADR-004](adr/ADR-004-sibling-order-by-reference.md) | Sibling order by reference | `src/ThoughtTree.Domain/**` |
+| [ADR-005](adr/ADR-005-tombstones.md) | Tombstones instead of hard deletes | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**` |
+| [ADR-006](adr/ADR-006-event-exchange.md) | Event exchange behind ISyncTransport | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**` |
+| [ADR-007](adr/ADR-007-file-sync.md) | Device-to-device sync by encrypted file | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-008](adr/ADR-008-standalone-first.md) | Standalone first | `src/ThoughtTree.Client/**` |
+| [ADR-009](adr/ADR-009-merge-is-union.md) | Merging is the union of logs; no special root | `src/ThoughtTree.Domain/**` |
+| [ADR-010](adr/ADR-010-multiple-trees.md) | Multiple independent trees per device | `src/ThoughtTree.Client/**` |
+| [ADR-011](adr/ADR-011-pairing-and-sharing.md) | Pairing and sharing are separate | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-012](adr/ADR-012-one-key-per-tree.md) | One key per tree, equal access | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Domain/**` |
+| [ADR-013](adr/ADR-013-device-local-state.md) | Device state is never synced | `src/ThoughtTree.Client/**` |
+| [ADR-014](adr/ADR-014-hybrid-logical-clock.md) | Event order by hybrid logical clock | `src/ThoughtTree.Domain/**` |
+| [ADR-015](adr/ADR-015-envelope-plaintext.md) | Minimal plaintext in the envelope | `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**` |
+| [ADR-016](adr/ADR-016-downward-compatible-events.md) | Downward-compatible event versioning | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-017](adr/ADR-017-json-fixed-type-names.md) | JSON with fixed type names | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-018](adr/ADR-018-visible-conflicts.md) | Conflicts are visible and resolved by the user | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-019](adr/ADR-019-readable-export.md) | Unencrypted export only as readable tree | `src/ThoughtTree.Client/**` |
+| [ADR-020](adr/ADR-020-no-server-accounts.md) | No user accounts on the server | `src/ThoughtTree.Server/**`, `src/ThoughtTree.Client/**` |
+| [ADR-021](adr/ADR-021-server-address-event.md) | Server address is a property of the tree | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-022](adr/ADR-022-binary-blobs.md) | Binary data as separate blobs | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**` |
+| [ADR-023](adr/ADR-023-one-parent.md) | One parent per node | `src/ThoughtTree.Domain/**` |
+| [ADR-024](adr/ADR-024-relations.md) | Relations separate from the tree | `src/ThoughtTree.Domain/**` |
+| [ADR-025](adr/ADR-025-predefined-relation-types.md) | Relation types defined per tree, predefined set | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-026](adr/ADR-026-translatable-labels.md) | Translatable labels for structural elements | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**` |
+| [ADR-027](adr/ADR-027-project-dependencies.md) | Domain and Contracts projects | `src/**` |
+| [ADR-028](adr/ADR-028-tree-access.md) | Tree access | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-029](adr/ADR-029-text-normalisation.md) | Text normalisation before writing | `src/ThoughtTree.Domain/**` |
+| [ADR-030](adr/ADR-030-metadata-protection.md) | Metadata protection | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**` |
+| [ADR-031](adr/ADR-031-switches.md) | Development flags, tree features, device settings | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**`, `src/ThoughtTree.Domain/**` |
+| [ADR-032](adr/ADR-032-resource-texts.md) | App texts in resource files | `src/ThoughtTree.Client/**` |
+| [ADR-033](adr/ADR-033-accessible-ui.md) | Accessible, direction-neutral UI | `src/ThoughtTree.Client/**` |
+| [ADR-034](adr/ADR-034-replaceable-time-random.md) | Replaceable time and randomness | `src/**` |
+| [ADR-035](adr/ADR-035-protected-harness.md) | Protected test harness | `tests/**`, `.github/**` |
+| [ADR-036](adr/ADR-036-user-controlled-updates.md) | User-controlled app updates | `src/ThoughtTree.Client/**` |
 
 **Open decisions**
 
@@ -620,9 +632,9 @@ Testing rules:
 | Sync service hosting | Azure Container Apps or Azure Functions |
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
-| Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-22). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted nodes may be removed |
+| Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-022). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted nodes may be removed |
 | Key backup | How a tree survives the loss of all devices: a passphrase-protected key in the export file, a recovery code, or both; the key stays random and is only wrapped for backup, so this does not affect the rest of the architecture |
-| Serialization format | JSON for now (ADR-17); a compact binary format such as MessagePack if logs grow too large |
+| Serialization format | JSON for now (ADR-017); a compact binary format such as MessagePack if logs grow too large |
 
 ## 10. Quality Requirements
 
