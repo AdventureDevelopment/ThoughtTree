@@ -74,7 +74,9 @@ The next morning the owner has made a coffee and drinks it in bed; awake, relaxe
    - next to another note nearby: drag and drop
    - into a project the owner has in mind: "Move to…", choose the project, see what is already there, place the idea where it belongs
    - something new: its own root, or wherever it belongs
-3. …
+3. After each move the owner stays in the inbox; a short confirmation shows where the idea went, with Undo and Go there (decision D-7)
+4. **Key moment:** the next idea belongs to the same project: one tap places it right below the idea just moved, no searching again (decision D-7)
+5. …
 
 Notes:
 
@@ -90,3 +92,4 @@ Notes:
 | D-4 | 2026-11-12 | 1 Principles (journey A) | On opening, the app shows the place last worked on (device state, ADR-013) together with a clearly visible capture button; one tap on it opens the inbox with a fresh, empty line, so typing starts after one tap (within U1) | Journey A |
 | D-5 | 2026-11-12 | 1 Principles (journey A) | A captured idea goes into the inbox of the open tree; the capture view shows that tree's name, and one tap switches to another tree's inbox | Journey A |
 | D-6 | 2026-11-12 | 1 Principles (journey B) | Moving a node offers three ways, chosen by distance: drag and drop for nearby places; "Move to…" that finds the target by search or in a compact tree, shows the target's children and places the node at a chosen position; and moving it to the top level (its own root). "Move to…" is also the accessible alternative to dragging (ADR-033) | Journey B |
+| D-7 | 2026-11-12 | 1 Principles (journey B) | After a move the user stays where they were (the inbox); a short confirmation names the target and offers Undo and Go there. The app remembers the last placed node (device state, ADR-013): for the next node there are two one-tap choices, keep it in the inbox or place it right below the last placed node; a space typed at the start of an empty title (D-2) nests it under that node instead | Journey B |
