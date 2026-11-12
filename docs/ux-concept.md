@@ -65,13 +65,6 @@ Principle candidates heard in this journey (to be confirmed with the other journ
 - Keep the flow: one idea leads to the next without detours
 - Saved at once and reliably: the user never wonders whether something was stored
 
-Principle candidates heard in journey B:
-
-- The way of acting fits the distance: near by hand, far by choosing
-- Stay in the flow: after an action the user stays where they were
-- No pressure: the inbox is a parking place, not a to-do list
-- Finding the place is the hard part; the app must make it easy
-
 ### Journey B – Sorting with coffee
 
 The next morning the owner has made a coffee and drinks it in bed; awake, relaxed, with time. Phone in one hand, coffee in the other.
@@ -90,6 +83,13 @@ Pain point: searching for the node where a new note belongs.
 Notes:
 
 - A swipe on an idea as a shortcut to "Move to…" is a wish; gestures are topic 6 and an open decision of the architecture
+
+Principle candidates heard in journey B:
+
+- The way of acting fits the distance: near by hand, far by choosing
+- Stay in the flow: after an action the user stays where they were
+- No pressure: the inbox is a parking place, not a to-do list
+- Finding the place is the hard part; the app must make it easy
 
 ## Decision log
 
