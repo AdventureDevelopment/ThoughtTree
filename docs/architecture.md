@@ -448,6 +448,8 @@ Example of an event before encryption:
 
 - All search runs on the client over the decrypted in-memory projection; no server-side search is possible by design
 - Initial implementation: linear scan with case-insensitive and fuzzy matching, highlighting the path to each hit
+- Matching rules: case is always ignored; accents are ignored by default ("Bar" finds "Bär", "cafe" finds "café"), with a toggle for exact accents; German equivalents always apply (ä = ae, ö = oe, ü = ue, ß = ss), since content carries no language; Markdown markers are ignored; emojis are searchable like any other character
+- Search behaviour is not a foundation decision: the index is rebuilt from the log and can change with any app version
 - If trees grow large: an incremental local index (inverted index of titles and notes) persisted in IndexedDB and updated as events are applied
 - Search scope can be limited to the currently zoomed subtree
 - Limitation accepted: search only works on paired devices that have synced
