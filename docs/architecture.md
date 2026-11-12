@@ -314,6 +314,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - An inline link is never turned into a relation automatically: inline links stay text, relations stay deliberate connections
 - External links are clickable and open in a new tab, or in the system browser for the installed app; the target address is shown before opening (hover or long press); the app sends no referrer (`Referrer-Policy: no-referrer`), so a self-hosted server's address is not revealed; no automatic link previews
 - Later, with binary data: a preview picture of a linked page, created only when the user asks for it, on the device, and stored as an encrypted blob in the tree; never created automatically, never through our server or a third-party service, because the address itself is content
+- Remote pictures (`![](https://…)`) are not loaded; the app shows a placeholder with the address, and clicking opens the picture in the browser; later, with binary data, the user can store such a picture once as an encrypted blob in the tree
 - Nothing connects trees: links and relations only point to nodes of the same tree; the link picker offers only nodes of the current tree, and a `node:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import
 - Relations: besides the tree structure (parent, child, sibling order), nodes can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where a node sits
 - A relation is identified by its three parts (from node, type, to node), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
@@ -495,6 +496,7 @@ Example of an event before encryption:
 - Server registration uses an account secret that is created on the device and shared only through pairing
 - Events are scoped per account; no cross-account access
 - HTTPS everywhere
+- Content is untrusted input: titles, notes, labels, imported files and feedback texts may come from other people (shared trees); Markdown is rendered without raw HTML; only the link schemes `node:`, `https:`, `http:` and `mailto:` are allowed, everything else is shown as plain text; a collection of known attack strings must render harmlessly (gate); the Content Security Policy is the second line of defence, not the only one
 - The server stores account secrets and device tokens only as hashes, so stolen server data cannot be used to join an account or push events
 - Abuse protection on the server: maximum request size; maximum events and storage per account; rate limiting of registrations and requests in memory only (the IP address is used for the moment, never stored); registration mode per server: open, or only with a server join code that the operator hands out; the owner's default server uses "join code only"
 - Device tokens are issued per device and tree, so the server gets no ready-made link between the trees of one device
@@ -802,6 +804,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-049](adr/ADR-049-apache-licence.md) | Apache 2.0, public from the first release | `**` |
 | [ADR-050](adr/ADR-050-dependency-licences.md) | Approved licences for dependencies | `**/*.csproj`, `**/package.json`, `Directory.Packages.props` |
 | [ADR-051](adr/ADR-051-user-reports.md) | User reports and feedback: sent by the user, untrusted input | `src/ThoughtTree.Client*/**`, `.github/**` |
+| [ADR-052](adr/ADR-052-untrusted-content.md) | Content is untrusted input | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**` |
 
 **Open decisions**
 
