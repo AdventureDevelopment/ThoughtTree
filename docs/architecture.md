@@ -105,6 +105,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - UI: Razor components that read state from the application layer and forward user input to use cases
 - Server in the same style: Server.Core with its ports (store, clock), store adapters, ASP.NET Core as the outermost shell
 - Dependency rule: dependencies only point inwards (UI → Application → Domain; adapters → Application); Domain depends on nothing; checked by architecture tests
+- The application layer offers view models shaped for display (for example: node with title, collapsed, has conflict, number of backlinks); the UI binds only to these and never references Domain types
+- Taken from Clean Architecture: the dependency rule, view models instead of domain types in the UI, a structure that shows what the system does; deliberately not taken: interactor, input and output port, request and response model and presenter per use case, and entities with behaviour as the centre
 
 
 **Level 1 – System**
