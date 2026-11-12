@@ -1,6 +1,6 @@
 # ADR-041: Client application layer, thin components
 
-id: ADR-041 · status: Accepted
+id: ADR-041 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`
 

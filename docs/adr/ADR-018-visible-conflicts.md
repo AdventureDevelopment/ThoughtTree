@@ -1,6 +1,6 @@
 # ADR-018: Conflicts are visible and resolved by the user
 
-id: ADR-018 · status: Accepted
+id: ADR-018 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
 

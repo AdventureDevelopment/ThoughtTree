@@ -1,6 +1,6 @@
 # ADR-035: Protected test harness
 
-id: ADR-035 · status: Accepted
+id: ADR-035 · status: Accepted · kind: constraint
 
 applies_to: `tests/**`, `.github/**`
 

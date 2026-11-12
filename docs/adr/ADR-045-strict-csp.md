@@ -1,6 +1,6 @@
 # ADR-045: Strict Content Security Policy
 
-id: ADR-045 · status: Accepted
+id: ADR-045 · status: Accepted · kind: constraint
 
 applies_to: `src/**`, `infra/**`
 

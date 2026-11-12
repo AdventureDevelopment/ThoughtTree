@@ -1,6 +1,6 @@
 # ADR-026: Translatable labels for structural elements
 
-id: ADR-026 · status: Accepted
+id: ADR-026 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
 

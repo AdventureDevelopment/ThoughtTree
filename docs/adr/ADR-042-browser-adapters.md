@@ -1,6 +1,6 @@
 # ADR-042: Browser APIs behind interfaces
 
-id: ADR-042 · status: Accepted
+id: ADR-042 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`
 

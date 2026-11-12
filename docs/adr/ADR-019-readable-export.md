@@ -1,6 +1,6 @@
 # ADR-019: Unencrypted export only as readable tree
 
-id: ADR-019 · status: Accepted
+id: ADR-019 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

@@ -1,6 +1,6 @@
 # ADR-004: Sibling order by reference
 
-id: ADR-004 · status: Accepted
+id: ADR-004 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`
 

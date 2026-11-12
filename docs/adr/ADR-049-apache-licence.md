@@ -1,6 +1,6 @@
 # ADR-049: Apache 2.0, public from the first release
 
-id: ADR-049 · status: Accepted
+id: ADR-049 · status: Accepted · kind: constraint
 
 applies_to: `**`
 

@@ -1,6 +1,6 @@
 # ADR-021: Server address is a property of the tree
 
-id: ADR-021 · status: Accepted
+id: ADR-021 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
 

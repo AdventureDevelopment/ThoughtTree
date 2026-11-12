@@ -1,6 +1,6 @@
 # ADR-028: Tree access
 
-id: ADR-028 · status: Accepted
+id: ADR-028 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**`
 

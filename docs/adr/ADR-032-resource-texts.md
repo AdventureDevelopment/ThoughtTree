@@ -1,6 +1,6 @@
 # ADR-032: App texts in resource files
 
-id: ADR-032 · status: Accepted
+id: ADR-032 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

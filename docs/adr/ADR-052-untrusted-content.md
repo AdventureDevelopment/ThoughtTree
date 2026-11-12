@@ -1,6 +1,6 @@
 # ADR-052: Content is untrusted input
 
-id: ADR-052 · status: Accepted
+id: ADR-052 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`
 

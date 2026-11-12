@@ -1,6 +1,6 @@
 # ADR-048: Hardened image and supply chain
 
-id: ADR-048 · status: Accepted
+id: ADR-048 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Server*/**`, `.github/**`
 

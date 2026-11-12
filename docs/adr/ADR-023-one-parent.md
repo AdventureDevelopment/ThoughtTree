@@ -1,6 +1,6 @@
 # ADR-023: One parent per node
 
-id: ADR-023 · status: Accepted
+id: ADR-023 · status: Accepted · kind: bet
 
 applies_to: `src/ThoughtTree.Domain/**`
 
@@ -15,3 +15,11 @@ dotnet test --filter "ADR=ADR-023"
 ```
 
 why: Moves, cycle checks, delete conflicts, sibling order, zoom path and export rely on one parent.
+
+outcome: (to be filled)
+
+assumption: (to be filled)
+
+signal: (to be filled)
+
+review: (to be filled)

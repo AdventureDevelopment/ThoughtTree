@@ -1,6 +1,6 @@
 # ADR-005: Tombstones instead of hard deletes
 
-id: ADR-005 · status: Accepted
+id: ADR-005 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 

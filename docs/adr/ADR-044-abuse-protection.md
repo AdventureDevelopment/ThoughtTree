@@ -1,6 +1,6 @@
 # ADR-044: Abuse protection and registration modes
 
-id: ADR-044 · status: Accepted
+id: ADR-044 · status: Accepted · kind: bet
 
 applies_to: `src/ThoughtTree.Server*/**`
 
@@ -16,3 +16,11 @@ dotnet test --filter "ADR=ADR-044"
 ```
 
 why: Without user accounts anyone can register; limits keep a server, and its free tier, from being abused.
+
+outcome: (to be filled)
+
+assumption: (to be filled)
+
+signal: (to be filled)
+
+review: (to be filled)

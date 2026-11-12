@@ -1,6 +1,6 @@
 # ADR-003: Own ASP.NET Core sync service
 
-id: ADR-003 · status: Accepted
+id: ADR-003 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Server*/**`
 

@@ -1,6 +1,6 @@
 # ADR-002: Event sourcing as data model
 
-id: ADR-002 · status: Accepted
+id: ADR-002 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
 

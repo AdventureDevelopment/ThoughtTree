@@ -1,6 +1,6 @@
 # ADR-011: Pairing and sharing are separate
 
-id: ADR-011 · status: Accepted
+id: ADR-011 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
 

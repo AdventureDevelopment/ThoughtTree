@@ -1,6 +1,6 @@
 # ADR-050: Approved licences for dependencies
 
-id: ADR-050 · status: Accepted
+id: ADR-050 · status: Accepted · kind: constraint
 
 applies_to: `**/*.csproj`, `**/package.json`, `Directory.Packages.props`
 

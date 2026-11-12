@@ -1,6 +1,6 @@
 # ADR-038: Local storage migrations without loss
 
-id: ADR-038 · status: Accepted
+id: ADR-038 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

@@ -1,6 +1,6 @@
 # ADR-054: Code organisation: boundaries, feature folders, test intents
 
-id: ADR-054 · status: Accepted
+id: ADR-054 · status: Accepted · kind: constraint
 
 applies_to: `src/**`, `tests/**`
 

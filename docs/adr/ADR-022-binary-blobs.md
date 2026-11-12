@@ -1,6 +1,6 @@
 # ADR-022: Binary data as separate blobs
 
-id: ADR-022 · status: Accepted
+id: ADR-022 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 

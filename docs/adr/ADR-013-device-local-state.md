@@ -1,6 +1,6 @@
 # ADR-013: Device state is never synced
 
-id: ADR-013 · status: Accepted
+id: ADR-013 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

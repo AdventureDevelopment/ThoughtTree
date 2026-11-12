@@ -1,6 +1,6 @@
 # ADR-020: No user accounts on the server
 
-id: ADR-020 · status: Accepted
+id: ADR-020 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Client/**`
 

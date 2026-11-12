@@ -1,6 +1,6 @@
 # ADR-029: Text normalisation before writing
 
-id: ADR-029 · status: Accepted
+id: ADR-029 · status: Accepted · kind: bet
 
 applies_to: `src/ThoughtTree.Domain/**`
 
@@ -16,3 +16,11 @@ dotnet test --filter "ADR=ADR-029"
 ```
 
 why: Events are never rewritten; mixed forms would break search, comparisons and conflicts forever.
+
+outcome: (to be filled)
+
+assumption: (to be filled)
+
+signal: (to be filled)
+
+review: (to be filled)

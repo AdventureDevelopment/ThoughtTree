@@ -1,6 +1,6 @@
 # ADR-027: Domain and Contracts projects
 
-id: ADR-027 · status: Accepted
+id: ADR-027 · status: Accepted · kind: constraint
 
 applies_to: `src/**`
 

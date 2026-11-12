@@ -1,6 +1,6 @@
 # ADR-017: JSON with fixed type names
 
-id: ADR-017 · status: Accepted
+id: ADR-017 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`
 

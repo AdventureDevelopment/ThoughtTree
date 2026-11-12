@@ -1,6 +1,6 @@
 # ADR-006: Event exchange behind ISyncTransport
 
-id: ADR-006 · status: Accepted
+id: ADR-006 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 

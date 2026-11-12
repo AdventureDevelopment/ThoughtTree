@@ -1,6 +1,6 @@
 # ADR-039: No uncontrolled concurrency or timers
 
-id: ADR-039 · status: Accepted
+id: ADR-039 · status: Accepted · kind: constraint
 
 applies_to: `src/**`
 

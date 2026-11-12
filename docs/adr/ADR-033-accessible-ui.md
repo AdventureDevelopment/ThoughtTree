@@ -1,6 +1,6 @@
 # ADR-033: Accessible, direction-neutral UI
 
-id: ADR-033 · status: Accepted
+id: ADR-033 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

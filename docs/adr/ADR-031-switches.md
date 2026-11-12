@@ -1,6 +1,6 @@
 # ADR-031: Development flags, tree features, device settings
 
-id: ADR-031 · status: Accepted
+id: ADR-031 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**`
 

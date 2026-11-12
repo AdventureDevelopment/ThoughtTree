@@ -1,6 +1,6 @@
 # ADR-016: Downward-compatible event versioning
 
-id: ADR-016 · status: Accepted
+id: ADR-016 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`
 

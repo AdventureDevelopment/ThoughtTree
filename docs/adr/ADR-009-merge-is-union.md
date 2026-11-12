@@ -1,6 +1,6 @@
 # ADR-009: Merging is the union of logs; no special root
 
-id: ADR-009 · status: Accepted
+id: ADR-009 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`
 

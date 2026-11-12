@@ -1,6 +1,6 @@
 # ADR-024: Relations separate from the tree
 
-id: ADR-024 · status: Accepted
+id: ADR-024 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`
 

@@ -1,6 +1,6 @@
 # ADR-037: Versioned, compatible sync API
 
-id: ADR-037 · status: Accepted
+id: ADR-037 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`
 

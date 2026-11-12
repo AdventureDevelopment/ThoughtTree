@@ -1,6 +1,6 @@
 # ADR-010: Multiple independent trees per device
 
-id: ADR-010 · status: Accepted
+id: ADR-010 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

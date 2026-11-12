@@ -1,6 +1,6 @@
 # ADR-001: Client in Blazor WebAssembly
 
-id: ADR-001 · status: Accepted
+id: ADR-001 · status: Accepted · kind: bet
 
 applies_to: `src/ThoughtTree.Client/**`
 
@@ -15,3 +15,11 @@ grep -rlE '"(react|vue|@angular/core|svelte)"' --include=package.json src | wc -
 ```
 
 why: The developer works in C#; one language across client and server.
+
+outcome: (to be filled)
+
+assumption: (to be filled)
+
+signal: (to be filled)
+
+review: (to be filled)

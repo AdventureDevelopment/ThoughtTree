@@ -1,6 +1,6 @@
 # ADR-007: Device-to-device sync by encrypted file
 
-id: ADR-007 · status: Accepted
+id: ADR-007 · status: Accepted · kind: bet
 
 applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**`
 
@@ -15,3 +15,11 @@ dotnet test --filter "ADR=ADR-007"
 ```
 
 why: Must work without internet; doubles as a backup.
+
+outcome: (to be filled)
+
+assumption: (to be filled)
+
+signal: (to be filled)
+
+review: (to be filled)

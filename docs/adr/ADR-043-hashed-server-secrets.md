@@ -1,6 +1,6 @@
 # ADR-043: Server secrets only as hashes
 
-id: ADR-043 · status: Accepted
+id: ADR-043 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Server*/**`
 

@@ -1,6 +1,6 @@
 # ADR-047: One container image everywhere
 
-id: ADR-047 · status: Accepted
+id: ADR-047 · status: Accepted · kind: bet
 
 applies_to: `src/ThoughtTree.Server*/**`, `infra/**`, `.github/**`
 
@@ -17,3 +17,11 @@ dotnet test --filter "ADR=ADR-047"   # deployment smoke tests run against the im
 ```
 
 why: What is tested is exactly what runs; one origin keeps the Content Security Policy simple.
+
+outcome: (to be filled)
+
+assumption: (to be filled)
+
+signal: (to be filled)
+
+review: (to be filled)

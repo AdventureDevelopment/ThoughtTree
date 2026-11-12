@@ -1,6 +1,6 @@
 # ADR-008: Standalone first
 
-id: ADR-008 · status: Accepted
+id: ADR-008 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

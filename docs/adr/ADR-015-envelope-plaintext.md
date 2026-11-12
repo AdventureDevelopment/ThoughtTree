@@ -1,6 +1,6 @@
 # ADR-015: Minimal plaintext in the envelope
 
-id: ADR-015 · status: Accepted
+id: ADR-015 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 

@@ -1,6 +1,6 @@
 # ADR-036: User-controlled app updates
 
-id: ADR-036 · status: Accepted
+id: ADR-036 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client/**`
 

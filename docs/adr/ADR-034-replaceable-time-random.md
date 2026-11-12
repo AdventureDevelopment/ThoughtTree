@@ -1,6 +1,6 @@
 # ADR-034: Replaceable time and randomness
 
-id: ADR-034 · status: Accepted
+id: ADR-034 · status: Accepted · kind: constraint
 
 applies_to: `src/**`
 

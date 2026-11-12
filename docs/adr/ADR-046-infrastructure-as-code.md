@@ -1,6 +1,6 @@
 # ADR-046: Infrastructure as code, deployment without stored secrets
 
-id: ADR-046 · status: Accepted
+id: ADR-046 · status: Accepted · kind: constraint
 
 applies_to: `infra/**`, `.github/**`
 

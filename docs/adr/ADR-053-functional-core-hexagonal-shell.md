@@ -1,6 +1,6 @@
 # ADR-053: Functional core, hexagonal shell
 
-id: ADR-053 · status: Accepted
+id: ADR-053 · status: Accepted · kind: constraint
 
 applies_to: `src/**`
 

@@ -1,6 +1,6 @@
 # ADR-040: Server logic as a library
 
-id: ADR-040 · status: Accepted
+id: ADR-040 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Server.Core/**`, `src/ThoughtTree.Server/**`
 

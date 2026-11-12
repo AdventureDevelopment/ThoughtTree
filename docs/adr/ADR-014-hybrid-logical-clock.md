@@ -1,6 +1,6 @@
 # ADR-014: Event order by hybrid logical clock
 
-id: ADR-014 · status: Accepted
+id: ADR-014 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`
 
