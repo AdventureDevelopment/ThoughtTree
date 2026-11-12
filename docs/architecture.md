@@ -44,7 +44,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 - Technology: C# / .NET, Blazor WebAssembly as PWA
 - Must work offline; network is optional and intermittent
-- Source control: private GitHub repository `AdventureDevelopment/ThoughtTree`
+- Source control: GitHub repository `AdventureDevelopment/ThoughtTree`, private until the first release, public from then on
+- Licence: Apache 2.0 for the whole repository; the name "ThoughtTree" is not licensed
+- Dependencies may only use licences from an approved list (MIT, Apache 2.0, BSD and similar permissive licences), checked in the push gate
 - Single developer, incremental delivery
 - Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible (Azure Container Apps, scaling to zero); target cost near zero for a single user
 - The sync service (and the static app) must also be deployable by others on their own server, without Azure
@@ -272,6 +274,12 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Event log storage on Azure | Append-only encrypted event log per account; Table Storage or Blob Storage is an open decision |
 | Self-hosted server (optional) | The same container image on any server, with SQLite on a volume, behind a reverse proxy that provides HTTPS (example: Docker Compose with Caddy); backups of the volume contain only encrypted data |
 | Container registry | GitHub Container Registry; public image, amd64 and arm64, version tags such as `1.4.2` and `1.4` |
+
+**Going public (checklist for the first release)**
+
+- Check the whole git history for secrets
+- `LICENSE` (Apache 2.0) present; add a short `CONTRIBUTING` guide
+- Make the repository public, then publish the first public image
 
 **Environments**
 
@@ -760,6 +768,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-046](adr/ADR-046-infrastructure-as-code.md) | Infrastructure as code with Bicep, deployment without stored secrets | `infra/**`, `.github/**` |
 | [ADR-047](adr/ADR-047-one-container-image.md) | One container image everywhere | `src/ThoughtTree.Server*/**`, `infra/**`, `.github/**` |
 | [ADR-048](adr/ADR-048-image-supply-chain.md) | Hardened image and supply chain | `src/ThoughtTree.Server*/**`, `.github/**` |
+| [ADR-049](adr/ADR-049-apache-licence.md) | Apache 2.0, public from the first release | `**` |
+| [ADR-050](adr/ADR-050-dependency-licences.md) | Approved licences for dependencies | `**/*.csproj`, `**/package.json`, `Directory.Packages.props` |
 
 **Open decisions**
 
