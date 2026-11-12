@@ -65,6 +65,21 @@ Principle candidates heard in this journey (to be confirmed with the other journ
 - Keep the flow: one idea leads to the next without detours
 - Saved at once and reliably: the user never wonders whether something was stored
 
+### Journey B – Sorting with coffee
+
+The next morning the owner has made a coffee and drinks it in bed; awake, relaxed, with time. Phone in one hand, coffee in the other.
+
+1. Opens the inbox with the ideas of the night
+2. Sorts them one by one into the tree, choosing the way of moving by distance (decision D-6):
+   - next to another note nearby: drag and drop
+   - into a project the owner has in mind: "Move to…", choose the project, see what is already there, place the idea where it belongs
+   - something new: its own root, or wherever it belongs
+3. …
+
+Notes:
+
+- A swipe on an idea as a shortcut to "Move to…" is a wish; gestures are topic 6 and an open decision of the architecture
+
 ## Decision log
 
 | # | Date | Topic | Decision | Source |
@@ -74,3 +89,4 @@ Principle candidates heard in this journey (to be confirmed with the other journ
 | D-3 | 2026-11-12 | 1 Principles (journey A) | Backspace in an empty title moves the idea one level up; only at the top level (of the inbox or the current zoom) does it remove the empty line; accessible alternatives: a menu command, and Shift+Tab on a keyboard (ADR-033) | Journey A |
 | D-4 | 2026-11-12 | 1 Principles (journey A) | On opening, the app shows the place last worked on (device state, ADR-013) together with a clearly visible capture button; one tap on it opens the inbox with a fresh, empty line, so typing starts after one tap (within U1) | Journey A |
 | D-5 | 2026-11-12 | 1 Principles (journey A) | A captured idea goes into the inbox of the open tree; the capture view shows that tree's name, and one tap switches to another tree's inbox | Journey A |
+| D-6 | 2026-11-12 | 1 Principles (journey B) | Moving a node offers three ways, chosen by distance: drag and drop for nearby places; "Move to…" that finds the target by search or in a compact tree, shows the target's children and places the node at a chosen position; and moving it to the top level (its own root). "Move to…" is also the accessible alternative to dragging (ADR-033) | Journey B |
