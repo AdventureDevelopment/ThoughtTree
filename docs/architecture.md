@@ -535,8 +535,21 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Maintainability | Fast feedback: the gate suite runs on every push within a set time budget (for example 10 minutes) | Watch |
 | Maintainability | Reproducibility: every failure can be repeated from its seed; unreliable tests are fixed, never ignored | Gate |
 | Maintainability | Architecture rules: automated checks that Domain does not depend on the browser, the server does not reference Domain, only Contracts are shared | Gate |
-| Maintainability | Depth of Domain tests measured by mutation testing, not coverage alone | Watch |
+| Maintainability | Depth of Domain tests measured by mutation testing, not coverage alone; changed Domain code must reach the agreed mutation score | Gate (changed code), watch (overall) |
 | Performance | Targets of section 10 measured on reference data (for example 10,000 nodes, 100,000 events) and tracked; a clear regression fails the nightly run | Watch with threshold |
+
+Harness for agentic development (the test harness is the specification the agents work towards):
+
+1. Tests express intent, not just examples: invariants, property-based tests, simulations and fixed stored formats carry the main load; example tests mainly document behaviour
+2. The harness is protected: stored test data from released versions is append-only; deleting a gate test or weakening an assertion needs human approval (test folders owned by the maintainer via CODEOWNERS, CI reports removed tests and changed expected values); agents may add tests freely
+3. Failures say what to do: name the broken invariant, show a minimal counterexample, give the seed to reproduce
+4. Zero flakiness: every test is deterministic; an unreliable test is a defect with top priority
+5. The whole gate suite runs in an agent's sandbox, without Azure accounts, secrets or network (SQLite, Azure Storage emulator, local browsers); tests against real Azure belong only to the deployment layer
+6. The quality of the tests is measured: mutation testing checks that tests notice deliberately broken code; agent-added tests must meet the agreed score
+7. Architecture rules are checked automatically on every push
+8. Documentation is part of the harness: this document, its ADRs and a short agent guide in the repository (rules, commands, what may and may not be changed) give agents the intent; changing an ADR is a human decision
+9. UI tests use stable test identifiers on elements, not texts or layout
+10. Feedback is fast enough for small steps: besides the full gate within the time budget, a fast subset for the area being changed answers within seconds
 
 Principles that shape the code from the start:
 
