@@ -547,14 +547,30 @@ Harness for agentic development (the test harness is the specification the agent
 2. The harness is protected: stored test data from released versions is append-only; deleting a gate test or weakening an assertion needs human approval (test folders owned by the maintainer via CODEOWNERS, CI reports removed tests and changed expected values); agents may add tests freely
 3. Failures say what to do: name the broken invariant, show a minimal counterexample, give the seed to reproduce
 4. Zero flakiness: every test is deterministic; an unreliable test is a defect with top priority
-5. The whole gate suite runs in an agent's sandbox, without Azure accounts, secrets or network (SQLite, Azure Storage emulator, local browsers); tests against real Azure belong only to the deployment layer
+5. The whole gate suite runs in an agent's sandbox, without Azure accounts, secrets or network (SQLite, Azure Storage emulator, local browsers); tests against real Azure belong only to the deployment tests
 6. The quality of the tests is measured: mutation testing checks that tests notice deliberately broken code; agent-added tests must meet the agreed score
 7. Architecture rules are checked automatically on every push
 8. Documentation is part of the harness: this document, its ADRs and a short agent guide in the repository (rules, commands, what may and may not be changed) give agents the intent; changing an ADR is a human decision
 9. UI tests use stable test identifiers on elements, not texts or layout
 10. Feedback is fast enough for small steps: besides the full gate within the time budget, a fast subset for the area being changed answers within seconds
 
-Layer 1 – Domain tests:
+Kinds of tests and loops: tests are not a numbered stack; they are grouped by role, and run in loops by cost.
+
+| Role | Kinds |
+| --- | --- |
+| Specify: what the system should do, as acceptance criteria, written first | Domain specifications (scenario tests), UI specifications |
+| Secure: correctness and rules | Compiler and analyzers, Domain properties and invariants, formats, simulation, application layer, component rules, server |
+| Confirm: the whole system in real environments | End-to-end, deployment, performance, manual |
+
+| Loop | Time | Contains |
+| --- | --- | --- |
+| Inner loop (the agent while working) | Seconds | Compiler; specifications, properties and component rules of the area being changed; UI specifications in Chromium |
+| Push gate | Within the time budget (for example 10 minutes) | All specifications and all securing tests, regression seeds, UI specifications in all three browsers, end-to-end smoke set |
+| Nightly | Hours | Long simulations, full end-to-end, performance, mutation testing |
+| After deployment | Minutes | Deployment smoke tests |
+| Before release | Manual | Real devices, screen reader, feel |
+
+Domain tests:
 
 - Covers everything that decides what the tree is: projection, sibling order, cycles, hybrid clock, conflict detection, relations, types, labels, tree features, derived facts (private or shared, tree name), text normalisation, versioning, and the command logic that decides which events a user action writes
 - Domain is pure logic: no storage, network, browser or asynchronous I/O; time and ids come from outside
@@ -576,23 +592,23 @@ Layer 1 – Domain tests:
 | INV-12 | Symmetric relations are one: A–B and B–A of a symmetric type are the same relation |
 
 - Reference model: a deliberately naive projection (sort all events, replay one by one) is the referee; property tests check that the real, optimised projection always gives exactly what the model gives; the model is protected like the stored test data and changes only with human approval
-- Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterNodeId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation layer
+- Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterNodeId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation
 - Scenario tests in readable form (given events, when an action, then the tree) cover the runtime scenarios of section 6
 - Runs in under about 30 seconds on every push, with fixed seeds plus one new random seed; nightly runs use many more cases
 - Tooling: xUnit v3; CsCheck for property-based and model-based tests; Shouldly for assertions; LambdaTale v3 (bbv's port of xBehave.net to xUnit v3) for scenario tests; Verify for expected trees as text outlines; `FakeTimeProvider` for time; Stryker.NET for mutation testing (changed code via `--since`); Microsoft code coverage for information only; ArchUnitNET for architecture rules
 
-Layer 2 – Format tests:
+Format tests:
 
 - Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs, encrypted and readable export files, pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
 - New reads old: the current version reads every stored version and gets exactly the expected tree
 - Old reads new: CI builds the previous release from its git tag and lets its Domain read data written by the current version; every node and every text must be there (INV-10)
 - Round trip: the current version writes and reads back without loss
 - Encryption: fixed test data (key, nonce, authenticated data) gives exactly the expected bytes; tampered envelopes (flipped byte, swapped `EventId`, other account id, wrong `KeyId`) are rejected; every encrypted size is one of the padding buckets; an unknown future envelope version leads to a clear request to update, not a crash
-- Local storage is a format too: a new app version opens the IndexedDB of the previous one and migrates it without loss; tested in real browsers in the end-to-end layer
+- Local storage is a format too: a new app version opens the IndexedDB of the previous one and migrates it without loss; tested in real browsers in the end-to-end tests
 - The API is a format too: it carries a version in its address (for example `/v1/events`); the new server handles requests of old clients, the new client works with an older server or says clearly that the server needs updating
 - Pairing and sharing codes: user name and server address have a maximum length; a test checks that the largest possible code fits into a QR code that phones read reliably
 
-Layer 3 – Simulation tests:
+Simulation tests:
 
 - Deterministic simulation: the whole system minus browser and real network runs in one process; a seed controls everything, so the same seed gives exactly the same run
 - Simulated: devices of several users with the real client logic on in-memory storage; the real server core with an in-memory store; network (delays, lost, duplicated and reordered messages, unreachable or restarting server); files (export and import, the same file twice, old files late); clocks (offsets, jumps, days ahead); users (random actions from the layer 1 generators, including pairing, sharing, merging trees and changing the server); failures (app closed while writing, full storage, rejected token, app update in mid-run)
@@ -601,7 +617,7 @@ Layer 3 – Simulation tests:
 - Every push runs the regression seeds plus a few new random ones within about 1 to 2 minutes; nightly runs use thousands of seeds and long runs; a seed that failed once is added to the regression list (`tests/data/regression-seeds`), which is append-only
 - Tooling: own harness built on CsCheck, so its generators and shrinking work for whole runs
 
-UI specification tests (position among the layers to be decided):
+UI specification tests:
 
 - Specify and check how the UI behaves while it is being built; usable in the agent's working loop; not end-to-end tests
 - The real client in a real browser with everything behind it faked (storage, server, time); seconds per test; Chromium in the fast loop, WebKit and Firefox in the push gate
@@ -611,7 +627,7 @@ UI specification tests (position among the layers to be decided):
 - Selectors come only from the test id catalogue; phone, tablet and desktop sizes; runs headless without network or secrets
 - End-to-end tests are reduced to what needs the whole system: sync through the real server, offline start and installation, update control, migration of local storage, file export and import between browser contexts, browser differences
 
-Layer 0 – compiler as the first gate:
+Compiler and analyzers (the first gate):
 
 - Nullable reference types on, warnings treated as errors, .NET analyzers at a strict level, `dotnet format` checked in CI
 - Banned API analyzer (Microsoft.CodeAnalysis.BannedApiAnalyzers): forbidden calls (for example `DateTime.Now`, `Guid.NewGuid`, `new Random`, browser and I/O APIs in Domain) are compile errors with a message saying why
