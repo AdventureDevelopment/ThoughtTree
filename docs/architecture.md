@@ -26,11 +26,12 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Priority | Quality goal | Motivation |
 | --- | --- | --- |
-| 1 | Usability | Outliner UX like MLO on touch devices: quick capture, drag-and-drop, gestures; keyboard navigation secondary |
-| 2 | Reliability | No data loss offline; deterministic sync and conflict handling |
-| 3 | Privacy & Security | Personal thoughts stay private: end-to-end encryption on the device, the sync server only relays ciphertext; strict per-user scoping |
-| 4 | Maintainability | Single language (C#) across client and server |
-| 5 | Performance | Trees with thousands of nodes stay responsive |
+| 1 | Reliability | No data loss, offline or during sync, merge, import, update or conflict; all devices with the same events show the same tree; notes outlive app versions, frameworks and cloud services, so old data stays readable for good |
+| 2 | Privacy & Security | Personal thoughts stay private: end-to-end encryption on the device, the server only relays ciphertext; minimal metadata, in particular nobody operating or observing the server learns where the user is; integrity of events |
+| 3 | Usability | Outliner UX like MLO on touch devices: quick capture, drag-and-drop, gestures; keyboard on desktop; accessible (screen readers, keyboard-only use, contrast, scalable text); English and German; honest about what is protected |
+| 4 | Portability | Runs on phone, tablet and desktop in all major browsers (Chromium-based, Safari, Firefox); installable as PWA, later as store app or package; server self-hostable without Azure; data never locked in (readable export and import) |
+| 5 | Maintainability | Testable (replaceable time and randomness, device simulation); changeable without breaking stored data (downward-compatible events, format versions); manageable by one developer; one language (C#) across client and server |
+| 6 | Performance | Trees with thousands of nodes stay responsive (targets in section 10) |
 
 **Stakeholders**
 
@@ -529,6 +530,7 @@ Testing rules:
 
 **UI / UX**
 
+- Accessible from the start: every component works with screen readers and keyboard only; every drag or gesture has an alternative (menu or keyboard command); sufficient contrast and scalable text
 - Touch-first for phone and tablet: tap to edit, drag-and-drop to move, gestures for indent and outdent (details to be designed)
 - Zoom into any node as if it were its own document
 - Breadcrumb for the current zoom path
