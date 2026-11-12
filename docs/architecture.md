@@ -684,6 +684,12 @@ Performance tests:
 - The app sets timing marks (`performance.mark`) for app start until the tree is visible, input until display, and search until first hits; tests read them, and they help diagnosis on real devices
 - Gate: a download size budget for the first load, measured exactly, with a fixed upper limit
 - Gate: complexity checks: replay, search and conflict detection are measured with 1,000, 10,000 and 100,000 events and the ratio is checked, so a quadratic algorithm fails regardless of the machine's speed
+- Diagnostics view: the app shows its timing marks and the shape of the tree on demand, only on the device
+- Performance report: if a user finds the app too slow, they can send a report containing only numbers: timings, app version, storage engine, AOT or interpreted, browser and operating system family, screen size class, and the shape of the tree (number of nodes and events, depth, maximum width, distribution of note lengths, number of relations and conflicts); never titles, notes, names, labels, ids or timestamps; the user sees the report before sending and can edit or cancel it
+- The report is sent as a pre-filled GitHub issue that the user submits themselves, or copied or saved as a file; never through our server; the app says that a GitHub issue is linked to the user's GitHub account and public
+- Reports are untrusted input: the report is a JSON block with a fixed schema; the pipeline reads only that block, validated against the schema, and ignores all free text; agents treat it as data, never as instructions; a human label decides whether a report is worked on
+- From the tree shape in a report the harness generates a synthetic dataset of the same shape to reproduce the slowdown; once the cause is found, the dataset joins the reference datasets and its complexity check becomes a gate
+- The report format is designed so that error reports (what went wrong and where in the code, without content) can use it later
 - Absolute timings are not used as tests, because they are too unreliable on shared machines; the targets of section 10 are design targets, secured by the size budget and the complexity checks
 
 Compiler and analyzers (the first gate):
@@ -778,6 +784,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-048](adr/ADR-048-image-supply-chain.md) | Hardened image and supply chain | `src/ThoughtTree.Server*/**`, `.github/**` |
 | [ADR-049](adr/ADR-049-apache-licence.md) | Apache 2.0, public from the first release | `**` |
 | [ADR-050](adr/ADR-050-dependency-licences.md) | Approved licences for dependencies | `**/*.csproj`, `**/package.json`, `Directory.Packages.props` |
+| [ADR-051](adr/ADR-051-user-reports.md) | User reports: numbers only, sent by the user, untrusted input | `src/ThoughtTree.Client*/**`, `.github/**` |
 
 **Open decisions**
 
