@@ -116,7 +116,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Server Transport | `ISyncTransport` over the Sync API and Sync Hub |
 | File Transport | `ISyncTransport` that writes the encrypted export file and reads an imported one |
 | Sync Scheduler | Decides when to sync: live, manual or scheduled mode; scheduled sync at a random moment in a UTC window; batching of pushes |
-| Pairing & Sharing | Creates and scans pairing and sharing codes; adds a received tree or merges a local tree into it (re-encrypting its envelopes); writes `DeviceJoined`; keeps pairing and sharing apart |
+| Pairing & Sharing | Creates and scans pairing and sharing codes; adds a received tree or merges a local tree into it (re-encrypting its envelopes); writes `device.joined`; keeps pairing and sharing apart |
 | Conflict View | Lists the conflicts the projection derives from the log and lets the user resolve them by writing the resolving event |
 | Update Control | Checks for and applies app updates only with the user's consent; triggers rebuilding snapshots and search index after an update |
 | Storage Guard | Requests persistent storage, warns when the app runs in a plain browser tab instead of being installed, reminds the user to export |
@@ -139,7 +139,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 **Scenario: Editing a node offline**
 
 1. User edits a node's title in the Outline UI
-2. Command Handler creates a `NodeTitleChanged` event with the next hybrid logical clock value
+2. Command Handler creates a `node.title-changed` event with the next hybrid logical clock value
 3. Local Event Store appends the event; it is not yet known to any sync destination
 4. Projection applies the event; UI updates immediately
 
@@ -180,7 +180,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 2. The app warns that the file is not encrypted and anyone who gets it can read the whole tree; the user confirms
 3. The app writes the current tree, without history, deleted nodes or device information, into a file whose name marks it as unencrypted
 4. On any device, also one without the tree's key, the user chooses "Import readable" and picks such a file, for example an OPML export from another outliner
-5. The app creates a new tree with its own key and writes ordinary `NodeCreated` events for the imported nodes
+5. The app creates a new tree with its own key and writes ordinary `node.created` events for the imported nodes
 
 **Scenario: Device with a clock far ahead**
 
@@ -202,13 +202,14 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 2. App asks for a user name and generates a user id; this is the user identity
 3. App generates a device id and asks for a device label, with a suggestion such as "Phone" or "Tablet"; name and label can be changed later
 4. App generates the key and an account identity (account id and account secret) for the first tree locally with the Web Crypto API and stores them in IndexedDB; nothing is sent anywhere
-5. User starts taking notes; events are stored locally
-6. No internet, login or server is needed at any point
+5. The first event of the tree is a `device.joined` for this device and user
+6. User starts taking notes; events are stored locally
+7. No internet, login or server is needed at any point
 
 **Scenario: Creating another tree on a device**
 
 1. User chooses "New tree" and gives it a name
-2. App generates a new key and a new account identity for this tree, locally
+2. App generates a new key and a new account identity for this tree, locally; the first event of the tree is a `device.joined` for this device and user
 3. The new tree starts empty and is independent of all other trees on the device
 4. User moves between trees with the tree switcher
 
@@ -221,7 +222,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 5. The new device asks the user what to do: add the tree next to the trees already on this device, merge one of this device's trees into it, or cancel
 6. Add: the tree is stored as a further tree with its own key; nothing else on the device changes
 7. Merge: the chosen local tree gives up its own key and account identity and adopts the ones from the QR code; its events are kept, their envelopes are re-encrypted with the adopted key, and they are merged with the other device's events on the next sync
-8. The new device takes over the user identity from the QR code and writes a `DeviceJoined` event, so the tree knows this device belongs to the same user
+8. The new device takes over the user identity from the QR code and writes a `device.joined` event, so the tree knows this device belongs to the same user
 9. The devices now exchange the tree's events by file, or through the server if server sync is switched on for that tree
 
 **Scenario: Sharing a tree with another user**
@@ -230,7 +231,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 2. On a device that holds the tree the user opens "Share with another user" and confirms a warning: the other user will be able to read and change the whole tree, and this cannot be taken back
 3. App renders a QR code containing the tree's key and account identity, marked as a share; it does not contain the user identity
 4. The other user's device scans the QR code and stores the tree as a further tree next to its own; its own trees and its own user identity stay untouched
-5. The other user's device writes a `DeviceJoined` event with its own user identity
+5. The other user's device writes a `device.joined` event with its own user identity
 6. From then on the tree is shown as shared on all devices that hold it, with the list of users and their devices
 7. Events are exchanged by file, or through the server if server sync is switched on for that tree
 
@@ -284,29 +285,46 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - `Root`: implicit, with a fixed well-known id that is the same in every tree and on every device; it is never created by an event, so two event logs that are merged always refer to the same root
-- `Device`: Id (GUID), Label; the label travels as a `DeviceLabelChanged` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
+- `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
-- A tree is private while all devices that have joined it belong to one user, and shared as soon as a device of another user has joined; this is derived from the `DeviceJoined` events, not stored as a flag
+- A tree is private while all devices that have joined it belong to one user, and shared as soon as a device of another user has joined; this is derived from the `device.joined` events, not stored as a flag
 
 **Event types (initial set)**
 
-- `NodeCreated(nodeId, parentId, afterNodeId, title)`
-- `NodeTitleChanged(nodeId, title)`
-- `NodeNoteChanged(nodeId, note)`
-- `NodeMoved(nodeId, newParentId, afterNodeId)`
-- `NodeDeleted(nodeId, seen)`
-- `NodeRestored(nodeId)`
-- `DeviceJoined(deviceId, deviceLabel, userId, userName)`
-- `DeviceLabelChanged(deviceId, label)`
-- `UserNameChanged(userId, userName)`
+| Type name | Data |
+| --- | --- |
+| `node.created` | `nodeId`, `parentId`, `afterNodeId`, `title`, `note` (optional) |
+| `node.title-changed` | `nodeId`, `title`, `replaces` |
+| `node.note-changed` | `nodeId`, `note`, `replaces` |
+| `node.moved` | `nodeId`, `parentId`, `afterNodeId`, `replaces` |
+| `node.deleted` | `nodeId`, `seen` |
+| `node.restored` | `nodeId` |
+| `device.joined` | `deviceId`, `deviceLabel`, `userId`, `userName` |
+| `device.label-changed` | `label`; a device can only rename itself, so the device is the one that wrote the event |
+| `user.name-changed` | `userId`, `userName` |
 
-`afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent.
+- `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent
+- `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
+- Title and note changes carry the full text; one event is written per editing session (when the user leaves the field or after a short pause), not per keystroke, so the log does not grow with every edit
 
-Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock), `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`), `LocalSequence`, and after sync a `ServerSequence`.
+Every event has, besides its data: type name, schema version, `DeviceId`, `Clock` (hybrid logical clock) and `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`). `EventId` sits in the envelope (see Event envelope and encryption). Bookkeeping that only concerns one device, such as the order in which events were stored locally, is kept by the Local Event Store and is not part of the event.
+
+Example of an event before encryption:
+
+```json
+{
+  "type": "node.title-changed",
+  "schema": 1,
+  "deviceId": "3f2a…",
+  "clock": { "time": 1794407400123, "counter": 0 },
+  "timestamp": "2026-11-11T15:30:00.123+01:00",
+  "data": { "nodeId": "a71c…", "title": "Ideas", "replaces": ["9e04…"] }
+}
+```
 
 **Ordering of siblings**
 
-- Position by reference: `NodeCreated` and `NodeMoved` place a node directly after a named sibling (`afterNodeId`), or first under its parent when empty
+- Position by reference: `node.created` and `node.moved` place a node directly after a named sibling (`afterNodeId`), or first under its parent when empty
 - The projection replays all events of a tree in one agreed order, sorted by `Clock`, then `DeviceId`; every device computes the same order, independent of the order in which events arrived
 - `Clock` is a hybrid logical clock: a UTC time in milliseconds plus a counter. A new event gets the device's current UTC time, or, if the highest clock in the tree's local log is equal or later, that clock with the counter raised by one
 - The clock is not stored separately: it is always derived from the highest clock in the tree's local log, so events received by sync or file raise it automatically
@@ -340,8 +358,8 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - Conflict: two or more changes of the same field of the same node that no later change replaces; the projection shows the winner by agreed order and marks the node, offering all competing values
 - The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
 - Delete conflict: a deletion conflicts with every change to the deleted node or anywhere in its subtree (including nodes created or moved into it) that the deleting device had not seen when it deleted
-- To decide this, `NodeDeleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
-- The node stays deleted in the projection, but is marked with a conflict listing the unseen changes; the user either keeps it deleted (a new deletion that has seen them) or restores it (`NodeRestored`) together with the changes
+- To decide this, `node.deleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
+- The node stays deleted in the projection, but is marked with a conflict listing the unseen changes; the user either keeps it deleted (a new deletion that has seen them) or restores it (`node.restored`) together with the changes
 - A conflict marker is derived from the log by the projection, not stored
 - Moves that would create a cycle are rejected on apply and re-parented to the root
 - Deleted nodes are tombstoned, never physically removed, to keep merges consistent
@@ -351,8 +369,8 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 **Event envelope and encryption**
 
 - An event is stored and transmitted as an envelope: a few plaintext fields plus one encrypted payload
-- Plaintext: `EventId`, envelope format version, `KeyId` (which key of the tree encrypted the payload) and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
-- Encrypted: everything else, including event type, `DeviceId`, `Clock`, `Timestamp` and the event data, so the server learns neither content nor structure nor which device wrote what
+- Plaintext: `EventId`, envelope format version, `KeyId` (which key of the tree encrypted the payload), the nonce and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
+- Encrypted: the event itself, that is everything else, including event type, `DeviceId`, `Clock`, `Timestamp` and the event data, so the server learns neither content nor structure nor which device wrote what
 - Encryption with AES-GCM (256-bit key, fresh random nonce per event) via the Web Crypto API; `EventId` and account id are bound to the ciphertext as additional authenticated data, so the server cannot move or swap events unnoticed
 - Before encryption the payload is padded to a fixed size bucket (for example 256 B, 1 KB, 4 KB, 16 KB), so the size of an envelope does not reveal the length of titles and notes
 - The same envelopes are used in IndexedDB, on the server and in the export file
@@ -366,7 +384,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - Events are serialized as JSON inside the encrypted payload
 - Event versioning must be downward compatible: an older app must never miss anything it already knows about. Rules:
   1. Existing events only grow: fields may be added, never removed or changed in meaning; an older app ignores fields it does not know
-  2. The structure of the tree comes only from the basic events (`NodeCreated`, `NodeMoved`, `NodeDeleted`, `NodeRestored`, `NodeTitleChanged`, `NodeNoteChanged`); a new feature that changes structure writes these events instead of an event of its own, so an older app always sees every node with its title and note in the right place
+  2. The structure of the tree comes only from the basic events (`node.created`, `node.moved`, `node.deleted`, `node.restored`, `node.title-changed`, `node.note-changed`); a new feature that changes structure writes these events instead of an event of its own, so an older app always sees every node with its title and note in the right place
   3. A new kind of information gets a new event type instead of being added to the meaning of an existing one; older apps skip it without anything else being affected
   4. A missing field always means "unchanged", never "reset to a default", so an older app that writes an event without a newer field does not overwrite the information in that field
 - Because of these rules the schema version normally stays at 1; it is a safety net for a breaking change that cannot be avoided: newer apps convert such events to the current shape when reading them (upcasting), older apps treat them as unknown
@@ -470,7 +488,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 | ADR-8 | Standalone first: key and account identity are created on the device, server sync is optional per tree | A device must work with no internet, account or server |
 | ADR-9 | Merging means the union of event logs, never a merge of trees; the root is implicit with a fixed id | One merge rule for server sync, file sync and pairing of devices that started on their own |
 | ADR-10 | Multiple trees per device, each with its own key, account identity and event log | Follows from keys being independent of devices; allows separate trees and sharing one tree without exposing the others |
-| ADR-11 | Pairing (own devices) and sharing (other users) are separate actions; users and devices are recorded by `DeviceJoined` events | Makes visible where changes come from and whether a tree is private or shared |
+| ADR-11 | Pairing (own devices) and sharing (other users) are separate actions; users and devices are recorded by `device.joined` events | Makes visible where changes come from and whether a tree is private or shared |
 | ADR-12 | One key per tree with equal access for every holder; no read-only access and no revocation for now | Keeps the encryption design simple; per-user keys are a much larger design and are deferred |
 | ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
 | ADR-14 | Events are ordered by a hybrid logical clock plus device id, not by plain wall-clock time or arrival order | Every device must compute the same tree from the same events; the latest edit in real time should usually win, also after long offline periods; device clocks drift and arrival order differs per device |
