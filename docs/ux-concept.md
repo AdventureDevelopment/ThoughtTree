@@ -106,6 +106,16 @@ The owner is planning something and knows there are already notes about it somew
 
 Principle candidate heard in journey C and in the wish for tags: several dimensions for notes; the tree is one order (where a note belongs), tags and relations add more (what kind, which context, which status, what it relates to).
 
+## Open questions
+
+Tags (core decided in D-14; details parked for feature work, none is a foundation decision):
+
+1. Duplicates: two devices that define the same tag name offline create two tags; whether and how the app offers to join them
+2. Names with spaces: where `@@name` ends, and whether a tag name can contain spaces
+3. Managing tags: renaming, deleting, a list of all tags; where this lives
+4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`)
+5. Look: colours for tags or not (touches the design tokens, topic 4)
+
 ## Decision log
 
 | # | Date | Topic | Decision | Source |
@@ -124,3 +134,4 @@ Principle candidate heard in journey C and in the wish for tags: several dimensi
 | D-12 | 2026-11-12 | 1 Principles (journey C) | Search filters the outline in place: only matching nodes and their ancestors stay visible, matches are highlighted, a match in a note is marked on its node; clearing the search returns to the previous view. Uses the on-device search and its matching rules (architecture section 8) | Journey C |
 | D-13 | 2026-11-12 | 1 Principles (journey C) | A relation can be created from either end: "Link to…" on any node opens the target picker (D-9), the same picker for both directions; the new relation gets the type `related`, which can be changed afterwards [ASSUMPTION: default type]; relations and backlinks as in ADR-024 | Journey C |
 | D-14 | 2026-11-12 | 1 Principles (wish for tags) | Notes can carry several tags, now rather than later; uses: finding, grouping across branches, context and status. Typing `@@name` in a title adds the tag (suggesting existing tags while typing); when editing ends the text is removed from the title and the tag is shown as a chip; tapping a chip filters the tree to the nodes with that tag, like search (D-12); a tag picker in the detail view is the alternative without typing. Architecture change proposed as [ADR-058](adr/ADR-058-tags.md) (Proposed) | Owner, Trello and MLO experience |
+| D-15 | 2026-11-12 | 1 Principles (wish for tags) | The details of tags (duplicates, names with spaces, managing, nesting, colours) are parked as open questions for feature work | Owner |
