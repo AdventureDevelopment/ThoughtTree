@@ -18,7 +18,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - See where changes come from: every device has a label (for example "Tablet"), and a node shows which device last changed it and when
 - Explicit sharing: pairing another device of one's own and sharing a tree with another user are two separate actions; every tree shows whether it is private or shared, and with whom
 - Usable where VPNs are blocked: file-only sync stays a full alternative, the user controls app updates, and the sync server can be self-hosted
-- Readable export and import: a tree can be exported unencrypted as Markdown, OPML or JSON, and such files can be imported as a new tree
+- Readable export and import: a tree can be exported unencrypted as Markdown, OPML or JSON, and such files can be imported as a new tree or into an existing node
+- Merging trees: another tree can be merged into a tree (union of their event logs, re-encrypted with this tree's key), after which its nodes can be moved anywhere; everyone who holds this tree can then read the merged tree including its history
 - Honest about protection: the app states plainly what it protects (content) and what it does not hide (that and when ThoughtTree is used)
 
 **Quality goals**
@@ -106,7 +107,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Component | Responsibility |
 | --- | --- |
 | Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
-| Tree Manager | Lists, creates, switches and deletes trees; the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, server address, sync mode; removes the key when a tree is deleted |
+| Tree Manager | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, server address, sync mode; removes the key when a tree is deleted |
 | Command Handler | Turns user actions into domain events; stamps them with the next hybrid logical clock value and the change they replace |
 | Local Event Store | Append-only log in IndexedDB; tracks sync progress per destination (server, devices synced by file) |
 | Projection | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
@@ -210,7 +211,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 1. User chooses "New tree" and gives it a name
 2. App generates a new key and a new account identity for this tree, locally; the first event of the tree is a `device.joined` for this device and user
-3. The new tree starts empty and is independent of all other trees on the device
+3. The name becomes the title of a first top-level node (`node.created` without a parent); otherwise the tree starts empty and is independent of all other trees on the device
 4. User moves between trees with the tree switcher
 
 **Scenario: Pairing another device of the same user**
@@ -285,6 +286,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - Top level: a node without a parent is a top-level node; a tree can have one or several; there is no special root node, every node is created by `node.created`
+- Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
 - A tree is private while all devices that have joined it belong to one user, and shared as soon as a device of another user has joined; this is derived from the `device.joined` events, not stored as a flag
