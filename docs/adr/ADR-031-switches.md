@@ -1,11 +1,14 @@
-# ADR-031: Development flags, tree features, device settings
+# ADR-031: Kinds of switches
 
 id: ADR-031 · status: Accepted · kind: constraint
 
-applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**`
+applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**`
 
-- **MUST** load development flags only from configuration shipped with the app; MUST NOT use a remote flag service or user targeting
-- **MUST NOT** write development flags into events; remove a flag once its feature is complete
+- **MUST** keep switches apart by kind: release flags, experiment flags, operations flags, permission flags, tree features, device settings
+- **MUST** load release flags only from configuration shipped with the app; remove them once their feature is complete
+- **MUST** assign experiment flags only per account on the server or by a local draw on the device; each experiment has a bet card and ends by its review
+- **MUST** store permission and experiment flags only as flags per account; report them to the device during sync
+- **MUST NOT** use a third-party flag service, tracking or telemetry; **MUST NOT** write flags into events
 - **MUST** record tree features by `tree.feature-changed`
 - **MUST** let switches only hide commands and UI; the projection always applies every known event
 
@@ -15,4 +18,4 @@ verify:
 dotnet test --filter "ADR=ADR-031"
 ```
 
-why: No switch may make trees differ or add server contacts.
+why: Switches serve development, experiments, operations and permissions without making trees differ or collecting data.

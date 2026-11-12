@@ -10,7 +10,7 @@ applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 - **MUST** run scheduled sync at a random moment within a window fixed in UTC
 - **MUST** offer live, manual and scheduled sync per tree and device; when server sync is switched on, let the user choose, with live preselected
 - **MUST** show unsynced changes and remind the user in manual and scheduled mode
-- **MUST NOT** add analytics, telemetry or third-party requests to the client
+- **MUST NOT** add analytics, telemetry or third-party requests to the client; user-initiated feedback encrypted to the operator (ADR-055) is not telemetry
 
 verify:
 

@@ -180,6 +180,8 @@ docs/        architecture, ADRs
 | Sync Hub (SignalR) | Notifies connected devices about new events |
 | Event Store | Persistent per-account append-only log of encrypted events (store to be decided: Table Storage, Blob Storage or SQLite) |
 | Registration | Registers an account on first contact; issues device tokens to devices that present the account secret |
+| Account Capabilities | Stores permission and experiment flags per account (for example the private feedback inbox) and reports them to the device during sync |
+| Feedback Inbox | Stores feedback encrypted to the operator's public key until the operator collects it; can be switched off by an operations flag |
 | Auth | Validates device tokens, scopes requests to one account |
 
 ## 6. Runtime View
@@ -574,12 +576,19 @@ Example of an event before encryption:
 
 **Feature flags and tree features**
 
-- Three kinds of switches are kept apart: development flags, tree features and device settings
-- Development flags keep unfinished code switched off (Microsoft.FeatureManagement), in the client and on the server; they belong to the app version and the environment, not to a tree, and are never events
-- Development flags come only from configuration shipped with the app, per environment, in its static files; there is no remote flag service, no targeting by user and no telemetry, so flags need no further server contact, work for file-only users, and a self-hosted package brings its own configuration
-- Development flags are temporary: a flag is removed once its feature is complete in production; permanent options are settings, not flags
-- Tree features are features the user chooses for a tree (for example relations, later tags); they are recorded by `tree.feature-changed` events, so all devices of a tree, including those of other users of a shared tree, agree on them; older apps ignore feature names they do not know
-- Device settings (language, sync mode, use of the server, optionally showing experimental features on this device) stay on the device and are not synced
+- Switches are kept apart by kind:
+
+| Kind | Purpose | Source | Lifetime |
+| --- | --- | --- | --- |
+| Release flag | Hide unfinished code | Configuration shipped with the app, per environment | Temporary: removed once the feature is complete |
+| Experiment flag | Give a feature to part of the users and learn whether it works | Assignment per account on the server (a random share, adjustable), or drawn by the device from a share in the shipped configuration | Until the review of its bet card decides: raise to everyone or remove |
+| Operations flag (kill switch) | Switch something off quickly if it causes trouble | Server configuration | Long-lived |
+| Permission flag | What an account may do (for example use the private feedback inbox) | Stored per account on the server, reported to the device during sync | Long-lived |
+| Tree feature | Features the user chooses for a tree (for example relations, later tags) | `tree.feature-changed` events, so all devices of a tree agree; older apps ignore unknown names | As long as the user wants |
+| Device setting | Language, sync mode, use of the server, showing experimental features | Stored on the device, never synced | As long as the user wants |
+
+- Flags are never events; release flags come only from shipped configuration, so they need no server contact and work for file-only users; a self-hosted package brings its own configuration
+- Experiments respect privacy: there is no third-party flag service, no tracking and no telemetry; the server stores only the flag per account; users who get a feature still decide themselves whether to use it; results come only from the privacy-compatible signals of the experiment's bet card (feedback, server counters, voluntary signal answers)
 - No switch ever makes trees differ: switches only hide commands and UI; the projection always applies every event its app version knows, so switching a tree feature off hides for example relations but does not remove them
 
 **Testing**
@@ -737,6 +746,7 @@ Performance tests:
 - The app sets timing marks (`performance.mark`) for app start until the tree is visible, input until display, search until first hits, and app start until the first sync completes; tests read them, and they help diagnosis on real devices
 - Gate: a download size budget for the first load, measured exactly, with a fixed upper limit
 - Gate: complexity checks: replay, search and conflict detection are measured with 1,000, 10,000 and 100,000 events and the ratio is checked, so a quadratic algorithm fails regardless of the machine's speed
+- Private feedback inbox (optional): instead of a GitHub issue, feedback can be sent to the server's inbox, end-to-end encrypted on the device with the operator's public key; the server stores only ciphertext, the operator collects and decrypts it on their own device, and it is deleted from the server after collection; available to accounts with the permission flag, assigned at first as an experiment to a share of accounts; an operations flag can switch the inbox off; only on the user's initiative, with the same preview; the IP address is not stored; what arrives is untrusted input, and the operator decides what becomes a GitHub issue
 - Diagnostics view: the app shows its timing marks and the shape of the tree on demand, only on the device
 - Performance report: if a user finds the app too slow, they can send a report containing only numbers: timings, app version, build and environment, storage engine, AOT or interpreted, browser and operating system family, screen size class, the active switches (development flags, the tree features of the affected tree, whether experimental features are on for this device), and the shape of the tree (number of nodes and events, depth, maximum width, distribution of note lengths, number of relations and conflicts); never titles, notes, names, labels, ids or timestamps; the user sees the report before sending and can edit or cancel it
 - The report is sent as a pre-filled GitHub issue that the user submits themselves, or copied or saved as a file; never through our server; the app says that a GitHub issue is linked to the user's GitHub account and public
@@ -853,6 +863,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-052](adr/ADR-052-untrusted-content.md) | Content is untrusted input | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**` |
 | [ADR-053](adr/ADR-053-functional-core-hexagonal-shell.md) | Functional core, hexagonal shell | `src/**` |
 | [ADR-054](adr/ADR-054-code-organisation.md) | Code organisation: boundaries, feature folders, test intents | `src/**`, `tests/**` |
+| [ADR-055](adr/ADR-055-private-feedback-inbox.md) | Private feedback inbox | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
 
 **Open decisions**
 

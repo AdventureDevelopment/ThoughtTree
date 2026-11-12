@@ -107,9 +107,20 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-051: User reports and feedback: sent by the user, untrusted input
 
-**TL;DR:** (to be filled)
+**TL;DR:** We bet that users who want to help will send feedback through GitHub or as a file, so we get real-world input without any data collection of our own.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** Problems, usability issues, performance data and bet signals reach the harness, with no telemetry.
+- **Assumption:** Enough willing users have a GitHub account or use the file route, accept that issues are public, trust the preview, and send reports concrete enough to reproduce problems.
+- **Signal:** Number of feedback issues per month; GitHub issues versus files; feedback about the feedback process; share of reports that led to a fix.
+- **Review when:** after the repository has been public for a while, hardly any feedback arrives · users have no GitHub account or do not want public issues (answer: the private inbox, ADR-055) · reports are mostly unusable · spam or abuse appears in issues.
+
+<a id="adr-055"></a>
+
+## ADR-055: Private feedback inbox
+
+**TL;DR:** We bet that a private inbox lowers the barrier for feedback and is not abused, so it needs no protection beyond the general limits.
+
+- **Outcome:** Users without a GitHub account, or who do not want public issues, send feedback easily; the server cannot read it.
+- **Assumption:** Users with the permission use it responsibly; spam does not appear; more feedback arrives than through GitHub alone.
+- **Signal:** Server counters: inbox messages per day, rejected messages; share of feedback arriving privately versus as GitHub issues; feedback about the inbox itself.
+- **Review when:** the counters jump (switch the inbox off with the operations flag) · the experiment has run a while and the share can be raised to everyone or the inbox removed.
