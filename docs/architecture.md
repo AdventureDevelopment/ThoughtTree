@@ -281,6 +281,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 - GitHub Actions builds and tests every push to `main`
 - A successful build deploys automatically to test
+- Test and production are created only from Bicep templates in the repository
+- GitHub Actions signs in to Azure through OpenID Connect federation; no deployment secrets are stored, and agents never see deployment credentials
 - Promotion to production is a manual approval step
 - Every release is reproducible from its git tag, and its build is archived as a release artifact
 - Unfinished features stay switched off in production through development flags
@@ -661,6 +663,12 @@ End-to-end tests:
 - Push gate: scenarios 1, 2, 6 and 8 in Chromium; nightly: all scenarios in Chromium, WebKit and Firefox, scenario 9 in CI with Docker
 - Every release is reproducible from its git tag and its build is archived (for example attached to a GitHub release), from the first release on; update, migration and "old reads new" tests depend on it
 
+Deployment tests:
+
+- After each deployment to test: the app loads and its service worker registers; a version endpoint shows the deployed commit; the service worker file is served without caching; an account registers with the join code, an event is pushed and pulled, SignalR connects; HTTPS with HSTS and security headers are present, the page makes no requests to third parties, logging and telemetry record no IP addresses
+- After promotion to production: read-only checks (health, version, headers, service worker) plus one synthetic probe tree whose fixed events are pushed again on every check, so production data does not grow; if a check fails, the previous archived release is deployed again automatically
+- The self-hosted container image is built, published and checked with the same smoke tests as the test environment
+
 Compiler and analyzers (the first gate):
 
 - Nullable reference types on, warnings treated as errors, .NET analyzers at a strict level, `dotnet format` checked in CI
@@ -747,6 +755,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-042](adr/ADR-042-browser-adapters.md) | Browser APIs behind interfaces | `src/ThoughtTree.Client*/**` |
 | [ADR-043](adr/ADR-043-hashed-server-secrets.md) | Server secrets only as hashes | `src/ThoughtTree.Server*/**` |
 | [ADR-044](adr/ADR-044-abuse-protection.md) | Abuse protection and registration modes | `src/ThoughtTree.Server*/**` |
+| [ADR-045](adr/ADR-045-strict-csp.md) | Strict Content Security Policy | `src/**`, `infra/**` |
+| [ADR-046](adr/ADR-046-infrastructure-as-code.md) | Infrastructure as code with Bicep, deployment without stored secrets | `infra/**`, `.github/**` |
 
 **Open decisions**
 
