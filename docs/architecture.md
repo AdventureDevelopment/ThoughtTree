@@ -46,12 +46,13 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Must work offline; network is optional and intermittent
 - Source control: GitHub repository `AdventureDevelopment/ThoughtTree`, private until the first release, public from then on
 - Licence: Apache 2.0 for the whole repository; the name "ThoughtTree" is not licensed
-- Dependencies may only use licences from an approved list (MIT, Apache 2.0, BSD and similar permissive licences), checked in the push gate
+- Dependencies may only use licences from an approved list (MIT, Apache 2.0, BSD and similar permissive licences), checked in the push gate; MPL-2.0 is also allowed for test-only dependencies that are not distributed (for example the accessibility checker axe)
 - Single developer, incremental delivery
 - Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible (Azure Container Apps, scaling to zero); target cost near zero for a single user
 - The sync service (and the static app) must also be deployable by others on their own server, without Azure
 - Server storage stays minimal: an append-only encrypted event log per account (one account per tree); concrete store (Azure Table Storage, Blob Storage or SQLite) is an open decision
-- Development process: trunk-based development on `main` with feature flags (Microsoft.FeatureManagement) instead of long-lived feature branches
+- Development process: trunk-based development with short-lived branches: every change, by a person or an agent, reaches `main` only through a pull request; release flags (Microsoft.FeatureManagement) instead of long-lived feature branches
+- Branch protection on `main`: no direct pushes; the push gate must pass; changes to protected paths (`tests/specify/**`, `tests/data/**`, the reference model, `*.verified.*`, `docs/**` including the ADRs and the invariant catalogue) need the owner's review through CODEOWNERS; other pull requests may merge automatically once the gate is green
 - Agentic development: the system is developed largely by AI coding agents; the test harness is what keeps it in a working state and must be of very high quality
 - CI/CD via GitHub Actions: every push builds and tests, deploys automatically to a test environment on Azure; promotion to production is a manual approval step
 
@@ -644,7 +645,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 Harness for agentic development (the test harness is the specification the agents work towards):
 
 1. Tests express intent, not just examples: invariants, property-based tests, simulations and fixed stored formats carry the main load; example tests mainly document behaviour
-2. The harness is protected: stored test data from released versions is append-only; deleting a gate test or weakening an assertion needs human approval (test folders owned by the maintainer via CODEOWNERS, CI reports removed tests and changed expected values); agents may add tests freely
+2. The harness is protected: stored test data from released versions is append-only; deleting a gate test or weakening an assertion needs human approval; every change reaches `main` through a pull request, protected paths need the owner's review (CODEOWNERS with branch protection), and CI compares each pull request with its base to report removed tests, changed expected values and changes to protected files; agents may add tests freely
 3. Failures say what to do: name the broken invariant, show a minimal counterexample, give the seed to reproduce
 4. Zero flakiness: every test is deterministic; an unreliable test is a defect with top priority
 5. The whole gate suite runs in an agent's sandbox, without Azure accounts, secrets or network (SQLite, Azure Storage emulator, local browsers); tests against real Azure belong only to the deployment tests
@@ -907,6 +908,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-022). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted nodes may be removed |
 | Key backup | How a tree survives the loss of all devices: a passphrase-protected key in the export file, a recovery code, or both; the key stays random and is only wrapped for backup, so this does not affect the rest of the architecture |
 | Serialization format | JSON for now (ADR-017); a compact binary format such as MessagePack if logs grow too large |
+| Release 1 scope | Which requirements of section 1 the first release contains, and the order of the foundation work and blocking decisions (store, storage engine, AOT, UX foundation, API contract); decided after the UX concept |
 | Sync API contract | Endpoints, request and response shapes, paging and limits of pulls, error and status codes, authentication per endpoint, the "server needs updating" signal, the hub messages, account deletion; defined in Contracts before the first release, because `v1` is frozen from then on (ADR-037) |
 | Size limits | Padding bucket list and behaviour above the largest bucket; maximum title and note length; maximum request size; maximum events and storage per account; maximum user name and server address length; size budget of the first load; to be fixed before the first release, because they become part of stored formats |
 | Key rotation | `KeyId` leaves room for changing a tree's key (for example after a leak); whether and how rotation is offered |

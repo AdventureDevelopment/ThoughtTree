@@ -16,7 +16,7 @@ verify:
 
 ```bash
 dotnet test --filter "ADR=ADR-016"
-git diff --diff-filter=DM origin/main -- tests/data/formats | wc -l   # expect 0
+git diff --diff-filter=DM origin/main...HEAD -- tests/data/formats | wc -l   # expect 0; runs on every pull request against its base
 ```
 
 why: Devices run different app versions; older devices must never miss nodes or texts.

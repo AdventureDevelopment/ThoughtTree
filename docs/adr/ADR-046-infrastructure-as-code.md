@@ -8,6 +8,7 @@ applies_to: `infra/**`, `.github/**`
 - **MUST** keep test and production identical apart from parameters
 - **MUST** sign in from GitHub Actions to Azure through OpenID Connect federation; **MUST NOT** store deployment secrets
 - **MUST** keep promotion to production a manual approval step
+- **MUST** protect `main`: no direct pushes, the push gate required, CODEOWNERS review for protected paths
 - **MUST** configure in the templates that logging and telemetry record no IP addresses
 
 verify:
