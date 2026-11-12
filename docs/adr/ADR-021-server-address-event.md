@@ -4,9 +4,9 @@ id: ADR-021 · status: Accepted
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
 
-- **MUST** record the tree's server address by `tree.server-changed`
+- **MUST** record the tree's server address, and its join code if any, by `tree.server-changed`
 - **MUST** keep whether a device uses the server, and its sync mode, on the device
-- **MAY** include the server address in the pairing and sharing code
+- **MAY** include the server address and join code in the pairing and sharing code
 
 verify:
 

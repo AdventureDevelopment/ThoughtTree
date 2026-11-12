@@ -347,7 +347,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | `label.set` | `elementId`, `field` (for example `name`, `reverseName`), `language`, `text`, `replaces` |
 | `label.removed` | `elementId`, `field`, `language` |
 | `tree.feature-changed` | `feature`, `enabled`, `replaces` |
-| `tree.server-changed` | `address` (empty for no server), `replaces` |
+| `tree.server-changed` | `address` (empty for no server), `joinCode` (optional), `replaces` |
 
 - `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent, or first top-level node when the parent is empty
 - `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
@@ -474,6 +474,8 @@ Example of an event before encryption:
 - Server registration uses an account secret that is created on the device and shared only through pairing
 - Events are scoped per account; no cross-account access
 - HTTPS everywhere
+- The server stores account secrets and device tokens only as hashes, so stolen server data cannot be used to join an account or push events
+- Abuse protection on the server: maximum request size; maximum events and storage per account; rate limiting of registrations and requests in memory only (the IP address is used for the moment, never stored); registration mode per server: open, or only with a server join code that the operator hands out; the owner's default server uses "join code only"
 - Device tokens are issued per device and tree, so the server gets no ready-made link between the trees of one device
 
 **Metadata protection**
@@ -502,7 +504,7 @@ Example of an event before encryption:
 - Tree access consists of: key, `KeyId`, account id and account secret
 - Not part of it: device tokens (per device, can be requested again with the account secret), whether a device uses the server and its sync mode (settings of each device), tree name and server address (come from the events)
 - Pairing, sharing and a future key backup all hand over exactly the tree access; pairing adds the user identity, sharing does not
-- The pairing and sharing code may additionally contain the server address, if the tree uses server sync, so the new device can fetch the log without the user typing the address
+- The pairing and sharing code may additionally contain the server address and its join code, if the tree uses server sync, so the new device can fetch the log without the user typing the address
 - The code has its own format version, so later additions do not break pairing between old and new apps
 
 **Feature flags and tree features**
@@ -643,6 +645,13 @@ Accessibility tests (target: WCAG 2.2, level AA):
 - Manual before each release: real screen readers (VoiceOver, TalkBack, NVDA), understandable announcements and labels, pleasant use without sight
 - End-to-end tests are reduced to what needs the whole system: sync through the real server, offline start and installation, update control, migration of local storage, file export and import between browser contexts, browser differences
 
+Server tests:
+
+- Store contract tests: one suite runs against every store implementation (in-memory for the simulation, SQLite for self-hosting, the chosen Azure store via the Azurite emulator), including duplicate detection and ordering by `ServerSequence`
+- API tests over HTTP with the ASP.NET Core test host: versioned endpoints and the recorded requests of every release; the SignalR hub only says that new events are available, never content
+- Security tests (gate): requests without a token, with an invalid token or with a token of another account are rejected; registration with a wrong account secret or join code fails; malformed envelopes and oversized requests are rejected cleanly; store and captured logs contain no IP addresses and no receive times
+- The self-hosted package is started as a container and tested in CI (push gate) and nightly, not in the inner loop, because the agent's sandbox may not have Docker
+
 Compiler and analyzers (the first gate):
 
 - Nullable reference types on, warnings treated as errors, .NET analyzers at a strict level, `dotnet format` checked in CI
@@ -727,6 +736,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-040](adr/ADR-040-server-core-library.md) | Server logic as a library | `src/ThoughtTree.Server*/**` |
 | [ADR-041](adr/ADR-041-client-application-layer.md) | Client application layer, thin components | `src/ThoughtTree.Client*/**` |
 | [ADR-042](adr/ADR-042-browser-adapters.md) | Browser APIs behind interfaces | `src/ThoughtTree.Client*/**` |
+| [ADR-043](adr/ADR-043-hashed-server-secrets.md) | Server secrets only as hashes | `src/ThoughtTree.Server*/**` |
+| [ADR-044](adr/ADR-044-abuse-protection.md) | Abuse protection and registration modes | `src/ThoughtTree.Server*/**` |
 
 **Open decisions**
 
