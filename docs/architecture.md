@@ -108,12 +108,17 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Tree Manager | Lists, creates and switches trees; holds each tree's key, account identity and private/shared state |
 | Command Handler | Turns user actions into domain events; stamps them with the next hybrid logical clock value and the change they replace |
 | Local Event Store | Append-only log in IndexedDB; tracks synced/unsynced events |
-| Projection | Builds the in-memory tree from events; incremental updates; snapshots |
+| Projection | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
 | Search | Client-side full-text search over the projection; optional local index |
 | Crypto | Key generation and storage, encryption/decryption of event payloads (Web Crypto API), device pairing payloads |
 | Sync Engine | Exchanges events through an `ISyncTransport`: push unsynced encrypted events, pull remote events, decrypt, merge and apply |
 | Server Transport | `ISyncTransport` over the Sync API and Sync Hub |
 | File Transport | `ISyncTransport` that writes the encrypted export file and reads an imported one |
+| Sync Scheduler | Decides when to sync: live, manual or scheduled mode; scheduled sync at a random moment in a UTC window; batching of pushes |
+| Pairing & Sharing | Creates and scans pairing and sharing codes; adds a received tree or merges a local tree into it (re-encrypting its envelopes); writes `DeviceJoined`; keeps pairing and sharing apart |
+| Conflict View | Lists the conflicts the projection derives from the log and lets the user resolve them by writing the resolving event |
+| Update Control | Checks for and applies app updates only with the user's consent; triggers rebuilding snapshots and search index after an update |
+| Storage Guard | Requests persistent storage, warns when the app runs in a plain browser tab instead of being installed, reminds the user to export |
 | Readable Export/Import | Exports the current tree unencrypted as Markdown, OPML or JSON; imports such files as a new tree |
 | Auth Client | Device token handling behind `IAuthProvider`; swappable for OIDC later |
 | Service Worker | Caches app shell and assets for offline start; applies app updates only when the user allows it |
