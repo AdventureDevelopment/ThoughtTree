@@ -513,6 +513,30 @@ Example of an event before encryption:
 
 **Testing**
 
+Test goals, derived from the quality goals; a gate has zero tolerance (a single failure stops delivery), a watch is measured and tracked over time:
+
+| Quality goal | Test goal | Kind |
+| --- | --- | --- |
+| Reliability | No data loss: every written event survives any sequence of offline work, sync, merge, import, update, conflict resolution, the app closing while writing, and full storage | Gate |
+| Reliability | Convergence: the same events give the same tree, conflicts, labels, tree name and private/shared status on every device | Gate |
+| Reliability | Longevity: all stored data of every released version stays readable; older apps see every node and text of newer data | Gate |
+| Privacy & Security | Confidentiality: nothing but the allowed plaintext fields leaves the device (server store, export files, network requests, logs) | Gate |
+| Privacy & Security | Metadata: padding, batching, no stored IP addresses or times, neutral headers and UTC scheduling work as decided | Gate |
+| Privacy & Security | Integrity: tampered, moved or swapped envelopes and wrong keys are detected and rejected | Gate |
+| Privacy & Security | Access: the server never gives one account's events to another account's token | Gate |
+| Usability | Core flows on touch (capture, edit, move, indent, zoom, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate |
+| Usability | Accessibility: no violations in automated checks; screen reader walk-through before each release | Gate (automated), watch (manual) |
+| Usability | Languages: every text exists in English and German, a missing text fails the build; layouts hold with longer German texts | Gate |
+| Usability | Feel: regular hands-on use on real devices | Watch (judgement) |
+| Portability | Browsers: core flows work in Chromium, WebKit and Firefox, including starting the installed PWA offline | Gate |
+| Portability | Self-hosting: the package runs without Azure, with its own store | Gate |
+| Portability | Data portability: export followed by import gives back the same structure, titles, notes and relations (JSON), within each format's limits | Gate |
+| Maintainability | Fast feedback: the gate suite runs on every push within a set time budget (for example 10 minutes) | Watch |
+| Maintainability | Reproducibility: every failure can be repeated from its seed; unreliable tests are fixed, never ignored | Gate |
+| Maintainability | Architecture rules: automated checks that Domain does not depend on the browser, the server does not reference Domain, only Contracts are shared | Gate |
+| Maintainability | Depth of Domain tests measured by mutation testing, not coverage alone | Watch |
+| Performance | Targets of section 10 measured on reference data (for example 10,000 nodes, 100,000 events) and tracked; a clear regression fails the nightly run | Watch with threshold |
+
 Principles that shape the code from the start:
 
 - Everything random or time-based is replaceable: time comes only through .NET's `TimeProvider`, ids and random values (node ids, event ids, nonces, the random sync moment) through a replaceable generator, so every test can be reproduced exactly
