@@ -32,7 +32,7 @@ Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. T
 Derived from journeys A to C (decision D-16). They guide every later decision, including the agents'.
 
 1. **Capture first, sort later.** Nothing has to be decided before typing: not the place, not the tree, not the kind. (D-1, D-4, D-5)
-2. **Create in the tree, go deeper in the detail view.** New notes are created and named in place in the tree; titles take inline Markdown (emphasis, links, inline code) and emojis. Shortcuts live in the text itself (space, Backspace, `##`, `@@`), each with a visible alternative. Longer text is written in the node's detail view; there is no separate capture form. (D-2, D-3, D-10, D-11, D-14)
+2. **Create in the tree, go deeper in the detail view.** New notes are created and named in place in the tree; titles take inline Markdown (emphasis, links, inline code) and emojis. Shortcuts live in the text itself (space, Backspace, `##`, `@@`), each with a visible alternative. Longer text is written in the node's detail view. Quick capture opens a light sheet whose lines behave exactly like the outline, so typing works the same everywhere. (D-2, D-3, D-10, D-11, D-14, D-18)
 3. **Stay in the flow.** After every action the user stays where they were, and the next step is right there. (D-2, D-7, D-13)
 4. **Effort fits the distance.** Near by hand (drag), far by choosing (search); finding the right place must be easy. (D-6, D-9)
 5. **Calm, no pressure.** No badges, no warning colours, no reminders that push. (D-8)
@@ -56,12 +56,13 @@ Inherited from the architecture and applying on top: accessible (ADR-033), and h
 The owner wakes up in bed, still half asleep; an idea comes up that must not be lost. Phone, probably one hand.
 
 1. Opens ThoughtTree from the home screen; it shows the place last worked on, with the bottom toolbar and its capture button 📥 in the middle (decisions D-4, D-17)
-2. Taps 📥: the inbox opens with a fresh, empty line
+2. Taps 📥: a light sheet slides up over the dimmed current view, with an empty line, the keyboard and the name of the target tree (decision D-18)
 3. Types the title right away, often starting with an emoji
 4. **Key moment:** the idea is saved; from now on nothing can be lost
 5. Optionally adds context: more text (the note) and a tag
 6. If it is a chain of ideas, enters the next idea right away, without detours
-7. Where the idea belongs in the tree is decided later, not now
+7. Closes the sheet and is back where they were
+8. Where the idea belongs in the tree is decided later, not now
 
 Notes:
 
@@ -157,3 +158,4 @@ Bottom toolbar (D-17):
 | D-15 | 2026-11-12 | 1 Principles (wish for tags) | The details of tags (duplicates, names with spaces, managing, nesting, colours) are parked as open questions for feature work | Owner |
 | D-16 | 2026-11-12 | 1 Principles | The eight UX principles in section "UX principles" are agreed, condensed from journeys A to C; accessible and honest about protection are inherited from the architecture | Journeys A–C |
 | D-17 | 2026-11-12 | 1 Principles (journeys A, B) | The phone layout has a bottom toolbar with the main actions; the capture button 📥 (capture into the inbox, D-4) sits in its middle, ＋ adds a new note at the current place. Only one floating-looking button (📥, docked in the bar); no second floating button. Contents of the bar and one-handed reach are open questions. Sketches of the variants compared: bottom toolbar, select then act, tap empty space, one button with inbox in the top bar | Owner, sketch comparison |
+| D-18 | 2026-11-12 | 1 Principles (journey A) | Revises D-10 for quick capture: 📥 opens a light sheet from below over the dimmed current view, with an empty line and the keyboard; it shows the target (the open tree's inbox, switchable, D-5); its lines behave exactly like the outline (Enter, leading space, Backspace, `##`, `@@`), so it is a small window onto the inbox, not a second kind of form; closing it returns to the place the user was; a button opens the full detail view of the current idea. Everywhere else new notes are typed in place in the tree (D-10) [ASSUMPTION: details of the sheet's behaviour to be confirmed in the UI specification] | Owner, MLO widget |
