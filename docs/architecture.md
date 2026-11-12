@@ -50,6 +50,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - The sync service (and the static app) must also be deployable by others on their own server, without Azure
 - Server storage stays minimal: an append-only encrypted event log per account (one account per tree); concrete store (Azure Table Storage, Blob Storage or SQLite) is an open decision
 - Development process: trunk-based development on `main` with feature flags (Microsoft.FeatureManagement) instead of long-lived feature branches
+- Agentic development: the system is developed largely by AI coding agents; the test harness is what keeps it in a working state and must be of very high quality
 - CI/CD via GitHub Actions: every push builds and tests, deploys automatically to a test environment on Azure; promotion to production is a manual approval step
 
 ## 3. Context and Scope
