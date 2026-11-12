@@ -2,7 +2,7 @@
 
 id: ADR-037 · status: Accepted
 
-applies_to: `src/ThoughtTree.Server/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`
+applies_to: `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`
 
 - **MUST** carry the API version in the address (`/v1/…`)
 - **MUST** keep the server able to serve every released client version of the same major API version

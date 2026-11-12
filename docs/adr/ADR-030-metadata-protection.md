@@ -2,7 +2,7 @@
 
 id: ADR-030 · status: Accepted
 
-applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**`
+applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 
 - **MUST NOT** store receive times or IP addresses on the server, or record IP addresses in logs and telemetry
 - **MUST** push events in batches after a pause in editing

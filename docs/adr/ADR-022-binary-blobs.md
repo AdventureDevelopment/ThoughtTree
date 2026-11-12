@@ -2,7 +2,7 @@
 
 id: ADR-022 · status: Accepted
 
-applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**`
+applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 
 - **MUST NOT** put binary data (pictures, files) inside events
 - **MUST** store binary data, once supported, as separate encrypted blobs referenced by id

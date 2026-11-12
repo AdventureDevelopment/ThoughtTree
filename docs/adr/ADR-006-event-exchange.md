@@ -2,7 +2,7 @@
 
 id: ADR-006 · status: Accepted
 
-applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**`
+applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 
 - **MUST** exchange events with server or file only through `ISyncTransport`
 - **MUST** follow the four steps: find out what the other side has, send what it lacks, receive what this side lacks, skip duplicates by `EventId`

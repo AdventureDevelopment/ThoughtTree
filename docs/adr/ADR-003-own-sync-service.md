@@ -2,7 +2,7 @@
 
 id: ADR-003 · status: Accepted
 
-applies_to: `src/ThoughtTree.Server/**`
+applies_to: `src/ThoughtTree.Server*/**`
 
 - **MUST** implement the sync service in ASP.NET Core
 - **MUST NOT** depend on a backend-as-a-service (Firebase, Supabase, Appwrite, …)

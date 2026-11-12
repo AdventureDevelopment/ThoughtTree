@@ -2,7 +2,7 @@
 
 id: ADR-031 · status: Accepted
 
-applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server/**`, `src/ThoughtTree.Domain/**`
+applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**`
 
 - **MUST** load development flags only from configuration shipped with the app; MUST NOT use a remote flag service or user targeting
 - **MUST NOT** write development flags into events; remove a flag once its feature is complete
