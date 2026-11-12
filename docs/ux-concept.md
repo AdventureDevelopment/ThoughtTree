@@ -101,7 +101,8 @@ The owner is planning something and knows there are already notes about it somew
 
 1. Starts a search and types the word
 2. **Key moment:** the tree itself is filtered: only the matching nodes and their parents stay visible, the word is highlighted (decision D-12)
-3. …
+3. Links the found notes to the plan instead of moving them; they stay where they are and the plan points to them (decision D-13)
+4. Stays in the filtered view after linking and continues with the next match [ASSUMPTION, by analogy with D-7]
 
 ## Decision log
 
@@ -119,3 +120,4 @@ The owner is planning something and knows there are already notes about it somew
 | D-10 | 2026-11-12 | 1 Principles (journey A, B) | Inside the app there is one way of entering text: a new node is added in the outline and typed in place (also in the inbox, D-4); no separate capture form or sheet. The note is edited in the node's detail view. A light capture form from the home screen (like MLO's widget) waits for the store app or package; a separator for typing title and note in one field is decided in D-11 | Journey A, B, MLO screenshots |
 | D-11 | 2026-11-12 | 1 Principles (journey A) | While typing a title in the outline, `##` splits it: the text before is the title, the text after becomes the note (appended on a new line if the node already has a note), applied when editing the title ends; `\##` keeps two literal `#` in the title. Works the same everywhere a title is typed (as in MLO). [ASSUMPTION] appending to an existing note and the escape are to be confirmed in the UI specification | Owner tried it in MLO |
 | D-12 | 2026-11-12 | 1 Principles (journey C) | Search filters the outline in place: only matching nodes and their ancestors stay visible, matches are highlighted, a match in a note is marked on its node; clearing the search returns to the previous view. Uses the on-device search and its matching rules (architecture section 8) | Journey C |
+| D-13 | 2026-11-12 | 1 Principles (journey C) | A relation can be created from either end: "Link to…" on any node opens the target picker (D-9), the same picker for both directions; the new relation gets the type `related`, which can be changed afterwards [ASSUMPTION: default type]; relations and backlinks as in ADR-024 | Journey C |
