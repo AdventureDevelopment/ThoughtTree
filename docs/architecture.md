@@ -109,7 +109,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Component | Responsibility |
 | --- | --- |
-| Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
+| Client Application Layer (ThoughtTree.Client.App) | Plain C#: use cases (capture, move, resolve conflicts, pair, share, export, …), UI state (selection, zoom, open dialogs) and UI decisions (for example: sharing requires a confirmed warning); used by the Razor components and by the simulation |
+| Browser Adapters | Every browser API (IndexedDB, Web Crypto, file and share APIs, QR scanner, clipboard, service worker) behind a C# interface, with thin JavaScript interop implementations and fakes for tests |
+| Outline UI | Razor components that only show state and forward user input: tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
 | Tree Manager | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, whether this device uses the tree's server, sync mode; removes the key when a tree is deleted |
 | Command Handler | Wires user actions to the command logic in ThoughtTree.Domain, which decides which events to write, with clock, `replaces` and `seen`; stores the result |
 | Local Event Store | Append-only log in IndexedDB; tracks sync progress per destination (server, devices synced by file) |
@@ -681,6 +683,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-038](adr/ADR-038-local-storage-migration.md) | Local storage migrations without loss | `src/ThoughtTree.Client/**` |
 | [ADR-039](adr/ADR-039-controlled-concurrency.md) | No uncontrolled concurrency or timers | `src/**` |
 | [ADR-040](adr/ADR-040-server-core-library.md) | Server logic as a library | `src/ThoughtTree.Server*/**` |
+| [ADR-041](adr/ADR-041-client-application-layer.md) | Client application layer, thin components | `src/ThoughtTree.Client*/**` |
+| [ADR-042](adr/ADR-042-browser-adapters.md) | Browser APIs behind interfaces | `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 
