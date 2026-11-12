@@ -74,12 +74,12 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-030: Metadata protection
 
-**TL;DR:** (to be filled)
+**TL;DR:** (Covers only the sync modes; the rest of ADR-030 is a constraint.) We bet that reliability matters more to users than hiding activity patterns, so live sync is preselected, while manual and scheduled remain available.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** Changes reach other devices quickly and are not lost because they never left a device; users who care more about activity patterns can choose manual or scheduled sync.
+- **Assumption:** Most users prefer automatic sync and accept that the server sees when they are online; users of manual or scheduled sync notice the indicator and reminder and do not lose changes.
+- **Signal:** Feedback about sync and lost changes; answers to "Have you ever lost changes that weren't synced?" (no / once / more than once) and "Which sync mode do you use?" (live / manual / scheduled); in the usage summary, the sync mode in use and the number of reminders about unsynced changes in the last 30 days.
+- **Review when:** users of manual or scheduled sync report lost changes · many users switch from live to manual · the store app or package exists, so reliable background sync could make scheduled sync the better default.
 
 <a id="adr-044"></a>
 
