@@ -8,7 +8,8 @@ applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 - **MUST** push events in batches after a pause in editing
 - **MUST** send a neutral `Accept-Language` header with sync requests
 - **MUST** run scheduled sync at a random moment within a window fixed in UTC
-- **MUST** offer live, manual and scheduled sync per tree and device
+- **MUST** offer live, manual and scheduled sync per tree and device; when server sync is switched on, let the user choose, with live preselected
+- **MUST** show unsynced changes and remind the user in manual and scheduled mode
 - **MUST NOT** add analytics, telemetry or third-party requests to the client
 
 verify:

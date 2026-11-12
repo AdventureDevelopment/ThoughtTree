@@ -248,7 +248,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 1. On any device the user switches on server sync for the tree and chooses the server: the default service or a self-hosted one, by its address; the device writes a `tree.server-changed` event, so all devices of the tree learn the address
 2. The device contacts the Sync Service with the account identity; the first device to do so registers the account, later devices prove membership with the account secret
 3. Sync Service issues a device token for this device and this tree; a device that syncs several trees holds one token per tree
-4. The user chooses the sync mode for this tree on this device: live, manual or scheduled
+4. The user chooses the sync mode for this tree on this device: live, manual or scheduled; the dialog explains the trade-offs and preselects live
 5. The device pushes its event log and pulls events it does not have yet
 6. Other devices of the tree know the address from the event (or from the pairing code) and join the same way whenever the user switches server sync on there; each device decides for itself whether it uses the server
 7. Moving the tree to another server is a new `tree.server-changed` event; each device that uses the server pushes its whole log to the new one, duplicates are skipped
@@ -517,6 +517,7 @@ Example of an event before encryption:
 - Where VPNs are blocked or risky, the user can stay without any server contact apart from installing and updating: file-only sync, updates only on request; or use a self-hosted server they trust
 - A network observer (for example an internet provider) can still see that a device connects to the sync server or the static host; the app says so in plain words and does not promise to hide that ThoughtTree is used
 - Manual and scheduled sync reduce what B sees: without a live connection, the server sees only the sync times, not when the user is online or writing
+- Default sync mode: when server sync is switched on, the user chooses the mode; live is preselected, because reliability comes first; in manual and scheduled mode the app shows how many changes are not yet synced and reminds the user when changes have waited longer than a time the user sets
 - Scheduled sync runs at a random moment within a time window the user sets; the app converts the window to UTC once and keeps it fixed, so sync times show neither round local times nor the switch to and from daylight saving time nor travel; the price is that in summer the window shifts by an hour in local time
 - Consequence accepted: losing the key on all devices means the notes cannot be recovered
 - Private and shared are recorded in the event log and shown in the UI, but not enforced by cryptography: every holder of the key can read and change the whole tree, there is no read-only access, and a key passed on outside the app leaves no trace
