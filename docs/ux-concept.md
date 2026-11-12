@@ -27,6 +27,21 @@ Status: outline, to be worked out step by step. Linked from section 8 of [archit
 
 Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. Topics 9 and 10 later.
 
+## UX principles
+
+Derived from journeys A to C (decision D-16). They guide every later decision, including the agents'.
+
+1. **Capture first, sort later.** Nothing has to be decided before typing: not the place, not the tree, not the kind. (D-1, D-4, D-5)
+2. **Create in the tree, go deeper in the detail view.** New notes are created and named in place in the tree; titles take inline Markdown (emphasis, links, inline code) and emojis. Shortcuts live in the text itself (space, Backspace, `##`, `@@`), each with a visible alternative. Longer text is written in the node's detail view; there is no separate capture form. (D-2, D-3, D-10, D-11, D-14)
+3. **Stay in the flow.** After every action the user stays where they were, and the next step is right there. (D-2, D-7, D-13)
+4. **Effort fits the distance.** Near by hand (drag), far by choosing (search); finding the right place must be easy. (D-6, D-9)
+5. **Calm, no pressure.** No badges, no warning colours, no reminders that push. (D-8)
+6. **Several dimensions.** The tree is one order; tags and relations add more. (D-13, D-14)
+7. **Saved at once and reliably.** The user never wonders whether something was stored. (Journey A; quality goal reliability)
+8. **Start simple.** A feature comes when use shows it is missed. (D-9, D-15)
+
+Inherited from the architecture and applying on top: accessible (ADR-033), and honest about what is protected (section 1).
+
 ## How this concept is worked out
 
 - Worked out interactively with the owner, one topic and one decision at a time, following the UX workflow of the BMAD Method (UX designer role); BMAD's split is kept as sections of this document: how it looks (visual identity, tokens) and how it works (information architecture, behaviour, states, flows)
@@ -135,3 +150,4 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 | D-13 | 2026-11-12 | 1 Principles (journey C) | A relation can be created from either end: "Link to…" on any node opens the target picker (D-9), the same picker for both directions; the new relation gets the type `related`, which can be changed afterwards [ASSUMPTION: default type]; relations and backlinks as in ADR-024 | Journey C |
 | D-14 | 2026-11-12 | 1 Principles (wish for tags) | Notes can carry several tags, now rather than later; uses: finding, grouping across branches, context and status. Typing `@@name` in a title adds the tag (suggesting existing tags while typing); when editing ends the text is removed from the title and the tag is shown as a chip; tapping a chip filters the tree to the nodes with that tag, like search (D-12); a tag picker in the detail view is the alternative without typing. Architecture change proposed as [ADR-058](adr/ADR-058-tags.md) (Proposed) | Owner, Trello and MLO experience |
 | D-15 | 2026-11-12 | 1 Principles (wish for tags) | The details of tags (duplicates, names with spaces, managing, nesting, colours) are parked as open questions for feature work | Owner |
+| D-16 | 2026-11-12 | 1 Principles | The eight UX principles in section "UX principles" are agreed, condensed from journeys A to C; accessible and honest about protection are inherited from the architecture | Journeys A–C |
