@@ -331,6 +331,7 @@ docs/        architecture, ADRs
 
 - Two environments, test and production, each with its own instance of the container image (serving the app and the sync API from one origin) and its own storage
 - Data is never shared between test and production
+- The test environment uses registration mode "open" with tight limits, and its data is deleted regularly; production uses "join code only"; no environment needs stored credentials for its checks
 
 **Delivery pipeline**
 
@@ -761,8 +762,8 @@ End-to-end tests:
 
 Deployment tests:
 
-- After each deployment to test: the app loads and its service worker registers; a version endpoint shows the deployed commit; the service worker file is served without caching; an account registers with the join code, an event is pushed and pulled, SignalR connects; HTTPS with HSTS and security headers are present, the page makes no requests to third parties, logging and telemetry record no IP addresses
-- After promotion to production: read-only checks (health, version, headers, service worker) plus one synthetic probe tree whose fixed events are pushed again on every check, so production data does not grow; if a check fails, the previous archived release is deployed again automatically
+- After each deployment to test (each run creates a new tree and account, so no credentials are stored): the app loads and its service worker registers; a version endpoint shows the deployed commit; the service worker file is served without caching; an account registers with the join code, an event is pushed and pulled, SignalR connects; HTTPS with HSTS and security headers are present, the page makes no requests to third parties, logging and telemetry record no IP addresses
+- After promotion to production: read-only checks only (health, version, headers, service worker); sync is proven in the test environment with the identical image (ADR-047); if a check fails, the previous archived release is deployed again automatically
 - The self-hosted container image is built, published and checked with the same smoke tests as the test environment
 
 Performance tests:
