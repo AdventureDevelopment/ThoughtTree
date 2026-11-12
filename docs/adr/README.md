@@ -33,7 +33,8 @@ review: <trigger that makes us check the decision again>
 
 - `kind: constraint`: required by logic, security or earlier decisions; firm; no outcome block
 - `kind: bet`: rests on an assumption that may turn out wrong; carries an outcome block (outcome, assumption, signal, review); agents treat its rules as firm until a review changes them, but may point out when a signal or review trigger has occurred
-- Signals must respect privacy: no telemetry; signals come only from the owner's own use, feedback issues and their categories, performance reports, voluntary signal answers in the feedback form, and CI numbers (gate time, size budget, mutation score, unreliable tests)
+- Signals must respect privacy: no telemetry; signals come only from the owner's own use, feedback issues and their categories, performance reports, voluntary signal answers and usage summaries in the feedback form (ADR-051), and CI numbers (gate time, size budget, mutation score, unreliable tests)
+- Each signal lists exactly the numbers it collects; adding a signal needs human approval
 - Reviews are triggered by events (for example: the repository goes public, the store app exists, the first feedback on a topic arrives), not by dates
 
 - `applies_to` names the paths the rules govern; before changing a file, read every ADR whose `applies_to` matches it
