@@ -521,7 +521,7 @@ Example of an event before encryption:
 
 | Topic | Options |
 | --- | --- |
-| Server event store | Azure Table Storage, Blob Storage or SQLite |
+| Server event store | Azure Table Storage, Blob Storage or SQLite. To consider: Table Storage records a time on every row that cannot be switched off, and Blob Storage records creation and change times, which conflicts with storing no times of use unless events are packed into larger chunks; SQLite stores no such times; the self-hosted package needs a store that runs without Azure; later binary data needs blob storage |
 | Sync service hosting | Azure Container Apps or Azure Functions |
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
