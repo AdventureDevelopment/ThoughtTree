@@ -65,6 +65,13 @@ Principle candidates heard in this journey (to be confirmed with the other journ
 - Keep the flow: one idea leads to the next without detours
 - Saved at once and reliably: the user never wonders whether something was stored
 
+Principle candidates heard in journey B:
+
+- The way of acting fits the distance: near by hand, far by choosing
+- Stay in the flow: after an action the user stays where they were
+- No pressure: the inbox is a parking place, not a to-do list
+- Finding the place is the hard part; the app must make it easy
+
 ### Journey B – Sorting with coffee
 
 The next morning the owner has made a coffee and drinks it in bed; awake, relaxed, with time. Phone in one hand, coffee in the other.
@@ -76,7 +83,9 @@ The next morning the owner has made a coffee and drinks it in bed; awake, relaxe
    - something new: its own root, or wherever it belongs
 3. After each move the owner stays in the inbox; a short confirmation shows where the idea went, with Undo and Go there (decision D-7)
 4. **Key moment:** the next idea belongs to the same project: one tap places it right below the idea just moved, no searching again (decision D-7)
-5. …
+5. Stops when the mind is empty of ideas, not when the inbox is empty; ideas may stay in the inbox for a while (decision D-8)
+
+Pain point: searching for the node where a new note belongs.
 
 Notes:
 
@@ -93,3 +102,4 @@ Notes:
 | D-5 | 2026-11-12 | 1 Principles (journey A) | A captured idea goes into the inbox of the open tree; the capture view shows that tree's name, and one tap switches to another tree's inbox | Journey A |
 | D-6 | 2026-11-12 | 1 Principles (journey B) | Moving a node offers three ways, chosen by distance: drag and drop for nearby places; "Move to…" that finds the target by search or in a compact tree, shows the target's children and places the node at a chosen position; and moving it to the top level (its own root). "Move to…" is also the accessible alternative to dragging (ADR-033) | Journey B |
 | D-7 | 2026-11-12 | 1 Principles (journey B) | After a move the user stays where they were (the inbox); a short confirmation names the target and offers Undo and Go there. The app remembers the last placed node (device state, ADR-013): for the next node there are two one-tap choices, keep it in the inbox or place it right below the last placed node; a space typed at the start of an empty title (D-2) nests it under that node instead | Journey B |
+| D-8 | 2026-11-12 | 1 Principles (journey B) | No pressure to empty the inbox: no badges, no counts in warning colours, no reminders; at most a calm, neutral number of entries next to the inbox | Journey B |
