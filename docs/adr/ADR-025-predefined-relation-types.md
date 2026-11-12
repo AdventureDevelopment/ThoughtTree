@@ -1,6 +1,6 @@
 # ADR-025: Relation types defined per tree, predefined set
 
-id: ADR-025 · status: Accepted · kind: bet
+id: ADR-025 · status: Accepted · kind: bet ([bet card](bets.md#adr-025))
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client/**`
 
@@ -15,11 +15,3 @@ dotnet test --filter "ADR=ADR-025"
 ```
 
 why: One mechanism for all types; the user owns every type; fixed ids avoid duplicates on merge.
-
-outcome: (to be filled)
-
-assumption: (to be filled)
-
-signal: (to be filled)
-
-review: (to be filled)

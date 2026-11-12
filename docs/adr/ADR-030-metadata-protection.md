@@ -1,6 +1,6 @@
 # ADR-030: Metadata protection
 
-id: ADR-030 · status: Accepted · kind: bet
+id: ADR-030 · status: Accepted · kind: bet ([bet card](bets.md#adr-030))
 
 applies_to: `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`
 
@@ -19,11 +19,3 @@ dotnet test --filter "ADR=ADR-030"
 ```
 
 why: Nobody operating or observing the server should learn where the user is or how they work.
-
-outcome: (to be filled)
-
-assumption: (to be filled)
-
-signal: (to be filled)
-
-review: (to be filled)

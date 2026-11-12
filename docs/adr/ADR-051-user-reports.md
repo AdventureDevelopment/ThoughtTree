@@ -1,6 +1,6 @@
 # ADR-051: User reports and feedback: sent by the user, untrusted input
 
-id: ADR-051 · status: Accepted · kind: bet
+id: ADR-051 · status: Accepted · kind: bet ([bet card](bets.md#adr-051))
 
 applies_to: `src/ThoughtTree.Client*/**`, `.github/**`
 
@@ -23,11 +23,3 @@ dotnet test --filter "ADR=ADR-051"   # report contains only allowed fields; sche
 ```
 
 why: Real-world slowdowns reach the harness without telemetry, without content, and without opening the agents to manipulation.
-
-outcome: (to be filled)
-
-assumption: (to be filled)
-
-signal: (to be filled)
-
-review: (to be filled)

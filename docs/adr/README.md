@@ -7,7 +7,7 @@ Agent-optimised ADRs: scoped, imperative, verifiable, short. One file per decisi
 ```markdown
 # ADR-0xx: <title>
 
-id: ADR-0xx · status: Accepted | Proposed | Superseded by ADR-0yy · kind: constraint | bet
+id: ADR-0xx · status: Accepted | Proposed | Superseded by ADR-0yy · kind: constraint | bet ([bet card](bets.md#adr-0xx))
 
 applies_to: `<glob>`, …
 
@@ -21,20 +21,14 @@ verify:
     <command>   # expected result
 
 why: <one line>
-
-# only for kind: bet
-outcome: <what should improve>
-assumption: <why we believe this decision helps>
-signal: <how we notice a change; privacy-compatible>
-review: <trigger that makes us check the decision again>
 ```
 
 ## Conventions
 
 - `kind: constraint`: required by logic, security or earlier decisions; firm; no outcome block
-- `kind: bet`: rests on an assumption that may turn out wrong; carries an outcome block (outcome, assumption, signal, review); agents treat its rules as firm until a review changes them, but may point out when a signal or review trigger has occurred
+- `kind: bet`: rests on an assumption that may turn out wrong; its bet card in [bets.md](bets.md) holds a one-line TL;DR, outcome, assumption, signal and review trigger, kept out of the ADR so the ADR stays short; agents treat its rules as firm until a review changes them, but may point out when a signal or review trigger has occurred
 - Signals must respect privacy: no telemetry; signals come only from the owner's own use, feedback issues and their categories, performance reports, voluntary signal answers and usage summaries in the feedback form (ADR-051), and CI numbers (gate time, size budget, mutation score, unreliable tests)
-- Each signal lists exactly the numbers it collects; adding a signal needs human approval
+- Each signal in a bet card lists exactly the numbers it collects; adding a signal needs human approval
 - Reviews are triggered by events (for example: the repository goes public, the store app exists, the first feedback on a topic arrives), not by dates
 
 - `applies_to` names the paths the rules govern; before changing a file, read every ADR whose `applies_to` matches it
