@@ -52,12 +52,12 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-025: Relation types defined per tree, predefined set
 
-**TL;DR:** (to be filled)
+**TL;DR:** We bet that a small predefined set of relation types gives a good start, and that people adapt it rather than starting from nothing.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** Relations are usable right away without inventing types first; everything stays changeable, because predefined types are ordinary events.
+- **Assumption:** The starting set (related, supports, contradicts, example_of, cites, depends_on) fits how most people think; users rename, remove or add types when it doesn't fit, rather than giving up on relations.
+- **Signal:** Feedback about relation types; answers to "Do the predefined relation types fit how you think?" (yes / partly / no); in the usage summary, without names: uses per predefined type, number of own types, number of renamed or removed predefined types.
+- **Review when:** one predefined type is almost never used, or removed by most who answer · most users create own types that mean the same thing · relations are hardly used at all.
 
 <a id="adr-029"></a>
 
