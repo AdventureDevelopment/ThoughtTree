@@ -287,6 +287,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - Top level: a node without a parent is a top-level node; a tree can have one or several; there is no special root node, every node is created by `node.created`
+- Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; both are Unicode text and may contain emojis; search and sorting work on the text without Markdown markers
 - Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
@@ -296,9 +297,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Type name | Data |
 | --- | --- |
-| `node.created` | `nodeId`, `parentId` (empty for a top-level node), `afterNodeId`, `title`, `note` (optional) |
-| `node.title-changed` | `nodeId`, `title`, `replaces` |
-| `node.note-changed` | `nodeId`, `note`, `replaces` |
+| `node.created` | `nodeId`, `parentId` (empty for a top-level node), `afterNodeId`, `title`, `note` (optional), `format` |
+| `node.title-changed` | `nodeId`, `title`, `format`, `replaces` |
+| `node.note-changed` | `nodeId`, `note`, `format`, `replaces` |
 | `node.moved` | `nodeId`, `parentId` (empty to move to top level), `afterNodeId`, `replaces` |
 | `node.deleted` | `nodeId`, `seen` |
 | `node.restored` | `nodeId` |
@@ -309,6 +310,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 - `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent, or first top-level node when the parent is empty
 - `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
+- `format` names the text format of title and note; initially always `markdown`; it keeps a later change of format possible without guessing what older texts meant
 - Title and note changes carry the full text; one event is written per editing session (when the user leaves the field or after a short pause), not per keystroke, so the log does not grow with every edit
 
 Every event has, besides its data: type name, schema version, `DeviceId`, `Clock` (hybrid logical clock) and `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`). `EventId` sits in the envelope (see Event envelope and encryption). Bookkeeping that only concerns one device, such as the order in which events were stored locally, is kept by the Local Event Store and is not part of the event.
