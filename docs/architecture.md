@@ -26,7 +26,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Priority | Quality goal | Motivation |
 | --- | --- | --- |
-| 1 | Reliability | No data loss, offline or during sync, merge, import, update or conflict; all devices with the same events show the same tree; notes outlive app versions, frameworks and cloud services, so old data stays readable for good |
+| 1 | Reliability | No data loss, offline or during sync, merge, import, update or conflict; all devices with the same events and the same app version show the same tree; notes outlive app versions, frameworks and cloud services, so old data stays readable for good |
 | 2 | Privacy & Security | Personal thoughts stay private: end-to-end encryption on the device, the server only relays ciphertext; minimal metadata, in particular nobody operating or observing the server learns where the user is; integrity of events |
 | 3 | Usability | Outliner UX like MLO on touch devices: quick capture, drag-and-drop, gestures; keyboard on desktop; accessible (screen readers, keyboard-only use, contrast, scalable text); English and German; honest about what is protected |
 | 4 | Portability | Runs on phone, tablet and desktop in all major browsers (Chromium-based, Safari, Firefox); installable as PWA, later as store app or package; server self-hostable without Azure; data never locked in (readable export and import) |
@@ -42,7 +42,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 ## 2. Constraints
 
-- Technology: C# / .NET, Blazor WebAssembly as PWA
+- Technology: C# on .NET 10 (the current long-term support release, pinned in `global.json`), Blazor WebAssembly as PWA, ASP.NET Core with SignalR on the server
 - Must work offline; network is optional and intermittent
 - Source control: GitHub repository `AdventureDevelopment/ThoughtTree`, private until the first release, public from then on
 - Licence: Apache 2.0 for the whole repository; the name "ThoughtTree" is not licensed
@@ -68,7 +68,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Partner | Interface | Purpose |
 | --- | --- | --- |
-| Browser / OS | Service Worker, IndexedDB, Web App Manifest, Web Crypto API | Installability, offline cache, local persistence, client-side encryption |
+| Browser / OS | Service Worker, local store (IndexedDB, or SQLite on the Origin Private File System, see open decision), Web App Manifest, Web Crypto API | Installability, offline cache, local persistence, client-side encryption |
 | Sync Service (ASP.NET Core on Azure) | REST + SignalR | Push/pull of encrypted events, real-time notifications |
 | Authentication (device tokens) | Bearer token | Identifies which account's event log a device may access; one token per device and tree, no user accounts |
 | Other devices (own or of other users) | Pairing or sharing flow (QR code or typed code) | Hands over a tree's key and account identity; no server involvement in key material |
@@ -78,7 +78,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 - **Blazor WebAssembly PWA** for a single C# codebase on every device
 - **Event sourcing** as the core data model: every change to the tree is an immutable event; the current tree is a projection of the event log
-- **Offline-first**: events are appended locally in IndexedDB first, then synchronised
+- **Offline-first**: events are appended to the local store first, then synchronised
 - **Sync by exchanging event logs** instead of whole documents, which keeps conflicts small and mergeable
 - **ASP.NET Core backend** as a thin event store and relay (REST for push/pull, SignalR for live updates)
 - **Domain project for the client, contracts project shared with the server**: the server cannot decrypt events, so it needs only the envelope, the export file format and the API data; all domain logic (events, tree, projection, conflicts, clock) lives in a client-side domain project
@@ -125,7 +125,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - A new project only for a real boundary: deployment (browser, container), sharing (client and server), or reuse (simulation, later native app); everything inside a project is separated by namespace and checked by architecture tests
 - Inside each project, folders by feature, named after the glossary and the same in every project: `Outline`, `Relations`, `Labels`, `Conflicts`, `Trees`, `Sync`, `Sharing`, `Search`, `Export`, `Feedback`, `Settings`; cross-cutting parts (`Clock`, `Text`, `Versioning`, `Crypto`) in their own folders
 - Shared build settings in the repository root: `Directory.Build.props` (nullable, warnings as errors, analyzers, banned API files), `Directory.Packages.props` (all package versions, checked for licences), `global.json` (fixed SDK), `.editorconfig`
-- Tests are grouped by intent, visible in folders, project names and a trait (`Intent = Specify | Secure | Confirm`), and the CI summary is grouped by intent:
+- Tests are grouped by intent, visible in folders, project names (by kind: `Specs`, `Properties`, `Model`, `Compatibility`, `Simulation`, `Rules`, `Contract`, `Security`, `Budgets`, `EndToEnd`, `Smoke`) and a trait (`Intent = Specify | Secure | Confirm`), and the CI summary is grouped by intent:
 
 ```text
 src/
@@ -134,7 +134,7 @@ src/
 tests/
   specify/   ThoughtTree.Domain.Specs  ThoughtTree.Client.App.Specs  ThoughtTree.Client.Specs  ThoughtTree.Server.Specs
   secure/    ThoughtTree.Domain.Properties  ThoughtTree.Domain.Model  ThoughtTree.Formats.Compatibility
-             ThoughtTree.Simulation  ThoughtTree.Client.Rules  ThoughtTree.Server.StoreContract
+             ThoughtTree.Simulation  ThoughtTree.Client.Rules  ThoughtTree.Server.Contract
              ThoughtTree.Server.Security  ThoughtTree.Architecture.Rules  ThoughtTree.Performance.Budgets
   confirm/   ThoughtTree.EndToEnd  ThoughtTree.Deployment.Smoke
   support/   ThoughtTree.Testing  ThoughtTree.Client.SpecHost
@@ -144,45 +144,46 @@ deploy/      Docker Compose example for self-hosting
 docs/        architecture, ADRs
 ```
 
+- Where tests of each kind live: Domain specs in `Domain.Specs`; invariants and properties in `Domain.Properties`; use cases, privacy confirmations and language resources in `Client.App.Specs`; generic component rules (test ids, accessible names, pseudo-localisation) in `Client.Rules`; UI and accessibility specifications in `Client.Specs`; store contract tests in `Server.Contract`
 - `tests/specify/` is protected as a whole: specs may be added, changing or deleting one needs human approval; every runtime scenario of section 6 is covered by at least one spec that names it
 - Specs are written with LambdaTale in domain language at every level (Domain, application layer, UI, server); end-to-end tests use LambdaTale too but confirm rather than specify
 
 **Level 2 – Client**
 
-| Component | Responsibility |
-| --- | --- |
-| Client Application Layer (ThoughtTree.Client.App) | Plain C#: use cases (capture, move, resolve conflicts, pair, share, export, …), UI state (selection, zoom, open dialogs) and UI decisions (for example: sharing requires a confirmed warning); used by the Razor components and by the simulation |
-| Browser Adapters | Every browser API (IndexedDB, Web Crypto, file and share APIs, QR scanner, clipboard, service worker) behind a C# interface, with thin JavaScript interop implementations and fakes for tests |
-| Outline UI | Razor components that only show state and forward user input: tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
-| Tree Manager | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, whether this device uses the tree's server, sync mode; removes the key when a tree is deleted |
-| Command Handler | Wires user actions to the command logic in ThoughtTree.Domain, which decides which events to write, with clock, `replaces` and `seen`; stores the result |
-| Local Event Store | Append-only log in IndexedDB; tracks sync progress per destination (server, devices synced by file) |
-| Projection | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
-| Search | Client-side full-text search over the projection; optional local index |
-| Crypto | Stateless operations with the Web Crypto API: creates keys, pads, encrypts and decrypts envelopes; stores nothing, the key is handed in for each operation |
-| Sync Engine | Exchanges events through an `ISyncTransport`: push unsynced encrypted events, pull remote events, decrypt, merge and apply |
-| Server Transport | `ISyncTransport` over the Sync API and Sync Hub |
-| File Transport | `ISyncTransport` that writes the encrypted export file and reads an imported one |
-| Sync Scheduler | Decides when to sync: live, manual or scheduled mode; scheduled sync at a random moment in a UTC window; batching of pushes |
-| Pairing & Sharing | Creates and scans pairing and sharing codes; adds a received tree or merges a local tree into it (re-encrypting its envelopes); writes `device.joined`; keeps pairing and sharing apart |
-| Conflict View | Lists the conflicts the projection derives from the log and lets the user resolve them by writing the resolving event |
-| Update Control | Checks for and applies app updates only with the user's consent; triggers rebuilding snapshots and search index after an update |
-| Storage Guard | Requests persistent storage, warns when the app runs in a plain browser tab instead of being installed, reminds the user to export |
-| Readable Export/Import | Exports the current tree unencrypted as Markdown, OPML or JSON; imports such files as a new tree |
-| Auth Client | Attaches the tree's device token, held by the Tree Manager, to sync requests |
-| Service Worker | Caches app shell and assets for offline start; applies app updates only when the user allows it |
+| Component | Project | Responsibility |
+| --- | --- | --- |
+| Client Application Layer (ThoughtTree.Client.App) | Client.App | Plain C#: use cases (capture, move, resolve conflicts, pair, share, export, …), UI state (selection, zoom, open dialogs) and UI decisions (for example: sharing requires a confirmed warning); used by the Razor components and by the simulation |
+| Browser Adapters | Client (adapters) | Every browser API (local store, Web Crypto, file and share APIs, QR scanner, clipboard, service worker) behind a C# interface, with thin JavaScript interop implementations and fakes for tests |
+| Outline UI | Client (UI) | Razor components that only show state and forward user input: tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
+| Tree Manager | Client.App | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, whether this device uses the tree's server, sync mode; removes the key when a tree is deleted |
+| Command Handler | Client.App (calls command logic in Domain) | Wires user actions to the command logic in ThoughtTree.Domain, which decides which events to write, with clock, `replaces` and `seen`; stores the result |
+| Local Event Store | Port in Client.App, implemented in Client (adapters) | Append-only log in the local store; tracks sync progress per destination (server, devices synced by file) |
+| Projection | Domain (pure); snapshots stored through a Client.App port | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
+| Search | Domain (matching, index logic), Client.App (use case) | Client-side full-text search over the projection; optional local index |
+| Crypto | Port in Client.App, implemented in Client (adapters) | Stateless operations with the Web Crypto API: creates keys, pads, encrypts and decrypts envelopes; stores nothing, the key is handed in for each operation |
+| Sync Engine | Client.App | Exchanges events through an `ISyncTransport`: push unsynced encrypted events, pull remote events, decrypt, merge and apply |
+| Server Transport | Client (adapters) | `ISyncTransport` over the Sync API and Sync Hub |
+| File Transport | Client (adapters); file format in Contracts | `ISyncTransport` that writes the encrypted export file and reads an imported one |
+| Sync Scheduler | Client.App | Decides when to sync: live, manual or scheduled mode; scheduled sync at a random moment in a UTC window; batching of pushes |
+| Pairing & Sharing | Client.App; QR scanner in Client (adapters); code format in Contracts | Creates and scans pairing and sharing codes; adds a received tree or merges a local tree into it (re-encrypting its envelopes); writes `device.joined`; keeps pairing and sharing apart |
+| Conflict View | Client (UI) with use case in Client.App | Lists the conflicts the projection derives from the log and lets the user resolve them by writing the resolving event |
+| Update Control | Client.App; service worker in Client | Checks for and applies app updates only with the user's consent; triggers rebuilding snapshots and search index after an update |
+| Storage Guard | Client.App; browser checks in Client (adapters) | Requests persistent storage, warns when the app runs in a plain browser tab instead of being installed, reminds the user to export |
+| Readable Export/Import | Client.App; formats in Contracts | Exports the current tree unencrypted as Markdown, OPML or JSON; imports such files as a new tree or into a node |
+| Auth Client | Client (adapters) | Attaches the tree's device token, held by the Tree Manager, to sync requests |
+| Service Worker | Client (static files) | Caches app shell and assets for offline start; applies app updates only when the user allows it |
 
 **Level 2 – Server**
 
-| Component | Responsibility |
-| --- | --- |
-| Sync API (REST) | `POST /v1/events` (push ciphertext), `GET /v1/events?since=` (pull); versioned (ADR-037) |
-| Sync Hub (SignalR) | Notifies connected devices about new events |
-| Event Store | Persistent per-account append-only log of encrypted events (store to be decided: Table Storage, Blob Storage or SQLite) |
-| Registration | Registers an account on first contact; issues device tokens to devices that present the account secret |
-| Account Capabilities | Stores permission and experiment flags per account (for example the private feedback inbox) and reports them to the device during sync |
-| Feedback Inbox | Stores feedback encrypted to the operator's public key until the operator collects it; can be switched off by an operations flag |
-| Auth | Validates device tokens, scopes requests to one account |
+| Component | Project | Responsibility |
+| --- | --- | --- |
+| Sync API (REST) | Server | `POST /v1/events` (push ciphertext), `GET /v1/events?since=` (pull), plus registration, tokens, capabilities, inbox and account deletion; versioned (ADR-037); the full contract is defined in Contracts before the first release (open decision) |
+| Sync Hub (SignalR) | Server | Notifies connected devices about new events |
+| Event Store | Port in Server.Core, implementations in Server | Persistent per-account append-only log of encrypted envelopes; gap-free sequence numbers, readable only in commit order; a pushed batch is stored all or nothing (see Event exchange) |
+| Registration | Server.Core | Registers an account on first contact; issues device tokens to devices that present the account secret |
+| Account Capabilities | Server.Core | Stores permission and experiment flags per account (for example the private feedback inbox) and reports them to the device during sync |
+| Feedback Inbox | Server.Core | Stores feedback encrypted to the operator's public key until the operator collects it; can be switched off by an operations flag |
+| Auth | Server.Core (validation), Server (middleware) | Validates device tokens, scopes requests to one account |
 
 ## 6. Runtime View
 
@@ -196,9 +197,9 @@ docs/        architecture, ADRs
 **Scenario: Coming back online (live sync mode)**
 
 1. Sync Engine detects connectivity
-2. Pushes all events the server does not have yet to `POST /events`
+2. Pushes all events the server does not have yet to `POST /v1/events`, batch by batch, strictly one after another
 3. Pulls events since last known server sequence number
-4. Applies remote events to the projection; resolves conflicts
+4. Applies remote events to the projection, which derives any conflicts; the user resolves them in the Conflict View
 5. Server broadcasts new events to other devices via SignalR
 
 **Scenario: Real-time update on a second device (live sync mode only)**
@@ -230,7 +231,9 @@ docs/        architecture, ADRs
 2. The app warns that the file is not encrypted and anyone who gets it can read the whole tree; the user confirms
 3. The app writes the current tree, without history, deleted nodes or device information, into a file whose name marks it as unencrypted
 4. On any device, also one without the tree's key, the user chooses "Import readable" and picks such a file, for example an OPML export from another outliner
-5. The app creates a new tree with its own key and writes ordinary `node.created` events for the imported nodes
+5. As a new tree: the app creates a tree with its own key, writes the same starting events as for any new tree, then the imported content; into an existing node: the content is written under that node
+6. Every imported node gets a new id; `node:` links within the imported content are rewritten to the new ids; links to nodes outside the file are shown as not found
+7. A JSON import also restores relations, relation types and their labels (`relation.added`, `relation-type.defined`, `label.set`); types with a predefined fixed id are reused instead of duplicated
 
 **Scenario: Device with a clock far ahead**
 
@@ -251,8 +254,8 @@ docs/        architecture, ADRs
 1. User installs ThoughtTree and opens it for the first time
 2. App asks for a user name and generates a user id; this is the user identity
 3. App generates a device id and asks for a device label, with a suggestion such as "Phone" or "Tablet"; name and label can be changed later
-4. App generates the key and an account identity (account id and account secret) for the first tree locally with the Web Crypto API and stores them in IndexedDB; nothing is sent anywhere
-5. The first event of the tree is a `device.joined` for this device and user
+4. App asks for a name for the first tree, with a suggestion such as "My thoughts", and generates its key and account identity (account id and account secret) locally with the Web Crypto API; they are stored in the local store; nothing is sent anywhere
+5. The tree starts with these events: `device.joined` for this device and user, the predefined relation types (`relation-type.defined`), and a first top-level node whose title is the tree name
 6. User starts taking notes; events are stored locally
 7. No internet, login or server is needed at any point
 
@@ -260,7 +263,7 @@ docs/        architecture, ADRs
 
 1. User chooses "New tree" and gives it a name
 2. App generates a new key and a new account identity for this tree, locally; the first event of the tree is a `device.joined` for this device and user
-3. The name becomes the title of a first top-level node (`node.created` without a parent); otherwise the tree starts empty and is independent of all other trees on the device
+3. The tree starts with the same events as the first tree: `device.joined`, the predefined relation types, and a first top-level node whose title is the name; it is independent of all other trees on the device
 4. User moves between trees with the tree switcher
 
 **Scenario: Pairing another device of the same user**
@@ -302,7 +305,7 @@ docs/        architecture, ADRs
 3. The user hands the file to device B (AirDrop, Nearby Share, USB or any other file transfer)
 4. On device B the user chooses "Import from another device" and picks the file
 5. Device B merges the events into its Local Event Store; events it already has are recognised by their `EventId` and skipped
-6. Projection applies the new events and resolves conflicts with the same rules as server sync
+6. Projection applies the new events and derives conflicts with the same rules as server sync
 7. For a two-way sync the user repeats the steps from B to A
 8. When either device is online again, it pushes the merged events to the server as usual
 
@@ -325,7 +328,7 @@ docs/        architecture, ADRs
 
 **Environments**
 
-- Two environments, test and production, each with its own static site, sync service and storage
+- Two environments, test and production, each with its own instance of the container image (serving the app and the sync API from one origin) and its own storage
 - Data is never shared between test and production
 
 **Delivery pipeline**
@@ -357,10 +360,13 @@ docs/        architecture, ADRs
 - External links are clickable and open in a new tab, or in the system browser for the installed app; the target address is shown before opening (hover or long press); the app sends no referrer (`Referrer-Policy: no-referrer`), so a self-hosted server's address is not revealed; no automatic link previews
 - Later, with binary data: a preview picture of a linked page, created only when the user asks for it, on the device, and stored as an encrypted blob in the tree; never created automatically, never through our server or a third-party service, because the address itself is content
 - Remote pictures (`![](https://…)`) are not loaded; the app shows a placeholder with the address, and clicking opens the picture in the browser; later, with binary data, the user can store such a picture once as an encrypted blob in the tree
-- Nothing connects trees: links and relations only point to nodes of the same tree; the link picker offers only nodes of the current tree, and a `node:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import
+- Nothing connects trees: links and relations only point to nodes of the same tree; the link picker offers only nodes of the current tree, and a `node:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import, with one sanctioned exception: merging a whole tree into another (see Merging trees)
 - Relations: besides the tree structure (parent, child, sibling order), nodes can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where a node sits
 - A relation is identified by its three parts (from node, type, to node), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
 - Relations of a deleted node are hidden but kept, and come back when the node is restored
+- Removing a relation type (`relation-type.removed`) hides its relations and labels but keeps them; they come back if the type is defined again
+- A node restored while one of its ancestors is still deleted stays hidden as "in a deleted part" until that ancestor is restored; the UI offers to restore the ancestor
+- `label.removed` and a concurrent `label.set` for the same element, field and language are decided by the agreed event order
 - Relation types: a relation refers to a type id, never to a name, so renaming a type changes no relation; a type has a name, a name for the reverse direction (for example "supports" / "supported by") and whether it is symmetric; for symmetric types the two node ids are stored in a fixed order, so A–B and B–A are the same relation
 - Types are defined per tree by `relation-type.defined` events, their names by `label.set`; there are no built-in types: when a tree is created the app writes the predefined types (initially `related`, `supports`, `contradicts`, `example_of`, `cites`, `depends_on`) as ordinary events, after which they can be renamed, removed or extended like any other type
 - Predefined types have fixed ids that are the same in every tree, so merging two trees does not duplicate them
@@ -385,9 +391,10 @@ docs/        architecture, ADRs
 - No right-to-left interface for now, but the UI is built direction-neutral from the start: CSS logical properties (`margin-inline-start` instead of `margin-left`), and gestures defined relative to the reading direction ("towards the end of the line" instead of "to the right"), so a mirrored interface later needs no rework
 - Translating content on the fly is a possible later feature; it must run on the device, or only after explicit consent with a clear warning, because sending plain text to an external translation service would break end-to-end encryption
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
-- Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
+- Tree name: the title of the first visible top-level node; renaming that node or placing another node first renames the tree, with no event of its own; a tree without visible top-level nodes is shown as "Untitled" (not stored)
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
+- Authority rules in the projection: `device.label-changed` always renames the device that wrote it; `user.name-changed` is applied only if the writing device has joined with that `userId`; otherwise it is ignored
 - A tree is private while all devices that have joined it belong to one user, and shared as soon as a device of another user has joined; this is derived from the `device.joined` events, not stored as a flag; if a device has several `device.joined` events, the latest in the agreed order counts
 
 **Event types (initial set)**
@@ -436,7 +443,7 @@ Example of an event before encryption:
 
 - Position by reference: `node.created` and `node.moved` place a node directly after a named sibling (`afterNodeId`), or first under its parent when empty
 - The projection replays all events of a tree in one agreed order, sorted by `Clock`, then `DeviceId`; every device computes the same order, independent of the order in which events arrived
-- `Clock` is a hybrid logical clock: a UTC time in milliseconds plus a counter. A new event gets the device's current UTC time, or, if the highest clock in the tree's local log is equal or later, that clock with the counter raised by one
+- `Clock` is a hybrid logical clock: a UTC time in milliseconds (64-bit) plus a counter (32-bit). A new event gets the device's current UTC time, or, if the highest clock in the tree's local log is equal or later, that clock with the counter raised by one
 - The clock is not stored separately: it is always derived from the highest clock in the tree's local log, so events received by sync or file raise it automatically
 - Events from a device whose clock is far ahead are accepted like all others, so every device keeps the same order; the receiving device warns that the other device's clock seems wrong
 - `DeviceId` is compared as the lowercase text form of the GUID, character by character (ordinal), never by the binary GUID order of .NET
@@ -458,20 +465,35 @@ Example of an event before encryption:
 - What a device has can be described like `seen`: for each device of the tree, the highest clock received from it; this works because every transport delivers a device's events without gaps
 - Sync progress is tracked per destination (the server, each device synced by file), not by one synced flag per event
 - The server stores each `EventId` only once, so pushing the same event again (for example after it reached the server through another device) is harmless
+- Same `EventId`, same content: an envelope whose `EventId` is already known but whose content differs is rejected and reported as a defect, on the server and on every device; it never replaces the stored one; the simulation injects such envelopes
+- Server requirements for the no-gap rule (the server cannot check it itself, because it cannot read `DeviceId`):
+  - `ServerSequence` numbers are gap-free per account and become readable only in commit order, so a pull "since X" can never skip an event that commits later with a lower number
+  - A pushed batch is stored all or nothing, in the order the device sent it
+  - A device sends its batches strictly one after another and sends the next one only after the previous one is confirmed
+  - These requirements are part of the store contract tests and a criterion of the open decision on the server store; the simulation injects concurrent pushes and failing batches
 - The exact `ISyncTransport` interface is left to the implementation
+
+**Merging trees**
+
+- Merging a tree into another is the one sanctioned way content moves between trees: the merged tree's events are added to the target tree's log and re-encrypted with the target tree's key
+- Its top-level nodes become top-level nodes of the target tree; the tree name stays the title of the first visible top-level node by agreed order
+- Its predefined relation types and labels coincide with the target's (same fixed ids, same values), so they cause no conflicts; its own types and labels are added; a differing `tree.server-changed` becomes an ordinary conflict
+- Open: membership after a merge, and what happens to the merged tree's account and devices (see open decisions)
 
 **Conflict resolution**
 
 - Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`); with the hybrid clock this is usually the latest edit in real time
 - `Timestamp` is never used to decide anything; only `Clock` is, which stays consistent even when device clocks drift
-- Events that change a node's title, note or position, or the tree's server address, name the change they replace (`replaces`, a list of event ids); a missing value means the event replaces nothing known
-- Conflict: two or more changes of the same field of the same node that no later change replaces; the projection shows the winner by agreed order and marks the node, offering all competing values
+- Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `node.title-changed`, `node.note-changed`, `node.moved`, `relation-type.defined`, `label.set`, `tree.feature-changed`, `tree.server-changed`
+- Conflict: two or more changes of the same field of the same element (node, relation type, label, tree feature, server address) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
+- Concurrent changes with the same value are not a conflict (for example the predefined relation types written by two trees that are later merged)
+- The Conflict View lists all conflicts of a tree, grouped by kind: nodes, relation types, labels, tree features, server address
 - The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
 - Delete conflict: a deletion conflicts with every change to the deleted node or anywhere in its subtree (including nodes created or moved into it) that the deleting device had not seen when it deleted
 - To decide this, `node.deleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
 - The node stays deleted in the projection, but is marked with a conflict listing the unseen changes; the user either keeps it deleted (a new deletion that has seen them) or restores it (`node.restored`) together with the changes
 - A conflict marker is derived from the log by the projection, not stored
-- Moves that would create a cycle are rejected on apply and the node is placed at top level
+- A move that would create a cycle is applied with the moved node placed at top level instead of under the requested parent
 - Deleted nodes are tombstoned, never physically removed, to keep merges consistent
 - Merging always means taking the union of two event logs, with events identified by `EventId`; trees are never merged directly, the projection rebuilds the tree from the combined log
 - This also covers two devices that were used on their own before pairing: their top-level nodes simply sit side by side at top level
@@ -479,11 +501,11 @@ Example of an event before encryption:
 **Event envelope and encryption**
 
 - An event is stored and transmitted as an envelope: a few plaintext fields plus one encrypted payload
-- Plaintext: `EventId`, envelope format version, `KeyId` (which key of the tree encrypted the payload), the nonce and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
+- Plaintext: `EventId`, envelope format version, `KeyId` (a short random id assigned when the key is created, naming which key of the tree encrypted the payload), the nonce and, once synced, `ServerSequence`; the account id comes from the device token and is not repeated in each event
 - Encrypted: the event itself, that is everything else, including event type, `DeviceId`, `Clock`, `Timestamp` and the event data, so the server learns neither content nor structure nor which device wrote what
 - Encryption with AES-GCM (256-bit key, fresh random nonce per event) via the Web Crypto API; `EventId` and account id are bound to the ciphertext as additional authenticated data, so the server cannot move or swap events unnoticed
-- Before encryption the payload is padded to a fixed size bucket (for example 256 B, 1 KB, 4 KB, 16 KB), so the size of an envelope does not reveal the length of titles and notes
-- The same envelopes are used in IndexedDB, on the server and in the export file
+- Before encryption the payload is padded to a fixed size bucket (the bucket list is fixed before the first release, see open decision Size limits), so the size of an envelope does not reveal the length of titles and notes
+- The same envelopes are used in the local store, on the server and in the export file
 - The export file has its own format version and a header with room for optional parts, so later additions (for example a protected key) do not break older apps
 - Readable export files are long-lived formats too: the JSON format carries its own format version, Markdown and OPML a version marker; every later version can import readable files of every earlier release
 - An envelope may be re-encrypted, for example when a local tree is merged into a received one and adopts its key; this does not count as rewriting the log, because the event inside stays unchanged
@@ -509,7 +531,8 @@ Example of an event before encryption:
 
 **Persistence**
 
-- Client: IndexedDB (via a JS interop wrapper) with two stores: `events` and `snapshots`
+- Client: the local store (IndexedDB or SQLite, see open decision), behind a port of the application layer, with these logical stores per tree: events (envelopes), sync progress per destination, snapshots, search and backlink index, tree access (key, `KeyId`, account), device token, device settings and UI state, drafts, local usage counters; plus the layout version for migrations
+- Drafts: text being edited is saved locally as a draft on every change and becomes an event at the end of the editing session; after a crash or a killed tab, the draft is recovered and turned into an event, so R1 covers text being typed as well
 - Snapshots speed up startup; the projection replays only events after the latest snapshot
 - Snapshots and the search index record the app version whose projection built them; after an update they are discarded and rebuilt from the full log, so events skipped by the older version take effect
 - All local data is partitioned by tree: events, snapshots, key, account identity and search index are stored per tree id
@@ -523,25 +546,26 @@ Example of an event before encryption:
 - Initial implementation: linear scan with case-insensitive and fuzzy matching, highlighting the path to each hit
 - Matching rules: case is always ignored; accents are ignored by default ("Bar" finds "Bär", "cafe" finds "café"), with a toggle for exact accents; German equivalents always apply (ä = ae, ö = oe, ü = ue, ß = ss), since content carries no language; Markdown markers are ignored; emojis are searchable like any other character
 - Search behaviour is not a foundation decision: the index is rebuilt from the log and can change with any app version
-- If trees grow large: an incremental local index (inverted index of titles and notes) persisted in IndexedDB and updated as events are applied
+- If trees grow large: an incremental local index (inverted index of titles and notes) persisted in the local store and updated as events are applied
 - Search scope can be limited to the currently zoomed subtree
-- Limitation accepted: search only works on paired devices that have synced
 - Each tree has its own search index; one search can cover the open tree or all trees on the device, and every hit shows which tree it belongs to
 
 **Security**
 
 - End-to-end encryption: event payloads are encrypted on the device with the key (Web Crypto API); the server stores and relays only ciphertext
-- The key never leaves the user's devices except through pairing (QR code or typed code); the server holds no key material
+- The key never leaves the user's devices except through pairing, sharing (QR code or typed code) or an explicit key backup; the server holds no key material
 - Readable export is unencrypted by design: it is never the default, never automatic, always for one tree only, confirmed after a warning, and the file name marks it as unencrypted
+- Authorship is not proven: `DeviceId` and `userId` are not signed, so anyone holding a tree's key can write events that appear to come from another device or user; the server, or someone with a device token, can withhold events or send old ones again; the app's explanation of what it protects says so
 - Each tree's key is random; it is stored extractable, because pairing and sharing must put it into a QR code (accepted trade-off: a non-extractable key would be safer against theft from the device)
 - Authentication only by device token; all sync endpoints require a valid token; there are no user accounts or logins on the server, because they would link all trees of a user to one identity
-- Server registration uses an account secret that is created on the device and shared only through pairing
+- Server registration uses an account secret that is created on the device and shared only through pairing, sharing or an explicit key backup
 - Events are scoped per account; no cross-account access
 - HTTPS everywhere
 - Content is untrusted input: titles, notes, labels, imported files and feedback texts may come from other people (shared trees); Markdown is rendered without raw HTML; only the link schemes `node:`, `https:`, `http:` and `mailto:` are allowed, everything else is shown as plain text; a collection of known attack strings must render harmlessly (gate); the Content Security Policy is the second line of defence, not the only one
 - The server stores account secrets and device tokens only as hashes, so stolen server data cannot be used to join an account or push events
 - Server counters for operations and bet signals: rejected registrations, rate-limit hits, number of accounts, storage used; counts only, no IP addresses or account ids, nothing per user; kept in memory or stored as daily totals at most; visible only to the operator
 - Abuse protection on the server: maximum request size; maximum events and storage per account; rate limiting of registrations and requests in memory only (the IP address is used for the moment, never stored); registration mode per server: open, or only with a server join code that the operator hands out; the owner's default server uses "join code only"
+- Join codes are stored on the server only as hashes (ADR-043); every member of a tree learns its server's join code through `tree.server-changed`; changing a join code is a server setting and does not affect accounts already registered
 - Device tokens are issued per device and tree, so the server gets no ready-made link between the trees of one device
 
 **Metadata protection**
@@ -554,11 +578,11 @@ Example of an event before encryption:
 - Remaining leak accepted for B: when devices are online and roughly when trees are edited, the IP address of each request, and over time the user's approximate time zone and changes of it when travelling
 - The IP address is mitigated outside the app: the user can use a VPN, or not switch on server sync at all and sync by file only; the app explains this where server sync is switched on
 - Sync requests send a neutral `Accept-Language` header, so they do not reveal the user's language and region
-- Even without server sync, the app contacts its static host when it checks for updates and so reveals the IP address
+- Even without server sync, the app contacts the server it was loaded from (the hosted container or a self-hosted server) when it checks for updates and so reveals the IP address
 - Requirement: the user controls updates, for example "check for updates only when I ask"; the app applies an update only when the user allows it
-- Limitation in the browser: when an installed PWA is opened while online, the browser itself checks the static host for a new service worker (at most about once a day) and the app cannot switch this off; full control over update checks needs the self-hosted package (the browser then contacts that server) or the later store app or downloadable package
+- Limitation in the browser: when an installed PWA is opened while online, the browser itself checks the server the app was loaded from for a new service worker (at most about once a day) and the app cannot switch this off; full control over update checks needs the self-hosted package (the browser then contacts that server) or the later store app or downloadable package
 - Where VPNs are blocked or risky, the user can stay without any server contact apart from installing and updating: file-only sync, updates only on request; or use a self-hosted server they trust
-- A network observer (for example an internet provider) can still see that a device connects to the sync server or the static host; the app says so in plain words and does not promise to hide that ThoughtTree is used
+- A network observer (for example an internet provider) can still see that a device connects to the sync server or the server the app was loaded from; the app says so in plain words and does not promise to hide that ThoughtTree is used
 - Manual and scheduled sync reduce what B sees: without a live connection, the server sees only the sync times, not when the user is online or writing
 - Default sync mode: when server sync is switched on, the user chooses the mode; live is preselected, because reliability comes first; in manual and scheduled mode the app shows how many changes are not yet synced and reminds the user when changes have waited longer than a time the user sets
 - Scheduled sync runs at a random moment within a time window the user sets; the app converts the window to UTC once and keeps it fixed, so sync times show neither round local times nor the switch to and from daylight saving time nor travel; the price is that in summer the window shifts by an hour in local time
@@ -604,7 +628,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Privacy & Security | Metadata: padding, batching, no stored IP addresses or times, neutral headers and UTC scheduling work as decided | Gate |
 | Privacy & Security | Integrity: tampered, moved or swapped envelopes and wrong keys are detected and rejected | Gate |
 | Privacy & Security | Access: the server never gives one account's events to another account's token | Gate |
-| Usability | Core flows on touch (capture, edit, move, indent, zoom, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate |
+| Usability | Core flows on touch (capture, edit, move, indent, zoom, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate, once the UX foundation decisions (principles, undo, component library, tokens, gestures) are made; until then pending |
 | Usability | Accessibility: no violations in automated checks; screen reader experience through user feedback | Gate (automated), watch (feedback) |
 | Usability | Languages: every text exists in English and German, a missing text fails the build; layouts hold with longer German texts | Gate |
 | Usability | Feel: daily use by the owner and user feedback | Watch (judgement) |
@@ -614,7 +638,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Maintainability | Fast feedback: the gate suite runs on every push within a set time budget (for example 10 minutes) | Watch |
 | Maintainability | Reproducibility: every failure can be repeated from its seed; unreliable tests are fixed, never ignored | Gate |
 | Maintainability | Architecture rules: automated checks that Domain does not depend on the browser, the server does not reference Domain, only Contracts are shared | Gate |
-| Maintainability | Depth of Domain tests measured by mutation testing, not coverage alone; changed Domain code must reach the agreed mutation score | Gate (changed code), watch (overall) |
+| Maintainability | Depth of Domain tests measured by mutation testing, not coverage alone; changed Domain code must reach the mutation score set before the first release | Gate in the push gate for changed code; watch nightly for the whole Domain |
 | Performance | Download size budget and complexity checks on reference data (1,000, 10,000, 100,000 events); absolute timings are design targets, not tests | Gate |
 
 Harness for agentic development (the test harness is the specification the agents work towards):
@@ -641,8 +665,8 @@ Kinds of tests and loops: tests are not a numbered stack; they are grouped by ro
 | Loop | Time | Contains |
 | --- | --- | --- |
 | Inner loop (the agent while working) | Seconds | Compiler; specifications, properties and component rules of the area being changed; UI specifications in Chromium |
-| Push gate | Within the time budget (for example 10 minutes) | All specifications and all securing tests (including size budget and complexity checks), regression seeds, UI specifications in all three browsers, end-to-end smoke set |
-| Nightly | Hours | Long simulations, full end-to-end, mutation testing |
+| Push gate | Within the time budget (for example 10 minutes) | All specifications and all securing tests (including size budget and complexity checks), regression seeds, mutation testing of changed Domain code, UI specifications in all three browsers, end-to-end smoke set in Chromium, self-hosted container test (CI with Docker) |
+| Nightly | Hours | Long simulations, full end-to-end in three browsers, mutation testing of the whole Domain |
 | After deployment | Minutes | Deployment smoke tests |
 | Before release | Minutes | Short release check on the owner's phone |
 
@@ -680,7 +704,7 @@ Format tests:
 - Old reads new: CI builds the previous release from its git tag and lets its Domain read data written by the current version; every node and every text must be there (INV-10)
 - Round trip: the current version writes and reads back without loss
 - Encryption: fixed test data (key, nonce, authenticated data) gives exactly the expected bytes; tampered envelopes (flipped byte, swapped `EventId`, other account id, wrong `KeyId`) are rejected; every encrypted size is one of the padding buckets; an unknown future envelope version leads to a clear request to update, not a crash
-- Local storage is a format too: a new app version opens the IndexedDB of the previous one and migrates it without loss; tested in real browsers in the end-to-end tests
+- Local storage is a format too: a new app version opens the local store of the previous one and migrates it without loss; tested in real browsers in the end-to-end tests
 - The API is a format too: it carries a version in its address (for example `/v1/events`); the new server handles requests of old clients, the new client works with an older server or says clearly that the server needs updating
 - Pairing and sharing codes: user name and server address have a maximum length; a test checks that the largest possible code fits into a QR code that phones read reliably
 
@@ -708,7 +732,7 @@ UI specification tests:
 - Tests wait for meaningful states (the app signals idle after an action) and Playwright's automatic waiting, never for fixed times; animations are off in the spec host
 - Selectors: domain concepts (node, title, conflict marker, …) by test ids from the catalogue; controls by role and accessible name (from the resource files), so a control without an accessible name cannot be found; phone, tablet and desktop sizes; runs headless without network or secrets
 
-Accessibility tests (target: WCAG 2.2, level AA):
+Accessibility tests (target: WCAG 2.2, level AA; automated tools cover only part of the criteria, the rest relies on feedback, see risks):
 
 - An axe scan (Deque.AxeCore.Playwright) after every step of every UI specification; any finding fails the test
 - Core specifications run a second time with the keyboard as the only input: every flow completable, focus always visible, no keyboard traps, sensible focus order, focus in the right place after actions
@@ -746,22 +770,26 @@ Performance tests:
 - The app sets timing marks (`performance.mark`) for app start until the tree is visible, input until display, search until first hits, and app start until the first sync completes; tests read them, and they help diagnosis on real devices
 - Gate: a download size budget for the first load, measured exactly, with a fixed upper limit
 - Gate: complexity checks: replay, search and conflict detection are measured with 1,000, 10,000 and 100,000 events and the ratio is checked, so a quadratic algorithm fails regardless of the machine's speed
-- Private feedback inbox (optional): instead of a GitHub issue, feedback can be sent to the server's inbox, end-to-end encrypted on the device with the operator's public key; the server stores only ciphertext, the operator collects and decrypts it on their own device, and it is deleted from the server after collection; available to accounts with the permission flag, assigned at first as an experiment to a share of accounts; an operations flag can switch the inbox off; only on the user's initiative, with the same preview; the IP address is not stored; what arrives is untrusted input, and the operator decides what becomes a GitHub issue
+- Absolute timings are not used as tests, because they are too unreliable on shared machines; the targets of section 10 are design targets, secured by the size budget and the complexity checks
+
+Feedback, reports and signals:
+
+- Private feedback inbox (optional): instead of a GitHub issue, feedback can be sent to the server's inbox, end-to-end encrypted on the device with the operator's public key; the server stores only ciphertext, the operator collects and decrypts it on their own device, and it is deleted from the server after collection; available to accounts with the permission flag, assigned at first as an experiment to a share of accounts (an account is a tree, so the app offers the inbox if any tree on the device has the permission); the operator's public key is reported by the server with the capabilities; an operations flag can switch the inbox off; only on the user's initiative, with the same preview; the IP address is not stored; what arrives is untrusted input, and the operator decides what becomes a GitHub issue
 - Diagnostics view: the app shows its timing marks and the shape of the tree on demand, only on the device
 - Performance report: if a user finds the app too slow, they can send a report containing only numbers: timings, app version, build and environment, storage engine, AOT or interpreted, browser and operating system family, screen size class, the active switches (release, experiment and permission flags, the tree features of the affected tree, whether experimental features are on for this device), and the shape of the tree (number of nodes and events, depth, maximum width, distribution of note lengths, number of relations and conflicts); never titles, notes, names, labels, ids or timestamps; the user sees the report before sending and can edit or cancel it
-- The report is sent as a pre-filled GitHub issue that the user submits themselves, or copied or saved as a file; never through our server; the app says that a GitHub issue is linked to the user's GitHub account and public
+- The report is sent as a pre-filled GitHub issue that the user submits themselves, or copied or saved as a file, or optionally sent to the private feedback inbox end-to-end encrypted to the operator (ADR-055); never unencrypted through a server; the app says that a GitHub issue is linked to the user's GitHub account and public
 - Reports are untrusted input: the report is a JSON block with a fixed schema; the pipeline reads only that block, validated against the schema, and ignores all free text; agents treat it as data, never as instructions; a human label decides whether a report is worked on
 - From the tree shape in a report the harness generates a synthetic dataset of the same shape to reproduce the slowdown; once the cause is found, the dataset joins the reference datasets and its complexity check becomes a gate
 - Signals for bets (ADRs of kind `bet`) through the feedback form: each bet can define a few optional signal questions with fixed answer choices, shown in the feedback form; users can also tick "include usage summary": counts and shares computed on the device from one tree the user chooses (for example sync mode in use, conflicts resolved in the last 30 days, uses of predefined versus own relation types without names, share of titles with Markdown, median taps to capture); never content, names or timestamps; never automatic or by default; shared trees are excluded, because they contain other people's activity (only the number of trees and of shared trees on the device may be counted); shown in the preview like everything else
-- Every signal is defined in its bet's outcome block with exactly the numbers it collects; a new signal needs human approval
+- Local usage counters: the counts needed for usage summaries are kept on the device only, per tree, as daily totals for at most 30 days; never synced, never sent except in a usage summary the user ticks
+- Every signal is defined in its bet's card with exactly the numbers it collects; a new signal needs human approval
 - A regular agent review (for example monthly, as an issue) counts signal answers per bet and, when a review trigger has occurred, proposes a review of the ADR with the numbers; the decision stays with the owner
 - The report format is designed so that error reports (what went wrong and where in the code, without content) can use it later
-- Absolute timings are not used as tests, because they are too unreliable on shared machines; the targets of section 10 are design targets, secured by the size budget and the complexity checks
 
 Manual tests and feedback:
 
 - The owner's daily use on phone, tablet and desktop is the main manual test
-- In-app feedback: users (and the owner) send findings (bug, usability, accessibility, performance, other) from within the app, using the same mechanism as the performance report: a pre-filled GitHub issue the user submits, or copy or file; the user's own description, plus optionally the diagnostics block with numbers only; previewed and editable; never through our server; free text is untrusted input (ADR-051); a human label decides whether agents work on it; the feedback form itself is accessible
+- In-app feedback: users (and the owner) send findings (bug, usability, accessibility, performance, other) from within the app, using the same mechanism as the performance report: a pre-filled GitHub issue the user submits, copy or file, or the private feedback inbox (ADR-055); the user's own description, plus optionally the diagnostics block with numbers only; previewed and editable; never unencrypted through a server; free text is untrusted input (ADR-051); a human label decides whether agents work on it; the feedback form itself is accessible
 - Release check: before promotion to production, the owner runs a guided check of about five minutes on the phone, shown in the test build of the app: the update arrives and is applied with consent; the tree is complete; sync works; on the iPhone started from the home screen and offline; the result is sent with the same mechanism as an issue linked to the release, and is part of the manual approval
 - Exploratory testing by an agent: nightly or before a release, an agent uses the app with tasks (for example "collect ideas for a trip and sort them", "share a tree") at phone size and with keyboard only, and reports what was confusing, slow or broken; findings become issues that need a human label
 - No paid device clouds; free programmes for open-source projects can be checked once the repository is public
@@ -775,7 +803,7 @@ Compiler and analyzers (the first gate):
 Principles that shape the code from the start:
 
 - Everything random or time-based is replaceable: time comes only through .NET's `TimeProvider`, ids and random values (node ids, event ids, nonces, the random sync moment) through a replaceable generator, so every test can be reproduced exactly
-- Several devices can be simulated in one process without a browser: IndexedDB sits behind an interface with an in-memory implementation, and transports, scheduler and clock are replaceable; simulations run many devices with random online and offline phases, clock offsets, duplicate imports and merges, and check that all end with the same tree and the same conflicts
+- Several devices can be simulated in one process without a browser: the local store sits behind an interface with an in-memory implementation, and transports, scheduler and clock are replaceable; simulations run many devices with random online and offline phases, clock offsets, duplicate imports and merges, and check that all end with the same tree and the same conflicts
 - Stored formats are tested for compatibility: a collection of real stored data (events, envelopes, export files, pairing codes) from every released version is kept in the repository and read by every new version; the previously released Domain version reads events of the new version and must still see every node and every text (rules 1 to 4 of event versioning); fixed test data for encryption makes sure a library update cannot silently change the format
 
 Testing rules:
@@ -877,6 +905,13 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-022). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted nodes may be removed |
 | Key backup | How a tree survives the loss of all devices: a passphrase-protected key in the export file, a recovery code, or both; the key stays random and is only wrapped for backup, so this does not affect the rest of the architecture |
 | Serialization format | JSON for now (ADR-017); a compact binary format such as MessagePack if logs grow too large |
+| Sync API contract | Endpoints, request and response shapes, paging and limits of pulls, error and status codes, authentication per endpoint, the "server needs updating" signal, the hub messages, account deletion; defined in Contracts before the first release, because `v1` is frozen from then on (ADR-037) |
+| Size limits | Padding bucket list and behaviour above the largest bucket; maximum title and note length; maximum request size; maximum events and storage per account; maximum user name and server address length; size budget of the first load; to be fixed before the first release, because they become part of stored formats |
+| Key rotation | `KeyId` leaves room for changing a tree's key (for example after a leak); whether and how rotation is offered |
+| Membership | Removing a device or user from a tree (`device.left`), lifetime and revocation of device tokens by the account secret, what a member list shows after a tree was deleted on a device; and after merging trees: whether the merged tree's devices and users become members of the target tree, and what happens to the merged tree's account and devices |
+| Account deletion and retention | Deleting an account's log on the server with the account secret (after deleting a tree, after a merge, after moving to another server, on request); how long a server keeps data of accounts that are no longer used; data-protection duties of an operator |
+| Far-future events | Whether the user can accept or reject events from a clock far ahead instead of accepting them silently with a warning |
+| Replicas and live sync | Whether the server runs with one replica (in-memory rate limits and counters stay valid, no SignalR backplane) or several (needs a backplane and shared counters); whether live mode keeps a WebSocket open or uses notification on demand, because open connections prevent scaling to zero |
 
 ## 10. Quality Requirements
 
@@ -911,7 +946,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | # | Scenario | Expected | Secured by |
 | --- | --- | --- | --- |
 | U1 | Capture a thought on the phone | New node within two taps of opening the app (design target) | UI specifications |
-| U2 | Use without touch or without sight | Every flow completable with keyboard and screen reader; WCAG 2.2 AA | Accessibility tests, ADR-033 |
+| U2 | Use without touch or without sight | Every flow completable with keyboard and screen reader; WCAG 2.2 AA as the target, verified automatically for the automatable criteria and through feedback for the rest | Accessibility tests, ADR-033 |
 | U3 | Sharing, unencrypted export, merging trees | Never without a confirmed warning | Application layer tests, ADR-041 |
 | U4 | German interface with longer texts | Layout holds | Pseudo-localisation, UI specifications |
 
@@ -919,7 +954,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 
 | # | Scenario | Expected | Secured by |
 | --- | --- | --- | --- |
-| PO1 | Core flows in Chromium, WebKit and Firefox | Work in all three | End-to-end tests (nightly) |
+| PO1 | Core flows in Chromium, WebKit and Firefox | Work in all three | UI specifications (push gate), end-to-end tests (nightly) |
 | PO2 | Self-hosting on a Raspberry Pi | Runs without Azure, with SQLite | Container tests, ADR-047, ADR-048 |
 | PO3 | A user leaves ThoughtTree | Readable export complete; JSON imports back completely | Format tests, ADR-019 |
 
@@ -945,7 +980,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 ## 11. Risks and Technical Debt
 
 - Blazor WASM startup size and initial load time, increased by loading the culture data for all languages
-- IndexedDB access from Blazor requires JS interop; performance for large logs needs measurement
+- Local store access from Blazor requires JS interop (IndexedDB) or a Web Worker (SQLite); performance for large logs needs measurement
 - Event log growth: needs snapshotting and possibly compaction strategy
 - Conflict rules for moves are non-trivial; need thorough tests
 - Single developer: scope creep towards task management (the MLO trap)
@@ -956,6 +991,13 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 - Losing every device that holds a tree loses the tree, because the server only holds ciphertext
 - Hybrid clocks and replay order are easy to get subtly wrong; covered by property-based convergence tests
 - Old app versions on rarely used devices skip newer events and may show an outdated tree until updated
+- Authorship is not proven: anyone with a tree's key can write events that appear to come from another device or user; the server can withhold or replay events
+- Membership only grows: devices and users cannot yet be removed from a tree, and device tokens do not expire
+- A device with a clock far ahead, by mistake or on purpose in a shared tree, moves the clock of every device forward; last-writer-wins then stops following real time until real time catches up
+- Live mode keeps connections open, which can prevent scaling to zero and raise cost; with several server replicas, in-memory rate limits and counters are per replica and reset on every cold start
+- WCAG 2.2 AA is only partly verifiable automatically; screen reader experience relies on feedback
+- Server data of accounts that are no longer used stays until account deletion and retention are decided
+- LambdaTale is a niche dependency that every specification relies on
 
 ## 12. Glossary
 
@@ -970,7 +1012,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Parent / Children | The node directly above a node / the nodes directly below it |
 | Sibling Order | The order of the children under one parent; follows from replaying the events, each placing a node after a named sibling |
 | Hybrid Logical Clock | The clock carried by every event: UTC time plus a counter; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
-| Conflict | Two or more changes of the same field of a node made without seeing each other; shown to the user, who picks the value |
+| Conflict | Two or more changes with different values of the same field of an element (node, relation type, label, tree feature, server address) made without seeing each other; shown to the user, who picks the value |
 | Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
 | Collapse | Hide a node's children in the view; UI state of one device, not a domain event |
 | Zoom | Make a node the temporary root of the view |
@@ -987,13 +1029,14 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Pairing | Bringing a tree onto another device of the same user, via QR code or typed code |
 | Sharing | Giving a tree to another user by handing over its key and account identity; every user of a shared tree can read and change all of it |
 | Key | The end-to-end encryption key of one tree; exists only on devices that hold that tree |
-| Account | The identity of one tree towards the sync server (account id and account secret); one account per tree |
+| Account | The identity of one tree towards the sync server (account id and account secret); one account per tree; not a user account: there are no user accounts or logins on the server |
 | Account Secret | Secret created on the device with a tree; proves to the sync server that a device may join that tree's account |
 | Device Token | Credential that lets a device access a tree's event log on the sync server |
 | Event Envelope | The stored and transmitted form of an event: a few plaintext fields plus the encrypted payload |
 | Upcasting | Converting an event written in an older schema version to the current shape when it is read |
 | Sync Transport | The way events travel between devices (`ISyncTransport`): through the server or as an export file |
 | Export File | An encrypted file containing a tree's events, used for device-to-device sync and as a backup |
+| Readable Export | An unencrypted Markdown, OPML or JSON file with the current tree, without history |
 | Release Flag | A temporary switch, shipped with the app, that keeps an unfinished feature off in an environment |
 | Experiment Flag | A switch that gives a feature to a share of accounts, to learn whether it works; ends with the review of its bet card |
 | Operations Flag | A long-lived server switch that turns something off quickly if it causes trouble (kill switch) |
@@ -1001,3 +1044,32 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Bet | An architecture decision that rests on an assumption; its bet card says what should improve, how we notice it and when we review it |
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
 | PWA | Progressive Web App: installable, offline-capable web application |
+| Tree Access | What a device needs outside the event log to read and sync a tree: key, `KeyId`, account id, account secret |
+| User Identity | User id and user name of a person; carried to their other devices by pairing |
+| Tree Name | The title of the first visible top-level node |
+| `EventId` | Globally unique id of an event; readable in the envelope; the same id must always carry the same content |
+| `KeyId` | Short random id of a tree's key, readable in the envelope |
+| `ServerSequence` | Gap-free number the server gives each envelope of an account, in commit order; used only to track sync progress |
+| `replaces` | List of event ids of the changes an event replaces; used to detect conflicts |
+| `seen` | For each device of a tree, the highest clock a device had received from it; carried by `node.deleted` |
+| Envelope / Schema / App Version | Version of the stored envelope format / of one event type's shape / of the installed release |
+| Padding Bucket | One of the fixed sizes a payload is padded to before encryption |
+| Join Code | Code an operator hands out so that accounts can register on a server in "join code only" mode |
+| Sync Mode | Live, manual or scheduled; chosen per tree and device |
+| Relation / Relation Type | A typed, directed connection between two nodes of a tree / its type, defined per tree |
+| `node:` Link | A Markdown link to a node of the same tree by its id |
+| Backlink | A link or incoming relation shown on the node it points to |
+| Label | The name of a structural element (for example a relation type) in one language |
+| Draft | Text being edited, saved locally until it becomes an event at the end of the editing session |
+| Gate / Watch | A test result that stops delivery on a single failure / a measure that is tracked over time |
+| Invariant | A core rule of the domain with an id (INV-n), checked by property tests |
+| Reference Model | A deliberately naive projection that serves as the referee for the real one |
+| Regression Seed | A simulation seed that failed once and is replayed on every push |
+| Specify / Secure / Confirm | The three intents of tests: acceptance criteria / correctness and rules / the whole system in real environments |
+| Inner Loop / Push Gate | Tests an agent runs while working / tests that must pass on every push |
+| Spec Host | A test build of the client with hooks to load state and control time, never shipped |
+| Test Id Catalogue | Shared C# constants naming the `data-testid` of every element that shows a domain concept |
+| Bet Card | The entry for a bet in `docs/adr/bets.md`: TL;DR, outcome, assumption, signal, review trigger |
+| Diagnostics Block / Usage Summary | Numbers and switch states added to feedback / counts computed on the device from one tree the user chooses |
+| Feedback Inbox / Operator | The server's optional inbox for feedback encrypted to the operator / the person who runs a server |
+| MLO | MyLifeOrganized, the task outliner whose UI inspired ThoughtTree |
