@@ -576,6 +576,13 @@ Layer 1 – Domain tests:
 - Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterNodeId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation layer
 - Scenario tests in readable form (given events, when an action, then the tree) cover the runtime scenarios of section 6
 - Runs in under about 30 seconds on every push, with fixed seeds plus one new random seed; nightly runs use many more cases
+- Tooling: xUnit v3; CsCheck for property-based and model-based tests; Shouldly for assertions; LambdaTale v3 (bbv's port of xBehave.net to xUnit v3) for scenario tests; Verify for expected trees as text outlines; `FakeTimeProvider` for time; Stryker.NET for mutation testing (changed code via `--since`); Microsoft code coverage for information only; ArchUnitNET for architecture rules
+
+Layer 0 – compiler as the first gate:
+
+- Nullable reference types on, warnings treated as errors, .NET analyzers at a strict level, `dotnet format` checked in CI
+- Banned API analyzer (Microsoft.CodeAnalysis.BannedApiAnalyzers): forbidden calls (for example `DateTime.Now`, `Guid.NewGuid`, `new Random`, browser and I/O APIs in Domain) are compile errors with a message saying why
+- Snapshot files of Verify (`*.verified.*`) are protected like the stored test data: CI never accepts new snapshots automatically, and changes need human approval
 
 Principles that shape the code from the start:
 
