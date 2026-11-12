@@ -288,6 +288,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - Top level: a node without a parent is a top-level node; a tree can have one or several; there is no special root node, every node is created by `node.created`
 - Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; both are Unicode text and may contain emojis; search and sorting work on the text without Markdown markers
+- Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
 - Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
@@ -514,6 +515,7 @@ Example of an event before encryption:
 | ADR-19 | Unencrypted export only as a readable tree (Markdown, OPML, JSON) without history, never as an unencrypted event log; import creates a new tree | Gives a backup without the key and a way to move notes in and out of ThoughtTree; the history stays protected |
 | ADR-20 | No user accounts or login (such as OpenID Connect) on the server; only device tokens per device and tree | A login would link all trees of a user to one identity on the server, which the per-tree tokens avoid on purpose |
 | ADR-21 | The server address is a property of the tree, recorded by `tree.server-changed`; whether a device uses the server and its sync mode stay per device | All devices of a tree must meet on the same server; moving to another server propagates like any change; each device can still stay on file sync |
+| ADR-22 | Binary data, once supported, is stored as separate encrypted blobs referenced from events by id; never inside events | Events are replayed, synced and kept forever and are padded for small sizes; blobs can be fetched only when needed |
 
 **Open decisions**
 
@@ -523,6 +525,7 @@ Example of an event before encryption:
 | Sync service hosting | Azure Container Apps or Azure Functions |
 | Touch gestures for indent, outdent and move | To be designed and tested on phone and tablet |
 | Log growth | Whether and how old events can ever be compacted without breaking merges with devices that were offline |
+| Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-22). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted nodes may be removed |
 | Key backup | How a tree survives the loss of all devices: a passphrase-protected key in the export file, a recovery code, or both; the key stays random and is only wrapped for backup, so this does not affect the rest of the architecture |
 | Serialization format | JSON for now (ADR-17); a compact binary format such as MessagePack if logs grow too large |
 
