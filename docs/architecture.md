@@ -617,6 +617,12 @@ Simulation tests:
 - Every push runs the regression seeds plus a few new random ones within about 1 to 2 minutes; nightly runs use thousands of seeds and long runs; a seed that failed once is added to the regression list (`tests/data/regression-seeds`), which is append-only
 - Tooling: own harness built on CsCheck, so its generators and shrinking work for whole runs
 
+Application layer and component rule tests:
+
+- Use cases, UI state and UI decisions of the client application layer are tested with xUnit, fast and without a browser; privacy-critical confirmations (sharing, unencrypted export, merging trees) and language resources (every key in English and German, matching placeholders, no unused keys) are gates
+- bUnit is used only for generic rule checks: every component is rendered in a catalogue of sample states and checked for: test ids from the catalogue on every element that shows a domain concept, an accessible name on every interactive element, `dir="auto"` on user content, and no hard-coded text (rendered with pseudo-localisation, every visible text must be changed)
+- The test id catalogue is a set of C# constants named after the glossary concepts, shared by components and tests; UI specification and end-to-end tests are written in C# with Playwright for .NET
+
 UI specification tests:
 
 - Specify and check how the UI behaves while it is being built; usable in the agent's working loop; not end-to-end tests
