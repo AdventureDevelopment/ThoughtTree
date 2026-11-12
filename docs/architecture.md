@@ -821,17 +821,67 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 
 ## 10. Quality Requirements
 
-| Scenario | Target |
-| --- | --- |
-| Start the app offline | Full tree visible within 1 s for up to 10,000 nodes |
-| Edit a node | UI reflects change in under 50 ms |
-| Reconnect after 1 day offline | All local changes synced without data loss |
-| Concurrent edit on two devices | Both edits preserved or deterministically resolved |
-| Same events arrive in a different order on two devices | Both devices show exactly the same tree |
-| Search in a tree with 10,000 nodes | First results within 200 ms |
-| Import an export file with 10,000 events | Merged and visible within 5 s |
-| Attacker reads the whole server store | Learns no note content, no tree structure, no device labels, no note lengths, no IP addresses and no times of use |
-| Device used with no internet for weeks | Works fully; nothing is lost when it syncs again |
+Scenarios grouped by quality goal; "secured by" names the invariant, test kind or ADR that checks them.
+
+**Reliability**
+
+| # | Scenario | Expected | Secured by |
+| --- | --- | --- | --- |
+| R1 | App closed while writing | No event lost after reopening | End-to-end scenario 8, simulation |
+| R2 | Device offline for weeks, then syncs | Nothing lost; all devices show the same tree | Simulation, INV-5 |
+| R3 | Same events in a different order, with duplicates | Identical tree and conflicts on every device | INV-1, INV-2, INV-9 |
+| R4 | Two devices rename the same node offline | Both values kept, conflict shown, resolved once for all devices | INV-9, ADR-018 |
+| R5 | A device's clock is three days ahead | Same order on every device, warning shown | ADR-014, simulation |
+| R6 | Older app receives newer events | Sees every node and text, stays editable, shows a warning | INV-10, ADR-016 |
+| R7 | Data written by release 1 opened by any later release | Complete | Format tests |
+| R8 | Update migrates local storage | Nothing missing | ADR-038, end-to-end scenario 5 |
+
+**Privacy & Security**
+
+| # | Scenario | Expected | Secured by |
+| --- | --- | --- | --- |
+| P1 | Someone reads the whole server store | No content, structure, device labels, note lengths, IP addresses or times of use; this constrains the open decision on the server store | Server security tests |
+| P2 | Someone observes the running server | At most online times, approximate time zone and IP address (hidden by a VPN); never content | ADR-030 |
+| P3 | The server alters, moves or swaps envelopes | Detected and rejected | Format tests, ADR-015 |
+| P4 | Another user of a shared tree writes malicious Markdown | Renders harmlessly; no access to keys | ADR-052 |
+| P5 | Server data is stolen | Cannot be used to join accounts or push events | ADR-043 |
+| P6 | Code tries to contact a third party | The browser blocks it | ADR-045, deployment tests |
+
+**Usability**
+
+| # | Scenario | Expected | Secured by |
+| --- | --- | --- | --- |
+| U1 | Capture a thought on the phone | New node within two taps of opening the app (design target) | UI specifications |
+| U2 | Use without touch or without sight | Every flow completable with keyboard and screen reader; WCAG 2.2 AA | Accessibility tests, ADR-033 |
+| U3 | Sharing, unencrypted export, merging trees | Never without a confirmed warning | Application layer tests, ADR-041 |
+| U4 | German interface with longer texts | Layout holds | Pseudo-localisation, UI specifications |
+
+**Portability**
+
+| # | Scenario | Expected | Secured by |
+| --- | --- | --- | --- |
+| PO1 | Core flows in Chromium, WebKit and Firefox | Work in all three | End-to-end tests (nightly) |
+| PO2 | Self-hosting on a Raspberry Pi | Runs without Azure, with SQLite | Container tests, ADR-047, ADR-048 |
+| PO3 | A user leaves ThoughtTree | Readable export complete; JSON imports back completely | Format tests, ADR-019 |
+
+**Maintainability**
+
+| # | Scenario | Expected | Secured by |
+| --- | --- | --- | --- |
+| M1 | An agent changes Domain code | Gate result within 10 minutes; a failure names the broken invariant and the seed | Harness principles |
+| M2 | An agent weakens a test, stored test data or a baseline | Blocked; needs human approval | ADR-035 |
+| M3 | An agent adds a package with an incompatible licence | Push gate fails | ADR-050 |
+
+**Performance** (design targets, not tested as absolute numbers)
+
+| # | Scenario | Target | Secured by |
+| --- | --- | --- | --- |
+| PF1 | Start offline with 10,000 nodes | Tree visible within 1 s | Complexity checks, AOT decision |
+| PF2 | Edit a node | Display updated within 50 ms | Design target |
+| PF3 | Search with 10,000 nodes | First hits within 200 ms | Complexity checks |
+| PF4 | Import 10,000 events | Visible within 5 s | Complexity checks |
+| PF5 | First load | Within the download size budget (value to be set after the storage and AOT decisions) | Size budget gate |
+| PF6 | Ten times more data | About ten times the time, never more | Complexity checks |
 
 ## 11. Risks and Technical Debt
 
