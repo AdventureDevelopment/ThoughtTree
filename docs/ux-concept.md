@@ -78,7 +78,7 @@ The next morning the owner has made a coffee and drinks it in bed; awake, relaxe
 4. **Key moment:** the next idea belongs to the same project: one tap places it right below the idea just moved, no searching again (decision D-7)
 5. Stops when the mind is empty of ideas, not when the inbox is empty; ideas may stay in the inbox for a while (decision D-8)
 
-Pain point: searching for the node where a new note belongs.
+Pain point: searching for the node where a new note belongs. In MLO the target picker offers fixed targets (inbox, top and bottom of the root level), the five targets last used for moving, and browsing the whole tree, but no search; a target outside the recent five means digging through the tree. Answered by the target picker (decision D-9).
 
 Notes:
 
@@ -90,6 +90,7 @@ Principle candidates heard in journey B:
 - Stay in the flow: after an action the user stays where they were
 - No pressure: the inbox is a parking place, not a to-do list
 - Finding the place is the hard part; the app must make it easy
+- Start simple: features nobody has missed yet (for example pinned places) wait until use shows the need
 
 ## Decision log
 
@@ -103,3 +104,4 @@ Principle candidates heard in journey B:
 | D-6 | 2026-11-12 | 1 Principles (journey B) | Moving a node offers three ways, chosen by distance: drag and drop for nearby places; "Move to…" that finds the target by search or in a compact tree, shows the target's children and places the node at a chosen position; and moving it to the top level (its own root). "Move to…" is also the accessible alternative to dragging (ADR-033) | Journey B |
 | D-7 | 2026-11-12 | 1 Principles (journey B) | After a move the user stays where they were (the inbox); a short confirmation names the target and offers Undo and Go there. The app remembers the last placed node (device state, ADR-013): for the next node there are two one-tap choices, keep it in the inbox or place it right below the last placed node; a space typed at the start of an empty title (D-2) nests it under that node instead | Journey B |
 | D-8 | 2026-11-12 | 1 Principles (journey B) | No pressure to empty the inbox: no badges, no counts in warning colours, no reminders; at most a calm, neutral number of entries next to the inbox | Journey B |
+| D-9 | 2026-11-12 | 1 Principles (journey B) | One target picker for "Move to…" and for choosing a target: a search field at the top, focused at once, listing matching nodes with their path (using the on-device search and its matching rules); below it the fixed targets inbox, start and end of the top level; then about five recent targets (device state, ADR-013); then browsing the whole tree as a compact, collapsed view. After choosing, the target's children are shown so the node can be placed at a chosen position (D-6). Pinned places are left out until use shows the need | Journey B |
