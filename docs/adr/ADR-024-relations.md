@@ -6,6 +6,7 @@ applies_to: `src/ThoughtTree.Domain/**`
 
 - **MUST** model relations with `relation.added` / `relation.removed`, identified by from node, type id and to node
 - **MUST NOT** let relations change where a node sits
+- **MUST NOT** connect trees: relations and `node:` links only point to nodes of the same tree
 - **MUST** store the node ids of symmetric relations in a fixed order
 - **MUST** hide relations of deleted nodes and show them again on restore
 
