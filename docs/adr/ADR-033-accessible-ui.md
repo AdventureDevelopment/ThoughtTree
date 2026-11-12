@@ -4,11 +4,14 @@ id: ADR-033 · status: Accepted
 
 applies_to: `src/ThoughtTree.Client/**`
 
+- **MUST** meet WCAG 2.2, level AA
 - **MUST** make every component usable with screen readers and keyboard only
 - **MUST** offer an alternative (menu or keyboard command) for every drag or gesture
 - **MUST** use CSS logical properties; MUST NOT use `left`/`right` for layout direction
 - **MUST** render titles and note paragraphs with `dir="auto"`
-- **MUST** give elements used by tests a stable `data-testid`
+- **MUST** give elements showing a domain concept a `data-testid` from the catalogue; controls are found by role and accessible name
+- **MUST** announce changes that are not immediately visible through a live region
+- **MUST** keep touch targets at least 24×24 CSS pixels
 
 verify:
 

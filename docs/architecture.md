@@ -624,7 +624,17 @@ UI specification tests:
 - Written as specifications with LambdaTale on Playwright for .NET, in the domain language (given a state, when the user acts with real touch or keyboard input, then the visible result); they are the acceptance criteria of a UI feature and are protected like other gate tests
 - A spec host, a test build of the client in a separate test-only project, is loaded once per test worker and offers hooks to load a state, reset it and control time; test hooks never reach the production build
 - Tests wait for meaningful states (the app signals idle after an action) and Playwright's automatic waiting, never for fixed times; animations are off in the spec host
-- Selectors come only from the test id catalogue; phone, tablet and desktop sizes; runs headless without network or secrets
+- Selectors: domain concepts (node, title, conflict marker, …) by test ids from the catalogue; controls by role and accessible name (from the resource files), so a control without an accessible name cannot be found; phone, tablet and desktop sizes; runs headless without network or secrets
+
+Accessibility tests (target: WCAG 2.2, level AA):
+
+- An axe scan (Deque.AxeCore.Playwright) after every step of every UI specification; any finding fails the test
+- Core specifications run a second time with the keyboard as the only input: every flow completable, focus always visible, no keyboard traps, sensible focus order, focus in the right place after actions
+- Changes that are not immediately visible are announced through a live region; specifications check the announcement
+- Touch targets at least 24×24 CSS pixels; usable at 320 pixels width without horizontal scrolling; nothing cut off with enlarged text and text spacing; no animations with reduced motion; axe scan again in forced-colours mode
+- A unit test checks the contrast of every text and background pair of the design tokens in light and dark mode
+- Component rules (accessible names, alternatives to gestures) as described for the component rule checks
+- Manual before each release: real screen readers (VoiceOver, TalkBack, NVDA), understandable announcements and labels, pleasant use without sight
 - End-to-end tests are reduced to what needs the whole system: sync through the real server, offline start and installation, update control, migration of local storage, file export and import between browser contexts, browser differences
 
 Compiler and analyzers (the first gate):
