@@ -19,12 +19,12 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-007: Device-to-device sync by encrypted file
 
-**TL;DR:** (to be filled)
+**TL;DR:** We bet that manual sync by file is worth offering, because some users can't or won't use a server.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** Devices sync without internet and without any server; the export file doubles as a backup.
+- **Assumption:** People without a usable server (no internet, VPNs blocked, privacy concerns) accept a manual step (export, hand over, import) and really use it.
+- **Signal:** Your own use; feedback about file sync; answers to "How do your devices sync?" (server / file / both / not at all); in the usage summary, the number of file imports in the last 30 days.
+- **Review when:** a store app or package with automatic discovery on the local network exists · feedback says the manual steps are too cumbersome · after the repository has been public for a while, nobody answers "file".
 
 <a id="adr-012"></a>
 
