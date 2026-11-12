@@ -30,12 +30,12 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-012: One key per tree, equal access
 
-**TL;DR:** (to be filled)
+**TL;DR:** We bet that one simple shared key is enough, because people share trees rarely and only with people they trust.
 
-- **Outcome:** (to be filled)
-- **Assumption:** (to be filled)
-- **Signal:** (to be filled)
-- **Review when:** (to be filled)
+- **Outcome:** Encryption stays simple and robust; sharing works offline with one code.
+- **Assumption:** Sharing is rare and only with trusted people; nobody needs read-only access or to take access back; when trust ends, starting a new tree and moving the content by readable export and import is acceptable.
+- **Signal:** Feedback asking for read-only access or revocation; answers to "Have you ever wanted to take back access to a shared tree?" (no / yes, once / yes, often); in the usage summary, the number of trees and of shared trees on the device (counts only, no activity of shared trees).
+- **Review when:** the first feedback asking for read-only access or revocation arrives · a shared key is known to have leaked · sharing with larger groups (more than a few people) becomes a real use case.
 
 <a id="adr-023"></a>
 
