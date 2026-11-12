@@ -57,7 +57,7 @@ Notes:
 - Inside the app, capture happens directly in the outline: a new line in the tree, typed in place; there is one way of entering text, the note is written in the node's detail view (decision D-10)
 - Fast typers write `Title ## Note` in one go; the text after `##` becomes the note (decision D-11)
 - The light capture sheet of MLO comes from its home-screen widget; a PWA cannot offer widgets, so this waits for the later store app or package; until then app shortcuts (press and hold the app icon: "New idea", Android and Windows only, not iPhone) are an option to consider
-- Tags are planned in the architecture only as a later tree feature (section 8, switches); this journey is a wish for them
+- Tags are added while typing with `@@` (decision D-14)
 - Emojis in titles are already supported (section 8, text)
 - Design target U1 (new node within two taps of opening the app) applies directly
 
@@ -104,6 +104,8 @@ The owner is planning something and knows there are already notes about it somew
 3. Links the found notes to the plan instead of moving them; they stay where they are and the plan points to them (decision D-13)
 4. Stays in the filtered view after linking and continues with the next match [ASSUMPTION, by analogy with D-7]
 
+Principle candidate heard in journey C and in the wish for tags: several dimensions for notes; the tree is one order (where a note belongs), tags and relations add more (what kind, which context, which status, what it relates to).
+
 ## Decision log
 
 | # | Date | Topic | Decision | Source |
@@ -121,3 +123,4 @@ The owner is planning something and knows there are already notes about it somew
 | D-11 | 2026-11-12 | 1 Principles (journey A) | While typing a title in the outline, `##` splits it: the text before is the title, the text after becomes the note (appended on a new line if the node already has a note), applied when editing the title ends; `\##` keeps two literal `#` in the title. Works the same everywhere a title is typed (as in MLO). [ASSUMPTION] appending to an existing note and the escape are to be confirmed in the UI specification | Owner tried it in MLO |
 | D-12 | 2026-11-12 | 1 Principles (journey C) | Search filters the outline in place: only matching nodes and their ancestors stay visible, matches are highlighted, a match in a note is marked on its node; clearing the search returns to the previous view. Uses the on-device search and its matching rules (architecture section 8) | Journey C |
 | D-13 | 2026-11-12 | 1 Principles (journey C) | A relation can be created from either end: "Link to…" on any node opens the target picker (D-9), the same picker for both directions; the new relation gets the type `related`, which can be changed afterwards [ASSUMPTION: default type]; relations and backlinks as in ADR-024 | Journey C |
+| D-14 | 2026-11-12 | 1 Principles (wish for tags) | Notes can carry several tags, now rather than later; uses: finding, grouping across branches, context and status. Typing `@@name` in a title adds the tag (suggesting existing tags while typing); when editing ends the text is removed from the title and the tag is shown as a chip; tapping a chip filters the tree to the nodes with that tag, like search (D-12); a tag picker in the detail view is the alternative without typing. Architecture change proposed as [ADR-058](adr/ADR-058-tags.md) (Proposed) | Owner, Trello and MLO experience |
