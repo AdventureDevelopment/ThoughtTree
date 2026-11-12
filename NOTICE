@@ -1,0 +1,13 @@
+ThoughtTree
+Copyright 2026 The ThoughtTree authors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The name "ThoughtTree" is not licensed under the Apache License. You may use
+and redistribute this software under the terms of the licence, but not under
+the name "ThoughtTree" or in a way that suggests it is the original project.
+
+Third-party notices
+-------------------
+Notices of third-party components that are distributed with this product
+(for example in the container image) are added here by the release pipeline.
