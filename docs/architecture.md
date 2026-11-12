@@ -282,6 +282,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - GitHub Actions builds and tests every push to `main`
 - A successful build deploys automatically to test
 - Promotion to production is a manual approval step
+- Every release is reproducible from its git tag, and its build is archived as a release artifact
 - Unfinished features stay switched off in production through development flags
 
 ## 8. Cross-cutting Concepts
@@ -651,6 +652,14 @@ Server tests:
 - API tests over HTTP with the ASP.NET Core test host: versioned endpoints and the recorded requests of every release; the SignalR hub only says that new events are available, never content
 - Security tests (gate): requests without a token, with an invalid token or with a token of another account are rejected; registration with a wrong account secret or join code fails; malformed envelopes and oversized requests are rejected cleanly; store and captured logs contain no IP addresses and no receive times
 - The self-hosted package is started as a container and tested in CI (push gate) and nightly, not in the inner loop, because the agent's sandbox may not have Docker
+
+End-to-end tests:
+
+- Scenarios: (1) two devices sync through the real server, live mode with a SignalR notification and manual mode; (2) offline start from the service worker cache, edits survive a reload; (3) installability: manifest, service worker, installation criteria; (4) update control between two real builds, rebuild of snapshots and search index after consent; (5) migration of local storage from the previous release; (6) file export in one browser context, import in another; (7) pairing by typed code, and in Chromium by QR code with a video file as fake camera; (8) app closed while writing, no event lost; (9) scenario 1 against the self-hosted container
+- The fixture starts the whole system locally (published client as static files, server with SQLite), without Azure or secrets; every test gets fresh browser contexts and a fresh server store; no waiting for fixed times; the server can run with fake time
+- On failure Playwright keeps a trace, stored by CI as an artifact for diagnosis; no traces for passing runs; no automatic retries
+- Push gate: scenarios 1, 2, 6 and 8 in Chromium; nightly: all scenarios in Chromium, WebKit and Firefox, scenario 9 in CI with Docker
+- Every release is reproducible from its git tag and its build is archived (for example attached to a GitHub release), from the first release on; update, migration and "old reads new" tests depend on it
 
 Compiler and analyzers (the first gate):
 
