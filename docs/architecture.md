@@ -292,6 +292,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Relations: besides the tree structure (parent, child, sibling order), nodes can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where a node sits
 - A relation is identified by its three parts (from node, type, to node), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
 - Relations of a deleted node are hidden but kept, and come back when the node is restored
+- Relation types: a relation refers to a type id, never to a name, so renaming a type changes no relation; a type has a name, a name for the reverse direction (for example "supports" / "supported by") and whether it is symmetric; for symmetric types the two node ids are stored in a fixed order, so A–B and B–A are the same relation
+- Types are defined per tree by `relation-type.defined` events; there are no built-in types: when a tree is created the app writes the predefined types (initially `related`, `supports`, `contradicts`, `example_of`, `cites`, `depends_on`) as ordinary events, after which they can be renamed, removed or extended like any other type
+- Predefined types have fixed ids that are the same in every tree, so merging two trees does not duplicate them
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
 - Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
@@ -311,8 +314,10 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | `device.joined` | `deviceId`, `deviceLabel`, `userId`, `userName` |
 | `device.label-changed` | `label`; a device can only rename itself, so the device is the one that wrote the event |
 | `user.name-changed` | `userId`, `userName` |
-| `relation.added` | `fromNodeId`, `type`, `toNodeId` |
-| `relation.removed` | `fromNodeId`, `type`, `toNodeId` |
+| `relation.added` | `fromNodeId`, `typeId`, `toNodeId` |
+| `relation.removed` | `fromNodeId`, `typeId`, `toNodeId` |
+| `relation-type.defined` | `typeId`, `name`, `reverseName`, `symmetric`, `replaces`; also used to rename or change a type |
+| `relation-type.removed` | `typeId` |
 | `tree.server-changed` | `address` (empty for no server), `replaces` |
 
 - `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent, or first top-level node when the parent is empty
@@ -524,6 +529,7 @@ Example of an event before encryption:
 | ADR-22 | Binary data, once supported, is stored as separate encrypted blobs referenced from events by id; never inside events | Events are replayed, synced and kept forever and are padded for small sizes; blobs can be fetched only when needed |
 | ADR-23 | One parent per node, for good; no clones; links instead | Moves, cycle checks, delete conflicts, sibling order, zoom path and readable export all rely on a single parent |
 | ADR-24 | Relations between nodes are a separate concept from the tree, with their own events, identified by from, type and to | Allows any number of typed connections without touching the single-parent tree; older apps skip relation events without missing nodes |
+| ADR-25 | Relation types are referenced by id and defined per tree by events; the starting set is predefined (written as events at tree creation, with fixed ids), not built into the app | One mechanism for all types; the user owns and can change every type; fixed ids keep merges free of duplicates |
 
 **Open decisions**
 
