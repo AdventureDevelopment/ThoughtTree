@@ -303,7 +303,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - The app language follows the device's language and can be changed in the settings; this setting belongs to the device and is not synced; changing it reloads the app
 - Dates, times and numbers are shown in the format of the chosen language; they are stored as before (ISO 8601 with UTC offset)
 - All languages are available offline: the service worker caches all resource files
-- Only the culture data for the supported languages is loaded, to keep the initial download small
+- The culture data for all languages is loaded from the start, so dates, numbers and sorting work in every language and adding a language later only needs its resource file, without further downloads; the price is a larger initial download
 - Structural elements that users can define (relation types now; tags, note kinds and similar later) carry no names themselves; their names are labels, one per language, set by `label.set` events, like a resource file inside the tree
 - Languages are identified by standard language tags such as `de`, `de-CH`, `en`
 - A device shows the label in this order: label in the tree for the device's language (`de-CH`), label in the tree for its base language (`de`), for predefined elements the app's own resource files, any label in the tree
@@ -578,7 +578,7 @@ Example of an event before encryption:
 
 ## 11. Risks and Technical Debt
 
-- Blazor WASM startup size and initial load time
+- Blazor WASM startup size and initial load time, increased by loading the culture data for all languages
 - IndexedDB access from Blazor requires JS interop; performance for large logs needs measurement
 - Event log growth: needs snapshotting and possibly compaction strategy
 - Conflict rules for moves are non-trivial; need thorough tests
