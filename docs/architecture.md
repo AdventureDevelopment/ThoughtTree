@@ -87,7 +87,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Device-to-device sync by encrypted file**: works without internet and is triggered manually; one device exports its event log as an encrypted file, the user hands it over (AirDrop, Nearby Share, USB), the other device imports and merges it. A native wrapper with automatic local discovery is a possible later upgrade
 - **User controls when to sync**: server sync runs only when the user wants it: live (continuous, with real-time updates), manual (on request), or scheduled at times the user plans; the mode is chosen per tree and per device
 - **Later distribution as a store app or downloadable package**: adds reliable background sync at planned times and control over updates, which a PWA in the browser cannot fully provide
-- **Self-hostable sync server**: the server address is configurable per tree; the sync service and the static app are also offered as a package that anyone can run on a server they trust
+- **Self-hostable sync server**: each tree records its server address as an event, so all its devices agree on it; the sync service and the static app are also offered as a package that anyone can run on a server they trust
 - **User controls app updates**: the app checks for and applies updates only when the user allows it
 - **Later option: sync through a cloud folder** the user already uses; the app writes the encrypted export file there, which looks like ordinary file sync on the network; needs the store app or downloadable package
 
@@ -107,7 +107,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Component | Responsibility |
 | --- | --- |
 | Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
-| Tree Manager | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, server address, sync mode; removes the key when a tree is deleted |
+| Tree Manager | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, whether this device uses the tree's server, sync mode; removes the key when a tree is deleted |
 | Command Handler | Turns user actions into domain events; stamps them with the next hybrid logical clock value and the change they replace |
 | Local Event Store | Append-only log in IndexedDB; tracks sync progress per destination (server, devices synced by file) |
 | Projection | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
@@ -238,12 +238,13 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Scenario: Switching on server sync (optional)**
 
-1. On any device the user switches on server sync and chooses the server: the default service or a self-hosted one, by its address
+1. On any device the user switches on server sync for the tree and chooses the server: the default service or a self-hosted one, by its address; the device writes a `tree.server-changed` event, so all devices of the tree learn the address
 2. The device contacts the Sync Service with the account identity; the first device to do so registers the account, later devices prove membership with the account secret
 3. Sync Service issues a device token for this device and this tree; a device that syncs several trees holds one token per tree
 4. The user chooses the sync mode for this tree on this device: live, manual or scheduled
 5. The device pushes its event log and pulls events it does not have yet
-6. Other paired devices join the same way whenever the user switches server sync on there
+6. Other devices of the tree know the address from the event (or from the pairing code) and join the same way whenever the user switches server sync on there; each device decides for itself whether it uses the server
+7. Moving the tree to another server is a new `tree.server-changed` event; each device that uses the server pushes its whole log to the new one, duplicates are skipped
 
 **Scenario: Device-to-device sync without internet**
 
@@ -304,6 +305,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | `device.joined` | `deviceId`, `deviceLabel`, `userId`, `userName` |
 | `device.label-changed` | `label`; a device can only rename itself, so the device is the one that wrote the event |
 | `user.name-changed` | `userId`, `userName` |
+| `tree.server-changed` | `address` (empty for no server), `replaces` |
 
 - `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent, or first top-level node when the parent is empty
 - `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
@@ -356,7 +358,7 @@ Example of an event before encryption:
 
 - Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`); with the hybrid clock this is usually the latest edit in real time
 - `Timestamp` is never used to decide anything; only `Clock` is, which stays consistent even when device clocks drift
-- Events that change a node's title, note or position name the change they replace (`replaces`, a list of event ids); a missing value means the event replaces nothing known
+- Events that change a node's title, note or position, or the tree's server address, name the change they replace (`replaces`, a list of event ids); a missing value means the event replaces nothing known
 - Conflict: two or more changes of the same field of the same node that no later change replaces; the projection shows the winner by agreed order and marks the node, offering all competing values
 - The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
 - Delete conflict: a deletion conflicts with every change to the deleted node or anywhere in its subtree (including nodes created or moved into it) that the deleting device had not seen when it deleted
@@ -453,7 +455,7 @@ Example of an event before encryption:
 
 - The event log restores a tree's content; the tree access restores the right to read and sync it; it is kept outside the log by the Tree Manager
 - Tree access consists of: key, `KeyId`, account id and account secret
-- Not part of it: device tokens (per device, can be requested again with the account secret), sync mode (a setting of each device), tree name (comes from the events)
+- Not part of it: device tokens (per device, can be requested again with the account secret), whether a device uses the server and its sync mode (settings of each device), tree name and server address (come from the events)
 - Pairing, sharing and a future key backup all hand over exactly the tree access; pairing adds the user identity, sharing does not
 - The pairing and sharing code may additionally contain the server address, if the tree uses server sync, so the new device can fetch the log without the user typing the address
 - The code has its own format version, so later additions do not break pairing between old and new apps
@@ -509,6 +511,7 @@ Example of an event before encryption:
 | ADR-18 | Concurrent changes of the same field are marked as conflicts and resolved by the user; changes name the change they replace | Last-writer-wins can still pick the wrong value (wrong device clock); the user sees and fixes it, and the fix is an ordinary event |
 | ADR-19 | Unencrypted export only as a readable tree (Markdown, OPML, JSON) without history, never as an unencrypted event log; import creates a new tree | Gives a backup without the key and a way to move notes in and out of ThoughtTree; the history stays protected |
 | ADR-20 | No user accounts or login (such as OpenID Connect) on the server; only device tokens per device and tree | A login would link all trees of a user to one identity on the server, which the per-tree tokens avoid on purpose |
+| ADR-21 | The server address is a property of the tree, recorded by `tree.server-changed`; whether a device uses the server and its sync mode stay per device | All devices of a tree must meet on the same server; moving to another server propagates like any change; each device can still stay on file sync |
 
 **Open decisions**
 
