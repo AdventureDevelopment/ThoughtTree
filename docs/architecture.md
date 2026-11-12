@@ -775,6 +775,7 @@ Testing rules:
 
 **UI / UX**
 
+- The UX concept is a separate document: [ux-concept.md](ux-concept.md)
 - Accessible from the start: every component works with screen readers and keyboard only; every drag or gesture has an alternative (menu or keyboard command); sufficient contrast and scalable text
 - Touch-first for phone and tablet: tap to edit, drag-and-drop to move, gestures for indent and outdent (details to be designed)
 - Zoom into any node as if it were its own document
