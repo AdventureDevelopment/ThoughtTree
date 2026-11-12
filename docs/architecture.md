@@ -277,7 +277,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - GitHub Actions builds and tests every push to `main`
 - A successful build deploys automatically to test
 - Promotion to production is a manual approval step
-- Unfinished features stay switched off in production through feature flags
+- Unfinished features stay switched off in production through development flags
 
 ## 8. Cross-cutting Concepts
 
@@ -341,6 +341,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | `relation-type.removed` | `typeId` |
 | `label.set` | `elementId`, `field` (for example `name`, `reverseName`), `language`, `text`, `replaces` |
 | `label.removed` | `elementId`, `field`, `language` |
+| `tree.feature-changed` | `feature`, `enabled`, `replaces` |
 | `tree.server-changed` | `address` (empty for no server), `replaces` |
 
 - `afterNodeId` names the sibling the node is placed directly after; empty means first child of the parent, or first top-level node when the parent is empty
@@ -499,11 +500,15 @@ Example of an event before encryption:
 - The pairing and sharing code may additionally contain the server address, if the tree uses server sync, so the new device can fetch the log without the user typing the address
 - The code has its own format version, so later additions do not break pairing between old and new apps
 
-**Feature flags**
+**Feature flags and tree features**
 
-- Unfinished features are switched off by feature flags (Microsoft.FeatureManagement), in the client and on the server
-- Flags are set per environment through configuration; production only switches a feature on once it is complete
-- Flags never change the event model: events of a feature that is switched off are still stored, synced and replayed
+- Three kinds of switches are kept apart: development flags, tree features and device settings
+- Development flags keep unfinished code switched off (Microsoft.FeatureManagement), in the client and on the server; they belong to the app version and the environment, not to a tree, and are never events
+- Development flags come only from configuration shipped with the app, per environment, in its static files; there is no remote flag service, no targeting by user and no telemetry, so flags need no further server contact, work for file-only users, and a self-hosted package brings its own configuration
+- Development flags are temporary: a flag is removed once its feature is complete in production; permanent options are settings, not flags
+- Tree features are features the user chooses for a tree (for example relations, later tags); they are recorded by `tree.feature-changed` events, so all devices of a tree, including those of other users of a shared tree, agree on them; older apps ignore feature names they do not know
+- Device settings (language, sync mode, use of the server, optionally showing experimental features on this device) stay on the device and are not synced
+- No switch ever makes trees differ: switches only hide commands and UI; the projection always applies every event its app version knows, so switching a tree feature off hides for example relations but does not remove them
 
 **Testing**
 
@@ -635,5 +640,6 @@ Example of an event before encryption:
 | Upcasting | Converting an event written in an older schema version to the current shape when it is read |
 | Sync Transport | The way events travel between devices (`ISyncTransport`): through the server or as an export file |
 | Export File | An encrypted file containing a tree's events, used for device-to-device sync and as a backup |
-| Feature Flag | A switch that keeps an unfinished feature off in an environment |
+| Development Flag | A temporary switch, shipped with the app, that keeps an unfinished feature off in an environment |
+| Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
 | PWA | Progressive Web App: installable, offline-capable web application |
