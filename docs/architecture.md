@@ -289,6 +289,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Top level: a node without a parent is a top-level node; a tree can have one or several; there is no special root node, every node is created by `node.created`
 - Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; both are Unicode text and may contain emojis; search and sorting work on the text without Markdown markers
 - Every node has exactly one parent (or none at top level), for good; a node cannot appear in several places; where something is needed in two places, a link points to it
+- Links inside text: a title or note links to a node with a standard Markdown link using the `node:` scheme, for example `[project ideas](node:a71c4e0b-…)`; node ids never change, so links survive moves and renames
 - Relations: besides the tree structure (parent, child, sibling order), nodes can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where a node sits
 - A relation is identified by its three parts (from node, type, to node), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
 - Relations of a deleted node are hidden but kept, and come back when the node is restored
@@ -312,6 +313,8 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Content (titles and notes) is stored as written and never translated in the log
 - All text is normalised before it goes into an event (titles, notes, labels, names), by the Command Handler and by readable import: Unicode normalisation form NFC; line breaks in notes stored as `\n` only; line breaks in titles replaced by spaces; emoji sequences stay unchanged
 - Search and comparisons normalise as well, as a safeguard against events from a faulty or very old app
+- Right-to-left text: every title and note paragraph is shown with automatic direction detection (`dir="auto"`), so content in Arabic, Hebrew or mixed languages displays correctly in any interface language
+- No right-to-left interface for now, but the UI is built direction-neutral from the start: CSS logical properties (`margin-inline-start` instead of `margin-left`), and gestures defined relative to the reading direction ("towards the end of the line" instead of "to the right"), so a mirrored interface later needs no rework
 - Translating content on the fly is a possible later feature; it must run on the device, or only after explicit consent with a clear warning, because sending plain text to an external translation service would break end-to-end encryption
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
 - Tree name: the title of the first top-level node; renaming that node or placing another node first renames the tree, with no event of its own
