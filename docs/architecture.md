@@ -113,11 +113,39 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 | Building block | Responsibility |
 | --- | --- |
-| ThoughtTree.Client (Blazor WASM) | UI, local event store, projections, sync client |
-| ThoughtTree.Domain (class library) | Event definitions, tree, projection, conflict detection, hybrid logical clock, validation; used by the client only |
-| ThoughtTree.Contracts (class library) | Event envelope, export file format, API data; shared by client and server |
-| ThoughtTree.Server.Core (class library) | Server logic independent of ASP.NET Core: registration, device tokens, duplicate detection, encrypted event store per account |
-| ThoughtTree.Server (ASP.NET Core) | Thin layer of endpoints around the core: sync API, SignalR hub |
+| ThoughtTree.Domain (class library) | Pure core: events, tree, projection, conflict detection, hybrid logical clock, command logic, validation; used by the client, the simulation and a later native app |
+| ThoughtTree.Contracts (class library) | Event envelope, export formats, pairing code, API data; shared by client and server |
+| ThoughtTree.Client.App (class library) | Application layer: use cases, UI state, view models, ports; no browser APIs |
+| ThoughtTree.Client (Blazor WASM) | Razor components and browser adapters (separated by namespace), resources, composition root |
+| ThoughtTree.Server.Core (class library) | Server logic and its ports, independent of ASP.NET Core |
+| ThoughtTree.Server (ASP.NET Core) | Shell around the core: sync API, SignalR hub, stores (in-memory, SQLite, Azure), serves the client app |
+
+**Code organisation**
+
+- A new project only for a real boundary: deployment (browser, container), sharing (client and server), or reuse (simulation, later native app); everything inside a project is separated by namespace and checked by architecture tests
+- Inside each project, folders by feature, named after the glossary and the same in every project: `Outline`, `Relations`, `Labels`, `Conflicts`, `Trees`, `Sync`, `Sharing`, `Search`, `Export`, `Feedback`, `Settings`; cross-cutting parts (`Clock`, `Text`, `Versioning`, `Crypto`) in their own folders
+- Shared build settings in the repository root: `Directory.Build.props` (nullable, warnings as errors, analyzers, banned API files), `Directory.Packages.props` (all package versions, checked for licences), `global.json` (fixed SDK), `.editorconfig`
+- Tests are grouped by intent, visible in folders, project names and a trait (`Intent = Specify | Secure | Confirm`), and the CI summary is grouped by intent:
+
+```text
+src/
+  ThoughtTree.Domain  ThoughtTree.Contracts  ThoughtTree.Client.App  ThoughtTree.Client
+  ThoughtTree.Server.Core  ThoughtTree.Server
+tests/
+  specify/   ThoughtTree.Domain.Specs  ThoughtTree.Client.App.Specs  ThoughtTree.Client.Specs  ThoughtTree.Server.Specs
+  secure/    ThoughtTree.Domain.Properties  ThoughtTree.Domain.Model  ThoughtTree.Formats.Compatibility
+             ThoughtTree.Simulation  ThoughtTree.Client.Rules  ThoughtTree.Server.StoreContract
+             ThoughtTree.Server.Security  ThoughtTree.Architecture.Rules  ThoughtTree.Performance.Budgets
+  confirm/   ThoughtTree.EndToEnd  ThoughtTree.Deployment.Smoke
+  support/   ThoughtTree.Testing  ThoughtTree.Client.SpecHost
+  data/      formats/  regression-seeds/  synthetic-datasets/
+infra/       Bicep templates
+deploy/      Docker Compose example for self-hosting
+docs/        architecture, ADRs
+```
+
+- `tests/specify/` is protected as a whole: specs may be added, changing or deleting one needs human approval; every runtime scenario of section 6 is covered by at least one spec that names it
+- Specs are written with LambdaTale in domain language at every level (Domain, application layer, UI, server); end-to-end tests use LambdaTale too but confirm rather than specify
 
 **Level 2 – Client**
 
@@ -819,6 +847,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-051](adr/ADR-051-user-reports.md) | User reports and feedback: sent by the user, untrusted input | `src/ThoughtTree.Client*/**`, `.github/**` |
 | [ADR-052](adr/ADR-052-untrusted-content.md) | Content is untrusted input | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**` |
 | [ADR-053](adr/ADR-053-functional-core-hexagonal-shell.md) | Functional core, hexagonal shell | `src/**` |
+| [ADR-054](adr/ADR-054-code-organisation.md) | Code organisation: boundaries, feature folders, test intents | `src/**`, `tests/**` |
 
 **Open decisions**
 

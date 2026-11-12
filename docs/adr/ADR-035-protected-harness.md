@@ -5,8 +5,9 @@ id: ADR-035 · status: Accepted
 applies_to: `tests/**`, `.github/**`
 
 - **MUST NOT** change or delete stored test data in `tests/data/formats` or regression seeds in `tests/data/regression-seeds`; both are append-only
-- **MUST NOT** change the reference model (`tests/ThoughtTree.Domain.Model`) or the invariant catalogue without human approval
+- **MUST NOT** change the reference model (`tests/secure/ThoughtTree.Domain.Model`) or the invariant catalogue without human approval
 - **MUST NOT** accept new or changed snapshot files (`*.verified.*`) automatically, in CI or by an agent; changes need human approval
+- **MUST NOT** change or delete specs in `tests/specify` without human approval
 - **MUST NOT** delete gate tests or weaken assertions without human approval
 - **MUST** tag every test that secures an ADR with its id (`[Trait("ADR", "ADR-0xx")]`)
 - **MUST** run the whole gate suite without Azure accounts, secrets or network
@@ -17,7 +18,7 @@ verify:
 
 ```bash
 git diff --diff-filter=DM origin/main -- tests/data/formats tests/data/regression-seeds | wc -l   # expect 0
-git diff origin/main -- tests/ThoughtTree.Domain.Model | wc -l   # expect 0 unless approved
+git diff origin/main -- tests/secure/ThoughtTree.Domain.Model | wc -l   # expect 0 unless approved
 git diff --diff-filter=DM origin/main -- '*.verified.*' | wc -l   # expect 0 unless approved
 ```
 
