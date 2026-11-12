@@ -512,10 +512,20 @@ Example of an event before encryption:
 
 **Testing**
 
+Principles that shape the code from the start:
+
+- Everything random or time-based is replaceable: time comes only through .NET's `TimeProvider`, ids and random values (node ids, event ids, nonces, the random sync moment) through a replaceable generator, so every test can be reproduced exactly
+- Several devices can be simulated in one process without a browser: IndexedDB sits behind an interface with an in-memory implementation, and transports, scheduler and clock are replaceable; simulations run many devices with random online and offline phases, clock offsets, duplicate imports and merges, and check that all end with the same tree and the same conflicts
+- Stored formats are tested for compatibility: a collection of real stored data (events, envelopes, export files, pairing codes) from every released version is kept in the repository and read by every new version; the previously released Domain version reads events of the new version and must still see every node and every text (rules 1 to 4 of event versioning); fixed test data for encryption makes sure a library update cannot silently change the format
+
+Testing rules:
+
 - The Domain project carries most of the logic and is covered by unit tests without browser or server
-- Property-based tests check convergence: the same set of events, in any arrival order and with duplicates, always gives the same tree
-- Further property-based tests cover moves that would create cycles, references to deleted or moved siblings, and replay after snapshots
-- The Sync Service is tested with integration tests against the chosen store; the client with component tests and a few end-to-end tests in a browser
+- Property-based tests check convergence: the same set of events, in any arrival order and with duplicates, always gives the same tree; further ones cover cycles, references to deleted or moved siblings, conflicts and replay after snapshots
+- Privacy is tested automatically: padding sizes, no IP addresses or receive times stored, neutral `Accept-Language`
+- Browser tests also run on WebKit (Safari's engine), where most platform limitations come from
+- The self-hosted package is tested in CI with its own store
+- Test data never contains real notes
 
 **UI / UX**
 
