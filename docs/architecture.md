@@ -18,6 +18,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - See where changes come from: every device has a label (for example "Tablet"), and a node shows which device last changed it and when
 - Explicit sharing: pairing another device of one's own and sharing a tree with another user are two separate actions; every tree shows whether it is private or shared, and with whom
 - Usable where VPNs are blocked: file-only sync stays a full alternative, the user controls app updates, and the sync server can be self-hosted
+- Readable export and import: a tree can be exported unencrypted as Markdown, OPML or JSON, and such files can be imported as a new tree
 - Honest about protection: the app states plainly what it protects (content) and what it does not hide (that and when ThoughtTree is used)
 
 **Quality goals**
@@ -113,6 +114,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Sync Engine | Exchanges events through an `ISyncTransport`: push unsynced encrypted events, pull remote events, decrypt, merge and apply |
 | Server Transport | `ISyncTransport` over the Sync API and Sync Hub |
 | File Transport | `ISyncTransport` that writes the encrypted export file and reads an imported one |
+| Readable Export/Import | Exports the current tree unencrypted as Markdown, OPML or JSON; imports such files as a new tree |
 | Auth Client | Device token handling behind `IAuthProvider`; swappable for OIDC later |
 | Service Worker | Caches app shell and assets for offline start; applies app updates only when the user allows it |
 
@@ -165,6 +167,14 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 3. On B the user adds a child to N and renames one of N's children
 4. After the next sync, N is deleted on both devices, but marked as a conflict, because the deletion had not seen B's changes
 5. The user sees the conflict, for example in a list of conflicts of the tree, and chooses: keep N deleted, or restore N with B's changes
+
+**Scenario: Readable export and import**
+
+1. The user chooses "Export readable" for one tree and picks Markdown, OPML or JSON
+2. The app warns that the file is not encrypted and anyone who gets it can read the whole tree; the user confirms
+3. The app writes the current tree, without history, deleted nodes or device information, into a file whose name marks it as unencrypted
+4. On any device, also one without the tree's key, the user chooses "Import readable" and picks such a file, for example an OPML export from another outliner
+5. The app creates a new tree with its own key and writes ordinary `NodeCreated` events for the imported nodes
 
 **Scenario: Device with a clock far ahead**
 
@@ -355,7 +365,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - All local data is partitioned by tree: events, snapshots, key, account identity and search index are stored per tree id
 - The app asks the browser for persistent storage (`navigator.storage.persist()`) so local data is not evicted under storage pressure
 - The export file doubles as a backup; the app reminds the user to export when a tree has never been synced or exported for a while, at an interval the user can set
-- Limitation: the export file is encrypted with the tree's key, so it only helps while a device with the key still exists (see open decision Key backup)
+- Limitation: the export file is encrypted with the tree's key, so it only helps while a device with the key still exists (see open decision Key backup); the readable export is a backup that works without the key
 
 **Search**
 
@@ -370,6 +380,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 
 - End-to-end encryption: event payloads are encrypted on the device with the key (Web Crypto API); the server stores and relays only ciphertext
 - The key never leaves the user's devices except through pairing (QR code or typed code); the server holds no key material
+- Readable export is unencrypted by design: it is never the default, never automatic, always for one tree only, confirmed after a warning, and the file name marks it as unencrypted
 - Each tree's key is random; it is stored extractable, because pairing and sharing must put it into a QR code (accepted trade-off: a non-extractable key would be safer against theft from the device)
 - Authentication by device token behind `IAuthProvider`; all sync endpoints require a valid token; OpenID Connect is an optional later upgrade
 - Server registration uses an account secret that is created on the device and shared only through pairing
@@ -443,6 +454,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 | ADR-13 | UI state (collapse, zoom, open tree) is device-local and never synced; only domain events enter the event log | Keeps the log a record of content changes; each device keeps its own view |
 | ADR-14 | Events are ordered by a hybrid logical clock plus device id, not by plain wall-clock time or arrival order | Every device must compute the same tree from the same events; the latest edit in real time should usually win, also after long offline periods; device clocks drift and arrival order differs per device |
 | ADR-18 | Concurrent changes of the same field are marked as conflicts and resolved by the user; changes name the change they replace | Last-writer-wins can still pick the wrong value (wrong device clock); the user sees and fixes it, and the fix is an ordinary event |
+| ADR-19 | Unencrypted export only as a readable tree (Markdown, OPML, JSON) without history, never as an unencrypted event log; import creates a new tree | Gives a backup without the key and a way to move notes in and out of ThoughtTree; the history stays protected |
 | ADR-15 | Only `EventId`, envelope version, `KeyId` and server sequence stay in plaintext; event type, device, clock and data are encrypted | The server only needs to store, deduplicate and relay; everything else would reveal structure and activity. Accepted consequence: the server can never filter or compact events by type. `KeyId` keeps later key rotation possible |
 | ADR-16 | Event versioning is downward compatible (events only grow, structure only through the basic events, new information in new event types, missing means unchanged); unknown events are kept and synced but skipped, and the tree stays editable with a warning | Devices run different app versions; an older device must keep working and never miss nodes or texts; no device may drop another device's events |
 | ADR-17 | Events are serialized as JSON with fixed type names | Readable and easy to debug; padding hides size differences anyway; type names independent of code |
