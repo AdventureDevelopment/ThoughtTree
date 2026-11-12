@@ -55,8 +55,8 @@ Inherited from the architecture and applying on top: accessible (ADR-033), and h
 
 The owner wakes up in bed, still half asleep; an idea comes up that must not be lost. Phone, probably one hand.
 
-1. Opens ThoughtTree from the home screen; it shows the place last worked on, with a clearly visible capture button (decision D-4)
-2. Taps the capture button: the inbox opens with a fresh, empty line
+1. Opens ThoughtTree from the home screen; it shows the place last worked on, with the bottom toolbar and its capture button 📥 in the middle (decisions D-4, D-17)
+2. Taps 📥: the inbox opens with a fresh, empty line
 3. Types the title right away, often starting with an emoji
 4. **Key moment:** the idea is saved; from now on nothing can be lost
 5. Optionally adds context: more text (the note) and a tag
@@ -131,6 +131,11 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`)
 5. Look: colours for tags or not (touches the design tokens, topic 4)
 
+Bottom toolbar (D-17):
+
+6. Which actions it holds besides 📥 capture and ＋ add here (search, move and more are candidates); decided with the layout model and touch interaction (topics 5 and 6)
+7. Reach with one hand: the outermost buttons may be too far for the thumb; to be checked on a real phone
+
 ## Decision log
 
 | # | Date | Topic | Decision | Source |
@@ -151,3 +156,4 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 | D-14 | 2026-11-12 | 1 Principles (wish for tags) | Notes can carry several tags, now rather than later; uses: finding, grouping across branches, context and status. Typing `@@name` in a title adds the tag (suggesting existing tags while typing); when editing ends the text is removed from the title and the tag is shown as a chip; tapping a chip filters the tree to the nodes with that tag, like search (D-12); a tag picker in the detail view is the alternative without typing. Architecture change proposed as [ADR-058](adr/ADR-058-tags.md) (Proposed) | Owner, Trello and MLO experience |
 | D-15 | 2026-11-12 | 1 Principles (wish for tags) | The details of tags (duplicates, names with spaces, managing, nesting, colours) are parked as open questions for feature work | Owner |
 | D-16 | 2026-11-12 | 1 Principles | The eight UX principles in section "UX principles" are agreed, condensed from journeys A to C; accessible and honest about protection are inherited from the architecture | Journeys A–C |
+| D-17 | 2026-11-12 | 1 Principles (journeys A, B) | The phone layout has a bottom toolbar with the main actions; the capture button 📥 (capture into the inbox, D-4) sits in its middle, ＋ adds a new note at the current place. Only one floating-looking button (📥, docked in the bar); no second floating button. Contents of the bar and one-handed reach are open questions. Sketches of the variants compared: bottom toolbar, select then act, tap empty space, one button with inbox in the top bar | Owner, sketch comparison |
