@@ -336,7 +336,7 @@ docs/        architecture, ADRs
 - GitHub Actions signs in to Azure through OpenID Connect federation; no deployment secrets are stored, and agents never see deployment credentials
 - Promotion to production is a manual approval step
 - Every release is reproducible from its git tag, and its build is archived as a release artifact
-- Unfinished features stay switched off in production through development flags
+- Unfinished features stay switched off in production through release flags
 
 ## 8. Cross-cutting Concepts
 
@@ -748,7 +748,7 @@ Performance tests:
 - Gate: complexity checks: replay, search and conflict detection are measured with 1,000, 10,000 and 100,000 events and the ratio is checked, so a quadratic algorithm fails regardless of the machine's speed
 - Private feedback inbox (optional): instead of a GitHub issue, feedback can be sent to the server's inbox, end-to-end encrypted on the device with the operator's public key; the server stores only ciphertext, the operator collects and decrypts it on their own device, and it is deleted from the server after collection; available to accounts with the permission flag, assigned at first as an experiment to a share of accounts; an operations flag can switch the inbox off; only on the user's initiative, with the same preview; the IP address is not stored; what arrives is untrusted input, and the operator decides what becomes a GitHub issue
 - Diagnostics view: the app shows its timing marks and the shape of the tree on demand, only on the device
-- Performance report: if a user finds the app too slow, they can send a report containing only numbers: timings, app version, build and environment, storage engine, AOT or interpreted, browser and operating system family, screen size class, the active switches (development flags, the tree features of the affected tree, whether experimental features are on for this device), and the shape of the tree (number of nodes and events, depth, maximum width, distribution of note lengths, number of relations and conflicts); never titles, notes, names, labels, ids or timestamps; the user sees the report before sending and can edit or cancel it
+- Performance report: if a user finds the app too slow, they can send a report containing only numbers: timings, app version, build and environment, storage engine, AOT or interpreted, browser and operating system family, screen size class, the active switches (release, experiment and permission flags, the tree features of the affected tree, whether experimental features are on for this device), and the shape of the tree (number of nodes and events, depth, maximum width, distribution of note lengths, number of relations and conflicts); never titles, notes, names, labels, ids or timestamps; the user sees the report before sending and can edit or cancel it
 - The report is sent as a pre-filled GitHub issue that the user submits themselves, or copied or saved as a file; never through our server; the app says that a GitHub issue is linked to the user's GitHub account and public
 - Reports are untrusted input: the report is a JSON block with a fixed schema; the pipeline reads only that block, validated against the schema, and ignores all free text; agents treat it as data, never as instructions; a human label decides whether a report is worked on
 - From the tree shape in a report the harness generates a synthetic dataset of the same shape to reproduce the slowdown; once the cause is found, the dataset joins the reference datasets and its complexity check becomes a gate
@@ -839,7 +839,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-028](adr/ADR-028-tree-access.md) | Tree access | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-029](adr/ADR-029-text-normalisation.md) | Text normalisation before writing | `src/ThoughtTree.Domain/**` |
 | [ADR-030](adr/ADR-030-metadata-protection.md) | Metadata protection | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**` |
-| [ADR-031](adr/ADR-031-switches.md) | Development flags, tree features, device settings | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**` |
+| [ADR-031](adr/ADR-031-switches.md) | Kinds of switches | `src/ThoughtTree.Client/**`, `src/ThoughtTree.Server*/**`, `src/ThoughtTree.Domain/**` |
 | [ADR-032](adr/ADR-032-resource-texts.md) | App texts in resource files | `src/ThoughtTree.Client/**` |
 | [ADR-033](adr/ADR-033-accessible-ui.md) | Accessible, direction-neutral UI | `src/ThoughtTree.Client/**` |
 | [ADR-034](adr/ADR-034-replaceable-time-random.md) | Replaceable time and randomness | `src/**` |
@@ -994,6 +994,10 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Upcasting | Converting an event written in an older schema version to the current shape when it is read |
 | Sync Transport | The way events travel between devices (`ISyncTransport`): through the server or as an export file |
 | Export File | An encrypted file containing a tree's events, used for device-to-device sync and as a backup |
-| Development Flag | A temporary switch, shipped with the app, that keeps an unfinished feature off in an environment |
+| Release Flag | A temporary switch, shipped with the app, that keeps an unfinished feature off in an environment |
+| Experiment Flag | A switch that gives a feature to a share of accounts, to learn whether it works; ends with the review of its bet card |
+| Operations Flag | A long-lived server switch that turns something off quickly if it causes trouble (kill switch) |
+| Permission Flag | A flag per account on the server that says what the account may do |
+| Bet | An architecture decision that rests on an assumption; its bet card says what should improve, how we notice it and when we review it |
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
 | PWA | Progressive Web App: installable, offline-capable web application |
