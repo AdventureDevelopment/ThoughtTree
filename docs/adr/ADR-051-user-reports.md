@@ -5,7 +5,7 @@ id: ADR-051 · status: Accepted
 applies_to: `src/ThoughtTree.Client*/**`, `.github/**`
 
 - **MUST** offer in-app feedback (bug, usability, accessibility, performance, other) and the release check through the same mechanism
-- **MUST** include in the diagnostics block only numbers: timings, app version, storage engine, platform family, screen size class and the shape of the tree
+- **MUST** include in the diagnostics block only numbers and switch states: timings, app version, build and environment, storage engine, platform family, screen size class, active development flags, tree features of the affected tree, whether experimental features are on for this device, and the shape of the tree
 - **MUST NOT** include titles, notes, names, labels, ids or timestamps
 - **MUST** show the report before sending and let the user edit or cancel it
 - **MUST** send only by a pre-filled GitHub issue the user submits, or by copy or file; **MUST NOT** send reports through our server or automatically
