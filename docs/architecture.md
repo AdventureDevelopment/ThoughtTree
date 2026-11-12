@@ -601,6 +601,16 @@ Layer 3 – Simulation tests:
 - Every push runs the regression seeds plus a few new random ones within about 1 to 2 minutes; nightly runs use thousands of seeds and long runs; a seed that failed once is added to the regression list (`tests/data/regression-seeds`), which is append-only
 - Tooling: own harness built on CsCheck, so its generators and shrinking work for whole runs
 
+UI specification tests (position among the layers to be decided):
+
+- Specify and check how the UI behaves while it is being built; usable in the agent's working loop; not end-to-end tests
+- The real client in a real browser with everything behind it faked (storage, server, time); seconds per test; Chromium in the fast loop, WebKit and Firefox in the push gate
+- Written as specifications with LambdaTale on Playwright for .NET, in the domain language (given a state, when the user acts with real touch or keyboard input, then the visible result); they are the acceptance criteria of a UI feature and are protected like other gate tests
+- A spec host, a test build of the client in a separate test-only project, is loaded once per test worker and offers hooks to load a state, reset it and control time; test hooks never reach the production build
+- Tests wait for meaningful states (the app signals idle after an action) and Playwright's automatic waiting, never for fixed times; animations are off in the spec host
+- Selectors come only from the test id catalogue; phone, tablet and desktop sizes; runs headless without network or secrets
+- End-to-end tests are reduced to what needs the whole system: sync through the real server, offline start and installation, update control, migration of local storage, file export and import between browser contexts, browser differences
+
 Layer 0 – compiler as the first gate:
 
 - Nullable reference types on, warnings treated as errors, .NET analyzers at a strict level, `dotnet format` checked in CI
