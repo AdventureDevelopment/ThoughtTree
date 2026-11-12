@@ -110,7 +110,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | --- | --- |
 | Outline UI | Tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
 | Tree Manager | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, whether this device uses the tree's server, sync mode; removes the key when a tree is deleted |
-| Command Handler | Turns user actions into domain events; stamps them with the next hybrid logical clock value and the change they replace |
+| Command Handler | Wires user actions to the command logic in ThoughtTree.Domain, which decides which events to write, with clock, `replaces` and `seen`; stores the result |
 | Local Event Store | Append-only log in IndexedDB; tracks sync progress per destination (server, devices synced by file) |
 | Projection | Builds the in-memory tree from events; incremental updates; snapshots; derives conflicts |
 | Search | Client-side full-text search over the projection; optional local index |
@@ -550,6 +550,32 @@ Harness for agentic development (the test harness is the specification the agent
 8. Documentation is part of the harness: this document, its ADRs and a short agent guide in the repository (rules, commands, what may and may not be changed) give agents the intent; changing an ADR is a human decision
 9. UI tests use stable test identifiers on elements, not texts or layout
 10. Feedback is fast enough for small steps: besides the full gate within the time budget, a fast subset for the area being changed answers within seconds
+
+Layer 1 – Domain tests:
+
+- Covers everything that decides what the tree is: projection, sibling order, cycles, hybrid clock, conflict detection, relations, types, labels, tree features, derived facts (private or shared, tree name), text normalisation, versioning, and the command logic that decides which events a user action writes
+- Domain is pure logic: no storage, network, browser or asynchronous I/O; time and ids come from outside
+- Invariant catalogue: the core rules, each with an id; every test that checks an invariant names its id, so a failure says which rule broke
+
+| Id | Invariant |
+| --- | --- |
+| INV-1 | Order independence: any order of the same events gives the same tree |
+| INV-2 | Duplicates harmless: applying an event twice changes nothing |
+| INV-3 | Merge is union: merging logs in any grouping gives the same tree |
+| INV-4 | Tree shape: every node has at most one parent, there are no cycles, every visible node is reachable from top level |
+| INV-5 | Nothing lost: every node ever created is in the projection (visible or deleted), every text ever written is in its history |
+| INV-6 | Snapshot equivalence: snapshot plus the remaining events gives the same tree as a full replay |
+| INV-7 | Incremental equals full: applying events one at a time gives the same tree as rebuilding |
+| INV-8 | Clock moves forward: a new event's clock is above every clock in the local log |
+| INV-9 | Conflicts agree: all devices with the same events see the same conflicts; a resolution removes them everywhere |
+| INV-10 | Older apps miss nothing: skipping unknown events still shows every node and text of the known events |
+| INV-11 | Normalised text: every text in every event is NFC; normalising twice changes nothing |
+| INV-12 | Symmetric relations are one: A–B and B–A of a symmetric type are the same relation |
+
+- Reference model: a deliberately naive projection (sort all events, replay one by one) is the referee; property tests check that the real, optimised projection always gives exactly what the model gives; the model is protected like the stored test data and changes only with human approval
+- Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterNodeId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation layer
+- Scenario tests in readable form (given events, when an action, then the tree) cover the runtime scenarios of section 6
+- Runs in under about 30 seconds on every push, with fixed seeds plus one new random seed; nightly runs use many more cases
 
 Principles that shape the code from the start:
 
