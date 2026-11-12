@@ -65,7 +65,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | --- | --- | --- |
 | Browser / OS | Service Worker, IndexedDB, Web App Manifest, Web Crypto API | Installability, offline cache, local persistence, client-side encryption |
 | Sync Service (ASP.NET Core on Azure) | REST + SignalR | Push/pull of encrypted events, real-time notifications |
-| Authentication (initially device tokens, later optional OpenID Connect) | Bearer token | Identifies which account's event log a device may access; kept behind an `IAuthProvider` abstraction so it can be swapped |
+| Authentication (device tokens) | Bearer token | Identifies which account's event log a device may access; one token per device and tree, no user accounts |
 | Other devices (own or of other users) | Pairing or sharing flow (QR code or typed code) | Hands over a tree's key and account identity; no server involvement in key material |
 | File transfer of the OS (share sheet, AirDrop, Nearby Share, USB) | File download / file picker, Web Share API where available | Carries the encrypted export file between devices |
 
@@ -76,7 +76,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Offline-first**: events are appended locally in IndexedDB first, then synchronised
 - **Sync by exchanging event logs** instead of whole documents, which keeps conflicts small and mergeable
 - **ASP.NET Core backend** as a thin event store and relay (REST for push/pull, SignalR for live updates)
-- **Shared domain project** (.NET class library) containing events, aggregates and projections, used by client and server
+- **Domain project for the client, contracts project shared with the server**: the server cannot decrypt events, so it needs only the envelope, the export file format and the API data; all domain logic (events, tree, projection, conflicts, clock) lives in a client-side domain project
 - **End-to-end encryption**: event payloads are encrypted on the device with the tree's key, handed over only by pairing or sharing; the server stores and relays ciphertext plus minimal routing metadata (account id, event id, sequence number)
 - **Several independent trees per device**: each tree has its own key, account identity and event log; nothing is shared between trees
 - **Deterministic replay**: every device orders a tree's events by hybrid logical clock and device id, so all devices compute the same tree from the same events
@@ -97,8 +97,9 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Building block | Responsibility |
 | --- | --- |
 | ThoughtTree.Client (Blazor WASM) | UI, local event store, projections, sync client |
-| ThoughtTree.Domain (class library) | Event definitions, tree aggregate, projection logic, validation |
-| ThoughtTree.Server (ASP.NET Core) | Authentication, event store per user, sync API, SignalR hub |
+| ThoughtTree.Domain (class library) | Event definitions, tree, projection, conflict detection, hybrid logical clock, validation; used by the client only |
+| ThoughtTree.Contracts (class library) | Event envelope, export file format, API data; shared by client and server |
+| ThoughtTree.Server (ASP.NET Core) | Registration, device tokens, encrypted event store per account, sync API, SignalR hub |
 
 **Level 2 – Client**
 
@@ -120,7 +121,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 | Update Control | Checks for and applies app updates only with the user's consent; triggers rebuilding snapshots and search index after an update |
 | Storage Guard | Requests persistent storage, warns when the app runs in a plain browser tab instead of being installed, reminds the user to export |
 | Readable Export/Import | Exports the current tree unencrypted as Markdown, OPML or JSON; imports such files as a new tree |
-| Auth Client | Device token handling behind `IAuthProvider`; swappable for OIDC later |
+| Auth Client | Holds and sends the device token of each tree |
 | Service Worker | Caches app shell and assets for offline start; applies app updates only when the user allows it |
 
 **Level 2 – Server**
@@ -402,7 +403,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 - The key never leaves the user's devices except through pairing (QR code or typed code); the server holds no key material
 - Readable export is unencrypted by design: it is never the default, never automatic, always for one tree only, confirmed after a warning, and the file name marks it as unencrypted
 - Each tree's key is random; it is stored extractable, because pairing and sharing must put it into a QR code (accepted trade-off: a non-extractable key would be safer against theft from the device)
-- Authentication by device token behind `IAuthProvider`; all sync endpoints require a valid token; OpenID Connect is an optional later upgrade
+- Authentication only by device token; all sync endpoints require a valid token; there are no user accounts or logins on the server, because they would link all trees of a user to one identity
 - Server registration uses an account secret that is created on the device and shared only through pairing
 - Events are scoped per account; no cross-account access
 - HTTPS everywhere
@@ -478,6 +479,7 @@ Each event carries: `EventId` (GUID), `DeviceId`, `Clock` (hybrid logical clock)
 | ADR-17 | Events are serialized as JSON with fixed type names | Readable and easy to debug; padding hides size differences anyway; type names independent of code |
 | ADR-18 | Concurrent changes of the same field are marked as conflicts and resolved by the user; changes name the change they replace | Last-writer-wins can still pick the wrong value (wrong device clock); the user sees and fixes it, and the fix is an ordinary event |
 | ADR-19 | Unencrypted export only as a readable tree (Markdown, OPML, JSON) without history, never as an unencrypted event log; import creates a new tree | Gives a backup without the key and a way to move notes in and out of ThoughtTree; the history stays protected |
+| ADR-20 | No user accounts or login (such as OpenID Connect) on the server; only device tokens per device and tree | A login would link all trees of a user to one identity on the server, which the per-tree tokens avoid on purpose |
 
 **Open decisions**
 
