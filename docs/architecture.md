@@ -543,9 +543,9 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Privacy & Security | Integrity: tampered, moved or swapped envelopes and wrong keys are detected and rejected | Gate |
 | Privacy & Security | Access: the server never gives one account's events to another account's token | Gate |
 | Usability | Core flows on touch (capture, edit, move, indent, zoom, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate |
-| Usability | Accessibility: no violations in automated checks; screen reader walk-through before each release | Gate (automated), watch (manual) |
+| Usability | Accessibility: no violations in automated checks; screen reader experience through user feedback | Gate (automated), watch (feedback) |
 | Usability | Languages: every text exists in English and German, a missing text fails the build; layouts hold with longer German texts | Gate |
-| Usability | Feel: regular hands-on use on real devices | Watch (judgement) |
+| Usability | Feel: daily use by the owner and user feedback | Watch (judgement) |
 | Portability | Browsers: core flows work in Chromium, WebKit and Firefox, including starting the installed PWA offline | Gate |
 | Portability | Self-hosting: the package runs without Azure, with its own store | Gate |
 | Portability | Data portability: export followed by import gives back the same structure, titles, notes and relations (JSON), within each format's limits | Gate |
@@ -582,7 +582,7 @@ Kinds of tests and loops: tests are not a numbered stack; they are grouped by ro
 | Push gate | Within the time budget (for example 10 minutes) | All specifications and all securing tests (including size budget and complexity checks), regression seeds, UI specifications in all three browsers, end-to-end smoke set |
 | Nightly | Hours | Long simulations, full end-to-end, mutation testing |
 | After deployment | Minutes | Deployment smoke tests |
-| Before release | Manual | Real devices, screen reader, feel |
+| Before release | Minutes | Short release check on the owner's phone |
 
 Domain tests:
 
@@ -654,7 +654,7 @@ Accessibility tests (target: WCAG 2.2, level AA):
 - Touch targets at least 24×24 CSS pixels; usable at 320 pixels width without horizontal scrolling; nothing cut off with enlarged text and text spacing; no animations with reduced motion; axe scan again in forced-colours mode
 - A unit test checks the contrast of every text and background pair of the design tokens in light and dark mode
 - Component rules (accessible names, alternatives to gestures) as described for the component rule checks
-- Manual before each release: real screen readers (VoiceOver, TalkBack, NVDA), understandable announcements and labels, pleasant use without sight
+- Screen reader experience (VoiceOver, TalkBack, NVDA) is not tested manually; it relies on user feedback, with accessibility as a feedback category
 - End-to-end tests are reduced to what needs the whole system: sync through the real server, offline start and installation, update control, migration of local storage, file export and import between browser contexts, browser differences
 
 Server tests:
@@ -691,6 +691,14 @@ Performance tests:
 - From the tree shape in a report the harness generates a synthetic dataset of the same shape to reproduce the slowdown; once the cause is found, the dataset joins the reference datasets and its complexity check becomes a gate
 - The report format is designed so that error reports (what went wrong and where in the code, without content) can use it later
 - Absolute timings are not used as tests, because they are too unreliable on shared machines; the targets of section 10 are design targets, secured by the size budget and the complexity checks
+
+Manual tests and feedback:
+
+- The owner's daily use on phone, tablet and desktop is the main manual test
+- In-app feedback: users (and the owner) send findings (bug, usability, accessibility, performance, other) from within the app, using the same mechanism as the performance report: a pre-filled GitHub issue the user submits, or copy or file; the user's own description, plus optionally the diagnostics block with numbers only; previewed and editable; never through our server; free text is untrusted input (ADR-051); a human label decides whether agents work on it; the feedback form itself is accessible
+- Release check: before promotion to production, the owner runs a guided check of about five minutes on the phone, shown in the test build of the app: the update arrives and is applied with consent; the tree is complete; sync works; on the iPhone started from the home screen and offline; the result is sent with the same mechanism as an issue linked to the release, and is part of the manual approval
+- Exploratory testing by an agent: nightly or before a release, an agent uses the app with tasks (for example "collect ideas for a trip and sort them", "share a tree") at phone size and with keyboard only, and reports what was confusing, slow or broken; findings become issues that need a human label
+- No paid device clouds; free programmes for open-source projects can be checked once the repository is public
 
 Compiler and analyzers (the first gate):
 
@@ -784,7 +792,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-048](adr/ADR-048-image-supply-chain.md) | Hardened image and supply chain | `src/ThoughtTree.Server*/**`, `.github/**` |
 | [ADR-049](adr/ADR-049-apache-licence.md) | Apache 2.0, public from the first release | `**` |
 | [ADR-050](adr/ADR-050-dependency-licences.md) | Approved licences for dependencies | `**/*.csproj`, `**/package.json`, `Directory.Packages.props` |
-| [ADR-051](adr/ADR-051-user-reports.md) | User reports: numbers only, sent by the user, untrusted input | `src/ThoughtTree.Client*/**`, `.github/**` |
+| [ADR-051](adr/ADR-051-user-reports.md) | User reports and feedback: sent by the user, untrusted input | `src/ThoughtTree.Client*/**`, `.github/**` |
 
 **Open decisions**
 
