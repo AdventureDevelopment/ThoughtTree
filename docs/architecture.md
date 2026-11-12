@@ -298,6 +298,12 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Internationalisation**
 
+- All app texts are kept in resource files (`.resx` with `IStringLocalizer`) from the start; no text is written directly into a component; the same files hold the names of predefined elements
+- Source language English, first translation German
+- The app language follows the device's language and can be changed in the settings; this setting belongs to the device and is not synced; changing it reloads the app
+- Dates, times and numbers are shown in the format of the chosen language; they are stored as before (ISO 8601 with UTC offset)
+- All languages are available offline: the service worker caches all resource files
+- Only the culture data for the supported languages is loaded, to keep the initial download small
 - Structural elements that users can define (relation types now; tags, note kinds and similar later) carry no names themselves; their names are labels, one per language, set by `label.set` events, like a resource file inside the tree
 - Languages are identified by standard language tags such as `de`, `de-CH`, `en`
 - A device shows the label in this order: label in the tree for the device's language (`de-CH`), label in the tree for its base language (`de`), for predefined elements the app's own resource files, any label in the tree
