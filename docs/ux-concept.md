@@ -312,7 +312,7 @@ Merging a received tree (D-81, for the architecture):
 
 Outliner comparison (research input, nothing decided; [ux/outliner-comparison.md](ux/outliner-comparison.md)):
 
-14. Architecture check of its 55 ideas (D-83): to be considered now, before the event format is fixed for release 1: grouping several events into one quick-undo step (multi-select with bulk actions, pasting indented text as several items, templates or duplicating a branch), which ADR-059 does not cover yet; worth keeping in mind for the application layer: navigation state that allows a structure sidebar and later side-by-side panes on tablet and desktop. Typing links with `[[` needs no architecture change (live `item:` links with empty text exist, section 8); the other ideas are UI only, already covered, left out, or wait for existing open decisions (binary data, ADR-022)
+14. Architecture check of its 55 ideas (D-83): to be considered now, before the event format is fixed for release 1: grouping several events into one quick-undo step (multi-select with bulk actions, pasting indented text as several items, templates or duplicating a branch), which ADR-059 does not cover yet (proposed as [ADR-067](adr/ADR-067-one-action-one-undo-step.md), Proposed); worth keeping in mind for the application layer: navigation state that allows a structure sidebar and later side-by-side panes on tablet and desktop. Typing links with `[[` needs no architecture change (live `item:` links with empty text exist, section 8); the other ideas are UI only, already covered, left out, or wait for existing open decisions (binary data, ADR-022)
 
 Store app (for the architecture):
 
