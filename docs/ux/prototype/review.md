@@ -243,3 +243,9 @@ Line numbers ("L…") refer to the prototype file. Topic numbers refer to the co
 | Toasts | Moved to "…" [Undo] [Go there] · Deleted "…" [Undo] · Undone: … [Go there] · Nothing of yours to undo on this device. · "…" was changed on X since. Undo stops here. [History] · This change cannot be reverted here. · Moved to the note [Open] · Added to the end of the note [Open] · Nothing above to nest under · The inbox always stays last at the top level. · Capture a thought first. · Everything collapsed · Everything expanded · n new or changed items from X [Show] [Send back] · Nothing new from X: both devices already have the same events. · The old tree is deleted. This device now has the tree from X; exchanges keep both in step from now on. · Reset to the tutorial |
 | Reset | Reset prototype · Deletes everything in this browser · All n events on this device are deleted, including everything you entered, and the tutorial tree is created again. Export first if you want to keep anything. · Delete everything and reset · Delete all events in this browser? · Delete everything |
 | Screen reader only | Captured · Focused on … · Showing the whole tree |
+
+## Outcomes of going through the differences with the owner
+
+| Difference | Outcome |
+| --- | --- |
+| D-7: "place right below the last placed item" missing | Keep D-7; the prototype does not have it yet |
