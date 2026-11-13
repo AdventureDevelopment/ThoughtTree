@@ -251,3 +251,4 @@ Line numbers ("L…") refer to the prototype file. Topic numbers refer to the co
 | D-7: "place right below the last placed item" missing | Keep D-7; the prototype does not have it yet |
 | D-6, D-9: "Move to…" without position step; browse fully expanded, 4 levels | Keep D-6 and D-9: choose the position among the target's children; browse collapsed, level by level |
 | D-14: no tag suggestions while typing; chips in the tree not tappable | Keep D-14: suggestions while typing `@@`; chips in the tree filter by their tag |
+| D-21: "Show" jumps to the first changed item | Keep D-21: "Show" filters the tree to all arrived items |
