@@ -72,7 +72,7 @@ The library is chosen by a spike (decision D-30).
   - accessible: no axe findings, keyboard only, screen readers (ADR-033)
   - direction-neutral: CSS logical properties, works mirrored (ADR-033)
   - download size within the budget (PF5)
-  - themeable through our own design tokens, light and dark (topic 4)
+  - themeable through our own design tokens, light and dark (topic 4), far enough to carry ThoughtTree's own calm look instead of the library's (D-31)
   - touch targets of at least 24×24 CSS pixels (ADR-033)
   - for the tree component: typing in place with Enter, leading space and Backspace (D-2, D-3), the `##` and `@@` shortcuts (D-11, D-14), 10,000 nodes stay responsive (PF1, PF2), dragging with an accessible alternative (D-6)
 
@@ -221,3 +221,4 @@ Bottom toolbar (D-17):
 | D-28 | 2026-11-13 | 2 Undo | Quick undo never overwrites a later change from another device or user: when the node was changed since, undo stops, names the later change (device and value) and offers the node's history | Owner, principle 9 |
 | D-29 | 2026-11-13 | 2 Undo | Quick undo has no limit: it reaches back through all of the user's actions on this device; no session needs to be defined; showing what each undo reverses (D-25) protects against surprises | Owner |
 | D-30 | 2026-11-13 | 3 Component library | The component library is chosen by a spike comparing MudBlazor, Fluent UI Blazor, Radzen Blazor and own components against the criteria in section "Component library"; the spike includes the libraries' tree components and whether one can carry the outliner; commercial libraries are out because of ADR-050 | Owner (challenge: tree components exist) |
+| D-31 | 2026-11-13 | 3 Component library, 4 Tokens | ThoughtTree has its own calm look, plain and quiet, made for thinking (in the spirit of iA Writer, Bear, Things), not a standard look such as Material or Fluent; a library must be restylable to it | Owner |
