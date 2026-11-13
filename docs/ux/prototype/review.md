@@ -253,3 +253,4 @@ Line numbers ("L…") refer to the prototype file. Topic numbers refer to the co
 | D-14: no tag suggestions while typing; chips in the tree not tappable | Keep D-14: suggestions while typing `@@`; chips in the tree filter by their tag |
 | D-21: "Show" jumps to the first changed item | Keep D-21: "Show" filters the tree to all arrived items |
 | D-27, D-28: history does not say who reverted; undo-stop message without the later value | Keep D-27 and D-28: "reverted by <device>, <time>"; the stop message names device and new value |
+| ADR-067: some actions need several undo steps (for example `Title ## note @@tag`) | Keep ADR-067: one action, one undo step |
