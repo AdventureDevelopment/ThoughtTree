@@ -256,7 +256,7 @@ docs/        architecture, ADRs
 2. App asks for a user name and generates a user id; this is the user identity
 3. App generates a device id and asks for a device label, with a suggestion such as "Phone" or "Tablet"; name and label can be changed later
 4. App asks for a name for the first tree, with a suggestion such as "My thoughts", and generates its key and account identity (account id and account secret) locally with the Web Crypto API; they are stored in the local store; nothing is sent anywhere
-5. The tree starts with these events: `device.joined` for this device and user, the predefined relation types (`relation-type.defined`), and a first top-level item whose title is the tree name
+5. The tree starts with these events: `device.joined` for this device and user, the predefined relation types (`relation-type.defined`), the inbox item with `tree.inbox-set`, and a first top-level item whose title is the tree name
 6. User starts taking notes; events are stored locally
 7. No internet, login or server is needed at any point
 
@@ -368,6 +368,7 @@ docs/        architecture, ADRs
 - Fonts: the base font is the device's system font; fonts of themes are shipped from the app's own origin and downloaded in the background only when a theme in use needs them (ADR-061)
 - Views: a tree and any item can have an ordered list of views (saved searches now, layouts such as board or columns later), defined by events and shared like content; the query is structured data with its own format version, results are computed on the device; at the tree level a view lists all views; always available (ADR-062)
 - Themes: a tree and any item can have a theme (`theme.set`), which applies to the whole branch unless a child sets its own; themes are content shared by all devices and users of the tree, referenced by fixed ids shipped with the app, with the default theme "Paper" as fallback; always available (ADR-060)
+- Inbox: every tree has an inbox, an ordinary item marked as the tree's inbox by `tree.inbox-set` when the tree is created; captured thoughts are created inside it; it is always shown last at the top level, whatever its stored position, expands like any branch and can be focused, themed and tagged; it cannot be moved or deleted; the tree name skips it; after merging two trees the inbox that comes first in the agreed order stays the inbox, the other loses its marking and becomes an ordinary item, and the app offers to move its contents (ADR-066)
 - Tags: items can carry tags, structural elements of the tree named by display names (ADR-058); a tree feature, switched on by default
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
 - A relation is identified by its three parts (from item, type, to item), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
@@ -399,7 +400,7 @@ docs/        architecture, ADRs
 - No right-to-left interface for now, but the UI is built direction-neutral from the start: CSS logical properties (`margin-inline-start` instead of `margin-left`), and gestures defined relative to the reading direction ("towards the end of the line" instead of "to the right"), so a mirrored interface later needs no rework
 - Translating content on the fly is a possible later feature; it must run on the device, or only after explicit consent with a clear warning, because sending plain text to an external translation service would break end-to-end encryption
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
-- Tree name: the title of the first visible top-level item; renaming that item or placing another item first renames the tree, with no event of its own; a tree without visible top-level items is shown as "Untitled" (not stored)
+- Tree name: the title of the first visible top-level item other than the inbox; renaming that item or placing another item first renames the tree, with no event of its own; a tree without visible top-level items is shown as "Untitled" (not stored)
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
 - Authority rules in the projection: `device.label-changed` always renames the device that wrote it; `user.name-changed` is applied only if the writing device has joined with that `userId`; otherwise it is ignored
@@ -422,6 +423,7 @@ docs/        architecture, ADRs
 | `relation.removed` | `fromItemId`, `typeId`, `toItemId` |
 | `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are display names (see below) |
 | `relation-type.removed` | `typeId` |
+| `tree.inbox-set` | `itemId`; marks the tree's inbox, written once when the tree is created |
 | `theme.set` | `target` (the tree or an `itemId`), `themeId`; concurrent changes are decided silently by the agreed order, no `replaces` (ADR-060) |
 | `view.set` | `owner` (the tree or an `itemId`), `viewId`, `name`, `query` (structured, with its own format version), `layoutId`, `replaces` |
 | `view.removed` | `viewId` |
@@ -920,6 +922,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, node | `docs/**`, `src/**`, `tests/**` |
 | [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
 | [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
+| [ADR-066](adr/ADR-066-inbox.md) | The inbox is a marked item, always last | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 
@@ -1075,6 +1078,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Bet | An architecture decision that rests on an assumption; its bet card says what should improve, how we notice it and when we review it |
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
 | View | A saved perspective of an item's branch or the whole tree: a name, a query and a layout |
+| Inbox | The item of a tree where captured thoughts wait to be sorted; always shown last at the top level |
 | Tag | A structural element of a tree, named by display names, that items can carry in any number; typed with `@@` or chosen in the tag picker |
 | PWA | Progressive Web App: installable, offline-capable web application |
 | Installation | The app as loaded from one server (the hosted service or a self-hosted one), with its own local store and trees; it syncs only with that server |
