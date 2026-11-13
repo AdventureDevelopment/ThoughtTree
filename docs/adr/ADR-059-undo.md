@@ -1,6 +1,6 @@
 # ADR-059: Undo writes new events; quick undo covers the user's own actions on this device
 
-id: ADR-059 · status: Proposed · kind: constraint
+id: ADR-059 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
@@ -18,7 +18,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-059"
+dotnet test --filter "ADR=ADR-059"   # includes INV-14
 ```
 
 why: The log is never rewritten, so undo is a revert like in git; limiting quick undo to the user's own actions keeps it predictable while sync brings in other changes (UX decision D-25).

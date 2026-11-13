@@ -6,7 +6,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Key requirements**
 
-- Hierarchical (tree-based) notes with unlimited nesting, collapse/expand, drag-and-drop, zoom into an item
+- Hierarchical (tree-based) notes with unlimited nesting, collapse/expand, drag-and-drop, focus on an item
 - Runs on every device as an installable PWA
 - Standalone first: a device works fully on its own, with no internet, no account and no server; pairing with other devices and server sync are optional and can be added later
 - Synchronisation of items across devices over the internet
@@ -46,7 +46,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Must work offline; network is optional and intermittent
 - Source control: GitHub repository `AdventureDevelopment/ThoughtTree`, private until the first release, public from then on
 - Licence: Apache 2.0 for the whole repository; the name "ThoughtTree" is not licensed
-- Dependencies may only use licences from an approved list (MIT, Apache 2.0, BSD and similar permissive licences), checked in the push gate; MPL-2.0 is also allowed for test-only dependencies that are not distributed (for example the accessibility checker axe)
+- Dependencies may only use licences from an approved list (MIT, Apache 2.0, BSD and similar permissive licences), checked in the push gate; MPL-2.0 is also allowed for test-only dependencies that are not distributed (for example the accessibility checker axe); fonts may use the SIL Open Font License 1.1
 - Single developer, incremental delivery
 - Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible; release 1 has no sync server and serves only the static app from Azure Static Web Apps (free tier), with a preview address for every pull request; once a sync server exists, the container image runs on Azure Container Apps, scaling to zero; target cost near zero for a single user
 - The sync service (and the static app) must also be deployable by others on their own server, without Azure
@@ -153,9 +153,9 @@ docs/        architecture, ADRs
 
 | Component | Project | Responsibility |
 | --- | --- | --- |
-| Client Application Layer (ThoughtTree.Client.App) | Client.App | Plain C#: use cases (capture, move, resolve conflicts, pair, share, export, …), UI state (selection, zoom, open dialogs) and UI decisions (for example: sharing requires a confirmed warning); used by the Razor components and by the simulation |
+| Client Application Layer (ThoughtTree.Client.App) | Client.App | Plain C#: use cases (capture, move, resolve conflicts, pair, share, export, …), UI state (selection, focus, open dialogs) and UI decisions (for example: sharing requires a confirmed warning); used by the Razor components and by the simulation |
 | Browser Adapters | Client (adapters) | Every browser API (local store, Web Crypto, file and share APIs, QR scanner, clipboard, service worker) behind a C# interface, with thin JavaScript interop implementations and fakes for tests |
-| Outline UI | Client (UI) | Razor components that only show state and forward user input: tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
+| Outline UI | Client (UI) | Razor components that only show state and forward user input: tree rendering, touch editing, gestures, drag-and-drop, focus; keyboard shortcuts on desktop |
 | Tree Manager | Client.App | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, whether this device uses the tree's server, sync mode; removes the key when a tree is deleted |
 | Command Handler | Client.App (calls command logic in Domain) | Wires user actions to the command logic in ThoughtTree.Domain, which decides which events to write, with clock, `replaces` and `seen`; stores the result |
 | Local Event Store | Port in Client.App, implemented in Client (adapters) | Append-only log in the local store; tracks sync progress per destination (server, devices synced by file) |
@@ -255,9 +255,11 @@ docs/        architecture, ADRs
 1. User installs ThoughtTree and opens it for the first time
 2. App asks for a user name and generates a user id; this is the user identity
 3. App generates a device id and asks for a device label, with a suggestion such as "Phone" or "Tablet"; name and label can be changed later
-4. App asks for a name for the first tree, with a suggestion such as "My thoughts", and generates its key and account identity (account id and account secret) locally with the Web Crypto API; they are stored in the local store; nothing is sent anywhere
-5. The tree starts with these events: `device.joined` for this device and user, the predefined relation types (`relation-type.defined`), and a first top-level item whose title is the tree name
-6. User starts taking notes; events are stored locally
+4. App creates two trees locally, each with its own key and account identity (account id and account secret) generated with the Web Crypto API and stored in the local store; nothing is sent anywhere:
+   - the tutorial tree, written in the device's language from the app's resource files, which explains ThoughtTree by its own items; it is opened first
+   - the user's own tree, named "My thoughts" by default (changeable at any time), empty apart from its inbox; no decision about a name is needed before the user has seen anything
+5. Each tree starts with these events: `device.joined` for this device and user, the predefined relation types (`relation-type.defined`), the inbox item with `tree.inbox-set` and the predefined theme "Inbox" (`theme.set`), and a first top-level item whose title is the tree name; the tutorial tree then contains its tutorial items
+6. User works through the tutorial or starts taking notes; events are stored locally
 7. No internet, login or server is needed at any point
 
 **Scenario: Creating another tree on a device**
@@ -353,7 +355,7 @@ docs/        architecture, ADRs
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - Top level: an item without a parent is a top-level item; a tree can have one or several; there is no special root item, every item is created by `item.created`
-- Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; both are Unicode text and may contain emojis; search and sorting work on the text without Markdown markers
+- Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; display names (tags, relation types and other structural elements) and view names are plain text without Markdown; all text is Unicode and may contain emojis; search and sorting work on the text without Markdown markers
 - Every item has exactly one parent (or none at top level), for good; an item cannot appear in several places; where something is needed in two places, a link points to it
 - Links inside text: a title or note links to an item with a standard Markdown link using the `item:` scheme, for example `[project ideas](item:a71c4e0b-…)`; item ids never change, so links survive moves and renames
 - Link text: the link picker inserts a live link with empty text (`[](item:<id>)`), shown with the target's current title as plain text; if the user types their own text, it stays fixed; renaming an item writes no event for the links pointing to it; readable export fills in the target's title for live links
@@ -365,6 +367,12 @@ docs/        architecture, ADRs
 - Later, with binary data: a preview picture of a linked page, created only when the user asks for it, on the device, and stored as an encrypted blob in the tree; never created automatically, never through our server or a third-party service, because the address itself is content
 - Remote pictures (`![](https://…)`) are not loaded; the app shows a placeholder with the address, and clicking opens the picture in the browser; later, with binary data, the user can store such a picture once as an encrypted blob in the tree
 - Nothing connects trees: links and relations only point to items of the same tree; the link picker offers only items of the current tree, and an `item:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import, with one sanctioned exception: merging a whole tree into another (see Merging trees)
+- Fonts: the base font is the device's system font; fonts of themes are shipped from the app's own origin and downloaded in the background only when a theme in use needs them (ADR-061)
+- Views: a tree and any item can have an ordered list of views (saved searches now, layouts such as board or columns later), defined by events and shared like content; the query is structured data with its own format version, results are computed on the device; at the tree level a view lists all views; always available (ADR-062)
+- Themes: a tree and any item can have a theme (`theme.set`), which applies to the whole branch unless a child sets its own; themes are content shared by all devices and users of the tree, referenced by fixed ids shipped with the app (initially "Paper" and "Inbox"), with the default theme "Paper" as fallback; always available (ADR-060)
+- Tutorial tree: on first start the app creates a tutorial tree next to the user's own tree and opens it first; it is an ordinary tree that explains ThoughtTree by its own items; its texts come from the app's resource files and are written in the device's language when the tree is created (not translated afterwards); it can be deleted, and "Show the tutorial again" creates a fresh one in the current version; it is not paired or shared unless the user chooses to
+- Inbox: every tree has an inbox, an ordinary item marked as the tree's inbox by `tree.inbox-set` when the tree is created; captured thoughts are created inside it; it starts with the predefined theme "Inbox", set by an ordinary `theme.set` and changeable like any theme; it is always shown last at the top level, whatever its stored position, expands like any branch and can be focused, themed and tagged; it cannot be moved or deleted; the tree name skips it; after merging two trees the inbox that comes first in the agreed order stays the inbox, the other loses its marking and becomes an ordinary item, and the app offers to move its contents (ADR-066)
+- Tags: items can carry tags, structural elements of the tree named by display names (ADR-058); a tree feature, switched on by default
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
 - A relation is identified by its three parts (from item, type, to item), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
 - Relations of a deleted item are hidden but kept, and come back when the item is restored
@@ -395,7 +403,7 @@ docs/        architecture, ADRs
 - No right-to-left interface for now, but the UI is built direction-neutral from the start: CSS logical properties (`margin-inline-start` instead of `margin-left`), and gestures defined relative to the reading direction ("towards the end of the line" instead of "to the right"), so a mirrored interface later needs no rework
 - Translating content on the fly is a possible later feature; it must run on the device, or only after explicit consent with a clear warning, because sending plain text to an external translation service would break end-to-end encryption
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
-- Tree name: the title of the first visible top-level item; renaming that item or placing another item first renames the tree, with no event of its own; a tree without visible top-level items is shown as "Untitled" (not stored)
+- Tree name: the title of the first visible top-level item other than the inbox; renaming that item or placing another item first renames the tree, with no event of its own; a tree without visible top-level items is shown as "Untitled" (not stored)
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
 - `User`: Id (GUID), Name; created on first setup and carried to the user's other devices by pairing; it is self-declared and not verified by anyone
 - Authority rules in the projection: `device.label-changed` always renames the device that wrote it; `user.name-changed` is applied only if the writing device has joined with that `userId`; otherwise it is ignored
@@ -418,12 +426,21 @@ docs/        architecture, ADRs
 | `relation.removed` | `fromItemId`, `typeId`, `toItemId` |
 | `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are display names (see below) |
 | `relation-type.removed` | `typeId` |
+| `tree.inbox-set` | `itemId`; marks the tree's inbox, written once when the tree is created |
+| `theme.set` | `target` (the tree or an `itemId`), `themeId`; concurrent changes are decided silently by the agreed order, no `replaces` (ADR-060) |
+| `view.set` | `owner` (the tree or an `itemId`), `viewId`, `name`, `query` (structured, with its own format version), `layoutId`, `replaces` |
+| `view.removed` | `viewId` |
+| `tag.defined` | `tagId`; names are display names |
+| `tag.joined` | `fromTagId`, `intoTagId`; assignments of the joined tag count for the target tag |
+| `item.tagged` | `itemId`, `tagId` |
+| `item.untagged` | `itemId`, `tagId` |
 | `display-name.set` | `elementId`, `field` (for example `name`, `reverseName`), `language`, `text`, `replaces` |
 | `display-name.removed` | `elementId`, `field`, `language` |
 | `tree.feature-changed` | `feature`, `enabled`, `replaces` |
 | `tree.server-changed` | `address` (empty for no server), `joinCode` (optional), `replaces` |
 
 - `afterItemId` names the sibling the item is placed directly after; empty means first child of the parent, or first top-level item when the parent is empty
+- `reverts` (optional, on events written by undo) names the event this event reverts, like git's "This reverts commit …"; the history shows it, and quick undo skips reverted events (ADR-059)
 - `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
 - `format` names the text format of title and note; initially always `markdown`; it keeps a later change of format possible without guessing what older texts meant
 - Title and note changes carry the full text; one event is written per editing session (when the user leaves the field or after a short pause), not per keystroke, so the log does not grow with every edit
@@ -488,10 +505,10 @@ Example of an event before encryption:
 
 - Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`); with the hybrid clock this is usually the latest edit in real time
 - `Timestamp` is never used to decide anything; only `Clock` is, which stays consistent even when device clocks drift
-- Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `display-name.set`, `tree.feature-changed`, `tree.server-changed`
-- Conflict: two or more changes of the same field of the same element (item, relation type, display name, tree feature, server address) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
+- Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `display-name.set`, `tree.feature-changed`, `tree.server-changed`, `view.set`
+- Conflict: two or more changes of the same field of the same element (item, relation type, display name, tree feature, server address, view) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
 - Concurrent changes with the same value are not a conflict (for example the predefined relation types written by two trees that are later merged)
-- The Conflict View lists all conflicts of a tree, grouped by kind: items, relation types, display names, tree features, server address
+- The Conflict View lists all conflicts of a tree, grouped by kind: items, relation types, display names, tree features, server address, views
 - The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
 - Delete conflict: a deletion conflicts with every change to the deleted item or anywhere in its subtree (including items created or moved into it) that the deleting device had not seen when it deleted
 - To decide this, `item.deleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
@@ -551,7 +568,7 @@ Example of an event before encryption:
 - Matching rules: case is always ignored; accents are ignored by default ("Bar" finds "Bär", "cafe" finds "café"), with a toggle for exact accents; German equivalents always apply (ä = ae, ö = oe, ü = ue, ß = ss), since content carries no language; Markdown markers are ignored; emojis are searchable like any other character
 - Search behaviour is not a foundation decision: the index is rebuilt from the log and can change with any app version
 - If trees grow large: an incremental local index (inverted index of titles and notes) persisted in the local store and updated as events are applied
-- Search scope can be limited to the currently zoomed subtree
+- Search scope can be limited to the currently focused branch
 - Each tree has its own search index; one search can cover the open tree or all trees on the device, and every hit shows which tree it belongs to
 
 **Security**
@@ -612,7 +629,7 @@ Example of an event before encryption:
 | Experiment flag | Give a feature to part of the users and learn whether it works | Assignment per account on the server (a random share, adjustable), or drawn by the device from a share in the shipped configuration | Until the review of its bet card decides: raise to everyone or remove |
 | Operations flag (kill switch) | Switch something off quickly if it causes trouble | Server configuration | Long-lived |
 | Permission flag | What an account may do (for example use the private feedback inbox) | Stored per account on the server, reported to the device during sync | Long-lived |
-| Tree feature | Features the user chooses for a tree (for example relations, later tags) | `tree.feature-changed` events, so all devices of a tree agree; older apps ignore unknown names | As long as the user wants |
+| Tree feature | Features the user chooses for a tree (for example relations, tags; tags are on by default) | `tree.feature-changed` events, so all devices of a tree agree; older apps ignore unknown names | As long as the user wants |
 | Device setting | Language, sync mode, use of the server, showing experimental features | Stored on the device, never synced | As long as the user wants |
 
 - Flags are never events; release flags come only from shipped configuration, so they need no server contact and work for file-only users; a self-hosted package brings its own configuration
@@ -632,7 +649,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Privacy & Security | Metadata: padding, batching, no stored IP addresses or times, neutral headers and UTC scheduling work as decided | Gate |
 | Privacy & Security | Integrity: tampered, moved or swapped envelopes and wrong keys are detected and rejected | Gate |
 | Privacy & Security | Access: the server never gives one account's events to another account's token | Gate |
-| Usability | Core flows on touch (capture, edit, move, indent, zoom, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate, once the UX foundation decisions (principles, undo, component library, tokens, gestures) are made; until then pending |
+| Usability | Core flows on touch (capture, edit, move, indent, focus, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate, once the UX foundation decisions (principles, undo, component library, tokens, gestures) are made; until then pending |
 | Usability | Accessibility: no violations in automated checks; screen reader experience through user feedback | Gate (automated), watch (feedback) |
 | Usability | Languages: every text exists in English and German, a missing text fails the build; layouts hold with longer German texts | Gate |
 | Usability | Feel: daily use by the owner and user feedback | Watch (judgement) |
@@ -695,6 +712,7 @@ Domain tests:
 | INV-11 | Normalised text: every text in every event is NFC; normalising twice changes nothing |
 | INV-12 | Symmetric relations are one: A–B and B–A of a symmetric type are the same relation |
 | INV-13 | One id, one content: envelopes with the same `EventId` are identical; a known id with different content is rejected and reported, never stored |
+| INV-14 | Undo returns: reverting a change and then reverting the undo gives back the same tree, as long as no other change touched the item in between |
 
 - Reference model: a deliberately naive projection (sort all events, replay one by one) is the referee; property tests check that the real, optimised projection always gives exactly what the model gives; the model is protected like the stored test data and changes only with human approval
 - Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterItemId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation
@@ -704,7 +722,7 @@ Domain tests:
 
 Format tests:
 
-- Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs, encrypted export files, readable export files (JSON, Markdown, OPML), pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
+- Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs (with every event type, including tags, themes and views), encrypted export files, readable export files (JSON, Markdown, OPML), view queries, pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
 - New reads old: the current version reads every stored version and gets exactly the expected tree
 - Old reads new: CI builds the previous release from its git tag and lets its Domain read data written by the current version; every item and every text must be there (INV-10)
 - Round trip: the current version writes and reads back without loss
@@ -825,8 +843,8 @@ Testing rules:
 - The UX concept is a separate document: [ux-concept.md](ux-concept.md)
 - Accessible from the start: every component works with screen readers and keyboard only; every drag or gesture has an alternative (menu or keyboard command); sufficient contrast and scalable text
 - Touch-first for phone and tablet: tap to edit, drag-and-drop to move, gestures for indent and outdent (details to be designed)
-- Zoom into any item as if it were its own document
-- Breadcrumb for the current zoom path
+- Focus on any item as if it were its own document
+- Breadcrumb for the current focus path
 - Desktop add-on: keyboard shortcuts such as Enter (new sibling), Tab / Shift+Tab (indent/outdent), arrows (navigate), Ctrl+Up/Down (move)
 - Tree switcher to move between the trees on a device
 - An item shows which device last changed it and when, using the device label; a full change history per item is possible later, since all events are kept
@@ -834,7 +852,7 @@ Testing rules:
 - Every tree is marked private or shared; a shared tree lists its users and their devices, and changes show the user as well as the device
 - A short, plain explanation of what ThoughtTree protects and what it does not, shown when server sync is switched on and available at any time
 - "Pair my other device" and "Share with another user" are two separate actions with separate wording and a warning before sharing
-- UI state (collapsed items, current zoom, open tree) belongs to one device: it is stored locally per tree and never synced; only domain events go into the event log
+- UI state (collapsed items, current focus, open tree) belongs to one device: it is stored locally per tree and never synced; only domain events go into the event log
 
 ## 9. Architecture Decisions
 
@@ -899,13 +917,15 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-055](adr/ADR-055-private-feedback-inbox.md) | Private feedback inbox | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
 | [ADR-056](adr/ADR-056-server-store-migrations.md) | Server store migrations | `src/ThoughtTree.Server*/**`, `infra/**` |
 | [ADR-057](adr/ADR-057-sync-modes.md) | Sync modes, live preselected | `src/ThoughtTree.Client*/**` |
-| [ADR-058](adr/ADR-058-tags.md) | Tags as tree elements, typed with `@@` (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-059](adr/ADR-059-undo.md) | Undo writes new events; quick undo covers the user's own actions on this device (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-060](adr/ADR-060-shared-themes.md) | Themes of trees and branches are shared through events (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-061](adr/ADR-061-shipped-fonts.md) | System font first, shipped fonts under the SIL Open Font License (proposed) | `src/ThoughtTree.Client*/**`, `**/*.csproj`, `**/package.json` |
-| [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, item (proposed) | `docs/**`, `src/**`, `tests/**` |
-| [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept (proposed) | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
+| [ADR-058](adr/ADR-058-tags.md) | Tags as tree elements, typed with `@@` | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-059](adr/ADR-059-undo.md) | Undo writes new events; quick undo covers the user's own actions on this device | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-060](adr/ADR-060-shared-themes.md) | Themes of trees and branches are shared through events | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-061](adr/ADR-061-shipped-fonts.md) | System font first, shipped fonts under the SIL Open Font License | `src/ThoughtTree.Client*/**`, `**/*.csproj`, `**/package.json` |
+| [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, node | `docs/**`, `src/**`, `tests/**` |
+| [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
+| [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
+| [ADR-066](adr/ADR-066-inbox.md) | The inbox is a marked item, always last | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 
@@ -919,9 +939,9 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-022). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted items may be removed |
 | Key backup | How a tree survives the loss of all devices: a passphrase-protected key in the export file, a recovery code, or both; the key stays random and is only wrapped for backup, so this does not affect the rest of the architecture |
 | Serialization format | JSON for now (ADR-017); a compact binary format such as MessagePack if logs grow too large |
-| Release 1 scope | Owner's input agreed (UX decisions D-50, D-51): phone, tablet and desktop; no sync server, sync by file only; themes per tree and per item; static hosting on Azure Static Web Apps with previews per pull request. Still open: which further requirements of section 1 belong to it, and the order of the foundation work and blocking decisions (storage engine, AOT, remaining UX foundation) |
+| Release 1 scope | Owner's input agreed (UX decisions D-50, D-51): phone, tablet and desktop; no sync server, sync by file only; themes per tree and per item; the tutorial tree as onboarding; static hosting on Azure Static Web Apps with previews per pull request. Still open: which further requirements of section 1 belong to it, and the order of the foundation work and blocking decisions (storage engine, AOT, remaining UX foundation) |
 | Sync API contract | Endpoints, request and response shapes, paging and limits of pulls, error and status codes, authentication per endpoint, the "server needs updating" signal, the hub messages, account deletion; defined in Contracts before the first release, because `v1` is frozen from then on (ADR-037) |
-| Size limits | Padding bucket list and behaviour above the largest bucket; maximum title and note length; maximum request size; maximum events and storage per account; maximum user name and server address length; size budget of the first load; to be fixed before the first release, because they become part of stored formats |
+| Size limits | Padding bucket list and behaviour above the largest bucket; maximum title and note length; maximum request size; maximum events and storage per account; maximum user name and server address length; size budget of the first load; budget for fonts downloaded in the background (ADR-061); to be fixed before the first release, because they become part of stored formats |
 | Key rotation | `KeyId` leaves room for changing a tree's key (for example after a leak); whether and how rotation is offered |
 | Membership | Removing a device or user from a tree (`device.left`), lifetime and revocation of device tokens by the account secret, what a member list shows after a tree was deleted on a device; and after merging trees: whether the merged tree's devices and users become members of the target tree, and what happens to the merged tree's account and devices |
 | Account deletion and retention | Deleting an account's log on the server with the account secret (after deleting a tree, after a merge, after moving to another server, on request); how long a server keeps data of accounts that are no longer used; data-protection duties of an operator |
@@ -1029,10 +1049,10 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Parent / Children | The item directly above an item / the items directly below it |
 | Sibling Order | The order of the children under one parent; follows from replaying the events, each placing an item after a named sibling |
 | Hybrid Logical Clock | The clock carried by every event: UTC time plus a counter; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
-| Conflict | Two or more changes with different values of the same field of an element (item, relation type, display name, tree feature, server address) made without seeing each other; shown to the user, who picks the value |
+| Conflict | Two or more changes with different values of the same field of an element (item, relation type, display name, tree feature, server address, view) made without seeing each other; shown to the user, who picks the value |
 | Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
 | Collapse | Hide an item's children in the view; UI state of one device, not a domain event |
-| Zoom | Make an item the temporary root of the view |
+| Focus | Make an item the temporary top of the view, showing only its branch; "zoom" is used only for magnifying (pinch or browser zoom) |
 | Event | Immutable record of one change to the tree |
 | Event Log | The sequence of all events of one tree |
 | Projection | The tree rebuilt by replaying events |
@@ -1060,6 +1080,9 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Permission Flag | A flag per account on the server that says what the account may do |
 | Bet | An architecture decision that rests on an assumption; its bet card says what should improve, how we notice it and when we review it |
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
+| View | A saved perspective of an item's branch or the whole tree: a name, a query and a layout |
+| Inbox | The item of a tree where captured thoughts wait to be sorted; always shown last at the top level |
+| Tag | A structural element of a tree, named by display names, that items can carry in any number; typed with `@@` or chosen in the tag picker |
 | PWA | Progressive Web App: installable, offline-capable web application |
 | Installation | The app as loaded from one server (the hosted service or a self-hosted one), with its own local store and trees; it syncs only with that server |
 | Tree Access | What a device needs outside the event log to read and sync a tree: key, `KeyId`, account id, account secret |
@@ -1068,6 +1091,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | `EventId` | Globally unique id of an event; readable in the envelope; the same id must always carry the same content (INV-13) |
 | `KeyId` | Short random id of a tree's key, readable in the envelope |
 | `ServerSequence` | Gap-free number the server gives each envelope of an account, in commit order; used only to track sync progress |
+| `reverts` | Event id of the change an undo event reverts |
 | `replaces` | List of event ids of the changes an event replaces; used to detect conflicts |
 | `seen` | For each device of a tree, the highest clock a device had received from it; carried by `item.deleted` |
 | Envelope / Schema / App Version | Version of the stored envelope format / of one event type's shape / of the installed release |

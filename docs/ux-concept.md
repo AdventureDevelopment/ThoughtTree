@@ -49,6 +49,15 @@ What the app calls these things in its own wording is decided with microcopy (to
 - Items grow: an idea becomes a project, a topic or a vision by working on it, without changing what it is in the app
 - Spawning todos, appointments and delegations is part of the vision but not decided; it is exactly where the risk of drifting into task management begins (architecture section 11, "the MLO trap"); for the architecture and a later product decision
 
+### What the owner always wanted and never found
+
+Named by the owner after trying the first prototype (2026-11-13). These are the heart of ThoughtTree; when a decision is hard or a detail is unclear, they win:
+
+- **Themes per branch:** every project or topic can carry its own mood, visible in the overview and filling the screen when focused
+- **The inbox, always at hand:** the capture button is there everywhere, even while editing another item; the inbox has its own entry in the global menu with its full item menu; and it can have its own theme, like any branch (capturing itself is known from MLO's widgets; what is new is having the inbox at hand everywhere)
+- **Markdown and emojis:** Markdown in titles (inline) and notes; emojis everywhere, also in tags and other names (tags and names stay unformatted)
+- **Focus:** concentrating on one item and its branch as if it were its own document, in the branch's theme, with the title shown in full and editable in place, and back always returning to the previous view and position (named by the owner as another killer feature after trying the prototype)
+
 ## UX principles
 
 Derived from journeys A to D (decisions D-16, D-24). They guide every later decision, including the agents'.
@@ -269,6 +278,10 @@ Remarks:
 - Sync over the local Wi-Fi is not possible for a PWA by local discovery; a direct WebRTC connection with a handshake by QR codes, without a server, would be possible but needs an ADR (Content Security Policy, ADR-045) and a spike; kept as an idea for later, besides the native wrapper with local discovery named in the architecture
 
 ## Open questions
+
+- Onboarding (topic 9, owner's decision 2026-11-13, recorded in the architecture): the tutorial tree from the prototype is the first tree a new user sees; its content and flow are to be refined here (what it explains, in which order, how it ends)
+
+- Inbox theme (owner's wish, architecture ADR-066): every inbox starts with a predefined theme "Inbox"; its look is to be designed with the tokens: calm (no pressure, D-8) but clearly different from Paper, for example a cool, light "tray" tone; a draft is in the prototype
 
 Tags (core decided in D-14; details parked for feature work, none is a foundation decision):
 
