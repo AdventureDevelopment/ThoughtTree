@@ -49,6 +49,14 @@ What the app calls these things in its own wording is decided with microcopy (to
 - Items grow: an idea becomes a project, a topic or a vision by working on it, without changing what it is in the app
 - Spawning todos, appointments and delegations is part of the vision but not decided; it is exactly where the risk of drifting into task management begins (architecture section 11, "the MLO trap"); for the architecture and a later product decision
 
+### What the owner always wanted and never found
+
+Named by the owner after trying the first prototype (2026-11-13). These are the heart of ThoughtTree; when a decision is hard or a detail is unclear, they win:
+
+- **Themes per branch:** every project or topic can carry its own mood, visible in the overview and filling the screen when focused
+- **The inbox:** capture without deciding anything first, and sort later, calmly, with the inbox as an ordinary branch at the end of the tree
+- **Markdown and emojis everywhere:** titles, notes, tags and names can be formatted and carry emojis
+
 ## UX principles
 
 Derived from journeys A to D (decisions D-16, D-24). They guide every later decision, including the agents'.
