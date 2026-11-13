@@ -10,6 +10,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 - **MUST** hide the tags of deleted items and show them again on restore
 - **MUST** offer the same assignment without typing (tag picker in the item's detail view), as the accessible alternative (ADR-033)
 - **MUST NOT** connect trees: a tag belongs to one tree
+- **MUST** offer to join tags with the same display name (for example defined offline on two devices) by a `tag.joined` event (from tag, into tag); assignments of the joined tag then count for the target tag; the app never joins tags without asking
 
 verify:
 
@@ -18,5 +19,3 @@ dotnet test --filter "ADR=ADR-058"
 ```
 
 why: Tags give items further dimensions besides the tree (UX decision D-14); one mechanism with relations and display names keep renaming, translation and merging consistent.
-
-Open: two devices that define a tag with the same name offline create two tags; whether the app offers to join them (and by which event) is still to be decided.
