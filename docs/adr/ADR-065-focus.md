@@ -1,6 +1,6 @@
 # ADR-065: "Focus" instead of "Zoom"
 
-id: ADR-065 · status: Proposed · kind: constraint
+id: ADR-065 · status: Accepted · kind: constraint
 
 applies_to: `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**`
 

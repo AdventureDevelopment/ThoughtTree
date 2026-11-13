@@ -14,4 +14,4 @@ verify:
 dotnet test --filter "ADR=ADR-023"
 ```
 
-why: Moves, cycle checks, delete conflicts, sibling order, zoom path and export rely on one parent.
+why: Moves, cycle checks, delete conflicts, sibling order, focus path and export rely on one parent.

@@ -6,7 +6,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 
 **Key requirements**
 
-- Hierarchical (tree-based) notes with unlimited nesting, collapse/expand, drag-and-drop, zoom into an item
+- Hierarchical (tree-based) notes with unlimited nesting, collapse/expand, drag-and-drop, focus on an item
 - Runs on every device as an installable PWA
 - Standalone first: a device works fully on its own, with no internet, no account and no server; pairing with other devices and server sync are optional and can be added later
 - Synchronisation of items across devices over the internet
@@ -153,9 +153,9 @@ docs/        architecture, ADRs
 
 | Component | Project | Responsibility |
 | --- | --- | --- |
-| Client Application Layer (ThoughtTree.Client.App) | Client.App | Plain C#: use cases (capture, move, resolve conflicts, pair, share, export, …), UI state (selection, zoom, open dialogs) and UI decisions (for example: sharing requires a confirmed warning); used by the Razor components and by the simulation |
+| Client Application Layer (ThoughtTree.Client.App) | Client.App | Plain C#: use cases (capture, move, resolve conflicts, pair, share, export, …), UI state (selection, focus, open dialogs) and UI decisions (for example: sharing requires a confirmed warning); used by the Razor components and by the simulation |
 | Browser Adapters | Client (adapters) | Every browser API (local store, Web Crypto, file and share APIs, QR scanner, clipboard, service worker) behind a C# interface, with thin JavaScript interop implementations and fakes for tests |
-| Outline UI | Client (UI) | Razor components that only show state and forward user input: tree rendering, touch editing, gestures, drag-and-drop, zoom; keyboard shortcuts on desktop |
+| Outline UI | Client (UI) | Razor components that only show state and forward user input: tree rendering, touch editing, gestures, drag-and-drop, focus; keyboard shortcuts on desktop |
 | Tree Manager | Client.App | Lists, creates, switches and deletes trees (the name comes from the projection); the only component that stores a tree's secrets and settings: key and `KeyId`, account id and secret, device token, whether this device uses the tree's server, sync mode; removes the key when a tree is deleted |
 | Command Handler | Client.App (calls command logic in Domain) | Wires user actions to the command logic in ThoughtTree.Domain, which decides which events to write, with clock, `replaces` and `seen`; stores the result |
 | Local Event Store | Port in Client.App, implemented in Client (adapters) | Append-only log in the local store; tracks sync progress per destination (server, devices synced by file) |
@@ -563,7 +563,7 @@ Example of an event before encryption:
 - Matching rules: case is always ignored; accents are ignored by default ("Bar" finds "Bär", "cafe" finds "café"), with a toggle for exact accents; German equivalents always apply (ä = ae, ö = oe, ü = ue, ß = ss), since content carries no language; Markdown markers are ignored; emojis are searchable like any other character
 - Search behaviour is not a foundation decision: the index is rebuilt from the log and can change with any app version
 - If trees grow large: an incremental local index (inverted index of titles and notes) persisted in the local store and updated as events are applied
-- Search scope can be limited to the currently zoomed subtree
+- Search scope can be limited to the currently focused branch
 - Each tree has its own search index; one search can cover the open tree or all trees on the device, and every hit shows which tree it belongs to
 
 **Security**
@@ -644,7 +644,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Privacy & Security | Metadata: padding, batching, no stored IP addresses or times, neutral headers and UTC scheduling work as decided | Gate |
 | Privacy & Security | Integrity: tampered, moved or swapped envelopes and wrong keys are detected and rejected | Gate |
 | Privacy & Security | Access: the server never gives one account's events to another account's token | Gate |
-| Usability | Core flows on touch (capture, edit, move, indent, zoom, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate, once the UX foundation decisions (principles, undo, component library, tokens, gestures) are made; until then pending |
+| Usability | Core flows on touch (capture, edit, move, indent, focus, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate, once the UX foundation decisions (principles, undo, component library, tokens, gestures) are made; until then pending |
 | Usability | Accessibility: no violations in automated checks; screen reader experience through user feedback | Gate (automated), watch (feedback) |
 | Usability | Languages: every text exists in English and German, a missing text fails the build; layouts hold with longer German texts | Gate |
 | Usability | Feel: daily use by the owner and user feedback | Watch (judgement) |
@@ -838,8 +838,8 @@ Testing rules:
 - The UX concept is a separate document: [ux-concept.md](ux-concept.md)
 - Accessible from the start: every component works with screen readers and keyboard only; every drag or gesture has an alternative (menu or keyboard command); sufficient contrast and scalable text
 - Touch-first for phone and tablet: tap to edit, drag-and-drop to move, gestures for indent and outdent (details to be designed)
-- Zoom into any item as if it were its own document
-- Breadcrumb for the current zoom path
+- Focus on any item as if it were its own document
+- Breadcrumb for the current focus path
 - Desktop add-on: keyboard shortcuts such as Enter (new sibling), Tab / Shift+Tab (indent/outdent), arrows (navigate), Ctrl+Up/Down (move)
 - Tree switcher to move between the trees on a device
 - An item shows which device last changed it and when, using the device label; a full change history per item is possible later, since all events are kept
@@ -847,7 +847,7 @@ Testing rules:
 - Every tree is marked private or shared; a shared tree lists its users and their devices, and changes show the user as well as the device
 - A short, plain explanation of what ThoughtTree protects and what it does not, shown when server sync is switched on and available at any time
 - "Pair my other device" and "Share with another user" are two separate actions with separate wording and a warning before sharing
-- UI state (collapsed items, current zoom, open tree) belongs to one device: it is stored locally per tree and never synced; only domain events go into the event log
+- UI state (collapsed items, current focus, open tree) belongs to one device: it is stored locally per tree and never synced; only domain events go into the event log
 
 ## 9. Architecture Decisions
 
@@ -919,7 +919,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, node | `docs/**`, `src/**`, `tests/**` |
 | [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
-| [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" (proposed) | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
+| [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
 
 **Open decisions**
 
@@ -1046,7 +1046,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Conflict | Two or more changes with different values of the same field of an element (item, relation type, display name, tree feature, server address, view) made without seeing each other; shown to the user, who picks the value |
 | Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
 | Collapse | Hide an item's children in the view; UI state of one device, not a domain event |
-| Zoom | Make an item the temporary root of the view |
+| Focus | Make an item the temporary top of the view, showing only its branch; "focus" means only magnifying |
 | Event | Immutable record of one change to the tree |
 | Event Log | The sequence of all events of one tree |
 | Projection | The tree rebuilt by replaying events |
