@@ -367,12 +367,14 @@ docs/        architecture, ADRs
 - External links are clickable and open in a new tab, or in the system browser for the installed app; the target address is shown before opening (hover or long press); the app sends no referrer (`Referrer-Policy: no-referrer`), so a self-hosted server's address is not revealed; no automatic link previews
 - Later, with binary data: a preview picture of a linked page, created only when the user asks for it, on the device, and stored as an encrypted blob in the tree; never created automatically, never through our server or a third-party service, because the address itself is content
 - Remote pictures (`![](https://…)`) are not loaded; the app shows a placeholder with the address, and clicking opens the picture in the browser; later, with binary data, the user can store such a picture once as an encrypted blob in the tree
-- Nothing connects trees: links and relations only point to items of the same tree; the link picker offers only items of the current tree, and an `item:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import, with one sanctioned exception: importing a whole tree into another as a new branch (see Importing a tree into another)
+- Nothing connects trees: links and relations only point to items of the same tree; the link picker offers only items of the current tree, and an `item:` link whose id is not in the tree is shown as not found; content moves between trees only as copies (copy and paste, readable export and import), with one sanctioned exception that keeps the history: importing a whole tree into another as a new branch (see Importing a tree into another)
 - Fonts: the base font is the device's system font; fonts of themes are shipped from the app's own origin and downloaded in the background only when a theme in use needs them (ADR-061)
 - Views: a tree and any item can have an ordered list of views (saved searches now, layouts such as board or columns later), defined by events and shared like content; the query is structured data with its own format version, results are computed on the device; at the tree level a view lists all views; always available (ADR-062)
 - Themes: a tree and any item can have a theme (`theme.set`), which applies to the whole branch unless a child sets its own; themes are content shared by all devices and users of the tree, referenced by fixed ids shipped with the app (initially "Paper" and "Inbox"), with the default theme "Paper" as fallback; always available (ADR-060)
 - Tutorial tree: on first start the app creates a tutorial tree next to the user's own tree and opens it first; it is an ordinary tree that explains ThoughtTree by its own items; its texts come from the app's resource files and are written in the device's language when the tree is created (not translated afterwards); it can be deleted, and "Show the tutorial again" creates a fresh one in the current version; it is not paired or shared unless the user chooses to
 - Inbox: every tree has an inbox, an ordinary item marked as the tree's inbox by `tree.inbox-set` when the tree is created; captured thoughts are created inside it; it starts with the predefined theme "Inbox", set by an ordinary `theme.set` and changeable like any theme; it is always shown last at the top level, whatever its stored position, expands like any branch and can be focused, themed and tagged; it cannot be moved or deleted; the tree name skips it; the latest `tree.inbox-set` in the agreed order wins, so after importing a tree the importing device confirms its own inbox and the other one becomes an ordinary item (ADR-066)
+- Copy and paste: items with their branches can be copied into another tree or place; the paste creates new items as one action, carries titles, notes, structure, tags (matched by name), themes and template markings, rewrites links and relations within the copy, drops relations to outside items, and starts without history; pasting into a shared tree shows a calm hint the first time (ADR-069)
+- Templates: a template is an ordinary item marked by `item.template-set`, valid in its parent's branch; creating from it (`::name` at the start of an empty line, or "From template…") copies its branch as one action without a reference back; new trees get no templates, the tutorial tree offers a set to copy (ADR-068)
 - Tags: items can carry tags, structural elements of the tree named by display names (ADR-058); a tree feature, switched on by default
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
 - A relation is identified by its three parts (from item, type, to item), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
@@ -427,6 +429,8 @@ docs/        architecture, ADRs
 | `relation.removed` | `fromItemId`, `typeId`, `toItemId` |
 | `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are display names (see below) |
 | `relation-type.removed` | `typeId` |
+| `item.template-set` | `itemId`; marks an item as a template (ADR-068) |
+| `item.template-removed` | `itemId` |
 | `tree.inbox-set` | `itemId`; marks the tree's inbox, written once when the tree is created |
 | `theme.set` | `target` (the tree or an `itemId`), `themeId`; concurrent changes are decided silently by the agreed order, no `replaces` (ADR-060) |
 | `view.set` | `owner` (the tree or an `itemId`), `viewId`, `name`, `query` (structured, with its own format version), `layoutId`, `replaces` |
@@ -931,6 +935,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
 | [ADR-066](adr/ADR-066-inbox.md) | The inbox is a marked item, always last | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-067](adr/ADR-067-one-action-one-undo-step.md) | One action, one undo step | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-068](adr/ADR-068-templates.md) | Templates are marked items, valid below their parent | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-069](adr/ADR-069-copy-paste-between-trees.md) | Copy and paste between trees | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 
@@ -1087,6 +1093,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
 | View | A saved perspective of an item's branch or the whole tree: a name, a query and a layout |
 | Inbox | The item of a tree where captured thoughts wait to be sorted; always shown last at the top level |
+| Template | An item marked as a template; creating from it copies its branch, valid in its parent's branch |
 | Tag | A structural element of a tree, named by display names, that items can carry in any number; typed with `@@` or chosen in the tag picker |
 | PWA | Progressive Web App: installable, offline-capable web application |
 | Installation | The app as loaded from one server (the hosted service or a self-hosted one), with its own local store and trees; it syncs only with that server |

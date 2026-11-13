@@ -1,6 +1,6 @@
 # ADR-068: Templates are marked items, valid below their parent
 
-id: ADR-068 · status: Proposed · kind: constraint
+id: ADR-068 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
@@ -8,8 +8,10 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 - **MUST** make a template valid in the branch of its parent; a template at the top level is valid in the whole tree; moving the template item changes where it is valid; no special root item exists for this
 - **OPEN** (UX decision D-111): whether template lines can be link slots creating typed relations (`item.slot-set`), or stay text with inline `item:` links, or carry a relation type for links typed into them
 - **MUST** create an item from a template by copying the template's branch as one action (ADR-067): new ids, the template marking and slot markings not copied; each slot becomes a line that offers to link an item by the slot's relation type or to write text
+- **MUST** rewrite `item:` links and relations between items of the template's branch to the copies; links and relations pointing outside the branch are kept as they are
+- **MUST** recognise `::` as the template shortcut only at the start of an empty line; `\::` there keeps two literal colons
 - **MUST NOT** store a reference from a created item to its template; a template's tags are copied with its branch, so items made from it can be found by tag (UX decision D-112)
-- **MUST** offer predefined templates (initially "Person", carrying the tag "person") with fixed ids, written as ordinary events when a tree is created, like the predefined relation types (ADR-025); they can be changed or removed
+- **MUST NOT** write templates into new trees; the tutorial tree carries a set of templates (Person, Talk or meeting, Source, Decision, Idea) that the user copies into their own trees (ADR-069)
 - **MUST** leave templates out of search, "Changed recently", counts and the readable export of content, unless the user asks for templates; they are included in the full JSON export (ADR-019)
 - **MUST NOT** store the display-only group row ("Templates · n") that the outline shows for the templates of a branch; it is a rendering of the marked items
 
