@@ -39,13 +39,13 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 <a id="adr-023"></a>
 
-## ADR-023: One parent per node
+## ADR-023: One parent per item
 
-**TL;DR:** We bet that links and relations are enough, so nobody misses having the same node in several places.
+**TL;DR:** We bet that links and relations are enough, so nobody misses having the same item in several places.
 
 - **Outcome:** The tree model stays simple: moves, cycle checks, deletion, conflicts, order, zoom path and export all rely on a single parent.
 - **Assumption:** When someone wants something in two places, a link or relation, together with backlinks, meets that need.
-- **Signal:** Feedback asking for clones, mirrors or "the same node in two places"; answers to "Have you wanted the same node in two places?" (no / sometimes / often); in the usage summary, the number of links and relations per 100 nodes.
+- **Signal:** Feedback asking for clones, mirrors or "the same item in two places"; answers to "Have you wanted the same item in two places?" (no / sometimes / often); in the usage summary, the number of links and relations per 100 items.
 - **Review when:** repeated feedback asks for clones · importing from other outliners loses information because the source uses clones.
 
 <a id="adr-025"></a>

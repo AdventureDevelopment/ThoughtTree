@@ -1,6 +1,6 @@
 # ADR-063: Terms: item, note, branch, node
 
-id: ADR-063 · status: Proposed · kind: constraint
+id: ADR-063 · status: Accepted · kind: constraint
 
 applies_to: `docs/**`, `src/**`, `tests/**`
 
@@ -9,13 +9,13 @@ applies_to: `docs/**`, `src/**`, `tests/**`
   - **Note:** the optional longer text of an item (unchanged from today's glossary)
   - **Branch:** an item together with everything below it
   - **Node:** how an item appears in the tree, its line and place; a technical term for rendering and specifications
-- **MUST** update the glossary of `architecture.md` on acceptance: "Node" as the thing becomes "Item" (also in Top-level Node, Zoom, Tree Name), "Branch" is added
-- **SHOULD** rename event types and fields to match before the first release, while nothing is stored yet (for example `node.created` → `item.created`, `node.note-changed` → `item.note-changed`); the architect decides the final names
+- The glossary of `architecture.md` uses these terms
+- **MUST** use the renamed event types, fields and link scheme (done before the first release, while nothing is stored): `item.created`, `item.title-changed`, `item.note-changed`, `item.moved`, `item.deleted`, `item.restored`, `item.tagged`, `item.untagged`; fields `itemId`, `afterItemId`, `fromItemId`, `toItemId`; links `[text](item:<id>)`; test ids such as `item-title`
 
 verify:
 
 ```bash
-grep -rnE '"node\.(created|moved|deleted|title-changed|note-changed)"' src tests | wc -l   # expect 0 once renamed
+grep -rnE 'node\.(created|moved|deleted|restored|title-changed|note-changed|tagged|untagged)|\(node:' src tests docs/architecture.md | wc -l   # expect 0
 ```
 
 why: Items grow from a single thought into projects or visions; a neutral term common to outliners leaves the meaning to the user (UX decision D-45).

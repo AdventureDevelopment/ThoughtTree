@@ -5,7 +5,7 @@ id: ADR-017 · status: Accepted · kind: constraint
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`
 
 - **MUST** serialize events as JSON inside the encrypted payload
-- **MUST** use fixed type names such as `node.created`
+- **MUST** use fixed type names such as `item.created`
 - **MUST NOT** derive type names from .NET type or member names
 
 verify:

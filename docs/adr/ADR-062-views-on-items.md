@@ -19,4 +19,4 @@ verify:
 dotnet test --filter "ADR=ADR-062"
 ```
 
-why: A project carries its own perspectives (saved searches now, layouts later) like its theme, without extra nodes in the tree (UX decisions D-38, D-39).
+why: A project carries its own perspectives (saved searches now, layouts later) like its theme, without extra items in the tree (UX decisions D-38, D-39).

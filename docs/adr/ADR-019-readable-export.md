@@ -4,11 +4,11 @@ id: ADR-019 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`
 
-- **MUST** export unencrypted only the current tree (Markdown, OPML, JSON), without history, deleted nodes or device information
+- **MUST** export unencrypted only the current tree (Markdown, OPML, JSON), without history, deleted items or device information
 - **MUST NOT** export the event log unencrypted
 - **MUST NOT** make readable export a default or automatic; MUST require a confirmed warning and mark the file name as unencrypted
-- **MUST** import readable files as a new tree or into a node, with ordinary events (`node.created`, and for JSON also `relation.added`, `relation-type.defined`, `label.set`)
-- **MUST** give every imported node a new id and rewrite `node:` links within the imported content; reuse predefined relation types by their fixed ids
+- **MUST** import readable files as a new tree or into an item, with ordinary events (`item.created`, and for JSON also `relation.added`, `relation-type.defined`, `label.set`)
+- **MUST** give every imported item a new id and rewrite `item:` links within the imported content; reuse predefined relation types by their fixed ids
 
 verify:
 
