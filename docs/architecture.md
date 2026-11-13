@@ -918,7 +918,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-061](adr/ADR-061-shipped-fonts.md) | System font first, shipped fonts under the SIL Open Font License | `src/ThoughtTree.Client*/**`, `**/*.csproj`, `**/package.json` |
 | [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, node | `docs/**`, `src/**`, `tests/**` |
-| [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept (proposed) | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
+| [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
 | [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" (proposed) | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
 
 **Open decisions**
