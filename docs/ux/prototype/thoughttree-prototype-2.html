@@ -271,7 +271,7 @@ mark{background:var(--hl);color:inherit;border-radius:3px}
 "use strict";
 /* ---------- storage (browser only; prototype) ---------- */
 /* v4: templates (ADR-068) and inline item links; v3: several trees (events carry `tree`), every event carries `actionId` (ADR-067) */
-const K={ev:"tt-proto-events-v5",dev:"tt-proto-device-v2",ui:"tt-proto-ui-v5"};
+const K={ev:"tt-proto-events-v6",dev:"tt-proto-device-v2",ui:"tt-proto-ui-v6"};
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const uuid=()=>{try{return crypto.randomUUID()}catch(e){return "x"+Math.random().toString(16).slice(2)+Date.now().toString(16)}};
@@ -282,7 +282,7 @@ let events=[];              /* the events of the open tree */
 let curTree=null;
 const ui=Object.assign({tree:null,per:{},added:[],focus:null,collapsed:[],hand:"right",recent:[],lastPlaced:null,tplOpen:[]},load(K.ui,{}));
 const PER=["focus","collapsed","recent","lastPlaced","tplOpen"];
-const saveUi=()=>{if(curTree){ui.per[curTree]={};for(const k of PER)ui.per[curTree][k]=ui[k]}save(K.ui,{tree:curTree,per:ui.per,hand:ui.hand,added:ui.added||[]})};
+const saveUi=()=>{if(curTree){ui.per[curTree]={};for(const k of PER)ui.per[curTree][k]=ui[k]}save(K.ui,{tree:curTree,per:ui.per,hand:ui.hand,added:ui.added||[],hinted:ui.hinted||[]})};
 const saveEvents=()=>save(K.ev,all);
 
 /* ---------- events, hybrid logical clock ---------- */
@@ -344,15 +344,22 @@ function setTree(tid){if(curTree)saveUi();curTree=tid;events=all.filter(e=>e.tre
 function newTree(name,extra){const tid=uuid();const prev=curTree,prevEvents=events;curTree=tid;events=[];
   action(()=>{write("tree.named",Object.assign({treeId:tid,name},extra||{}));const ib=uuid();
     write("item.created",{itemId:ib,parentId:null,afterItemId:null,title:"📥 Inbox",note:"",format:"markdown"});write("tree.inbox-set",{itemId:ib});write("theme.set",{target:ib,themeId:"inbox"});
-    const pid=seedPredefined();ui.per[tid]=Object.assign({focus:null,recent:[],lastPlaced:null,tplOpen:[]},ui.per[tid]||{},{collapsed:[pid]})});
+    ui.per[tid]=Object.assign({focus:null,recent:[],lastPlaced:null,tplOpen:[]},ui.per[tid]||{},{collapsed:[]})});
   curTree=prev;events=prevEvents;return tid}
-/* D-107, ADR-068: the predefined "Person" template, written as ordinary events when a tree is created, at the top level; its lines are plain text */
-function seedPredefined(){const p=uuid();
-  write("item.created",{itemId:p,parentId:null,afterItemId:null,title:"👤 Person",note:"",format:"markdown"});
+/* D-113, ADR-068: new trees get no templates; the tutorial carries five, written as ordinary items marked as templates.
+   Names in sentence case; no task wording (D-67) */
+const TEMPLATES={
+  person:["👤 Person","",["🤝 How we met: ","🎂 Birthday: ","👪 Family: ","✨ Shared interests: ","🏘 Shared communities: ","📅 Shared events: "],"person"],
+  talk:["🎤 Talk or meeting","For what someone said and what it set off in you.",["🎙 Speaker: ","📍 Context: ","💬 Key points: ","❓ Questions: ","💡 My thoughts: "]],
+  source:["📚 Source","For a book, an article or a podcast that stayed with you.",["✍️ Author: ","🔑 Key ideas: ","❝ Quotes: ","💭 What it means to me: "]],
+  decision:["⚖️ Decision","For thinking a choice through before you make it.",["❓ The question: ","🅰️ Options: ","➕ For: ","➖ Against: ","✅ What I decide: ","💭 Why: "]],
+  idea:["💡 Idea","For an idea that deserves more than one line.",["✨ What it is: ","🌱 Why it matters: ","❓ Open questions: ","🔗 Related thoughts: "]]};
+function seedTemplate(key,parent,after){const [title,note,lines,tag]=TEMPLATES[key];const p=uuid();
+  write("item.created",{itemId:p,parentId:parent,afterItemId:after,title,note,format:"markdown"});
   write("item.template-set",{itemId:p});
   /* D-112: a template carries tags that every item made from it inherits; "person" finds all persons */
-  const tg=uuid();write("tag.defined",{tagId:tg});write("display-name.set",{elementId:tg,field:"name",language:"en",text:"person"});write("item.tagged",{itemId:p,tagId:tg});
-  let prev=null;for(const title of["🤝 How we met: ","🎂 Birthday: ","👪 Family: ","✨ Shared interests: ","🏘 Shared communities: "]){const id=uuid();write("item.created",{itemId:id,parentId:p,afterItemId:prev,title,note:"",format:"markdown"});prev=id}
+  if(tag){const tg=uuid();write("tag.defined",{tagId:tg});write("display-name.set",{elementId:tg,field:"name",language:"en",text:tag});write("item.tagged",{itemId:p,tagId:tg})}
+  let prev=null;for(const t of lines){const id=uuid();write("item.created",{itemId:id,parentId:p,afterItemId:prev,title:t,note:"",format:"markdown"});prev=id}
   return p}
 /* templates are left out of the children; they are shown in the branch's "Templates" row (D-110) */
 const kidsOf=id=>{const k=(P.kids.get(id==null?"":id)||[]).filter(k=>{const i=P.items.get(k);return i&&!i.deleted&&!i.template});if(id==null&&INBOX&&k.includes(INBOX)){k.splice(k.indexOf(INBOX),1);k.push(INBOX)}return k};
@@ -404,9 +411,19 @@ function seedTutorial(){
   mk("l1","l",null,"Type [[ to link to another thought while writing","A few letters are enough: the best match appears as faded text after the cursor (tap it, or press Tab), and a short list opens under the line. “Create …” makes a new thought in the inbox and links it at once. The 🔗 button above the keyboard does the same.");
   mk("l2","l","l1","A link shows the other thought's current title, even after renaming");
   mk("p",null,"l","🧩 Templates");
-  mk("p1","p",null,"Type :: at the start of a line to create from a template","For example `::person Anna` creates “👤 Anna” with the lines of the Person template. A branch's templates wait in its faded “Templates” row at the end; the tree's own templates sit just above the inbox.");
+  mk("p1","p",null,"Type ::person Anna at the start of an empty line","Try it on a new line in this lesson: “👤 Anna” appears with the lines of the Person template and the tag “person”. Tap the tag to see every person. Capitals do not matter; `\\::` keeps two colons as text. The Person template waits in this lesson's faded “Templates” row at the end.");
   mk("p2","p","p1","Press and hold ＋ for From template…");
-  mk("p3","p","p2","Any item can become a template: ⋯ › Use as template");
+  mk("p3","p","p2","Take a template into your own tree: copy it, then paste it there","New trees start without templates. Open the “Templates” row, select “👤 Person”, ⋯ › Copy, switch to “My thoughts” (More › Trees) and paste it with More › Paste at the top level: there it is valid in the whole tree.");
+  mk("mira","p","p3","👤 Mira","An example person, made from the Person template.");
+  mk("mira1","mira",null,"🤝 How we met: after her talk on memory");
+  mk("mira2","mira","mira1","✨ Shared interests: how walking helps thinking");
+  mk("talk","p","mira","🎤 Why we forget what we read","An example made from the Talk or meeting template.");
+  mk("talk1","talk",null,"🎙 Speaker: [](item:"+ids.mira+")");
+  mk("talk2","talk","talk1","💬 Key points: we keep what we connect to something we know");
+  mk("talk3","talk","talk2","💡 My thoughts: maybe writing a line about it is already a connection");
+  mk("p4","p","talk","The speaker links to Mira, so Mira's detail page lists this talk under “Linked from”");
+  mk("shelf","p","p4","🗄 Template shelf","Four more templates, ready to copy into your own trees: open the “Templates” row below.");
+  mk("p5","p","shelf","Any item can become a template: ⋯ › Use as template");
   mk("l3","l","l2","Tap a link to go there, like this one: [](item:"+ids.p+")");
   mk("l4","l","l3","On the detail page, ↩ shows which thoughts link here, 🔗 where this one links to");
   mk("d",null,"p","🔁 More than one device");
@@ -418,10 +435,11 @@ function seedTutorial(){
   const t1=uuid();write("tag.defined",{tagId:t1});write("display-name.set",{elementId:t1,field:"name",language:"en",text:"tip"});
   for(const k of ["w2","f4","f5","c4","s2"])write("item.tagged",{itemId:ids[k],tagId:t1});
   write("theme.set",{target:ids.t,themeId:"sage"});
-  const person=seedPredefined();
+  const person=seedTemplate("person",ids.p,null);let prevT=null;for(const k of["talk","source","decision","idea"])prevT=seedTemplate(k,ids.shelf,prevT);
+  const ptag=[...all.slice(start)].find(e=>e.type==="display-name.set"&&e.data.text==="person");write("item.tagged",{itemId:ids.mira,tagId:ptag.data.elementId});
   /* mark seed events as tutorial data */
   for(const e of all.slice(start)){if(e.data&&typeof e.data.note==="string")e.data.note=e.data.note.replace("item:WELCOME","item:"+ids.w);e.device="tutorial";e.deviceLabel="Tutorial";e.actionId="tutorial-"+tid}
-  saveEvents();ui.per[tid]={focus:null,collapsed:[ids.w3,person],recent:[],lastPlaced:null,tplOpen:[]};
+  saveEvents();ui.per[tid]={focus:null,collapsed:[ids.w3,ids.mira,ids.talk],recent:[],lastPlaced:null,tplOpen:[]};
   curTree=prev;events=prevEvents;return tid}
 /* first start: the tutorial (opened first) next to the user's own tree "My thoughts", empty except its inbox */
 function fresh(){all=[];saveEvents();ui.per={};curTree=null;const tut=seedTutorial();newTree("My thoughts");setTree(tut)}
@@ -730,7 +748,9 @@ function commitDraft(chain,quiet){
   const d=state.draft;if(!d)return;state.draft=null;
   const inp=document.querySelector(".editin");if(inp)d.value=clean(inp.value);
   /* D-108: "::name rest" on a new line creates from the template "name"; the rest becomes the title */
-  if(d.isNew){const tm=d.value.trim().match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],d.parent);
+  /* ADR-068: "\\::" at the start keeps two literal colons */
+  const esc=d.value.trimStart().startsWith("\\::");if(esc)d.value=d.value.replace("\\::","::");
+  if(d.isNew&&!esc){const tm=d.value.trim().match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],d.parent);
     if(t){const root=copyTemplate(t.id,d.parent,d.after,tm[2]||"");state.sel=root;showTools(false);if(!quiet)renderAll();createdToast(root,t);return}
     if(tm)setTimeout(()=>toast("No template “"+tm[1]+"” here; saved as text"),0)}
   const parsed=parseTitle(d.value);
@@ -827,7 +847,7 @@ function closeAll(){const hadPreview=!!state.preview;sheet.className="sheet";she
 scrim.addEventListener("click",()=>{closeAll();renderAll()});
 function openSheet(title,sub,body,headExtra){{const f=onSheetClose;onSheetClose=null;if(f)f()}pop.hidden=true;sheet.replaceChildren(el("div",{class:"sheethead"},el("h2",null,title,sub?el("span",{class:"sub",text:sub}):null),headExtra||null,el("button",{class:"btn ghost",text:"Close",onclick:()=>{closeAll();renderAll()}})),el("div",{class:"sheetbody"},...[].concat(body)));
   sheet.hidden=false;scrim.hidden=false;$("#fab").style.visibility="hidden"}
-function openPop(anchor,entries){pop.replaceChildren();for(const e of entries){if(e==="-"){pop.append(el("hr"));continue}pop.append(el("button",{role:"menuitem",class:e.cls||"",text:e.label,disabled:!!e.disabled,title:e.why||null,onclick:()=>{pop.hidden=true;scrim.hidden=true;$("#fab").style.visibility="";e.run()}}))}
+function openPop(anchor,entries){pop.replaceChildren();for(const e of entries){if(!e)continue;if(e==="-"){pop.append(el("hr"));continue}pop.append(el("button",{role:"menuitem",class:e.cls||"",text:e.label,disabled:!!e.disabled,title:e.why||null,onclick:()=>{pop.hidden=true;scrim.hidden=true;$("#fab").style.visibility="";e.run()}}))}
   pop.hidden=false;scrim.hidden=false;$("#fab").style.visibility="hidden";
   const a=anchor.getBoundingClientRect(),A=app.getBoundingClientRect();const ph=pop.offsetHeight,pw=pop.offsetWidth;
   let y=a.bottom-A.top+4;if(y+ph>A.height-10)y=Math.max(10,a.top-A.top-ph-4);
@@ -842,6 +862,8 @@ function itemMenu(id,anchor,fromDetail){const it=P.items.get(id);
     {label:"Tags",run:()=>tagPicker(id)},
     {label:"Theme",run:()=>themePicker(id)},
     {label:"History",run:()=>historySheet(id)},
+    {label:"Copy",run:()=>copyItem(id)},
+    clip?{label:"Paste below"+(id===INBOX?" (into the inbox)":""),run:()=>id===INBOX?pasteAt(INBOX,lastChild(INBOX)):pasteAt(it.parent??null,id)}:null,
     /* D-110, ADR-068: any item can become a template; a template can become an ordinary item again */
     it.template?{label:"No longer a template",run:()=>setTemplate(id,false,fromDetail)}
       :{label:"Use as template"+(id===INBOX?" (not the inbox)":inTpl(id)?" (already inside a template)":""),disabled:id===INBOX||inTpl(id),run:()=>setTemplate(id,true,fromDetail)},"-",
@@ -849,6 +871,29 @@ function itemMenu(id,anchor,fromDetail){const it=P.items.get(id);
       toast("Deleted “"+(it.title||"Untitled")+"”",[["Undo",()=>quickUndo()]])}});
   openPop(anchor,entries)}
 
+/* ADR-069 copy and paste between trees; where Copy and Paste live is provisional (open question 18):
+   ⋯ › Copy, ⋯ › Paste below, More › Paste at the top level. A paste gets new ids, is one action (ADR-067),
+   rewrites links inside the copy, matches tags by name, keeps themes and template markings, and has no history */
+let clip=null;
+function copyItem(id){let n=0;const snap=x=>{n++;return{id:x.id,title:x.title,note:x.note,template:x.template,theme:x.theme||null,tags:[...x.tags].map(tagName),
+    kids:(P.kids.get(x.id)||[]).map(k=>P.items.get(k)).filter(k=>k&&!k.deleted).map(snap)}};
+  clip={from:curTree,root:snap(P.items.get(id)),n};
+  const md=(x,d)=>"  ".repeat(d)+"- "+mdStrip(x.title)+(x.note?"\n"+x.note.split("\n").map(l=>"  ".repeat(d+1)+l).join("\n"):"")+"\n"+x.kids.map(k=>md(k,d+1)).join("");
+  try{navigator.clipboard.writeText(md(clip.root,0)).catch(()=>{})}catch(e){}
+  toast("Copied “"+(mdStrip(clip.root.title)||"Untitled")+"”"+(n>1?" with "+(n-1)+" more":"")+" · ⋯ › Paste below, in any tree")}
+function pasteAt(parent,after){if(!clip)return;const map=new Map();const walk=n=>{map.set(n.id,uuid());n.kids.forEach(walk)};walk(clip.root);
+  const rw=t=>(t||"").replace(linkRe,(m,x)=>map.has(x)?"](item:"+map.get(x)+")":m);
+  action(()=>{const put=(n,par,aft)=>{const nid=map.get(n.id);write("item.created",{itemId:nid,parentId:par,afterItemId:aft,title:rw(n.title),note:rw(n.note),format:"markdown"});
+      for(const tn of n.tags){const tg=ensureTag(tn);write("item.tagged",{itemId:nid,tagId:tg})}
+      if(n.theme)write("theme.set",{target:nid,themeId:n.theme});if(n.template)write("item.template-set",{itemId:nid});
+      let prev=null;for(const k of n.kids){put(k,nid,prev);prev=map.get(k.id)}};
+    put(clip.root,parent,after)});
+  refresh();const root=map.get(clip.root.id);if(parent)ui.collapsed=ui.collapsed.filter(c=>c!==parent);
+  if(clip.root.template){const key=parent==null?"":parent;if(!ui.tplOpen.includes(key))ui.tplOpen.push(key)}
+  state.sel=root;saveUi();closeAll();renderAll();flash(root);
+  const shared=(ui.added||[]).includes(curTree)&&!(ui.hinted||[]).includes(curTree);
+  if(shared){ui.hinted=[...(ui.hinted||[]),curTree];saveUi()}
+  toast(shared?"Pasted. This tree is shared with another device: the copy goes there with the next exchange":"Pasted “"+(mdStrip(clip.root.title)||"Untitled")+"”"+(clip.from!==curTree?" from “"+treeName(clip.from)+"”":""),[["Undo",()=>quickUndo()]])}
 function setTemplate(id,on,fromDetail){const it=P.items.get(id);action(()=>write(on?"item.template-set":"item.template-removed",{itemId:id}));refresh();
   const key=it.parent==null?"":it.parent;const where=it.parent==null?"the whole tree":"“"+(mdStrip(P.items.get(it.parent).title)||"Untitled")+"”";
   if(on&&!ui.tplOpen.includes(key))ui.tplOpen.push(key);if(it.parent)ui.collapsed=ui.collapsed.filter(c=>c!==it.parent);saveUi();state.sel=id;
@@ -1026,6 +1071,7 @@ function capture(){const resuming=!!state.draft;if(resuming)holdDraftForCapture(
   /* principle 7, saved at once: a typed line is kept however the sheet is closed */
   const saveLine=()=>{hideSuggest(inp);const raw=clean(inp.value).trim();
     /* D-108: "::name rest" creates from a template here too */
+    if(raw.startsWith("\\::"))inp.value=inp.value.replace("\\::","::");
     const tm=raw.match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],parent);
     if(t){const id=copyTemplate(t.id,parent,after,tm[2]||"");done.push(id);lastId=id;after=id;inp.value=ZW;capPrev="";announce("Created “"+mdStrip(P.items.get(id).title)+"” from “"+mdStrip(t.title)+"”");return id}
     const parsed=parseTitle(inp.value);if(!parsed.title&&!parsed.note&&!parsed.tags.length)return null;
@@ -1145,6 +1191,7 @@ function moreSheet(){
       el("button",{class:"btn ghost",style:"flex:1",text:"▾ Expand all",onclick:()=>{setCollapsedAll(false);closeAll();renderAll();toast("Everything expanded")}})),
     el("button",{class:"opt",onclick:treesSheet},el("span",null,"Trees",el("span",{class:"path",text:"Open: “"+name+"” · switch, show the tutorial again"})),el("span",{class:"cnt",text:String(treeIds().length)})),
     ...imports,
+    clip?el("button",{class:"opt",onclick:()=>{const k=kidsOf(null).filter(x=>x!==INBOX);pasteAt(null,k.length?k[k.length-1]:null)}},el("span",null,"Paste at the top level",el("span",{class:"path",text:"“"+(mdStrip(clip.root.title)||"Untitled")+"”"+(clip.n>1?" with "+(clip.n-1)+" more":"")+" · a copy with new ids"}))):null,
     el("button",{class:"opt",onclick:()=>{closeAll();itemMenu(INBOX,$("#b-more"))}},el("span",null,"📥 Inbox",el("span",{class:"path",text:"Open, focus, tags, theme, history"}))),
     el("button",{class:"opt",onclick:()=>themePicker("tree")},el("span",null,"Theme of this tree",el("span",{class:"path",text:themeLabel(P.treeTheme)+" · for every branch without its own theme"}))),
     el("button",{class:"opt",onclick:exchangeSheet},el("span",null,"Exchange with another device",el("span",{class:"path",text:"Copies the changes of “"+name+"” both ways"}))),
@@ -1252,7 +1299,7 @@ function aboutSheet(){const p=t=>el("p",{class:"hint",text:t});
   openSheet("About this prototype","A clickable sketch, not the app",[
     p("You start in the tutorial, a tree of its own; your own thoughts go into the tree “My thoughts” (More › Trees). This page lets you try the UX decisions of ThoughtTree on your phone: capturing into the inbox, sorting with Move to…, the item menu, Focus, the detail page, tags with @@, notes with ##, themes per branch and per tree, quick undo and the history."),
     p("Every change is written as an event (item.created, item.moved, theme.set, …) with a hybrid logical clock and an action id; events written for one action are undone together. The outline is computed from the event log, as in the architecture. The log lives only in this browser; clearing site data deletes it."),
-    p("Templates: a template is an ordinary item marked as a template, valid in its parent's branch (at the top level in the whole tree); each tree starts with “👤 Person”. Type ::person Anna on an empty line, or hold ＋ Add here. Type [[ to link another item inside a title; the detail page counts links and “Linked from”."),
+    p("Templates: a template is an ordinary item marked as a template, valid in its parent's branch (at the top level in the whole tree); new trees start without templates; the tutorial carries five (Person, Talk or meeting, Source, Decision, Idea) to copy with ⋯ › Copy and paste into your own tree (provisional places). Type ::person Anna on an empty line, or hold ＋ Add here. Type [[ to link another item inside a title; the detail page counts links and “Linked from”."),
     p("Not real: no encryption, no Blazor, no installation as an app, no typed relations or views yet, no drag and drop, no conflict view. The inbox is an ordinary item marked as the inbox, always last at the top level, as in the architecture."),
     p("This device: "+device.label+" · "+device.id.slice(0,8))])}
 
@@ -1286,5 +1333,6 @@ if(ui.focus&&ui.focus!==INBOX&&!(P.items.get(ui.focus)&&visibleItem(ui.focus)))u
 renderAll();
 })();
 </script>
+
 </body>
 </html>
