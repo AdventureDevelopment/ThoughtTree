@@ -255,3 +255,4 @@ Line numbers ("L…") refer to the prototype file. Topic numbers refer to the co
 | D-27, D-28: history does not say who reverted; undo-stop message without the later value | Keep D-27 and D-28: "reverted by <device>, <time>"; the stop message names device and new value |
 | ADR-067: some actions need several undo steps (for example `Title ## note @@tag`) | Keep ADR-067: one action, one undo step |
 | D-54, D-80: 📥 while typing ends the edit, no return to the text; 📥 and toasts can sit behind the keyboard | Keep D-54 and D-80: return to the text with the cursor where it was; 📥 and messages stay above the keyboard |
+| D-65: theme preview from the detail page does not recolour that page | Keep D-65: the live preview recolours the page the user is on |
