@@ -146,6 +146,15 @@ How the owner's UX intent reaches the agents, and how the owner checks the resul
 - Sketches are shown as artifacts for choosing; only the chosen variant is kept in the repository as reference, in `docs/ux/sketches/`, linked from its decision; rejected variants are not kept; where a sketch and the text of this concept differ, the text wins (decision D-47)
 - Binding, as a definition of done for UI work, by three means together (decision D-48): a rule for agents, proposed as [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) (Proposed); a UI checklist in the pull request template; and a pointer to the UX concept in the agents' entry file (`CLAUDE.md` or `AGENTS.md`). The pull request template and the entry file do not exist yet; they are created when ADR-064 is accepted
 
+Definition of done for UI work (decision D-49): a UI feature is done when all three hold:
+
+| Part | What it covers | Checked by |
+| --- | --- | --- |
+| Push gate (exists) | All tests, UI specifications, accessibility scans and ADR checks are green; ADR-064's automatable rules (tokens only, every UI specification names a UX decision) | CI |
+| Pull request checklist (D-48) | What cannot be automated: principles checked, terms used, sketch linked, screenshots attached, keyboard and screen reader paths covered | The agent fills it, the owner checks it |
+| Design review (D-46) | The owner looks at the screenshots, tries the feature in the test environment and approves | The owner |
+
+
 ## How this concept is worked out
 
 - Worked out interactively with the owner, one topic and one decision at a time, following the UX workflow of the BMAD Method (UX designer role); BMAD's split is kept as sections of this document: how it looks (visual identity, tokens) and how it works (information architecture, behaviour, states, flows)
@@ -317,3 +326,4 @@ Store app (for the architecture):
 | D-46 | 2026-11-13 | 11 UX with agents | Before building a new screen, the agent makes an HTML sketch that the owner chooses or corrects; UI specifications are not approved separately beforehand (they are reviewed in the pull request as a protected path); after building, the pull request shows screenshots generated from the UI specifications (phone and tablet, light and dark) and a link to try the feature in the test environment | Owner |
 | D-47 | 2026-11-13 | 11 UX with agents | Sketches are shown as artifacts to choose from; only the chosen variant is stored as reference in `docs/ux/sketches/` and linked from its decision; rejected variants are not kept; the concept's text wins over a sketch | Owner |
 | D-48 | 2026-11-13 | 11 UX with agents | The UX concept is made binding for agents by three means together, like a definition of done: ADR-064 (Proposed: read the concept before UI work, sketch first, tokens only, specifications name the UX decisions they secure, screenshots and test link in the pull request), a UI checklist in the pull request template, and a pointer in the agents' entry file | Owner, usual UX practice (design system, handoff, design QA) |
+| D-49 | 2026-11-13 | 11 UX with agents | Definition of done for UI work: the push gate is green, the pull request checklist is complete, and the owner has approved after the design review (screenshots, test environment) | Owner |
