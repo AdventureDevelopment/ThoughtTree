@@ -43,6 +43,20 @@ Derived from journeys A to D (decisions D-16, D-24). They guide every later deci
 
 Inherited from the architecture and applying on top: accessible (ADR-033), and honest about what is protected (section 1).
 
+## Undo (topic 2)
+
+The owner thinks of undo like a git repository: every change is a commit that is never erased, and undo is a revert (decision D-25).
+
+| Need | Git equivalent | In ThoughtTree |
+| --- | --- | --- |
+| Reverse the last slip | `git revert HEAD` | Undo right after the action (also in the confirmation after a move, D-7) |
+| Step back several actions | Several reverts | Undo button or Ctrl+Z, repeated, through the user's own actions on this device |
+| Go back much later | `git log`, restore a file | The node's history: every version with device and time, any change revertible, whoever made it |
+
+- Quick undo does not go strictly by time: with live sync, a change from another device can arrive between the user's action and the undo; undoing that instead of the user's own slip would be surprising
+- Undo is not limited to the current view (zooming would lose it, and a move belongs to two places); instead undo always shows what it reverses
+- Architecture change proposed as [ADR-059](adr/ADR-059-undo.md) (Proposed); the node history brings forward what the architecture names as "possible later"
+
 ## How this concept is worked out
 
 - Worked out interactively with the owner, one topic and one decision at a time, following the UX workflow of the BMAD Method (UX designer role); BMAD's split is kept as sections of this document: how it looks (visual identity, tokens) and how it works (information architecture, behaviour, states, flows)
@@ -182,3 +196,4 @@ Bottom toolbar (D-17):
 | D-22 | 2026-11-13 | 1 Principles (journey D) | Conflicts (ADR-018) are reported in two places: in the confirmation after an exchange or sync ("1 conflict", with a way to resolve it), and as a marker on the affected node that stays until the conflict is resolved; all conflicts are also listed in the Conflict View. The marker is noticeable but calm, no alarm colours (principle 5) [ASSUMPTION: look decided with the tokens, topic 4] | Journey D |
 | D-23 | 2026-11-13 | 1 Principles (journey D) | The resolve view shows both (or all) versions side by side with device and time; the user picks one or writes a new version starting from one of them (an ordinary event replacing all competing changes, ADR-018); it shows the node's context to help remember what was meant: path, children, relations and backlinks, each tappable; "Later" leaves the conflict open and the marker stays | Journey D |
 | D-24 | 2026-11-13 | 1 Principles | Principle 9 added: nothing happens behind the user's back | Journey D |
+| D-25 | 2026-11-13 | 2 Undo | Undo writes new events that restore the previous state, like a git revert; every change can be reverted from the node's history, whoever made it; quick undo (button, Ctrl+Z) steps back through the user's own recent actions on this device, in one sequence across views; undo always shows what it reverses (brings the node into view and highlights it, or names the change with Go there). Proposed as [ADR-059](adr/ADR-059-undo.md) | Owner (git model), discussion |
