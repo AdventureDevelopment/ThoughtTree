@@ -54,9 +54,9 @@ h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
 const acc=[["p3","Paper · rust ochre","#9a5e28"]];
 const phone=(c,m)=>`<div class="ph ${c} ${m}"><div class="top">Home › <b>Ideas</b></div><div class="list">
 <div class="n">💡 App for thinking<span class="chip">idea</span></div><div class="n c1 sel">Capture first</div>
-<div class="n c1">Tags with @@<span class="mark" title="conflict"></span></div><div class="n">📚 Book to read</div>
+<div class="n c1">Tags with @@<span class="mark" title="conflict"></span></div><div class="n">📚 Why we forget what we read</div>
 <div class="n">See <span class="link">Ideas › Reading</span></div></div>
-<div class="btn">Move here</div><div class="bar"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span><span class="dock">📥</span></div></div>`;
+<div class="btn">Focus</div><div class="bar"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span><span class="dock">📥</span></div></div>`;
 let h='<div></div>'+acc.map(a=>`<div class="colhead"><span class="sw" style="background:${a[2]}"></span>${a[1]}<small>${a[2]}</small></div>`).join('');
 for(const m of ["light","dark"]){h+=`<div class="rowhead">${m}</div>`+acc.map(a=>phone(a[0],m)).join('');}
 document.getElementById('grid').innerHTML=h;
