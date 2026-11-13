@@ -122,6 +122,19 @@ The owner is planning something and knows there are already notes about it somew
 
 Principle candidate heard in journey C and in the wish for tags: several dimensions for notes; the tree is one order (where a note belongs), tags and relations add more (what kind, which context, which status, what it relates to).
 
+### Journey D – From phone to tablet, offline
+
+The owner has captured ideas on the phone and wants to continue on the tablet; there is no internet at all.
+
+1. Captured ideas on the phone
+2. Wants to continue with them on the tablet
+3. Hands the changes from the phone to the tablet as an encrypted file (ADR-007; decision D-19)
+4. …
+
+Notes:
+
+- Sync over the local Wi-Fi is not possible for a PWA by local discovery; a direct WebRTC connection with a handshake by QR codes, without a server, would be possible but needs an ADR (Content Security Policy, ADR-045) and a spike; kept as an idea for later, besides the native wrapper with local discovery named in the architecture
+
 ## Open questions
 
 Tags (core decided in D-14; details parked for feature work, none is a foundation decision):
@@ -159,3 +172,4 @@ Bottom toolbar (D-17):
 | D-16 | 2026-11-12 | 1 Principles | The eight UX principles in section "UX principles" are agreed, condensed from journeys A to C; accessible and honest about protection are inherited from the architecture | Journeys A–C |
 | D-17 | 2026-11-12 | 1 Principles (journeys A, B) | The phone layout has a bottom toolbar with the main actions; the capture button 📥 (capture into the inbox, D-4) sits in its middle, ＋ adds a new note at the current place. Only one floating-looking button (📥, docked in the bar); no second floating button. Contents of the bar and one-handed reach are open questions. Sketches of the variants compared: bottom toolbar, select then act, tap empty space, one button with inbox in the top bar | Owner, sketch comparison |
 | D-18 | 2026-11-12 | 1 Principles (journey A) | Revises D-10 for quick capture: 📥 opens a light sheet from below over the dimmed current view, with an empty line and the keyboard; it shows the target (the open tree's inbox, switchable, D-5); its lines behave exactly like the outline (Enter, leading space, Backspace, `##`, `@@`), so it is a small window onto the inbox, not a second kind of form; closing it returns to the place the user was; a button opens the full detail view of the current idea. Everywhere else new notes are typed in place in the tree (D-10) [ASSUMPTION: details of the sheet's behaviour to be confirmed in the UI specification] | Owner, MLO widget |
+| D-19 | 2026-11-13 | 1 Principles (journey D) | Without internet, devices exchange changes by encrypted file as in the architecture (ADR-007); sync over the local Wi-Fi (WebRTC with a QR-code handshake, or the native wrapper) is an idea for later, no ADR proposed now | Journey D |
