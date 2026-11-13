@@ -252,3 +252,4 @@ Line numbers ("L…") refer to the prototype file. Topic numbers refer to the co
 | D-6, D-9: "Move to…" without position step; browse fully expanded, 4 levels | Keep D-6 and D-9: choose the position among the target's children; browse collapsed, level by level |
 | D-14: no tag suggestions while typing; chips in the tree not tappable | Keep D-14: suggestions while typing `@@`; chips in the tree filter by their tag |
 | D-21: "Show" jumps to the first changed item | Keep D-21: "Show" filters the tree to all arrived items |
+| D-27, D-28: history does not say who reverted; undo-stop message without the later value | Keep D-27 and D-28: "reverted by <device>, <time>"; the stop message names device and new value |
