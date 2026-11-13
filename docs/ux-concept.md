@@ -97,6 +97,8 @@ The library is chosen by a spike (decision D-30).
 
 - Themes can be chosen per tree and per node, to support the vibe of a project; a node's theme applies to its whole branch, and shows when the user zooms into it (decision D-34)
 - In the overview a branch with its own theme is tinted in that theme, so its mood is visible before zooming in; zoomed in, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus zoomed in)
+- Themes of trees and branches are shared: the same on every device and for every user of a tree, recorded by an event; proposed as [ADR-060](adr/ADR-060-shared-themes.md) (Proposed) (decision D-36)
+- **Signature feature:** a theme for a part of the tree, tinted in the overview and taking over the whole screen when zoomed in; the owner has not seen this anywhere else
 
 All text and accent pairs above meet WCAG AA contrast; the contrast unit test (architecture section 8) will check them once they are code.
 
@@ -251,3 +253,4 @@ Bottom toolbar (D-17):
 | D-33 | 2026-11-13 | 4 Tokens | The first theme is Paper: warm paper tones with a rust ochre accent (`#9a5e28` light, `#e3a35f` dark); draft token values in section "Design tokens and theming" | Owner, colour comparison |
 | D-34 | 2026-11-13 | 4 Tokens | The theme can be changed, and chosen per tree and per node: a node's theme applies to its branch and shows while the user is zoomed into it; otherwise the tree's theme applies. Whether the choice is synced is still open | Owner |
 | D-35 | 2026-11-13 | 4 Tokens | A branch with its own theme is shown tinted in that theme in the overview (preferred over a small dot); zoomed into it, every bar, button and list takes on its theme. Every theme must meet the same contrast rules, also where a tinted branch sits inside another theme | Owner, sketch |
+| D-36 | 2026-11-13 | 4 Tokens | Themes of trees and branches are shared through an event, not kept as device state: they belong to the content like a tree's name, so every device and every user of a shared tree sees the same mood. Proposed as [ADR-060](adr/ADR-060-shared-themes.md) | Owner |
