@@ -314,6 +314,11 @@ Outliner comparison (research input, nothing decided; [ux/outliner-comparison.md
 
 14. Architecture check of its 55 ideas (D-83): to be considered now, before the event format is fixed for release 1: grouping several events into one quick-undo step (multi-select with bulk actions, pasting indented text as several items, templates or duplicating a branch), which ADR-059 does not cover yet (decided: [ADR-067](adr/ADR-067-one-action-one-undo-step.md), Accepted; several views at once is a rule in ADR-041); worth keeping in mind for the application layer: navigation state that allows a structure sidebar and later side-by-side panes on tablet and desktop. Typing links with `[[` needs no architecture change (live `item:` links with empty text exist, section 8); the other ideas are UI only, already covered, left out, or wait for existing open decisions (binary data, ADR-022)
 
+Owner's dream features (named 2026-11-13, for later; nothing decided):
+
+15. A map of a branch like a mind map: an item and its children drawn as a map (comparison idea 38, a layout of an item's views, ADR-062); possibly also links between items shown in the map (comparison idea 35)
+16. A literature list export: the sources used in items (for example items linked with the predefined relation type `cites`) exported as a list of references; open how sources are described (a note in a citation format, tags, or structured fields, which the comparison advises against) and which formats (Markdown list, BibTeX, RIS); touches readable export (ADR-019)
+
 Store app (for the architecture):
 
 9. Native wrapper: .NET MAUI Blazor Hybrid looks like the most fitting route (same Razor components in C#, native shortcuts, widgets, background sync and shared-file sync; browser adapters swapped thanks to ADR-042); alternatives Capacitor and PWABuilder/TWA; Apple's minimum-functionality review and developer accounts to consider. Not decided here
