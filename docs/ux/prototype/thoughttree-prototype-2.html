@@ -101,10 +101,36 @@ button.tag{font-family:inherit;cursor:pointer;min-height:24px;padding:2px 9px;li
 /* only the line being edited gets extra space on the capture button's side (D-54) */
 .hand-right .row.editing{padding-right:calc(84px + env(safe-area-inset-right,0px))}
 .hand-left .row.editing .body{padding-left:62px}
-#sugg,.sugg{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:6px max(8px,env(safe-area-inset-right,0px)) 6px max(8px,env(safe-area-inset-left,0px));background:var(--bg);border-top:1px solid var(--line)}
-#sugg{position:absolute;left:0;right:0;bottom:calc(var(--kb,0px) + 49px);z-index:31}
-.sugg{margin:0 -14px}
-.suglbl{font-size:0.75rem;color:var(--muted)}
+/* D-109: suggestions where the user types: ghost text after the caret, a short list directly under the line */
+.body,.focushead,.capline{position:relative}
+.sghost{position:absolute;z-index:3;display:flex;align-items:center;min-height:24px;padding:0;font:inherit;color:var(--muted);opacity:.75;white-space:nowrap;overflow:hidden;cursor:pointer;background:none}
+.sugglist{display:flex;flex-direction:column;gap:2px;background:var(--card);border-bottom:1px solid var(--line);padding:4px max(8px,env(safe-area-inset-right,0px)) 6px calc(max(8px,env(safe-area-inset-left,0px)) + var(--depth,0) * 22px + 40px)}
+.capline + .sugglist,.focushead .sugglist{padding-left:8px;margin:0 -6px;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.focushead .sugglist{position:absolute;left:0;right:0;top:100%;z-index:20}
+.sugopt{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;text-align:start;padding:6px 10px;border-radius:8px}
+.sugopt:hover,.sugopt:focus-visible{background:var(--sel)}
+.sugopt .sub{margin-inline-start:auto;font-size:.75rem;color:var(--muted);white-space:nowrap}
+.sugopt .typed{font-weight:700}
+.suglbl{font-size:0.75rem;color:var(--muted);padding:2px 10px}
+/* templates (D-110): a faded, display-only group row with a stamp icon; template items carry the stamp instead of the dot */
+.stampic{display:inline-flex;width:18px;height:18px;flex:0 0 18px}
+.stampic svg{width:18px;height:18px}
+.tplrow{width:100%;text-align:start;align-items:center;color:var(--muted);font-size:.875rem;min-height:44px}
+.tplrow>*{opacity:.8}
+.tplrow .tw{color:var(--muted)}
+.tplrow .chev{margin-inline-start:4px;font-size:.75rem}
+.tw.stamp{gap:1px;color:var(--muted);font-weight:400}
+.tw.stamp .caret{font-size:.75rem;color:var(--acctext)}
+.slotmark{display:inline-block;font-size:.75rem;color:var(--muted);margin-inline-start:6px;border:1px dashed var(--line);border-radius:8px;padding:0 6px;vertical-align:1px}
+/* link slots in created items (D-107): linked items as small accent links, "＋ Link…" to add one */
+.slotbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:4px}
+.rlink{min-height:32px;padding:4px 8px;border-radius:8px;font-size:.8125rem;color:var(--acctext);background:color-mix(in srgb,var(--accent) 10%,transparent);text-align:start}
+.linkbtn{min-height:32px;padding:4px 10px;border-radius:14px;border:1px dashed var(--accent);font-size:.8125rem;color:var(--acctext)}
+.relgroup{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.relgroup .relname{color:var(--muted);font-size:.875rem;margin-inline-end:2px}
+.relgroup .rlink{font-size:.9375rem;min-height:40px;padding:6px 10px}
+.tplnote{font-size:.8125rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+#bar,#b-add{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .browse{display:flex;align-items:center;gap:2px}
 .browse .opt{flex:1;min-width:0}
 .treerow{display:flex;align-items:center;gap:8px}
@@ -217,7 +243,7 @@ mark{background:var(--hl);color:inherit;border-radius:3px}
     <button id="b-more" aria-label="More"><span>⋯</span><small>More</small></button>
     <button id="b-undo" aria-label="Undo"><span>↩</span><small>Undo</small></button>
     <button id="b-search" aria-label="Search"><span>🔍</span><small>Search</small></button>
-    <button id="b-add" aria-label="Add here"><span>＋</span><small>Add here</small></button>
+    <button id="b-add" aria-label="Add here" aria-description="Press and hold for From template…" title="Tap: add here · hold: From template…"><span>＋</span><small>Add here</small></button>
   </nav>
   <div id="tools" hidden role="toolbar" aria-label="Editing">
     <button data-t="undo" aria-label="Undo typing">↩</button>
@@ -228,9 +254,10 @@ mark{background:var(--hl);color:inherit;border-radius:3px}
     <button data-t="down" aria-label="Move down">↓</button>
     <button data-t="note" aria-label="Insert note separator">##</button>
     <button data-t="tag" aria-label="Insert tag marker">@@</button>
+    <button data-t="tpl" aria-label="Create from a template: insert :: at the start of an empty line">::</button>
+    <button data-t="link" aria-label="Link to another item: insert [[">🔗</button>
     <button data-t="done" class="done" aria-label="Done">✓</button>
   </div>
-  <div id="sugg" hidden role="toolbar" aria-label="Tag suggestions"></div>
   <div id="toast" hidden role="status"></div>
   <div id="scrim" hidden></div>
   <section id="sheet" class="sheet" hidden role="dialog" aria-modal="true"></section>
@@ -243,8 +270,8 @@ mark{background:var(--hl);color:inherit;border-radius:3px}
 (()=>{
 "use strict";
 /* ---------- storage (browser only; prototype) ---------- */
-/* v3: several trees (events carry `tree`), every event carries `actionId` (ADR-067) */
-const K={ev:"tt-proto-events-v3",dev:"tt-proto-device-v2",ui:"tt-proto-ui-v3"};
+/* v4: templates (ADR-068) and inline item links; v3: several trees (events carry `tree`), every event carries `actionId` (ADR-067) */
+const K={ev:"tt-proto-events-v5",dev:"tt-proto-device-v2",ui:"tt-proto-ui-v5"};
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const uuid=()=>{try{return crypto.randomUUID()}catch(e){return "x"+Math.random().toString(16).slice(2)+Date.now().toString(16)}};
@@ -253,8 +280,8 @@ if(!device){device={id:uuid(),label:/iPad|Tablet/i.test(navigator.userAgent)?"Ta
 let all=load(K.ev,[]);      /* every event of every tree on this device */
 let events=[];              /* the events of the open tree */
 let curTree=null;
-const ui=Object.assign({tree:null,per:{},added:[],focus:null,collapsed:[],hand:"right",recent:[],lastPlaced:null},load(K.ui,{}));
-const PER=["focus","collapsed","recent","lastPlaced"];
+const ui=Object.assign({tree:null,per:{},added:[],focus:null,collapsed:[],hand:"right",recent:[],lastPlaced:null,tplOpen:[]},load(K.ui,{}));
+const PER=["focus","collapsed","recent","lastPlaced","tplOpen"];
 const saveUi=()=>{if(curTree){ui.per[curTree]={};for(const k of PER)ui.per[curTree][k]=ui[k]}save(K.ui,{tree:curTree,per:ui.per,hand:ui.hand,added:ui.added||[]})};
 const saveEvents=()=>save(K.ev,all);
 
@@ -287,7 +314,7 @@ function project(evs){
     const it=items.get(d.itemId);
     switch(e.type){
       case"tree.named":name=d.name;tutorial=!!d.tutorial;break;
-      case"item.created":if(items.has(d.itemId))break;{const n={id:d.itemId,parent:null,title:d.title||"",note:d.note||"",deleted:false,tags:new Set(),created:e.clock.t,changed:e.clock.t};items.set(n.id,n);place(n,d.parentId??null,d.afterItemId)}break;
+      case"item.created":if(items.has(d.itemId))break;{const n={id:d.itemId,parent:null,title:d.title||"",note:d.note||"",deleted:false,tags:new Set(),created:e.clock.t,changed:e.clock.t,template:false,fromTemplate:d.fromTemplate||null};items.set(n.id,n);place(n,d.parentId??null,d.afterItemId)}break;
       case"item.title-changed":if(it){it.title=d.title;it.changed=e.clock.t}break;
       case"item.note-changed":if(it){it.note=d.note;it.changed=e.clock.t}break;
       case"tree.inbox-set":inbox=d.itemId;break;
@@ -299,6 +326,9 @@ function project(evs){
       case"item.tagged":if(it){it.tags.add(d.tagId);it.changed=e.clock.t}break;
       case"item.untagged":if(it){it.tags.delete(d.tagId);it.changed=e.clock.t}break;
       case"theme.set":themes.set(d.target,d.themeId);if(it)it.changed=e.clock.t;break;
+      /* ADR-068: a template is an ordinary item marked by events */
+      case"item.template-set":if(it){it.template=true;it.changed=e.clock.t}break;
+      case"item.template-removed":if(it){it.template=false;it.changed=e.clock.t}break;
     }
   }
   for(const [id,t] of themes){const i=items.get(id);if(i)i.theme=t||null}
@@ -310,12 +340,24 @@ const treeIds=()=>{const s=[];for(const e of all)if(e.tree&&!s.includes(e.tree))
 const treeInfo=tid=>{const p=project(all.filter(e=>e.tree===tid));return{name:p.name||"Untitled tree",tutorial:p.tutorial}};
 const treeName=tid=>tid===curTree?(P.name||"Untitled tree"):treeInfo(tid).name;
 function setTree(tid){if(curTree)saveUi();curTree=tid;events=all.filter(e=>e.tree===tid);
-  const s=ui.per[tid]||{};ui.focus=s.focus||null;ui.collapsed=s.collapsed||[];ui.recent=s.recent||[];ui.lastPlaced=s.lastPlaced||null;refresh();saveUi()}
+  const s=ui.per[tid]||{};ui.focus=s.focus||null;ui.collapsed=s.collapsed||[];ui.recent=s.recent||[];ui.lastPlaced=s.lastPlaced||null;ui.tplOpen=s.tplOpen||[];refresh();saveUi()}
 function newTree(name,extra){const tid=uuid();const prev=curTree,prevEvents=events;curTree=tid;events=[];
   action(()=>{write("tree.named",Object.assign({treeId:tid,name},extra||{}));const ib=uuid();
-    write("item.created",{itemId:ib,parentId:null,afterItemId:null,title:"📥 Inbox",note:"",format:"markdown"});write("tree.inbox-set",{itemId:ib});write("theme.set",{target:ib,themeId:"inbox"})});
+    write("item.created",{itemId:ib,parentId:null,afterItemId:null,title:"📥 Inbox",note:"",format:"markdown"});write("tree.inbox-set",{itemId:ib});write("theme.set",{target:ib,themeId:"inbox"});
+    const pid=seedPredefined();ui.per[tid]=Object.assign({focus:null,recent:[],lastPlaced:null,tplOpen:[]},ui.per[tid]||{},{collapsed:[pid]})});
   curTree=prev;events=prevEvents;return tid}
-const kidsOf=id=>{const k=(P.kids.get(id==null?"":id)||[]).filter(k=>{const i=P.items.get(k);return i&&!i.deleted});if(id==null&&INBOX&&k.includes(INBOX)){k.splice(k.indexOf(INBOX),1);k.push(INBOX)}return k};
+/* D-107, ADR-068: the predefined "Person" template, written as ordinary events when a tree is created, at the top level; its lines are plain text */
+function seedPredefined(){const p=uuid();
+  write("item.created",{itemId:p,parentId:null,afterItemId:null,title:"👤 Person",note:"",format:"markdown"});
+  write("item.template-set",{itemId:p});
+  /* D-112: a template carries tags that every item made from it inherits; "person" finds all persons */
+  const tg=uuid();write("tag.defined",{tagId:tg});write("display-name.set",{elementId:tg,field:"name",language:"en",text:"person"});write("item.tagged",{itemId:p,tagId:tg});
+  let prev=null;for(const title of["🤝 How we met: ","🎂 Birthday: ","👪 Family: ","✨ Shared interests: ","🏘 Shared communities: "]){const id=uuid();write("item.created",{itemId:id,parentId:p,afterItemId:prev,title,note:"",format:"markdown"});prev=id}
+  return p}
+/* templates are left out of the children; they are shown in the branch's "Templates" row (D-110) */
+const kidsOf=id=>{const k=(P.kids.get(id==null?"":id)||[]).filter(k=>{const i=P.items.get(k);return i&&!i.deleted&&!i.template});if(id==null&&INBOX&&k.includes(INBOX)){k.splice(k.indexOf(INBOX),1);k.push(INBOX)}return k};
+const tplsOf=id=>(P.kids.get(id==null?"":id)||[]).filter(k=>{const i=P.items.get(k);return i&&!i.deleted&&i.template});
+const inTpl=id=>{let i=P.items.get(id);while(i){if(i.template)return true;i=P.items.get(i.parent)}return false};
 const visibleItem=id=>{let i=P.items.get(id);while(i){if(i.deleted)return false;if(i.parent==null||i.parent===INBOX)return true;i=P.items.get(i.parent)}return false};
 function pathOf(id){const out=[];let i=P.items.get(id);while(i){out.unshift(i);i=P.items.get(i.parent)}return out}
 const pathText=id=>[treeName(curTree),...pathOf(id).slice(0,-1).map(x=>x.title||"Untitled")].join(" › ");
@@ -358,7 +400,16 @@ function seedTutorial(){
   mk("s1","s",null,"🔍 Search filters the tree while you type");
   mk("s2","s","s1","Tap a tag to see everything with it");
   mk("s3","s","s2","“Changed recently” shows what is new");
-  mk("d",null,"s","🔁 More than one device");
+  mk("l",null,"s","🔗 Linking thoughts");
+  mk("l1","l",null,"Type [[ to link to another thought while writing","A few letters are enough: the best match appears as faded text after the cursor (tap it, or press Tab), and a short list opens under the line. “Create …” makes a new thought in the inbox and links it at once. The 🔗 button above the keyboard does the same.");
+  mk("l2","l","l1","A link shows the other thought's current title, even after renaming");
+  mk("p",null,"l","🧩 Templates");
+  mk("p1","p",null,"Type :: at the start of a line to create from a template","For example `::person Anna` creates “👤 Anna” with the lines of the Person template. A branch's templates wait in its faded “Templates” row at the end; the tree's own templates sit just above the inbox.");
+  mk("p2","p","p1","Press and hold ＋ for From template…");
+  mk("p3","p","p2","Any item can become a template: ⋯ › Use as template");
+  mk("l3","l","l2","Tap a link to go there, like this one: [](item:"+ids.p+")");
+  mk("l4","l","l3","On the detail page, ↩ shows which thoughts link here, 🔗 where this one links to");
+  mk("d",null,"p","🔁 More than one device");
   mk("d1","d",null,"More › Exchange with another device copies all changes over");
   mk("d2","d","d1","Every change is kept: ⋯ › History lists them, and each can be reverted");
   mk("in1","inbox",null,"Sort me into “Capture and sort” with ⋯ › Move to…");
@@ -367,18 +418,22 @@ function seedTutorial(){
   const t1=uuid();write("tag.defined",{tagId:t1});write("display-name.set",{elementId:t1,field:"name",language:"en",text:"tip"});
   for(const k of ["w2","f4","f5","c4","s2"])write("item.tagged",{itemId:ids[k],tagId:t1});
   write("theme.set",{target:ids.t,themeId:"sage"});
+  const person=seedPredefined();
   /* mark seed events as tutorial data */
   for(const e of all.slice(start)){if(e.data&&typeof e.data.note==="string")e.data.note=e.data.note.replace("item:WELCOME","item:"+ids.w);e.device="tutorial";e.deviceLabel="Tutorial";e.actionId="tutorial-"+tid}
-  saveEvents();ui.per[tid]={focus:null,collapsed:[ids.w3],recent:[],lastPlaced:null};
+  saveEvents();ui.per[tid]={focus:null,collapsed:[ids.w3,person],recent:[],lastPlaced:null,tplOpen:[]};
   curTree=prev;events=prevEvents;return tid}
 /* first start: the tutorial (opened first) next to the user's own tree "My thoughts", empty except its inbox */
 function fresh(){all=[];saveEvents();ui.per={};curTree=null;const tut=seedTutorial();newTree("My thoughts");setTree(tut)}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
-const app=$("#app"),outline=$("#outline"),top=$("#top"),sheet=$("#sheet"),scrim=$("#scrim"),pop=$("#pop"),toastEl=$("#toast"),tools=$("#tools"),detail=$("#detail"),sugg=$("#sugg");
+const app=$("#app"),outline=$("#outline"),top=$("#top"),sheet=$("#sheet"),scrim=$("#scrim"),pop=$("#pop"),toastEl=$("#toast"),tools=$("#tools"),detail=$("#detail");
 const el=(tag,props,...children)=>{const n=document.createElement(tag);if(props)for(const[k,v]of Object.entries(props)){if(k==="class")n.className=v;else if(k==="text")n.textContent=v;else if(k.startsWith("on"))n.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)n.setAttribute(k,v===true?"":v)}for(const c of children){if(c!=null)n.append(c)}return n};
 const announce=t=>{$("#live").textContent=t};
+/* a simple rubber stamp, thin strokes in the current colour */
+const STAMP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.6 9.2a3.4 3.4 0 1 1 4.8 0"/><path d="M10 9.2l-.6 3.8h5.2L14 9.2"/><path d="M5 15.2c0-1.2 1-2.2 2.2-2.2h9.6c1.2 0 2.2 1 2.2 2.2V17H5z"/><path d="M4 20.5h16"/></svg>';
+const stampIcon=()=>{const s=document.createElement("span");s.className="stampic";s.innerHTML=STAMP;return s};
 const norm=s=>(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ae/g,"a").replace(/oe/g,"o").replace(/ue/g,"u").replace(/ß/g,"ss");
 const normText=s=>(s||"").normalize("NFC");
 const ZW="\u200B";const clean=v=>(v||"").replace(/\u200B/g,""); /* invisible marker in empty lines, so Backspace on an empty line is noticed on every phone keyboard */
@@ -408,7 +463,7 @@ function rootTitle(){return treeName(curTree)}
 function renderTop(){
   keepCaret();top.replaceChildren();
   if(state.search!==null){
-    const inp=el("input",{type:"search",id:"q",placeholder:"Search titles and notes","aria-label":"Search",value:state.search});
+    const inp=el("input",{type:"search",id:"q",placeholder:"Search titles and notes · :: for templates","aria-label":"Search",value:state.search});
     inp.addEventListener("input",()=>{state.search=inp.value;renderOutline()});
     /* D-105: the search field takes the full width; its filters sit in a row underneath, clearly visible */
     top.append(el("div",{class:"searchwrap"},
@@ -431,15 +486,18 @@ function renderTop(){
     top.append(el("button",{class:"upbtn",text:"←","aria-label":"Back to the previous view",onclick:()=>{if(location.hash==="#focus"){history.back()}else{goBack()}}}),head)}
   requestAnimationFrame(()=>{crumbs.scrollLeft=crumbs.scrollWidth});
 }
-function matches(it){const q=norm(state.search||"").trim();const hit=!q||norm(it.title).includes(q)||norm(it.note).includes(q)||[...it.tags].some(t=>norm(tagName(t)).includes(q.replace(/^@@/,"")));
+/* D-110: search leaves templates out, unless the search text starts with "::" (then it searches the templates) */
+const tplSearch=()=>state.search!=null&&state.search.trimStart().startsWith("::");
+const searchQ=()=>norm((state.search||"").trimStart().replace(/^::/,"")).trim();
+function matches(it){const q=searchQ();const hit=!q||norm(it.title).includes(q)||norm(it.note).includes(q)||[...it.tags].some(t=>norm(tagName(t)).includes(q.replace(/^@@/,"")));
   const recent=!state.recentOnly||(state.recentSet&&state.recentSet.has(it.id));return hit&&recent}
 const lastChange=id=>{let best=null;for(const e of events){if(evItem(e)===id&&(!best||order(e,best)>0))best=e}return best};
 const ago=t=>{const m=Math.round((Date.now()-t)/60000);if(m<1)return"just now";if(m<60)return m+" min";const h=Math.round(m/60);if(h<24)return h+" h";const d=Math.round(h/24);return d===1?"yesterday":d<7?d+" days":new Date(t).toLocaleDateString()};
 /* D-98: "Changed recently" = the most recently changed items in the current view, five at a time */
 function computeRecent(){const inView=it=>!ui.focus||(it.id!==ui.focus&&inBranch(it.id,ui.focus));
-  const list=[...P.items.values()].filter(it=>!it.deleted&&it.id!==INBOX&&visibleItem(it.id)&&inView(it)).sort((a,b)=>b.changed-a.changed);
+  const list=[...P.items.values()].filter(it=>!it.deleted&&it.id!==INBOX&&visibleItem(it.id)&&!inTpl(it.id)&&inView(it)).sort((a,b)=>b.changed-a.changed);
   state.recentSet=new Set(list.slice(0,state.recentN||5).map(it=>it.id));state.recentTotal=list.length}
-function highlight(text){const q=norm(state.search||"").trim();const frag=document.createDocumentFragment();
+function highlight(text){const q=searchQ();const frag=document.createDocumentFragment();
   if(!q||!text){frag.append(text||"");return frag}
   const n=norm(text);let i=n.indexOf(q);
   if(i<0||n.length!==text.length){frag.append(text);return frag}
@@ -455,21 +513,31 @@ function renderOutline(){
   let keep=null;
   if(state.recentOnly)computeRecent();
   state.hits=null;
-  if(filtering){keep=new Set();state.hits=new Set();for(const it of P.items.values()){if(!it.deleted&&visibleItem(it.id)&&(!searching||matches(it))&&(!state.filter||state.filter.test(it))){state.hits.add(it.id);let x=it;while(x){keep.add(x.id);x=P.items.get(x.parent)}}}}
+  const tplMode=searching&&tplSearch()&&!state.recentOnly;
+  if(filtering){keep=new Set();state.hits=new Set();for(const it of P.items.values()){if(!it.deleted&&visibleItem(it.id)&&inTpl(it.id)===tplMode&&(!searching||matches(it))&&(!state.filter||state.filter.test(it))){state.hits.add(it.id);let x=it;while(x){keep.add(x.id);x=P.items.get(x.parent)}}}}
   /* a filter (tag chip, "Show" after an exchange) works like search: matches and their ancestors, with a way to clear it */
   if(state.filter){const n=[...keep].filter(id=>state.filter.test(P.items.get(id))).length;
     outline.append(el("div",{class:"filterbar",role:"status"},el("span",{text:state.filter.label+" · "+n+(n===1?" item":" items")}),el("button",{class:"chipbtn",text:"✕ Clear","aria-label":"Clear the filter",onclick:()=>{state.filter=null;renderAll()}})))}
+  /* D-110: a branch's templates are gathered in one display-only row "Templates · n" (never stored), collapsed by default */
+  const tplGroup=(parent,depth)=>{const ts=tplsOf(parent).filter(t=>!keep||keep.has(t));if(!ts.length)return;
+    const key=parent==null?"":parent;const open=filtering||ui.tplOpen.includes(key);
+    const b=el("button",{class:"row tplrow",style:`--depth:${depth}`,"aria-expanded":String(open),"aria-label":"Templates, "+ts.length+(open?", collapse":", expand"),onclick:()=>{commitDraft(false,true);const i=ui.tplOpen.indexOf(key);i>=0?ui.tplOpen.splice(i,1):ui.tplOpen.push(key);saveUi();renderOutline()}},
+      el("span",{class:"tw","aria-hidden":"true"},stampIcon()),el("span",{text:"Templates · "+ts.length}),el("span",{class:"chev","aria-hidden":"true",text:open?"▾":"▸"}));
+    outline.append(b);
+    if(open)for(const t of ts){outline.append(row(P.items.get(t),depth,pageTheme));if(filtering||!ui.collapsed.includes(t))walk(t,depth+1)}};
   const walk=(parent,depth)=>{
     const ks=kidsOf(parent);
-    let draftDone=false;
+    let draftDone=false,tplDone=false;
     const draftHere=state.draft&&state.draft.isNew&&state.draft.parent===parent;
     if(draftHere&&!state.draft.after){outline.append(draftRow(depth));draftDone=true}
     for(const id of ks){const it=P.items.get(id);if(keep&&!keep.has(id))continue;
+      if(id===INBOX&&parent==null){if(draftHere&&!draftDone){outline.append(draftRow(depth));draftDone=true}tplGroup(parent,depth);tplDone=true}
       outline.append(row(it,depth,pageTheme));
       const open=filtering||!ui.collapsed.includes(id);
       if(open)walk(id,depth+1);
       if(draftHere&&!draftDone&&state.draft.after===id){outline.append(draftRow(depth));draftDone=true}}
     if(draftHere&&!draftDone)outline.append(draftRow(depth));
+    if(!tplDone)tplGroup(parent,depth);
   };
   /* D-104: "By time" lists the latest changes newest first, each with its path, instead of the tree */
   if(state.recentOnly&&state.recentList&&state.hits){const ids=[...state.hits].sort((x,y)=>P.items.get(y).changed-P.items.get(x).changed);
@@ -485,17 +553,20 @@ function renderOutline(){
   updatePill();
 }
 function row(it,depth,pageTheme){
-  const has=kidsOf(it.id).length>0;const collapsed=ui.collapsed.includes(it.id);
+  const nk=kidsOf(it.id).length;const has=nk>0||tplsOf(it.id).length>0;const collapsed=ui.collapsed.includes(it.id);
   const own=themeFor(it.id);const tinted=own!==pageTheme;
   const editing=state.draft&&!state.draft.isNew&&state.draft.id===it.id;
   const r=el("div",{class:"row"+(it.id===INBOX?" inboxrow":"")+(state.sel===it.id?" sel":"")+(editing?" editing":"")+(tinted?" tinted t-"+own+(it.theme?"":" inner"):"")+(state.hits&&!state.hits.has(it.id)?" ctx":""),style:`--depth:${depth}`,"data-id":it.id});
-  r.append(el("button",{class:"tw"+(has?" has":" leaf")+(has&&collapsed?" closed":""),"aria-label":has?(collapsed?"Expand, "+kidsOf(it.id).length+" items inside":"Collapse"):"No items inside","aria-expanded":has?String(!collapsed):false,tabindex:has?"0":"-1",text:has?(collapsed?"▸":"▾"):"●",onclick:ev=>{ev.stopPropagation();if(!has)return;toggleCollapse(it.id)}}));
+  if(it.template){/* a template carries the stamp instead of the dot (D-110) */
+    const tw=el("button",{class:"tw stamp"+(has&&collapsed?" closed":""),"aria-label":"Template"+(has?(collapsed?", expand, "+nk+" lines inside":", collapse"):""),"aria-expanded":has?String(!collapsed):false,tabindex:has?"0":"-1",onclick:ev=>{ev.stopPropagation();if(has)toggleCollapse(it.id)}},stampIcon());
+    if(has)tw.append(el("span",{class:"caret","aria-hidden":"true",text:collapsed?"▸":"▾"}));r.append(tw)}
+  else r.append(el("button",{class:"tw"+(has?" has":" leaf")+(has&&collapsed?" closed":""),"aria-label":has?(collapsed?"Expand, "+nk+" items inside":"Collapse"):"No items inside","aria-expanded":has?String(!collapsed):false,tabindex:has?"0":"-1",text:has?(collapsed?"▸":"▾"):"●",onclick:ev=>{ev.stopPropagation();if(!has)return;toggleCollapse(it.id)}}));
   const body=el("div",{class:"body",tabindex:"0"});
   if(state.draft&&!state.draft.isNew&&state.draft.id===it.id){body.append(editor())}
   else{const t=el("div",{class:"title"+(it.title?"":" empty")});t.append(state.search?highlight(mdStrip(it.title)||"Untitled"):mdInline(it.title||"Untitled"));
     for(const tg of it.tags)t.append(el("button",{class:"tag",text:tagName(tg),"aria-label":"Show all with tag "+tagName(tg),onclick:ev=>{ev.stopPropagation();filterByTag(tg)}}));
     if(state.recentOnly&&state.hits&&state.hits.has(it.id)){const lc=lastChange(it.id);if(lc)t.append(el("span",{class:"when",text:ago(lc.clock.t)+" · "+(lc.device===device.id?device.label:(lc.deviceLabel||"other device"))}))}
-    if(has&&collapsed)t.append(el("span",{class:"kids",text:"+"+kidsOf(it.id).length,title:kidsOf(it.id).length+" items inside"}));
+    if(nk&&collapsed)t.append(el("span",{class:"kids",text:"+"+nk,title:nk+" items inside"}));
     body.append(t);if(it.note){const pv=el("div",{class:"preview"});pv.append(highlight(mdStrip(it.note.split("\n").find(l=>l.trim())||"")));body.append(pv)}
     /* D-7: for the next thought in the inbox, one tap places it right below the last placed item */
     const lp=placeBelowTarget(it.id);
@@ -530,18 +601,106 @@ function placeBelow(id){const lp=placeBelowTarget(id);if(!lp)return;const x=P.it
 const nextInInbox=id=>{const k=kidsOf(INBOX);const i=k.indexOf(id);return i<0?null:(k[i+1]||k[i-1]||null)};
 
 /* ---------- editing (drafts are local until editing ends) ---------- */
-function focusEditor(ed){ed.focus();const d=state.draft;const c=d&&d.caret!=null?Math.min(d.caret,ed.value.length):ed.value.length;if(d)delete d.caret;try{ed.setSelectionRange(c,c)}catch(e){}}
-/* D-14: while typing @@, suggest existing tags; a tap completes the name */
-function tagSuggest(inp,box){const s=inp.selectionStart??inp.value.length;const before=inp.value.slice(0,s).replace(/\u200B/g,"");
-  const m=before.match(/@@([\p{L}\p{N}_-]*)$/u);box.replaceChildren();
-  if(!m){box.hidden=true;return}
-  const q=norm(m[1]);const counts=new Map();for(const x of P.items.values())if(!x.deleted)for(const t of x.tags)counts.set(t,(counts.get(t)||0)+1);
-  const list=[...P.tags.values()].filter(t=>t.name&&/^[\p{L}\p{N}_-]+$/u.test(t.name)&&norm(t.name).startsWith(q)&&norm(t.name)!==q).sort((a,b)=>(counts.get(b.id)||0)-(counts.get(a.id)||0)).slice(0,6);
-  if(!list.length){box.hidden=true;return}
-  box.append(el("span",{class:"suglbl",text:"Tags:"}));
-  for(const t of list)box.append(el("button",{class:"chipbtn",text:t.name,"aria-label":"Complete tag "+t.name,onmousedown:e=>e.preventDefault(),onpointerdown:e=>e.preventDefault(),onclick:()=>{
-    const v=inp.value,cut=s-m[1].length;const ins=t.name+" ";inp.value=v.slice(0,cut)+ins+v.slice(s);inp.focus();inp.setSelectionRange(cut+ins.length,cut+ins.length);inp.dispatchEvent(new Event("input"));box.hidden=true}}));
-  box.hidden=false}
+function focusEditor(ed){ed.focus();const d=state.draft;
+  if(d&&d.selFrom!=null){const f=Math.min(d.selFrom,ed.value.length);delete d.selFrom;delete d.caret;try{ed.setSelectionRange(f,ed.value.length)}catch(e){}return}const c=d&&d.caret!=null?Math.min(d.caret,ed.value.length):ed.value.length;if(d)delete d.caret;try{ed.setSelectionRange(c,c)}catch(e){}}
+/* ---------- D-109: suggestions where the user types, for @@ (tags, D-14), :: (templates, D-108) and [[ (item links) ----------
+   the best match as faded ghost text right after the caret (tap it, or Tab), and up to five matches, most used first, directly under the line */
+let measureCtx=null;
+const textWidth=(inp,t)=>{measureCtx=measureCtx||document.createElement("canvas").getContext("2d");const cs=getComputedStyle(inp);measureCtx.font=cs.font||(cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily);return measureCtx.measureText(t).width};
+function hideSuggest(inp){if(!inp)return;if(inp._ghost)inp._ghost.remove();if(inp._list)inp._list.remove();inp._ghost=null;inp._list=null;inp._sugg=null}
+/* inp._ctx: place() gives the parent for template suggestions (only on a new line), self is the item being edited, mount(list) places the list */
+function runSuggest(inp){hideSuggest(inp);if(!inp.isConnected)return;const ctx=inp._ctx||{};
+  const focused=document.activeElement===inp;const s=focused?(inp.selectionStart??inp.value.length):inp.value.length;
+  const before=inp.value.slice(0,s).replace(/​/g,"");const atEnd=!inp.value.slice(s).replace(/​/g,"");
+  let m,mode=null,typed="",items=[];
+  if((m=before.match(/@@([\p{L}\p{N}_-]*)$/u))){mode="tag";typed=m[1];const q=norm(typed);const counts=new Map();for(const x of P.items.values())if(!x.deleted&&!inTpl(x.id))for(const t of x.tags)counts.set(t,(counts.get(t)||0)+1);
+    items=[...P.tags.values()].filter(t=>t.name&&/^[\p{L}\p{N}_-]+$/u.test(t.name)&&norm(t.name).startsWith(q)&&norm(t.name)!==q).sort((a,b)=>(counts.get(b.id)||0)-(counts.get(a.id)||0)).slice(0,5)
+      .map(t=>({label:t.name,sub:(counts.get(t.id)||0)+((counts.get(t.id)||0)===1?" item":" items"),insert:t.name+" ",ghost:t.name}))}
+  else if(ctx.place&&(m=before.match(/^::([\p{L}\p{N}_-]*)$/u))){mode="tpl";typed=m[1];
+    items=rankTemplates(typed,ctx.place()).slice(0,5).map(x=>({label:x.t.title||"Untitled",sub:x.where,insert:tplKey(x.t)+" ",ghost:tplKey(x.t),tpl:true}))}
+  else if((m=before.match(/\[\[([^\[\]\n]*)$/))){mode="link";typed=m[1];
+    items=rankItems(typed,ctx.self).slice(0,5).map(x=>{const t=mdStrip(x.title);const em=leadEmoji(t);return{label:t||"Untitled",sub:pathText(x.id),insertId:x.id,ghost:em&&!typed.startsWith(em)?t.slice(t.indexOf(em)+em.length).trimStart():t}});
+    if(typed.trim())items.push({label:"Create “"+typed.trim()+"”",sub:"New item in the inbox",create:typed.trim()})}
+  if(!mode||!items.length)return;
+  const cut=s-typed.length-(mode==="link"?2:0);
+  inp._sugg={mode,items,cut,end:s,typed};
+  const best=items[0];
+  /* ghost text: the rest of the best match, right after the caret */
+  if(atEnd&&!best.create&&best.ghost&&best.ghost.length>typed.length&&norm(best.ghost.slice(0,typed.length))===norm(typed)){
+    const rest=best.ghost.slice(typed.length);const cs=getComputedStyle(inp);
+    const left=inp.offsetLeft+parseFloat(cs.paddingLeft||0)+textWidth(inp,inp.value.slice(0,s).replace(/​/g,""))-inp.scrollLeft;
+    const room=inp.offsetLeft+inp.clientWidth-left;
+    if(room>12){const g=el("button",{class:"sghost",type:"button",tabindex:"-1","aria-label":"Accept suggestion: "+best.label,text:rest,onmousedown:e=>e.preventDefault(),onpointerdown:e=>e.preventDefault(),onclick:e=>{e.stopPropagation();acceptSuggest(inp,0)}});
+      g.style.left=left+"px";g.style.top=inp.offsetTop+"px";g.style.height=Math.max(24,inp.offsetHeight)+"px";g.style.maxWidth=room+"px";
+      inp.parentElement.append(g);inp._ghost=g}}
+  const list=el("div",{class:"sugglist",role:"group","aria-label":mode==="tag"?"Tag suggestions":mode==="tpl"?"Templates":"Items to link"});
+  if(mode==="tpl")list.append(el("div",{class:"suglbl",text:"Create from a template"}));
+  if(mode==="link")list.append(el("div",{class:"suglbl",text:"Link to an item"}));
+  items.forEach((it,i)=>{const b=el("button",{class:"sugopt",type:"button","aria-label":(it.create?it.label:(mode==="tag"?"Tag ":mode==="tpl"?"Template ":"Link to ")+it.label),onmousedown:e=>e.preventDefault(),onpointerdown:e=>e.preventDefault(),onclick:e=>{e.stopPropagation();acceptSuggest(inp,i)}});
+    if(it.tpl)b.append(stampIcon());b.append(el("span",{text:it.label}),it.sub?el("span",{class:"sub",text:it.sub}):null);list.append(b)});
+  const r=inp.closest(".row");
+  if(ctx.mount)ctx.mount(list);else if(r){list.style.setProperty("--depth",r.style.getPropertyValue("--depth")||0);r.after(list)}else inp.parentElement.append(list);
+  inp._list=list;if(r)requestAnimationFrame(()=>{try{list.scrollIntoView({block:"nearest"})}catch(e){}})}
+function acceptSuggest(inp,i){const sg=inp._sugg;if(!sg)return;const it=sg.items[i];let ins=it.insert;
+  if(it.create){const id=createInInbox(it.create);ins="[](item:"+id+") ";setTimeout(()=>toast("Created “"+mdStrip(P.items.get(id).title)+"” in the inbox and linked it"),0)}
+  else if(it.insertId)ins="[](item:"+it.insertId+") ";
+  const v=inp.value;inp.value=v.slice(0,sg.cut)+ins+v.slice(sg.end);const c=sg.cut+ins.length;inp.focus();try{inp.setSelectionRange(c,c)}catch(e){}
+  hideSuggest(inp);inp.dispatchEvent(new Event("input"))}
+/* keys while suggestions show: Tab accepts the best; Enter completes a template name or a link; Escape closes the suggestions */
+function suggestKey(inp,ev){const sg=inp._sugg;if(!sg)return false;
+  if(ev.key==="Tab"&&!ev.shiftKey){ev.preventDefault();acceptSuggest(inp,0);return true}
+  if(ev.key==="Enter"&&(sg.mode==="link"||sg.mode==="tpl")){ev.preventDefault();acceptSuggest(inp,0);return true}
+  if(ev.key==="Escape"){ev.preventDefault();ev.stopPropagation();hideSuggest(inp);return true}
+  return false}
+function insertMarker(inp,ins){const s=inp.selectionStart??inp.value.length;const v=inp.value.replace(/​/g,"");const at=Math.min(s,v.length);
+  const pre=ins==="[["&&at>0&&!/\s$/.test(v.slice(0,at))?" ":"";inp.value=v.slice(0,at)+pre+ins+v.slice(at);const c=at+pre.length+ins.length;inp.focus();inp.setSelectionRange(c,c);inp.dispatchEvent(new Event("input"))}
+
+/* ---------- templates (ADR-068, D-107, D-108, D-110) ---------- */
+const leadEmoji=t=>{const m=(t||"").match(/^((?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:️|‍\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator})*)\s*/u);return m?m[1]:""};
+const tplKey=t=>norm(mdStrip(t.title).replace(/^(?:\p{Extended_Pictographic}|\p{Regional_Indicator}|️|‍|\p{Emoji_Modifier})+/u,"")).trim().replace(/\s+/g,"-")||"template";
+/* a template is valid in its parent's branch; at the top level in the whole tree; nearest branch first */
+function validTemplates(parent){const out=[];let p=parent;const chain=[];for(let n=0;n<100;n++){chain.push(p);if(p==null)break;const x=P.items.get(p);p=x?(x.parent??null):null}
+  for(const a of chain)for(const t of tplsOf(a)){if(parent!=null&&inBranch(parent,t))continue;out.push({t:P.items.get(t),where:a==null?"Whole tree":"In “"+(mdStrip(P.items.get(a).title)||"Untitled")+"”"})}
+  return out}
+const tplUse=id=>{let n=0;for(const x of P.items.values())if(!x.deleted&&x.fromTemplate===id)n++;return n};
+function rankTemplates(typed,parent){const q=norm(typed);const v=validTemplates(parent).map((x,i)=>Object.assign(x,{i,k:tplKey(x.t)}));
+  return v.filter(x=>x.k.startsWith(q)||(q&&x.k.includes(q))).sort((a,b)=>(b.k.startsWith(q)-a.k.startsWith(q))||(tplUse(b.t.id)-tplUse(a.t.id))||a.i-b.i)}
+function findTemplate(name,parent){const q=norm(name);const v=rankTemplates(name,parent);const exact=v.find(x=>x.k===q);return exact?exact.t:(v.length&&v[0].k.startsWith(q)?v[0].t:null)}
+/* copying a template's branch is one action (ADR-067): new ids, no template marking; the typed text becomes the title, keeping the template's emoji */
+function copyTemplate(tid,parent,after,rest){const t=P.items.get(tid);const parsed=parseTitle(rest||"");const em=leadEmoji(t.title);
+  const title=parsed.title?(leadEmoji(parsed.title)||!em?parsed.title:em+" "+parsed.title):t.title;const root=uuid();
+  action(()=>{write("item.created",{itemId:root,parentId:parent,afterItemId:after,title,note:parsed.note!=null?parsed.note:t.note,format:"markdown",fromTemplate:tid});
+    for(const tg of t.tags)write("item.tagged",{itemId:root,tagId:tg});
+    const copyKids=(src,dst)=>{let prev=null;for(const k of kidsOf(src)){const x=P.items.get(k);const nid=uuid();
+      write("item.created",{itemId:nid,parentId:dst,afterItemId:prev,title:x.title,note:x.note,format:"markdown"});for(const tg of x.tags)write("item.tagged",{itemId:nid,tagId:tg});prev=nid;copyKids(k,nid)}};
+    copyKids(tid,root);refresh();
+    for(const tg of parsed.tags){const id=ensureTag(tg);if(!P.items.get(root).tags.has(id))write("item.tagged",{itemId:root,tagId:id})}});
+  refresh();ui.collapsed=ui.collapsed.filter(c=>c!==root);if(parent&&parent!==INBOX)ui.collapsed=ui.collapsed.filter(c=>c!==parent);saveUi();return root}
+function createdToast(root,t){toast("Created “"+mdStrip(P.items.get(root).title)+"” from “"+mdStrip(t.title)+"”",[["Undo",()=>quickUndo()],["Open",()=>openDetail(root)]])}
+/* "From template…": the templates valid at the place where ＋ Add here would add (nearest branch first, then the tree's) */
+function fromTemplateSheet(place){commitDraft(false,true);const v=validTemplates(place.parent);const pn=place.parent==null?treeName(curTree):place.parent===INBOX?"Inbox":(mdStrip(P.items.get(place.parent).title)||"Untitled");
+  const body=[];let last=null;
+  for(const x of v){if(x.where!==last){body.push(el("div",{class:"lbl",text:x.where}));last=x.where}
+    const n=kidsOf(x.t.id).length;body.push(el("button",{class:"opt","aria-label":"From template "+mdStrip(x.t.title),onclick:()=>{closeAll();if(place.parent===INBOX)ui.collapsed=ui.collapsed.filter(c=>c!==INBOX);
+      const root=copyTemplate(x.t.id,place.parent,place.after,"");const it=P.items.get(root);const em=leadEmoji(it.title);
+      startEdit(root);if(state.draft){state.draft.selFrom=em?em.length+1:0;renderAll()}createdToast(root,x.t)}},stampIcon(),el("span",null,mdStrip(x.t.title)||"Untitled",el("span",{class:"path",text:n+(n===1?" line":" lines")+(x.t.note?" · "+mdStrip(x.t.note.split("\n")[0]).slice(0,60):"")}))))}
+  if(!v.length)body.push(el("p",{class:"hint",text:"No templates here yet. Any item can become one: ⋯ › Use as template."}));
+  body.push(el("p",{class:"hint",text:"Tip: type :: at the start of an empty line, for example “::person Anna”."}));
+  openSheet("From template…","Into “"+pn+"”",body)}
+/* ---------- inline item links: [](item:<id>) shows the target's current title ---------- */
+const linkRe=/\]\(item:([^)\s]+)\)/g;
+const linkTargets=text=>{const out=[];for(const m of (text||"").matchAll(linkRe))if(!out.includes(m[1]))out.push(m[1]);return out};
+const liveItem=id=>{const x=P.items.get(id);return x&&!x.deleted?x:null};
+const linksFrom=id=>{const it=P.items.get(id);return it?linkTargets(it.title+"\n"+it.note).filter(t=>t!==id&&liveItem(t)):[]};
+function linkedFrom(id){const out=[];for(const x of P.items.values()){if(x.deleted||x.id===id||!visibleItem(x.id))continue;
+  const lines=(x.title+"\n"+x.note).split("\n").filter(l=>linkTargets(l).includes(id));if(lines.length)out.push({item:x,lines})}return out}
+function rankItems(q,self){q=norm(q).trim();const bare=x=>{const t=mdStrip(x.title);const em=leadEmoji(t);return norm(em?t.slice(em.length).trimStart():t)};const inc=new Map();for(const x of P.items.values())if(!x.deleted)for(const t of linkTargets(x.title+"\n"+x.note))inc.set(t,(inc.get(t)||0)+1);
+  return [...P.items.values()].filter(x=>!x.deleted&&x.id!==self&&visibleItem(x.id)&&!inTpl(x.id)&&(!q||norm(mdStrip(x.title)).includes(q)))
+    .sort((a,b)=>(q?(bare(b).startsWith(q)-bare(a).startsWith(q)):0)||((inc.get(b.id)||0)-(inc.get(a.id)||0))||b.changed-a.changed)}
+/* "Create “…”" while linking: a new item in the inbox, also from a template ("::person Tom") */
+function createInInbox(text){const tm=text.match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],INBOX);
+  if(t)return copyTemplate(t.id,INBOX,lastChild(INBOX),tm[2]||"");
+  const id=uuid();applyParsed(id,parseTitle(text),true,INBOX,lastChild(INBOX));return id}
 function editor(){
   const d=state.draft;const inp=el("input",{class:"editin",type:"text","aria-label":"Title",value:d.value||ZW,enterkeyhint:"next",autocomplete:"off"});
   inp.addEventListener("input",()=>{const raw=inp.value;
@@ -550,14 +709,18 @@ function editor(){
     if(d.isNew&&v===" "){inp.value=ZW;d.value="";indentDraft();return}
     if(raw.startsWith(ZW)&&v){inp.value=v;inp.setSelectionRange(v.length,v.length)}
     d.value=v;d.hist.push(v);d.fut=[]});
+  inp._ctx={place:d.isNew?()=>d.parent:null,self:d.isNew?null:d.id};
   inp.addEventListener("keydown",ev=>{
+    if(suggestKey(inp,ev))return;
     if(ev.key==="Enter"){ev.preventDefault();commitDraft(!(!d.isNew&&d.id===ui.focus))}
     else if(ev.key==="Escape"){ev.preventDefault();cancelDraft()}
     else if(ev.key==="Tab"){ev.preventDefault();ev.shiftKey?outdentDraft():indentDraft()}
     else if(ev.key==="Backspace"&&clean(inp.value)===""){ev.preventDefault();backspaceEmpty()}});
   inp.addEventListener("beforeinput",ev=>{if(ev.inputType==="deleteContentBackward"&&clean(inp.value)===""){ev.preventDefault();backspaceEmpty()}});
-  inp.addEventListener("input",()=>tagSuggest(inp,sugg));
-  inp.addEventListener("blur",()=>{setTimeout(()=>{const a=document.activeElement;if(state.draft===d&&!state.resume&&!tools.contains(a)&&!sugg.contains(a)&&!(a&&a.classList&&a.classList.contains("editin")))commitDraft(false)},150)});
+  inp.addEventListener("input",()=>runSuggest(inp));
+  inp.addEventListener("click",()=>runSuggest(inp));
+  requestAnimationFrame(()=>{if(inp.isConnected&&document.activeElement===inp)runSuggest(inp)});
+  inp.addEventListener("blur",()=>{setTimeout(()=>{const a=document.activeElement;if(state.draft===d&&!state.resume&&!tools.contains(a)&&!(a&&a.closest&&a.closest(".sugglist,.sghost"))&&!(a&&a.classList&&a.classList.contains("editin")))commitDraft(false)},150)});
   return inp}
 function startNew(parent,after){commitDraft(false,true);state.draft={isNew:true,id:uuid(),parent,after,value:"",hist:[""],fut:[]};state.sel=null;showTools(true);renderOutline()}
 function startEdit(id){commitDraft(false,true);const it=P.items.get(id);const tagStr=[...it.tags].map(t=>" @@"+tagName(t)).join("");
@@ -566,6 +729,10 @@ function cancelDraft(){state.draft=null;showTools(false);renderAll()}
 function commitDraft(chain,quiet){
   const d=state.draft;if(!d)return;state.draft=null;
   const inp=document.querySelector(".editin");if(inp)d.value=clean(inp.value);
+  /* D-108: "::name rest" on a new line creates from the template "name"; the rest becomes the title */
+  if(d.isNew){const tm=d.value.trim().match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],d.parent);
+    if(t){const root=copyTemplate(t.id,d.parent,d.after,tm[2]||"");state.sel=root;showTools(false);if(!quiet)renderAll();createdToast(root,t);return}
+    if(tm)setTimeout(()=>toast("No template “"+tm[1]+"” here; saved as text"),0)}
   const parsed=parseTitle(d.value);
   if(d.isNew){
     if(parsed.title||parsed.note||parsed.tags.length){applyParsed(d.id,parsed,true,d.parent,d.after);state.sel=d.id;
@@ -601,7 +768,7 @@ function draftUpDown(dir){const d=state.draft;if(!d)return;if(!d.isNew){moveRela
   if(dir==="up"){if(i<0)return;d.after=i>=1?sib[i-1]:null}else{if(i>=sib.length-1)return;d.after=sib[i+1]}renderOutline()}
 
 /* editing toolbar above the keyboard */
-function showTools(on){tools.hidden=!on;if(!on)sugg.hidden=true;app.classList.toggle("editing",on);$("#bar").style.visibility=on?"hidden":"";placeTools()}
+function showTools(on){tools.hidden=!on;app.classList.toggle("editing",on);$("#bar").style.visibility=on?"hidden":"";placeTools()}
 function placeTools(){const vv=window.visualViewport;let kb=0;if(vv){kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop)}app.style.setProperty("--kb",kb+"px")}
 /* 📥, toasts, toolbars and sheets sit above the on-screen keyboard: --kb is the keyboard's height (D-54, D-80) */
 if(window.visualViewport){visualViewport.addEventListener("resize",placeTools);visualViewport.addEventListener("scroll",placeTools)}
@@ -614,7 +781,12 @@ tools.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)re
   else if(t==="redo"&&inp&&d.fut.length){const v=d.fut.pop();d.hist.push(v);d.value=v;inp.value=v||ZW}
   else if(t==="in")indentDraft();else if(t==="out")outdentDraft();
   else if(t==="up"||t==="down")draftUpDown(t);
-  else if((t==="note"||t==="tag")&&inp){const ins=t==="note"?" ## ":" @@";const s=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,s)+ins+inp.value.slice(s);d.value=clean(inp.value);d.hist.push(d.value);inp.focus();inp.setSelectionRange(s+ins.length,s+ins.length);tagSuggest(inp,sugg)}
+  else if((t==="note"||t==="tag")&&inp){const ins=t==="note"?" ## ":" @@";const s=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,s)+ins+inp.value.slice(s);d.value=clean(inp.value);d.hist.push(d.value);inp.focus();inp.setSelectionRange(s+ins.length,s+ins.length);runSuggest(inp)}
+  else if(t==="link"&&inp){insertMarker(inp,"[[");return}
+  /* D-108, D-76: "::" starts an empty line with :: and shows the templates; a line with text first ends, and the next line starts with :: */
+  else if(t==="tpl"&&inp){if(d.isNew&&!clean(inp.value).trim()){insertMarker(inp,"::");return}
+    commitDraft(true,true);if(!state.draft){const s2=state.sel&&P.items.get(state.sel);startNew(s2?s2.parent:ui.focus,s2?s2.id:lastChild(ui.focus))}
+    state.draft.value="::";state.draft.hist.push("::");showTools(true);renderAll();return}
   if(inp)inp.focus()});
 
 /* ---------- selection, focus, collapse ---------- */
@@ -642,7 +814,9 @@ function toast(msg,actions){toastEl.replaceChildren(el("span",{text:msg}));for(c
 function flash(id){requestAnimationFrame(()=>{const r=outline.querySelector(`[data-id="${id}"]`);if(r){r.scrollIntoView({block:"center",behavior:"smooth"});r.classList.remove("flash");void r.offsetWidth;r.classList.add("flash")}})}
 function goTo(id){const it=P.items.get(id);if(!it)return;if(state.filter&&!state.filter.test(it))state.filter=null;const p=pathOf(id);const first=p[0];
   /* D-96: stay in Focus when the item is inside the focused branch; leave it only for items outside */
-  if(ui.focus&&!(id!==ui.focus&&inBranch(id,ui.focus)))ui.focus=null;for(const x of p.slice(0,-1))ui.collapsed=ui.collapsed.filter(c=>c!==x.id);saveUi();state.sel=id;closeAll();renderAll();flash(id)}
+  if(ui.focus&&!(id!==ui.focus&&inBranch(id,ui.focus)))ui.focus=null;for(const x of p.slice(0,-1))ui.collapsed=ui.collapsed.filter(c=>c!==x.id);
+  for(const x of p)if(x.template){const k=x.parent==null?"":x.parent;if(!ui.tplOpen.includes(k))ui.tplOpen.push(k)}
+  if(inTpl(id))state.search=null;saveUi();state.sel=id;closeAll();renderAll();flash(id)}
 
 /* ---------- sheets and popovers ---------- */
 /* onSheetClose runs however a sheet is closed (Close, backdrop, Escape, an action) */
@@ -667,11 +841,19 @@ function itemMenu(id,anchor,fromDetail){const it=P.items.get(id);
     {label:"Move to…"+(id===INBOX?" (the inbox stays last)":""),disabled:id===INBOX,run:()=>movePicker(id)},
     {label:"Tags",run:()=>tagPicker(id)},
     {label:"Theme",run:()=>themePicker(id)},
-    {label:"History",run:()=>historySheet(id)},"-",
+    {label:"History",run:()=>historySheet(id)},
+    /* D-110, ADR-068: any item can become a template; a template can become an ordinary item again */
+    it.template?{label:"No longer a template",run:()=>setTemplate(id,false,fromDetail)}
+      :{label:"Use as template"+(id===INBOX?" (not the inbox)":inTpl(id)?" (already inside a template)":""),disabled:id===INBOX||inTpl(id),run:()=>setTemplate(id,true,fromDetail)},"-",
     {label:"Delete"+(id===INBOX?" (the inbox cannot be deleted)":""),cls:"del",disabled:id===INBOX,run:()=>{action(()=>write("item.deleted",{itemId:id}));refresh();if(fromDetail)closeDetail();state.sel=null;renderAll();
       toast("Deleted “"+(it.title||"Untitled")+"”",[["Undo",()=>quickUndo()]])}});
   openPop(anchor,entries)}
 
+function setTemplate(id,on,fromDetail){const it=P.items.get(id);action(()=>write(on?"item.template-set":"item.template-removed",{itemId:id}));refresh();
+  const key=it.parent==null?"":it.parent;const where=it.parent==null?"the whole tree":"“"+(mdStrip(P.items.get(it.parent).title)||"Untitled")+"”";
+  if(on&&!ui.tplOpen.includes(key))ui.tplOpen.push(key);if(it.parent)ui.collapsed=ui.collapsed.filter(c=>c!==it.parent);saveUi();state.sel=id;
+  if(fromDetail)openDetail(id);else renderAll();flash(id);
+  toast(on?"“"+(mdStrip(it.title)||"Untitled")+"” is now a template, valid in "+where:"“"+(mdStrip(it.title)||"Untitled")+"” is no longer a template",[["Undo",()=>quickUndo()]])}
 /* move picker (D-6, D-9): search first, fixed targets, recent targets, browse the tree collapsed and level by level;
    after choosing a target, its children are shown so the item can be placed at a chosen position */
 function movePicker(id){const it=P.items.get(id);
@@ -741,7 +923,8 @@ function themePicker(target){const isTree=target==="tree";const it=isTree?null:P
 
 /* history: every change can be reverted from here */
 function describe(e){const d=e.data,t=d.reverts?" (undo of an earlier change)":"";
-  switch(e.type){case"item.created":return"Created “"+(d.title||"")+"”"+(d.parentId===INBOX?" in the inbox":"")+t;
+  switch(e.type){case"item.created":return"Created “"+mdStrip(d.title||"")+"”"+(d.fromTemplate?" from the template “"+mdStrip((P.items.get(d.fromTemplate)||{}).title||"…")+"”":"")+(d.parentId===INBOX?" in the inbox":"")+t;
+    case"item.template-set":return"Made a template"+t;case"item.template-removed":return"No longer a template"+t;
     case"item.title-changed":return"Title → “"+d.title+"”"+t;case"item.note-changed":return"Note changed"+t;
     case"item.moved":return"Moved to "+(d.parentId===INBOX?"Inbox":d.parentId?"“"+((P.items.get(d.parentId)||{}).title||"…")+"”":"top level")+t;
     case"item.deleted":return"Deleted"+t;case"item.restored":return"Restored"+t;
@@ -775,6 +958,8 @@ function inverse(e){const d=e.data,B=stateBefore(e),prev=B.items.get(d.itemId);
     case"item.moved":{if(!prev)return null;const sib=(B.kids.get(prev.parent==null?"":prev.parent)||[]).filter(k=>{const x=B.items.get(k);return x&&!x.deleted});const i=sib.indexOf(d.itemId);return["item.moved",{itemId:d.itemId,parentId:prev.parent,afterItemId:i>0?sib[i-1]:null}]}
     case"item.deleted":return["item.restored",{itemId:d.itemId}];
     case"item.restored":return["item.deleted",{itemId:d.itemId}];
+    case"item.template-set":return["item.template-removed",{itemId:d.itemId}];
+    case"item.template-removed":return["item.template-set",{itemId:d.itemId}];
     case"item.tagged":return["item.untagged",{itemId:d.itemId,tagId:d.tagId}];
     case"item.untagged":return["item.tagged",{itemId:d.itemId,tagId:d.tagId}];
     case"theme.set":return["theme.set",{target:d.target,themeId:B.themes.get(d.target)||null}];
@@ -782,11 +967,12 @@ function inverse(e){const d=e.data,B=stateBefore(e),prev=B.items.get(d.itemId);
   }return null}
 function revert(e,quiet){const inv=inverse(e);if(!inv){if(!quiet)toast("This change cannot be reverted here.");return null}
   inv[1].reverts=e.id;const ne=write(inv[0],inv[1]);refresh();return ne}
-const UNDOABLE=["item.created","item.title-changed","item.note-changed","item.moved","item.deleted","item.restored","item.tagged","item.untagged","theme.set","display-name.set"];
+const UNDOABLE=["item.template-set","item.template-removed","item.created","item.title-changed","item.note-changed","item.moved","item.deleted","item.restored","item.tagged","item.untagged","theme.set","display-name.set"];
 const evKey=e=>evItem(e)||(e.type==="display-name.set"?e.data.elementId:null);
 /* one sentence for a whole action, e.g. "Created “A” with @@idea", "Moved 3 items to “Ideas”" */
 function describeAction(evs){const main=evs.filter(e=>UNDOABLE.includes(e.type));if(!main.length)return"a change";
   const cr=main.filter(e=>e.type==="item.created"),mv=main.filter(e=>e.type==="item.moved");
+  if(cr.length&&cr[0].data.fromTemplate)return describe(cr[0])+(cr.length>1?" ("+(cr.length-1)+(cr.length===2?" line)":" lines)"):"");
   if(cr.length===1&&mv.length>1&&mv.every(e=>e.data.parentId===cr[0].data.itemId))return"Imported “"+cr[0].data.title+"” as a new branch ("+mv.length+" items)";
   if(mv.length>1&&mv.length===main.length)return"Moved "+mv.length+" items"+describe(mv[0]).replace(/^Moved/,"");
   const first=main[0];let s=describe(first);const tags=main.filter(e=>e.type==="item.tagged"&&e!==first).map(e=>"“"+tagName(e.data.tagId)+"”");
@@ -821,31 +1007,39 @@ function capture(){const resuming=!!state.draft;if(resuming)holdDraftForCapture(
   const unnest=()=>{if(parent===INBOX)return;const p=P.items.get(parent);after=parent;parent=p.parent;render()};
   const keep=e=>e.preventDefault();
   const tb=(t,a,f,cls)=>el("button",{text:t,"aria-label":a,class:cls||"",onmousedown:keep,onpointerdown:keep,onclick:()=>{f();inp.focus()}});
-  const insert=ins=>{const st=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,st)+ins+inp.value.slice(st);capPrev=clean(inp.value);inp.setSelectionRange(st+ins.length,st+ins.length);tagSuggest(inp,sug)};
+  const insert=ins=>{const st=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,st)+ins+inp.value.slice(st);capPrev=clean(inp.value);inp.setSelectionRange(st+ins.length,st+ins.length);runSuggest(inp)};
+  /* D-108: "::" on an empty line shows the templates; a line with text is saved first */
+  const tplBtn=()=>{if(clean(inp.value).trim()){if(saveLine()){render();renderOutline()}}insertMarker(inp,"::")};
   const outBtn=tb("⇤","Outdent: move this line out",()=>unnest());
   const capTools=el("div",{class:"captools",role:"toolbar","aria-label":"Editing"},outBtn,tb("⇥","Indent: nest this line under the one above",()=>nestUnder()),
     tb("##","Insert note separator",()=>insert(" ## ")),tb("@@","Insert tag marker",()=>insert(" @@")),
-    tb("✓","Done",()=>{if(clean(inp.value).trim())inp.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter"}));closeAll();renderAll()},"done"));
+    tb("::","Create from a template: insert :: at the start of an empty line",tplBtn),tb("🔗","Link to another item: insert [[",()=>insertMarker(inp,"[[")),
+    tb("✓","Done",()=>{hideSuggest(inp);if(clean(inp.value).trim())inp.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter"}));closeAll();renderAll()},"done"));
   const line=el("div",{class:"capline"},el("span",{text:"•"}),inp);
   /* D-102: the sheet shows only the thoughts captured in this session, not older inbox content */
   const render=()=>{list.replaceChildren();
-    for(const id of done){const x=P.items.get(id);const dep=pathOf(id).length-2;list.append(el("div",{class:"capline",style:`padding-inline-start:${dep*18}px`},el("span",{text:"✓"}),el("span",{text:x.title||"Untitled"})))}
+    for(const id of done){const x=P.items.get(id);const dep=pathOf(id).length-2;list.append(el("div",{class:"capline",style:`padding-inline-start:${dep*18}px`},el("span",{text:"✓"}),el("span",{text:mdStrip(x.title)||"Untitled"})))}
     line.style.paddingInlineStart=(parent===INBOX?0:(pathOf(parent).length-1)*18)+"px";outBtn.disabled=parent===INBOX;
     where.textContent=parent===INBOX?"Next thought goes into the inbox":"Next thought goes under “"+(P.items.get(parent).title||"Untitled")+"”"};
   inp.addEventListener("input",()=>{const raw=inp.value;if(raw===""){inp.value=ZW;if(capPrev==="")unnest();capPrev="";return}const v=clean(raw);if(v===" "){inp.value=ZW;capPrev="";nestUnder();return}if(raw.startsWith(ZW)&&v){inp.value=v;inp.setSelectionRange(v.length,v.length)}capPrev=v});
   inp.addEventListener("beforeinput",ev=>{if(ev.inputType==="deleteContentBackward"&&clean(inp.value)===""){ev.preventDefault();unnest()}});
   /* principle 7, saved at once: a typed line is kept however the sheet is closed */
-  const saveLine=()=>{const parsed=parseTitle(inp.value);if(!parsed.title&&!parsed.note&&!parsed.tags.length)return null;
-    const id=uuid();applyParsed(id,parsed,true,parent,after);done.push(id);lastId=id;after=id;inp.value=ZW;capPrev="";sug.hidden=true;return id};
-  const sug=el("div",{class:"sugg",hidden:true,role:"toolbar","aria-label":"Tag suggestions"});
-  inp.addEventListener("input",()=>tagSuggest(inp,sug));
+  const saveLine=()=>{hideSuggest(inp);const raw=clean(inp.value).trim();
+    /* D-108: "::name rest" creates from a template here too */
+    const tm=raw.match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],parent);
+    if(t){const id=copyTemplate(t.id,parent,after,tm[2]||"");done.push(id);lastId=id;after=id;inp.value=ZW;capPrev="";announce("Created “"+mdStrip(P.items.get(id).title)+"” from “"+mdStrip(t.title)+"”");return id}
+    const parsed=parseTitle(inp.value);if(!parsed.title&&!parsed.note&&!parsed.tags.length)return null;
+    const id=uuid();applyParsed(id,parsed,true,parent,after);done.push(id);lastId=id;after=id;inp.value=ZW;capPrev="";return id};
+  inp._ctx={place:()=>parent,self:null,mount:l=>line.after(l)};
+  inp.addEventListener("input",()=>runSuggest(inp));inp.addEventListener("click",()=>runSuggest(inp));
   inp.addEventListener("keydown",ev=>{
+    if(suggestKey(inp,ev))return;
     if(ev.key==="Enter"){ev.preventDefault();if(!saveLine())return;render();renderOutline();announce("Captured")}
     else if(ev.key==="Backspace"&&clean(inp.value)===""){ev.preventDefault();unnest()}});
   render();
-  openSheet("Capture","Into the inbox of “"+treeName(curTree)+"”",[list,line,where,el("p",{class:"hint",text:"Enter starts the next thought. A space at the start of an empty line, or ⇥ above the keyboard, nests it under the line above; Backspace on an empty line, or ⇤, moves it back out. Use ## to add a note and @@ for tags."})],
+  openSheet("Capture","Into the inbox of “"+treeName(curTree)+"”",[list,line,where,el("p",{class:"hint",text:"Enter starts the next thought. A space at the start of an empty line, or ⇥ above the keyboard, nests it under the line above; Backspace on an empty line, or ⇤, moves it back out. Use ## to add a note, @@ for tags, [[ to link another item, and :: at the start of a line to create from a template."})],
     el("button",{class:"btn ghost",text:"Details",onclick:()=>{if(lastId){closeAll();openDetail(lastId)}else toast("Capture a thought first.")}}));
-  sheet.className="sheet t-"+themeFor(INBOX);sheet.append(sug,capTools);placeTools();
+  sheet.className="sheet t-"+themeFor(INBOX);sheet.append(capTools);placeTools();
   onSheetClose=()=>{const id=saveLine();const n=done.length;
     const msg=id?"Saved “"+(P.items.get(id).title||"Untitled")+"” in the inbox":n?"Captured "+n+(n===1?" thought":" thoughts"):null;
     if(resuming&&state.draft&&state.resume){state.resume=null;const t=state.draft.isNew?"the new line":"“"+(state.draft.value||"Untitled")+"”";showTools(true);renderAll();
@@ -876,11 +1070,14 @@ function openDetail(id){commitDraft(false,true);closeAll();const it=P.items.get(
   view.addEventListener("click",ev=>{if(ev.target.closest("a"))return;edit()});view.addEventListener("keydown",ev=>{if(ev.key==="Enter"){ev.preventDefault();edit()}});
   note.addEventListener("input",()=>{clearTimeout(noteTimer);noteTimer=setTimeout(flush,1200)});
   note.addEventListener("blur",()=>{setTimeout(()=>{if(document.activeElement===note)return;flush();show();note.hidden=true;bar.hidden=true;view.hidden=false},100)});
-  const hist=events.filter(e=>evItem(e)===id).length;
+  const hist=events.filter(e=>evItem(e)===id).length;const nOut=linksFrom(id).length,nIn=linkedFrom(id).length;
+  const tplInfo=it.template?el("div",{class:"tplnote"},stampIcon(),el("span",{text:"Template · valid in "+(it.parent==null?"the whole tree":"“"+(mdStrip(P.items.get(it.parent).title)||"Untitled")+"”")+" · type ::"+tplKey(it)+" to use it"})):null;
   const back=el("button",{"aria-label":"Back","text":"←",onclick:()=>{flush();if(location.hash==="#open"){history.back()}else{closeDetail()}}});
   detail.replaceChildren(el("div",{class:"dhead"},back,el("div",{class:"dpath",text:pathText(id)})),
-    el("div",{class:"dbody"},title,tagsBox,view,note),bar,
+    el("div",{class:"dbody"},tplInfo,title,tagsBox,view,note),bar,
     el("div",{class:"strip"},el("button",{text:"🕘 "+hist,"aria-label":"History, "+hist+" changes",onclick:()=>{flush();historySheet(id)}}),
+      el("button",{text:"🔗 "+nOut,"aria-label":"Links, "+nOut,onclick:()=>{flush();linksSheet(id,"out")}}),
+      el("button",{text:"↩ "+nIn,"aria-label":"Linked from, "+nIn,onclick:()=>{flush();linksSheet(id,"in")}}),
       el("button",{class:"dmore",text:"⋯","aria-label":"Item actions",onclick:ev=>{flush();itemMenu(id,ev.currentTarget,true)}})));
   if(location.hash!=="#open"){try{location.hash="open"}catch(e){}}
   detail.hidden=false;$("#bar").style.visibility="hidden";$("#fab").style.bottom="calc(64px + var(--kb,0px) + env(safe-area-inset-bottom,0px))";
@@ -893,7 +1090,7 @@ function mdInline(text){const frag=document.createDocumentFragment();const re=/(
     else if(m[2])frag.append(el("strong",null,mdInline(s.slice(2,-2))));
     else if(m[3])frag.append(el("em",null,mdInline(s.slice(1,-1))));
     else{const lm=s.match(/^\[([^\]]*)\]\(([^)\s]*)\)$/);const label=lm[1],href=lm[2];
-      if(/^item:/i.test(href)){const tid=href.slice(5);const t=P.items.get(tid);frag.append(el("a",{href:"#",text:label||(t?t.title:"not found"),onclick:ev=>{ev.preventDefault();ev.stopPropagation();if(t){closeDetail();goTo(tid)}}}))}
+      if(/^item:/i.test(href)){const tid=href.slice(5);const t=P.items.get(tid);frag.append(el("a",{href:"#",class:"ilink",text:label||itemLabel(tid),"aria-label":"Go to "+(label||itemLabel(tid)),onclick:ev=>{ev.preventDefault();ev.stopPropagation();if(t&&!t.deleted){commitDraft(false,true);if(!detail.hidden)closeDetail();goTo(tid)}}}))}
       else if(/^(https?:|mailto:)/i.test(href))frag.append(el("a",{href,target:"_blank",rel:"noopener noreferrer",text:label||href}));
       else frag.append(s)}
     last=m.index+s.length}frag.append(text.slice(last));return frag}
@@ -907,11 +1104,27 @@ function mdBlocks(text){const frag=document.createDocumentFragment();let list=nu
     if((m=line.match(/^\s*\d+[.)]\s+(.*)$/))){endPara();if(!list||list.tagName!=="OL"){list=el("ol");frag.append(list)}list.append(el("li",null,mdInline(m[1])));continue}
     endList();if(!para){para=el("p");frag.append(para)}else para.append(el("br"));para.append(mdInline(line))}
   return frag}
-const mdStrip=s=>(s||"").replace(/^#{1,3}\s+/,"").replace(/^\s*[-*]\s+/,"").replace(/\*\*([^*]+)\*\*/g,"$1").replace(/[*_`]/g,"").replace(/\[([^\]]*)\]\([^)]*\)/g,"$1");
+/* an item link without its own text shows the target's current title */
+const itemLabel=id=>{const t=P.items.get(id);if(!t)return"not found";return (t.title||"Untitled").replace(/\[([^\]]*)\]\(([^)]*)\)/g,"$1").replace(/\*\*([^*]+)\*\*/g,"$1").replace(/[*_`]/g,"")+(t.deleted?" (deleted)":"")};
+const mdStrip=s=>(s||"").replace(/^#{1,3}\s+/,"").replace(/^\s*[-*]\s+/,"").replace(/\*\*([^*]+)\*\*/g,"$1").replace(/[*_`]/g,"").replace(/\[([^\]]*)\]\(([^)]*)\)/g,(_,l,h)=>l||(/^item:/i.test(h)?itemLabel(h.slice(5)):h));
 window.addEventListener("hashchange",()=>{if(location.hash!=="#open"&&!detail.hidden){const n=detail.querySelector("textarea");if(n)n.blur();closeAll();closeDetail();return}
   /* the device's back steps out of focus one level at a time */
   if(location.hash===""&&ui.focus&&detail.hidden){goBack();markFocusHistory()}});
 function closeDetail(){if(location.hash==="#open"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}detail.hidden=true;$("#bar").style.visibility="";$("#fab").style.bottom="";renderAll()}
+/* D-85: links of an item, two tabs: "Links" (the items its title and note link to) and "Linked from" (the items that mention it, with the line as context) */
+function linksSheet(id,tab){const it=P.items.get(id);const out=linksFrom(id),inc=linkedFrom(id);
+  const go=x=>()=>{closeAll();closeDetail();goTo(x)};
+  const tabs=el("div",{style:"display:flex;gap:8px;margin:4px 0 8px",role:"group","aria-label":"Which links"},
+    el("button",{class:"chipbtn","aria-pressed":String(tab==="out"),text:"Links · "+out.length,onclick:()=>linksSheet(id,"out")}),
+    el("button",{class:"chipbtn","aria-pressed":String(tab==="in"),text:"Linked from · "+inc.length,onclick:()=>linksSheet(id,"in")}));
+  const body=[tabs];
+  if(tab==="out"){if(!out.length)body.push(el("p",{class:"hint",text:"No links yet. Type [[ in the title or the note to link another item."}));
+    for(const x of out)body.push(el("button",{class:"opt",onclick:go(x)},el("span",null,"→ "+itemLabel(x),el("span",{class:"path",text:pathText(x)}))))}
+  else{if(!inc.length)body.push(el("p",{class:"hint",text:"No item links here yet."}));
+    else body.push(el("div",{class:"lbl",text:"Mentioned in"}));
+    for(const r of inc)body.push(el("button",{class:"opt",onclick:go(r.item.id)},el("span",null,"↩ "+(mdStrip(r.item.title)||"Untitled"),
+      ...r.lines.filter(l=>l!==r.item.title).slice(0,2).map(l=>el("span",{class:"path",text:"In the note: “"+mdStrip(l).trim().slice(0,120)+"”"})),el("span",{class:"path",text:pathText(r.item.id)}))))}
+  openSheet(tab==="out"?"Links":"Linked from",mdStrip(it.title)||"Untitled",body)}
 function tagMenu(id,t,anchor){openPop(anchor,[{label:"Remove from this item",run:()=>{write("item.untagged",{itemId:id,tagId:t});refresh();openDetail(id)}},
   {label:"Show all with “"+tagName(t)+"”",run:()=>{closeDetail();filterByTag(t)}},
   {label:"Rename “"+tagName(t)+"” ("+tagCount(t)+(tagCount(t)===1?" item":" items")+")…",run:()=>renameTag(id,t)}])}
@@ -990,7 +1203,7 @@ function setCollapsedAll(on){const list=[];const walk=p=>{for(const k of kidsOf(
   if(on){ui.collapsed=[...new Set([...ui.collapsed,...list])]}else{ui.collapsed=ui.collapsed.filter(c=>!list.includes(c))}saveUi()}
 function applyHand(){app.classList.toggle("hand-left",ui.hand==="left");app.classList.toggle("hand-right",ui.hand!=="left")}
 function treeIdOf(evs){const m=evs.filter(e=>e&&e.type==="tree.inbox-set"&&e.clock).sort(order)[0];return m?m.data.itemId:null}
-function exportText(){return JSON.stringify({format:"thoughttree-prototype-export",version:3,from:device.label,treeId:curTree,treeName:treeName(curTree),events})}
+function exportText(){return JSON.stringify({format:"thoughttree-prototype-export",version:4,from:device.label,treeId:curTree,treeName:treeName(curTree),events})}
 function exchangeSheet(){
   const status=el("div",{class:"hint",text:""});const area=el("textarea",{class:"field",rows:"4",placeholder:"Paste the text exported on the other device","aria-label":"Paste export"});
   const file=el("input",{type:"file",accept:".json,.txt,application/json,text/plain","aria-label":"Choose an export file"});
@@ -1039,18 +1252,29 @@ function aboutSheet(){const p=t=>el("p",{class:"hint",text:t});
   openSheet("About this prototype","A clickable sketch, not the app",[
     p("You start in the tutorial, a tree of its own; your own thoughts go into the tree “My thoughts” (More › Trees). This page lets you try the UX decisions of ThoughtTree on your phone: capturing into the inbox, sorting with Move to…, the item menu, Focus, the detail page, tags with @@, notes with ##, themes per branch and per tree, quick undo and the history."),
     p("Every change is written as an event (item.created, item.moved, theme.set, …) with a hybrid logical clock and an action id; events written for one action are undone together. The outline is computed from the event log, as in the architecture. The log lives only in this browser; clearing site data deletes it."),
-    p("Not real: no encryption, no Blazor, no installation as an app, no relations or views yet, no drag and drop, no conflict view. The inbox is an ordinary item marked as the inbox, always last at the top level, as in the architecture."),
+    p("Templates: a template is an ordinary item marked as a template, valid in its parent's branch (at the top level in the whole tree); each tree starts with “👤 Person”. Type ::person Anna on an empty line, or hold ＋ Add here. Type [[ to link another item inside a title; the detail page counts links and “Linked from”."),
+    p("Not real: no encryption, no Blazor, no installation as an app, no typed relations or views yet, no drag and drop, no conflict view. The inbox is an ordinary item marked as the inbox, always last at the top level, as in the architecture."),
     p("This device: "+device.label+" · "+device.id.slice(0,8))])}
 
 /* ---------- wiring ---------- */
 $("#fab").addEventListener("click",capture);
 $("#fab").addEventListener("pointerdown",ev=>{if(state.draft)ev.preventDefault()}); /* keeps the keyboard and the cursor while editing (D-54) */
 $("#fab").addEventListener("mousedown",ev=>{if(state.draft)ev.preventDefault()});
-$("#b-add").addEventListener("click",()=>{const sel=state.sel?P.items.get(state.sel):null;
-  /* D-95: an expanded parent gets the new line as its first child; a leaf or a collapsed item gets it directly below; the inbox, which stays last, gets it as its first child */
-  if(sel&&sel.id===INBOX){ui.collapsed=ui.collapsed.filter(c=>c!==INBOX);startNew(INBOX,null)}
-  else if(sel&&kidsOf(sel.id).length&&!ui.collapsed.includes(sel.id)){startNew(sel.id,null)}
-  else if(sel){startNew(sel.parent,sel.id)}else{const p=ui.focus;startNew(p,lastChild(p))}});
+/* D-95: an expanded parent gets the new line as its first child; a leaf or a collapsed item gets it directly below; the inbox, which stays last, gets it as its first child;
+   below a collapsed template the line goes to the end of the branch's ordinary items */
+function addPlace(){const sel=state.sel?P.items.get(state.sel):null;
+  if(sel&&sel.id===INBOX)return{parent:INBOX,after:null};
+  if(sel&&kidsOf(sel.id).length&&!ui.collapsed.includes(sel.id))return{parent:sel.id,after:null};
+  if(sel&&sel.template)return{parent:sel.parent,after:lastChild(sel.parent)};
+  if(sel)return{parent:sel.parent,after:sel.id};
+  return{parent:ui.focus,after:lastChild(ui.focus)}}
+/* D-108: press and hold "＋ Add here" (about half a second) offers "From template…"; a normal tap adds a line */
+const addBtn=$("#b-add");let holdTimer=null,held=false;
+addBtn.addEventListener("pointerdown",()=>{held=false;clearTimeout(holdTimer);holdTimer=setTimeout(()=>{held=true;try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}fromTemplateSheet(addPlace())},500)});
+for(const t of["pointerup","pointerleave","pointercancel"])addBtn.addEventListener(t,()=>clearTimeout(holdTimer));
+addBtn.addEventListener("contextmenu",ev=>ev.preventDefault());
+addBtn.addEventListener("click",()=>{if(held){held=false;return}const pl=addPlace();
+  if(pl.parent===INBOX)ui.collapsed=ui.collapsed.filter(c=>c!==INBOX);startNew(pl.parent,pl.after)});
 $("#b-search").addEventListener("click",()=>{state.search=state.search===null?"":null;state.recentOnly=false;renderAll()});
 $("#b-undo").addEventListener("click",()=>{commitDraft(false,true);quickUndo()});
 $("#b-more").addEventListener("click",moreSheet);
