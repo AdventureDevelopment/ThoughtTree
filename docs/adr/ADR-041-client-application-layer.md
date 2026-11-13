@@ -6,7 +6,8 @@ applies_to: `src/ThoughtTree.Client*/**`
 
 - **MUST** put use cases, UI state and UI decisions into ThoughtTree.Client.App, plain C# without Razor or browser dependencies
 - **MUST** keep Razor components to showing state and forwarding user input
-- **MUST** enforce privacy-critical confirmations (sharing, unencrypted export, merging trees) in the application layer, so no component can bypass them
+- **MUST** keep navigation state (focus, selection, scroll position) per view, so several views can exist at once (structure sidebar, side-by-side panes)
+- **MUST** enforce privacy-critical confirmations (sharing, unencrypted export, importing a tree into another) in the application layer, so no component can bypass them
 - **MUST NOT** use HTML snapshot tests; assert meaning instead
 
 verify:
