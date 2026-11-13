@@ -129,7 +129,8 @@ The owner has captured ideas on the phone and wants to continue on the tablet; t
 1. Captured ideas on the phone
 2. Wants to continue with them on the tablet
 3. Hands the changes from the phone to the tablet as an encrypted file (ADR-007; decision D-19)
-4. …
+4. The tablet reads the file in and offers right away to send its own changes back; one more transfer and both devices are equal (decision D-20)
+5. …
 
 Notes:
 
@@ -173,3 +174,4 @@ Bottom toolbar (D-17):
 | D-17 | 2026-11-12 | 1 Principles (journeys A, B) | The phone layout has a bottom toolbar with the main actions; the capture button 📥 (capture into the inbox, D-4) sits in its middle, ＋ adds a new note at the current place. Only one floating-looking button (📥, docked in the bar); no second floating button. Contents of the bar and one-handed reach are open questions. Sketches of the variants compared: bottom toolbar, select then act, tap empty space, one button with inbox in the top bar | Owner, sketch comparison |
 | D-18 | 2026-11-12 | 1 Principles (journey A) | Revises D-10 for quick capture: 📥 opens a light sheet from below over the dimmed current view, with an empty line and the keyboard; it shows the target (the open tree's inbox, switchable, D-5); its lines behave exactly like the outline (Enter, leading space, Backspace, `##`, `@@`), so it is a small window onto the inbox, not a second kind of form; closing it returns to the place the user was; a button opens the full detail view of the current idea. Everywhere else new notes are typed in place in the tree (D-10) [ASSUMPTION: details of the sheet's behaviour to be confirmed in the UI specification] | Owner, MLO widget |
 | D-19 | 2026-11-13 | 1 Principles (journey D) | Without internet, devices exchange changes by encrypted file as in the architecture (ADR-007); sync over the local Wi-Fi (WebRTC with a QR-code handshake, or the native wrapper) is an idea for later, no ADR proposed now | Journey D |
+| D-20 | 2026-11-13 | 1 Principles (journey D) | Exchange by file is guided as a round trip: after a device has read in a file from another device, it offers at once to send its own changes back ("Send back to Phone"), so both devices end up equal; the user can decline. Uses the existing flow ("Import from another device", whole log exported by default) | Journey D |
