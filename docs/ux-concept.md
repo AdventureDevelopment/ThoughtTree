@@ -132,7 +132,7 @@ The owner has captured ideas on the phone and wants to continue on the tablet; t
 4. The tablet reads the file in and offers right away to send its own changes back; one more transfer and both devices are equal (decision D-20)
 5. **Key moment:** wants to continue with the notes that just arrived; a short confirmation names how many arrived and offers Show, which filters the tree to them (decision D-21)
 6. A note changed on both devices while offline is named in the confirmation ("1 conflict") and marked on the note until it is resolved (decision D-22)
-7. …
+7. Resolves it: a small, unconnected note by picking a version or writing a new one; a note connected to many things only after looking at its context again (decision D-23)
 
 Notes:
 
@@ -179,3 +179,4 @@ Bottom toolbar (D-17):
 | D-20 | 2026-11-13 | 1 Principles (journey D) | Exchange by file is guided as a round trip: after a device has read in a file from another device, it offers at once to send its own changes back ("Send back to Phone"), so both devices end up equal; the user can decline. Uses the existing flow ("Import from another device", whole log exported by default) | Journey D |
 | D-21 | 2026-11-13 | 1 Principles (journey D) | After an exchange a short confirmation names how many notes arrived ("7 new or changed notes from Phone") and offers Show, which filters the tree to those notes and their ancestors, like search (D-12). Search also offers a filter "Changed recently" at any time, based on the time of the last change of each node. A filter by device is left out until use shows the need | Journey D |
 | D-22 | 2026-11-13 | 1 Principles (journey D) | Conflicts (ADR-018) are reported in two places: in the confirmation after an exchange or sync ("1 conflict", with a way to resolve it), and as a marker on the affected node that stays until the conflict is resolved; all conflicts are also listed in the Conflict View. The marker is noticeable but calm, no alarm colours (principle 5) [ASSUMPTION: look decided with the tokens, topic 4] | Journey D |
+| D-23 | 2026-11-13 | 1 Principles (journey D) | The resolve view shows both (or all) versions side by side with device and time; the user picks one or writes a new version starting from one of them (an ordinary event replacing all competing changes, ADR-018); it shows the node's context to help remember what was meant: path, children, relations and backlinks, each tappable; "Later" leaves the conflict open and the marker stays | Journey D |
