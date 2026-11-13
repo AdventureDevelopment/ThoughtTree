@@ -96,6 +96,7 @@ The library is chosen by a spike (decision D-30).
 | `conflict-marker` [ASSUMPTION: calm violet, to be confirmed] | `#7a6bb0` | `#a99be0` |
 
 - Themes can be chosen per tree and per node, to support the vibe of a project; a node's theme applies to its whole branch, and shows when the user zooms into it (decision D-34)
+- In the overview a branch with its own theme is tinted in that theme, so its mood is visible before zooming in; zoomed in, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus zoomed in)
 
 All text and accent pairs above meet WCAG AA contrast; the contrast unit test (architecture section 8) will check them once they are code.
 
@@ -249,3 +250,4 @@ Bottom toolbar (D-17):
 | D-32 | 2026-11-13 | 4 Tokens | MLO is the reference for the look; the first theme is calm; more colourful themes may follow later, so all components use semantic tokens and a theme only swaps the palette behind them | Owner |
 | D-33 | 2026-11-13 | 4 Tokens | The first theme is Paper: warm paper tones with a rust ochre accent (`#9a5e28` light, `#e3a35f` dark); draft token values in section "Design tokens and theming" | Owner, colour comparison |
 | D-34 | 2026-11-13 | 4 Tokens | The theme can be changed, and chosen per tree and per node: a node's theme applies to its branch and shows while the user is zoomed into it; otherwise the tree's theme applies. Whether the choice is synced is still open | Owner |
+| D-35 | 2026-11-13 | 4 Tokens | A branch with its own theme is shown tinted in that theme in the overview (preferred over a small dot); zoomed into it, every bar, button and list takes on its theme. Every theme must meet the same contrast rules, also where a tinted branch sits inside another theme | Owner, sketch |
