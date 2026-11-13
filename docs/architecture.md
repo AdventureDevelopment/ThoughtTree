@@ -909,12 +909,13 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-056](adr/ADR-056-server-store-migrations.md) | Server store migrations | `src/ThoughtTree.Server*/**`, `infra/**` |
 | [ADR-057](adr/ADR-057-sync-modes.md) | Sync modes, live preselected | `src/ThoughtTree.Client*/**` |
 | [ADR-058](adr/ADR-058-tags.md) | Tags as tree elements, typed with `@@` | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-059](adr/ADR-059-undo.md) | Undo writes new events; quick undo covers the user's own actions on this device (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-060](adr/ADR-060-shared-themes.md) | Themes of trees and branches are shared through events (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-059](adr/ADR-059-undo.md) | Undo writes new events; quick undo covers the user's own actions on this device | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-060](adr/ADR-060-shared-themes.md) | Themes of trees and branches are shared through events | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-061](adr/ADR-061-shipped-fonts.md) | System font first, shipped fonts under the SIL Open Font License (proposed) | `src/ThoughtTree.Client*/**`, `**/*.csproj`, `**/package.json` |
 | [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, item (proposed) | `docs/**`, `src/**`, `tests/**` |
+| [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, node | `docs/**`, `src/**`, `tests/**` |
 | [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept (proposed) | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
+| [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" (proposed) | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
 
 **Open decisions**
 
