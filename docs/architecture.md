@@ -353,7 +353,7 @@ docs/        architecture, ADRs
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - Top level: an item without a parent is a top-level item; a tree can have one or several; there is no special root item, every item is created by `item.created`
-- Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; both are Unicode text and may contain emojis; search and sorting work on the text without Markdown markers
+- Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; display names (tags, relation types and other structural elements) and view names are plain text without Markdown; all text is Unicode and may contain emojis; search and sorting work on the text without Markdown markers
 - Every item has exactly one parent (or none at top level), for good; an item cannot appear in several places; where something is needed in two places, a link points to it
 - Links inside text: a title or note links to an item with a standard Markdown link using the `item:` scheme, for example `[project ideas](item:a71c4e0b-…)`; item ids never change, so links survive moves and renames
 - Link text: the link picker inserts a live link with empty text (`[](item:<id>)`), shown with the target's current title as plain text; if the user types their own text, it stays fixed; renaming an item writes no event for the links pointing to it; readable export fills in the target's title for live links

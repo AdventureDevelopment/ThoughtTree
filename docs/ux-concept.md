@@ -55,7 +55,7 @@ Named by the owner after trying the first prototype (2026-11-13). These are the 
 
 - **Themes per branch:** every project or topic can carry its own mood, visible in the overview and filling the screen when focused
 - **The inbox:** capture without deciding anything first, and sort later, calmly, with the inbox as an ordinary branch at the end of the tree
-- **Markdown and emojis everywhere:** titles, notes, tags and names can be formatted and carry emojis
+- **Markdown and emojis:** Markdown in titles (inline) and notes; emojis everywhere, also in tags and other names (tags and names stay unformatted)
 
 ## UX principles
 
