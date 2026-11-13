@@ -366,6 +366,7 @@ docs/        architecture, ADRs
 - Remote pictures (`![](https://…)`) are not loaded; the app shows a placeholder with the address, and clicking opens the picture in the browser; later, with binary data, the user can store such a picture once as an encrypted blob in the tree
 - Nothing connects trees: links and relations only point to items of the same tree; the link picker offers only items of the current tree, and an `item:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import, with one sanctioned exception: merging a whole tree into another (see Merging trees)
 - Fonts: the base font is the device's system font; fonts of themes are shipped from the app's own origin and downloaded in the background only when a theme in use needs them (ADR-061)
+- Views: a tree and any item can have an ordered list of views (saved searches now, layouts such as board or columns later), defined by events and shared like content; the query is structured data with its own format version, results are computed on the device; at the tree level a view lists all views; always available (ADR-062)
 - Themes: a tree and any item can have a theme (`theme.set`), which applies to the whole branch unless a child sets its own; themes are content shared by all devices and users of the tree, referenced by fixed ids shipped with the app, with the default theme "Paper" as fallback; always available (ADR-060)
 - Tags: items can carry tags, structural elements of the tree named by display names (ADR-058); a tree feature, switched on by default
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
@@ -422,6 +423,8 @@ docs/        architecture, ADRs
 | `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are display names (see below) |
 | `relation-type.removed` | `typeId` |
 | `theme.set` | `target` (the tree or an `itemId`), `themeId`; concurrent changes are decided silently by the agreed order, no `replaces` (ADR-060) |
+| `view.set` | `owner` (the tree or an `itemId`), `viewId`, `name`, `query` (structured, with its own format version), `layoutId`, `replaces` |
+| `view.removed` | `viewId` |
 | `tag.defined` | `tagId`; names are display names |
 | `tag.joined` | `fromTagId`, `intoTagId`; assignments of the joined tag count for the target tag |
 | `item.tagged` | `itemId`, `tagId` |
@@ -497,10 +500,10 @@ Example of an event before encryption:
 
 - Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`); with the hybrid clock this is usually the latest edit in real time
 - `Timestamp` is never used to decide anything; only `Clock` is, which stays consistent even when device clocks drift
-- Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `display-name.set`, `tree.feature-changed`, `tree.server-changed`
-- Conflict: two or more changes of the same field of the same element (item, relation type, display name, tree feature, server address) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
+- Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `display-name.set`, `tree.feature-changed`, `tree.server-changed`, `view.set`
+- Conflict: two or more changes of the same field of the same element (item, relation type, display name, tree feature, server address, view) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
 - Concurrent changes with the same value are not a conflict (for example the predefined relation types written by two trees that are later merged)
-- The Conflict View lists all conflicts of a tree, grouped by kind: items, relation types, display names, tree features, server address
+- The Conflict View lists all conflicts of a tree, grouped by kind: items, relation types, display names, tree features, server address, views
 - The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
 - Delete conflict: a deletion conflicts with every change to the deleted item or anywhere in its subtree (including items created or moved into it) that the deleting device had not seen when it deleted
 - To decide this, `item.deleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
@@ -714,7 +717,7 @@ Domain tests:
 
 Format tests:
 
-- Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs (with every event type, including tags, themes and views), encrypted export files, readable export files (JSON, Markdown, OPML), pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
+- Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs (with every event type, including tags, themes and views), encrypted export files, readable export files (JSON, Markdown, OPML), view queries, pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
 - New reads old: the current version reads every stored version and gets exactly the expected tree
 - Old reads new: CI builds the previous release from its git tag and lets its Domain read data written by the current version; every item and every text must be there (INV-10)
 - Round trip: the current version writes and reads back without loss
@@ -913,7 +916,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-059](adr/ADR-059-undo.md) | Undo writes new events; quick undo covers the user's own actions on this device | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-060](adr/ADR-060-shared-themes.md) | Themes of trees and branches are shared through events | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-061](adr/ADR-061-shipped-fonts.md) | System font first, shipped fonts under the SIL Open Font License | `src/ThoughtTree.Client*/**`, `**/*.csproj`, `**/package.json` |
-| [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, node | `docs/**`, `src/**`, `tests/**` |
 | [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept (proposed) | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
 | [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" (proposed) | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
@@ -1040,7 +1043,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Parent / Children | The item directly above an item / the items directly below it |
 | Sibling Order | The order of the children under one parent; follows from replaying the events, each placing an item after a named sibling |
 | Hybrid Logical Clock | The clock carried by every event: UTC time plus a counter; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
-| Conflict | Two or more changes with different values of the same field of an element (item, relation type, display name, tree feature, server address) made without seeing each other; shown to the user, who picks the value |
+| Conflict | Two or more changes with different values of the same field of an element (item, relation type, display name, tree feature, server address, view) made without seeing each other; shown to the user, who picks the value |
 | Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
 | Collapse | Hide an item's children in the view; UI state of one device, not a domain event |
 | Zoom | Make an item the temporary root of the view |
@@ -1071,6 +1074,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Permission Flag | A flag per account on the server that says what the account may do |
 | Bet | An architecture decision that rests on an assumption; its bet card says what should improve, how we notice it and when we review it |
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
+| View | A saved perspective of an item's branch or the whole tree: a name, a query and a layout |
 | Tag | A structural element of a tree, named by display names, that items can carry in any number; typed with `@@` or chosen in the tag picker |
 | PWA | Progressive Web App: installable, offline-capable web application |
 | Installation | The app as loaded from one server (the hosted service or a self-hosted one), with its own local store and trees; it syncs only with that server |

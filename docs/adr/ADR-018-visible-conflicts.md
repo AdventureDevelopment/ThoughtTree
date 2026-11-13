@@ -4,9 +4,9 @@ id: ADR-018 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
-- **MUST** let exactly these events name the changes they replace (`replaces`): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `display-name.set`, `tree.feature-changed`, `tree.server-changed`
+- **MUST** let exactly these events name the changes they replace (`replaces`): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `display-name.set`, `tree.feature-changed`, `tree.server-changed`, `view.set`
 - **MUST NOT** treat concurrent changes with the same value as a conflict
-- **MUST** list all kinds of conflicts (items, relation types, display names, tree features, server address) in the Conflict View
+- **MUST** list all kinds of conflicts (items, relation types, display names, tree features, server address, views) in the Conflict View
 - **MUST** let `item.deleted` carry `seen`, the highest clock received per device
 - **MUST** derive conflicts from the log; MUST NOT store them
 - **MUST** resolve a conflict by an ordinary event that replaces all competing changes
