@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Detail page themes</title>
+</head>
+<body>
+<!-- Reference sketch, chosen variant only (UX decision D-47). Decisions D-63, D-65, D-66; the strip layout of D-63 with the item menu of D-65. Where this sketch and docs/ux-concept.md differ, the concept wins. -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: three phone frames (wrapping); each frame carries its theme tokens (Paper or the example theme Dusk) */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:65ch}
+.row{display:flex;flex-wrap:wrap;gap:22px}
+.col{flex:1 1 250px;max-width:320px;min-width:0}
+.col h2{font-size:15px;margin:0 0 8px}
+.col p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
+.paper{--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5}
+.dusk{--t-bg:#23233f;--t-card:#2b2b4b;--t-text:#ecebf7;--t-muted:#b4b2d6;--t-line:#3d3d63;--t-accent:#ff8a6b;--t-ink:#2a1208;--t-acc-text:#ffb39e;--t-sel:#3a3a66}
+.ph{position:relative;height:580px;border-radius:20px;overflow:hidden;background:var(--t-card);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:15px}
+.top{padding:10px 14px;border-bottom:1px solid var(--t-line);font-size:12px;color:var(--t-muted);background:var(--t-bg);display:flex;justify-content:space-between}
+.page{flex:1;padding:14px 16px;overflow:hidden;line-height:1.55}
+.title{font-size:19px;font-weight:600;margin-bottom:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-size:13px;border-radius:10px;padding:2px 10px;background:var(--t-sel);color:var(--t-acc-text)}
+.chip.add{background:transparent;border:1px dashed var(--t-acc-text)}
+.page p{margin:4px 0}
+.fab{position:absolute;inset-inline-end:16px;bottom:64px;width:54px;height:54px;border-radius:50%;background:var(--t-accent);color:var(--t-ink);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 10px #0004}
+.strip{display:flex;justify-content:space-around;align-items:center;height:48px;border-top:1px solid var(--t-line);background:var(--t-bg);font-size:13px;color:var(--t-muted)}
+.strip b{color:var(--t-text)}
+.pop{position:absolute;inset-inline-end:10px;bottom:54px;width:210px;background:var(--t-card);color:var(--t-text);border:1px solid var(--t-line);border-radius:12px;box-shadow:0 6px 20px #0004;padding:4px 0;z-index:2}
+.pop .mi{padding:8px 12px;font-size:14px;display:flex;gap:10px}
+.pop .mi i{font-style:normal;width:20px;text-align:center}
+.pop .mi.d{color:#9b3b2a}
+.pop .mi.off{color:var(--t-muted)}
+.pop .sep2{height:1px;background:var(--t-line);margin:3px 0}
+.hl{outline:2px solid var(--t-accent);outline-offset:2px;border-radius:6px}
+.sheet{position:absolute;inset-inline:0;bottom:0;background:#fffdf8;color:#2a2520;border-radius:16px 16px 0 0;border-top:1px solid #e9e1d4;box-shadow:0 -6px 20px #0003;padding:10px 0 12px}
+.sheet .hd{padding:0 16px 8px;font-size:13px;color:#6d645a;display:flex;justify-content:space-between}
+.sheet .hd b{color:#2a2520}
+.opt{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:15px}
+.sw{width:30px;height:20px;border-radius:5px;border:1px solid #0002;display:flex;overflow:hidden;flex:none}
+.sw i{flex:1}
+.radio{width:18px;height:18px;border-radius:50%;border:2px solid #6d645a;flex:none}
+.radio.on{border:6px solid #9a5e28}
+.opt small{display:block;font-size:12px;color:#6d645a}
+.opt.cur{background:#f3e7d5}
+.sep{height:1px;background:#e9e1d4;margin:4px 0}
+.btns{display:flex;gap:10px;padding:8px 16px 0;justify-content:flex-end}
+.btns span{padding:7px 14px;border-radius:9px;font-size:14px}
+.btns .p{background:#9a5e28;color:#fff}
+</style>
+
+<h1>The detail page takes the item's theme</h1>
+<p class="lead">The item's ⋯ sits in the bottom strip at the thumb's end. An item shows in its own theme, else its branch's, else the tree's. Paper is the default theme of a new tree. Dusk is an example theme. Example content only.</p>
+
+<div class="row">
+<div class="col"><h2>1 · An item in the default theme</h2>
+<div class="ph paper"><div class="top"><span>‹ Ideas</span><span></span></div>
+<div class="page"><div class="title">Capture first, sort later</div>
+<div class="chips"><span class="chip">idea</span><span class="chip add">＋</span></div>
+<p>Nothing has to be decided before typing: <b>not the place</b>, not the tree.</p></div>
+<div class="fab">📥</div><div class="strip"><span>🕘 06:12</span><span>↩ <b>3</b></span><span>🔗 <b>2</b></span><span style="font-size:18px;color:var(--t-text)">⋯</span></div></div>
+<p class="d">Neither the item nor its branch has a theme of its own, so the tree's theme applies: Paper.</p></div>
+
+<div class="col"><h2>2 · An item inside a themed branch</h2>
+<div class="ph dusk"><div class="top"><span>‹ 📖 Writing project</span><span></span></div>
+<div class="page"><div class="title">The old captain</div>
+<div class="chips"><span class="chip">character</span><span class="chip add">＋</span></div>
+<p>Quiet, stubborn, afraid of the sea since the storm.</p></div>
+<div class="fab">📥</div><div class="strip"><span>🕘 Tue</span><span>↩ <b>4</b></span><span>🔗 <b>1</b></span><span style="font-size:18px;color:var(--t-text)">⋯</span></div></div>
+<p class="d">The item has no theme of its own, but its branch "Writing project" uses Dusk, so the page does too.</p></div>
+
+<div class="col"><h2>3 · Choosing a theme (⋯ › Theme)</h2>
+<div class="ph dusk"><div class="top"><span>‹ 📖 Writing project</span><span></span></div>
+<div class="page"><div class="title">The old captain</div><p>Quiet, stubborn, afraid of the sea since the storm.</p></div>
+<div class="sheet"><div class="hd"><b>Theme for "The old captain"</b><span>preview is live</span></div>
+<div class="opt cur"><span class="radio on"></span><span>Same as above<small>From "Writing project": Dusk</small></span></div>
+<div class="sep"></div>
+<div class="opt"><span class="radio"></span><span class="sw"><i style="background:#f7f3ec"></i><i style="background:#9a5e28"></i></span>Paper</div>
+<div class="opt"><span class="radio"></span><span class="sw"><i style="background:#23233f"></i><i style="background:#ff8a6b"></i></span>Dusk</div>
+<div class="opt"><span class="radio"></span><span class="sw"><i style="background:#f6f7f5"></i><i style="background:#2e7d4f"></i></span>Fresh</div>
+<div class="btns"><span>Cancel</span><span class="p">Apply</span></div></div></div>
+<p class="d">The first choice is "Same as above": no theme of its own, it follows its branch or tree, and says which theme that is. Tapping another theme previews it live on the page.</p></div>
+
+<div class="col"><h2>4 · The item menu from the strip</h2>
+<div class="ph paper"><div class="top"><span>‹ Ideas</span><span></span></div>
+<div class="page"><div class="title">Capture first, sort later</div>
+<div class="chips"><span class="chip">idea</span><span class="chip add">＋</span></div>
+<p>Nothing has to be decided before typing: <b>not the place</b>, not the tree.</p></div>
+<div class="pop"><div class="mi"><i>🎯</i>Focus</div><div class="mi"><i>↕</i>Move to…</div><div class="mi"><i>🔗</i>Link to…</div><div class="mi"><i>🏷</i>Tags</div><div class="mi"><i>🎨</i>Theme</div><div class="mi"><i>🗂</i>Views</div><div class="mi"><i>🕘</i>History</div><div class="sep2"></div><div class="mi d"><i>🗑</i>Delete</div></div>
+<div class="strip"><span>🕘 06:12</span><span>↩ <b>3</b></span><span>🔗 <b>2</b></span><span class="hl" style="font-size:18px;color:var(--t-text);padding:0 6px">⋯</span></div></div>
+<p class="d">The same item menu as in the tree (D-59), opening upwards from the ⋯ in the same order; "Open" is left out because the item is already open. The capture button steps aside while the menu is open.</p></div>
+</div>
+</body>
+</html>

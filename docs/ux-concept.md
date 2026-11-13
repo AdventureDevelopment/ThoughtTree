@@ -1,6 +1,6 @@
 # ThoughtTree – UX Concept
 
-Status: outline, to be worked out step by step. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
+Status: in progress; foundation topics 1, 2, 3, 4 and 11 worked out, topic 5 (phone) and parts of 7 (item detail) started; see the decision log. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
 
 ## Approach
 
@@ -29,7 +29,7 @@ Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. T
 
 ## Terms
 
-This concept uses the following terms (decision D-45, replacing D-44). The change to the architecture's glossary is proposed as [ADR-063](adr/ADR-063-terms.md) (Proposed).
+This concept uses the following terms (decision D-45, replacing D-44). The architecture adopted them with [ADR-063](adr/ADR-063-terms.md) (Accepted); "Focus" instead of "Zoom" is proposed separately as [ADR-065](adr/ADR-065-focus.md) (Proposed).
 
 | Term | Meaning |
 | --- | --- |
@@ -38,6 +38,7 @@ This concept uses the following terms (decision D-45, replacing D-44). The chang
 | Note | The optional longer text of an item, written in the detail view |
 | Branch | An item together with everything below it |
 | Node | How an item appears in the tree: its line in the outline and its place; a technical term for code and specifications |
+| Focus | Make an item the temporary top of the view, showing only its branch (D-57; the architecture still says "zoom" until ADR-065 is accepted) |
 
 What the app calls these things in its own wording is decided with microcopy (topic 10).
 
@@ -75,7 +76,7 @@ The owner thinks of undo like a git repository: every change is a commit that is
 | Go back much later | `git log`, restore a file | The item's history: every version with device and time, any change revertible, whoever made it |
 
 - Quick undo does not go strictly by time: with live sync, a change from another device can arrive between the user's action and the undo; undoing that instead of the user's own slip would be surprising
-- Undo is not limited to the current view (zooming would lose it, and a move belongs to two places); instead undo always shows what it reverses
+- Undo is not limited to the current view (changing the focus would lose it, and a move belongs to two places); instead undo always shows what it reverses
 - While text is being edited, it is a local draft (ADR-013): the editor's usual undo and redo apply within the draft, character by character or word by word; once editing ends, the whole text change is one step for quick undo; for all other actions there is undo but no redo, a regretted undo is reverted from the history (decision D-26)
 - Quick undo needs no list of its own: it is read from the log (this device's events, newest first); an undo event names the event it reverts, like git's "This reverts commit …", so the history can show "reverted by …" and undo survives closing the app (decision D-27)
 - When the item was changed since on another device or by another user, quick undo stops and asks instead of overwriting: "This item has been changed since on Tablet ('C'). Open history?" (decision D-28)
@@ -95,6 +96,7 @@ The library is chosen by a spike (decision D-30).
   - download size within the budget (PF5)
   - themeable through our own design tokens, light and dark (topic 4), far enough to carry ThoughtTree's own calm look instead of the library's (D-31)
   - touch targets of at least 24×24 CSS pixels (ADR-033)
+  - for the note: an editor that formats Markdown as you type, converts pasted HTML to Markdown cleanly, is accessible and works in both writing directions (D-61)
   - for the tree component: typing in place with Enter, leading space and Backspace (D-2, D-3), the `##` and `@@` shortcuts (D-11, D-14), 10,000 items stay responsive (PF1, PF2), dragging with an accessible alternative (D-6)
 
 ## Design tokens and theming (topic 4)
@@ -116,21 +118,21 @@ The library is chosen by a spike (decision D-30).
 | `selection` | `#f3e7d5` | `#3b2e1e` |
 | `conflict-marker` [ASSUMPTION: calm violet, to be confirmed] | `#7a6bb0` | `#a99be0` |
 
-- Themes can be chosen per tree and per item, to support the vibe of a project; an item's theme applies to its whole branch (shown for all its children, unless a child has its own theme), and shows when the user zooms into it (decision D-34)
-- In the overview a branch with its own theme is tinted in that theme, so its mood is visible before zooming in; zoomed in, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus zoomed in)
+- Themes can be chosen per tree and per item, to support the vibe of a project; an item's theme applies to its whole branch (shown for all its children, unless a child has its own theme), and shows when the user focuses on it (decision D-34)
+- In the overview a branch with its own theme is tinted in that theme, so its mood is visible before focusing on it; focused on it, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus zoomed in)
 - Themes of trees and branches are shared: the same on every device and for every user of a tree, recorded by an event; proposed as [ADR-060](adr/ADR-060-shared-themes.md) (Proposed) (decision D-36)
 - Typography: the base font is the device's system font, so startup downloads nothing; a theme may bring its own font (for example Literata for writing, Nunito for creative, IBM Plex Mono for technical projects), downloaded in the background after start and kept offline; proposed as [ADR-061](adr/ADR-061-shipped-fonts.md) (Proposed), which also approves the SIL Open Font License for fonts (decision D-37)
 - Custom views: views belong to an item (decision D-39, revising D-38):
   - every item, and the tree itself, can carry one or more views; the default is the outline
   - a view is a saved search over the item's branch (for example "🔎 Open questions", "Changed recently") and, later, a layout such as a board or columns
-  - zoomed into the item, a view switcher (like tabs) appears when it has more than one view; the item's theme applies to all its views
+  - focused on the item, a view switcher (like tabs) appears when it has more than one view; the item's theme applies to all its views
   - at the tree level, a view "All views" lists every view of the tree with the path of its item
   - the start view of a device is an item plus one of its views
   - start icons with their own view (decision D-40): the app understands a start parameter "item plus view" in its address from the start; Android: "Add to home screen" from such a link (spike: does it open in the app window or a tab); Windows and desktop: links with the start parameter; iPhone and iPad: with the store app, because each home-screen web app there has its own storage
   - proposed as [ADR-062](adr/ADR-062-views-on-items.md) (Proposed)
 - A theme brings more than colours: palette, optionally a font (D-37), the density of the outline and whether the first line of an item's note is previewed under its title. Paper: density comfortable (rows about 44 px, text 16 px, system font) with the note preview shown (decision D-42; sketch: airy, comfortable, compact)
 - Text size follows the device: the theme's sizes are the starting point, and the device's text-size setting scales them (sizes in relative units; on iPhone and iPad the system text style is used so Dynamic Type applies); rows grow with the text, layouts must hold at 200 % text size; no slider of its own in the app (decision D-43)
-- **Signature feature:** a theme for a part of the tree, tinted in the overview and taking over the whole screen when zoomed in; the owner has not seen this anywhere else
+- **Signature feature:** a theme for a part of the tree, tinted in the overview and taking over the whole screen when focused on; the owner has not seen this anywhere else
 
 All text and accent pairs above meet WCAG AA contrast; the contrast unit test (architecture section 8) will check them once they are code.
 
@@ -154,6 +156,20 @@ Definition of done for UI work (decision D-49): a UI feature is done when all th
 | Pull request checklist (D-48) | What cannot be automated: principles checked, terms used, sketch linked, screenshots attached, keyboard and screen reader paths covered | The agent fills it, the owner checks it |
 | Design review (D-46) | The owner looks at the screenshots, tries the feature in the test environment and approves | The owner |
 
+
+Reference sketches (D-47), chosen variants only, in [ux/sketches/](ux/sketches/); where a sketch and this document differ, this document wins:
+
+| Sketch | Decisions |
+| --- | --- |
+| [bottom-bar.html](ux/sketches/bottom-bar.html) | D-52, D-55 |
+| [capture-while-typing.html](ux/sketches/capture-while-typing.html) | D-54 |
+| [item-menu.html](ux/sketches/item-menu.html) | D-53, D-58, D-59 |
+| [paper-theme.html](ux/sketches/paper-theme.html) | D-33 |
+| [branch-themes.html](ux/sketches/branch-themes.html) | D-34, D-35 |
+| [density-comfortable.html](ux/sketches/density-comfortable.html) | D-42 |
+| [note-editing.html](ux/sketches/note-editing.html) | D-61, D-62 |
+| [tags-editing.html](ux/sketches/tags-editing.html) | D-64 |
+| [detail-page.html](ux/sketches/detail-page.html) | D-63, D-65, D-66 |
 
 ## How this concept is worked out
 
@@ -257,14 +273,14 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 
 1. Duplicates: two devices that define the same tag name offline create two tags; whether and how the app offers to join them
 2. Names with spaces: where `@@name` ends, and whether a tag name can contain spaces
-3. Managing tags: renaming, deleting, a list of all tags; where this lives
+3. Managing tags: renaming is decided (D-64); deleting a tag everywhere and a list of all tags are still open
 4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`)
 5. Look: colours for tags or not (touches the design tokens, topic 4)
 
-Bottom toolbar (D-17):
+Bottom toolbar (D-17, revised by D-52):
 
-6. Which actions it holds besides 📥 capture and ＋ add here (search, move and more are candidates); decided with the layout model and touch interaction (topics 5 and 6)
-7. Reach with one hand: the outermost buttons may be too far for the thumb; to be checked on a real phone
+6. Contents and order decided in D-52; to be checked with a tappable prototype on the owner's phone
+7. Reach with one hand: answered by the hand setting and the order by reach (D-52)
 
 Custom views (owner's idea, to be expanded):
 
@@ -286,7 +302,7 @@ Store app (for the architecture):
 | --- | --- | --- | --- | --- |
 | D-1 | 2026-11-12 | 1 Principles (journey A) | A quickly captured idea lands in an inbox, to be sorted into the tree later; the user does not choose a place before typing | Journey A |
 | D-2 | 2026-11-12 | 1 Principles (journey A) | In a chain of ideas the next idea is a sibling by default; typing a space as the first character of an empty title nests it under the previous idea (as in MLO); accessible alternatives: a menu command, and Tab on a keyboard (ADR-033) | Journey A |
-| D-3 | 2026-11-12 | 1 Principles (journey A) | Backspace in an empty title moves the idea one level up; only at the top level (of the inbox or the current zoom) does it remove the empty line; accessible alternatives: a menu command, and Shift+Tab on a keyboard (ADR-033) | Journey A |
+| D-3 | 2026-11-12 | 1 Principles (journey A) | Backspace in an empty title moves the idea one level up; only at the top level (of the inbox or the current focus) does it remove the empty line; accessible alternatives: a menu command, and Shift+Tab on a keyboard (ADR-033) | Journey A |
 | D-4 | 2026-11-12 | 1 Principles (journey A) | On opening, the app shows the place last worked on (device state, ADR-013) together with a clearly visible capture button; one tap on it opens the inbox with a fresh, empty line, so typing starts after one tap (within U1) | Journey A |
 | D-5 | 2026-11-12 | 1 Principles (journey A) | A captured idea goes into the inbox of the open tree; the capture view shows that tree's name, and one tap switches to another tree's inbox | Journey A |
 | D-6 | 2026-11-12 | 1 Principles (journey B) | Moving an item offers three ways, chosen by distance: drag and drop for nearby places; "Move to…" that finds the target by search or in a compact tree, shows the target's children and places the item at a chosen position; and moving it to the top level (its own root). "Move to…" is also the accessible alternative to dragging (ADR-033) | Journey B |
@@ -317,12 +333,12 @@ Store app (for the architecture):
 | D-31 | 2026-11-13 | 3 Component library, 4 Tokens | ThoughtTree has its own calm look, plain and quiet, made for thinking (in the spirit of iA Writer, Bear, Things), not a standard look such as Material or Fluent; a library must be restylable to it | Owner |
 | D-32 | 2026-11-13 | 4 Tokens | MLO is the reference for the look; the first theme is calm; more colourful themes may follow later, so all components use semantic tokens and a theme only swaps the palette behind them | Owner |
 | D-33 | 2026-11-13 | 4 Tokens | The first theme is Paper: warm paper tones with a rust ochre accent (`#9a5e28` light, `#e3a35f` dark); draft token values in section "Design tokens and theming" | Owner, colour comparison |
-| D-34 | 2026-11-13 | 4 Tokens | The theme can be changed, and chosen per tree and per item: an item's theme applies to its branch (shown for all its children unless a child has its own) and shows while the user is zoomed into it; otherwise the tree's theme applies. Whether the choice is synced is still open | Owner |
-| D-35 | 2026-11-13 | 4 Tokens | A branch with its own theme is shown tinted in that theme in the overview (preferred over a small dot); zoomed into it, every bar, button and list takes on its theme. Every theme must meet the same contrast rules, also where a tinted branch sits inside another theme | Owner, sketch |
+| D-34 | 2026-11-13 | 4 Tokens | The theme can be changed, and chosen per tree and per item: an item's theme applies to its branch (shown for all its children unless a child has its own) and shows while the user is focused on it; otherwise the tree's theme applies. Whether the choice is synced is still open | Owner |
+| D-35 | 2026-11-13 | 4 Tokens | A branch with its own theme is shown tinted in that theme in the overview (preferred over a small dot); focused on it, every bar, button and list takes on its theme. Every theme must meet the same contrast rules, also where a tinted branch sits inside another theme | Owner, sketch |
 | D-36 | 2026-11-13 | 4 Tokens | Themes of trees and branches are shared through an event, not kept as device state: they belong to the content like a tree's name, so every device and every user of a shared tree sees the same mood. Proposed as [ADR-060](adr/ADR-060-shared-themes.md) | Owner |
 | D-37 | 2026-11-13 | 4 Tokens | Base font: the system font of each device, for a fast start; themes may bring their own open-licence font, downloaded in the background after start and kept for offline use, the system font shows until then. Proposed as [ADR-061](adr/ADR-061-shipped-fonts.md), including approval of the SIL Open Font License for fonts | Owner, font suggestions |
 | D-38 | 2026-11-13 | 4 Tokens (custom views) | A saved search is an item of its own in the tree: placed anywhere, opened like a place, showing the tree filtered as in D-12, themeable like any item. Any item, including a saved search, can be chosen as the start view of the app on a device (device state, ADR-013); "the place last worked on" (D-4) stays the default. Proposed as ADR-062; revised by D-39 | Owner |
-| D-39 | 2026-11-13 | 4 Tokens (custom views) | Revises D-38: views belong to items, not to saved-search items of their own. Every item, and the tree, carries one or more views (outline by default; saved searches over its branch now; layouts such as board or columns later), switched like tabs when zoomed in; the tree level offers "All views" listing every view; the start view of a device is an item plus one of its views. Views are shared like content. Proposed as [ADR-062](adr/ADR-062-views-on-items.md) | Owner, discussion |
+| D-39 | 2026-11-13 | 4 Tokens (custom views) | Revises D-38: views belong to items, not to saved-search items of their own. Every item, and the tree, carries one or more views (outline by default; saved searches over its branch now; layouts such as board or columns later), switched like tabs when focused on the item; the tree level offers "All views" listing every view; the start view of a device is an item plus one of its views. Views are shared like content. Proposed as [ADR-062](adr/ADR-062-views-on-items.md) | Owner, discussion |
 | D-40 | 2026-11-13 | 4 Tokens (custom views) | Start icons with their own view: the app accepts a start parameter "item plus view" in its address from the start; Android uses "Add to home screen" from such a link (spike: app window or browser tab); desktop uses links; iPhone and iPad wait for the store app (separate storage per home-screen web app; automatic sync through a shared file or cloud folder also comes with the store app, as in the architecture) | Owner, discussion |
 | D-41 | 2026-11-13 | 4 Tokens (custom views) | Layouts per project (board, columns) are parked. The owner's wish for the release 1 scope (an open decision of the architecture): themes per tree and per item (D-34 to D-36) are in the first version | Owner |
 | D-42 | 2026-11-13 | 4 Tokens | Density and the note preview are part of a theme. The outline can show the first line of an item's note in small, muted type under the title. Paper uses density comfortable (rows about 44 px, text 16 px) with the preview shown; other themes may choose airy (about 56 px / 17 px) or compact (about 32 px / 14 px, touch targets still at least 24 px, ADR-033) | Owner, density sketch |
@@ -335,3 +351,18 @@ Store app (for the architecture):
 | D-49 | 2026-11-13 | 11 UX with agents | Definition of done for UI work: the push gate is green, the pull request checklist is complete, and the owner has approved after the design review (screenshots, test environment) | Owner |
 | D-50 | 2026-11-13 | Release 1 scope (input) | The owner's wish for release 1: phone and tablet (desktop added by D-51), no sync server, sync between devices only by file (guided round trip), themes per tree and per item; the app is still served by static hosting; server-related parts can wait; the export reminder matters more. Input to the architecture's open decision "Release 1 scope", not decided here | Owner |
 | D-51 | 2026-11-13 | Release 1 scope (input) | Desktop belongs to release 1 as well. The owner's main need for distribution is trying every change quickly on their own devices from the pull request; recommended to the architecture: a preview deployment per pull request, later public distribution via GitHub Pages and/or GitHub Releases; not decided here (ADR-046) | Owner |
+| D-52 | 2026-11-13 | 5 Layout (phone) | Revises D-17. Capture 📥 is a floating button at the thumb's corner, above the bar; the bottom bar holds four actions ordered by reach from the thumb: ＋ Add here (nearest), 🔍 Search, ↩ Undo, ⋯ More (farthest). "Back to selection" has no button: a label naming the selected item appears above the bar only while it is scrolled out of sight, and scrolls back to it on tap. A device setting "Hand: right / left" (default right, device state, ADR-013) mirrors the floating button and the bar; it is independent of the reading direction. Sketch: bottom bar, revised | Owner (right-handed, one-handed use) |
+| D-53 | 2026-11-13 | 5 Layout (phone) | Actions are shown where their subject is. Item actions (Move to…, Link to…, Tag, Theme, Views, History, Focus, Delete) open from a small ⋯ on the selected item's row, which is also their accessible path (ADR-033); press and hold is not used for this menu, since it is likely needed for dragging (topic 6). ⋯ More in the bottom bar holds only global actions (Switch tree, All views, Exchange with another device, Export, Settings, Feedback) [ASSUMPTION: both lists to be refined with the information architecture, topic 7] | Owner |
+| D-54 | 2026-11-13 | 5 Layout (phone), 6 Touch | While typing (keyboard up), the bottom bar gives way to an editing toolbar above the keyboard: ↩ undo and ↪ redo of the text (D-26), outdent, indent, move up, move down, `##`, `@@`, and ✓ Done at the thumb's end [ASSUMPTION: exact contents decided in topic 6]. The floating capture button 📥 stays in its corner just above the toolbar; tapping it saves the current text, opens the capture sheet, and closing the sheet returns to the text with the cursor where it was, with a short confirmation. Only the line being edited gets extra space on the button's side, so its text wraps before the button (covers long titles, right-to-left titles with `dir="auto"`, and the button on the left for left-handed use); other lines may run under the button. The hand setting (D-52) mirrors the toolbar too. Sketch: capture while typing | Owner |
+| D-55 | 2026-11-13 | 5 Layout (phone) | The bottom bar and the floating capture button stay visible while scrolling; they do not hide: calm (principle 5), capture and undo always one tap away, no controls that disappear for screen readers, keyboard users or people sensitive to motion. Revisit only if space feels tight in use | Owner, on advice |
+| D-56 | 2026-11-13 | 10 Microcopy (early) | In the app, zooming into an item is labelled "Focus" ("Zoom in" was unclear); "Open" is reserved for the item's detail page. The architecture's term Zoom is replaced by Focus as well (D-57) | Owner, item menu sketch |
+| D-57 | 2026-11-13 | Terms | "Zoom" is replaced by "Focus" everywhere, also in the architecture: zoom suggests magnifying (pinch), not concentrating on one item and its branch. Focus: make an item the temporary top of the view. Proposed as [ADR-065](adr/ADR-065-focus.md), since ADR-063 has been accepted without it | Owner |
+| D-58 | 2026-11-13 | 5 Layout (phone) | The item menu (D-53) opens as a popover anchored at the ⋯ of the selected row, so the tree stays visible; the ⋯ and the popover sit on the side of the hand setting (D-52), independent of the reading direction. Order, by frequency and purpose: Open (the item's detail page), Focus (go deeper), Move to…, Link to… (put in order), Tags, Theme, Views (describe), History (look back), and Delete set apart at the end (remove; restorable, ADR-005); the order stays the same when the popover opens upwards, for muscle memory (decision D-59). Sketch: item menu, variant popover | Owner |
+| D-59 | 2026-11-13 | 5 Layout (phone) | Order of the item menu: Open, Focus, Move to…, Link to…, Tags, Theme, Views, History, then Delete set apart; grouped by purpose and frequency; the same order whether the popover opens down or up | Owner |
+| D-60 | 2026-11-13 | 7 Information architecture (item detail) | "Open" shows the item's detail page note-first: the title at the top, the note large below it and ready to write; tags, links, backlinks and history are folded away below or behind a tab [ASSUMPTION: how they are folded away is decided with the detail page] | Owner |
+| D-61 | 2026-11-13 | 7 Information architecture (item detail) | The note is formatted as you type: Markdown markers show faintly only on the line with the cursor; a formatting toolbar above the keyboard (bold, italic, heading, list, link) inserts markers. Paste: Markdown is taken as is; HTML (also what Word, Pages or Outlook put next to RTF) is converted to Markdown and never stored as HTML, remote pictures become placeholders (ADR-052); pure RTF without HTML falls back to plain text. Copy: the clipboard gets the Markdown as plain text and HTML as formatted text, so both kinds of apps receive something useful. Adds an editor criterion to the component library spike (D-30). Sketch: writing a note, variant B | Owner |
+| D-62 | 2026-11-13 | 7 Information architecture (item detail) | Pasting formatted text always keeps the formatting (converted to Markdown, D-61), without asking; "Paste as plain text" is available for the exception, in the text field's own menu and on desktop as Ctrl+Shift+V | Owner |
+| D-63 | 2026-11-13 | 7 Information architecture (item detail) | On the detail page, tags are chips under the title; links, backlinks and history sit in a strip at the bottom with their counts and the last change (🔗 2 · ↩ 3 · 🕘 06:12), each opening as a sheet over the note. The floating capture button is on this page too, above the strip. There is no save button: everything is saved at once (principle 7); while typing, ✓ Done in the editing toolbar ends the editing (D-54); leaving the page is the back arrow at the top and the device's back (Android); a reachable way back on iPhone and iPad, which have no system back button, is decided with touch interaction (topic 6). Sketch: item detail, variant C | Owner |
+| D-64 | 2026-11-13 | 7 Information architecture (item detail) | Tags on the detail page: chips under the title with a ＋ at the end. ＋ opens the tag picker (search field focused, matching tags as you type with their number of items, most used first, several can be ticked, "Create …" when none fits). Tapping a tag opens a popover, ordered by frequency: "Remove from this item" first (used most; undoable), then "Show all with …" (filters the tree, D-14), then "Rename … (n items)…" which renames the tag everywhere (a tag has one name, ADR-058; a rename is a `display-name.set`, concurrent renames become a visible conflict, ADR-018). Swapping a tag on one item is removing plus adding, no entry of its own. `@@name` in the title keeps working. Sketch: editing tags | Owner |
+| D-65 | 2026-11-13 | 7 Information architecture (item detail), 4 Tokens | The detail page appears in the theme that applies to the item: its own, else its branch's, else the tree's; a new tree uses Paper. The theme picker (item menu › Theme) starts with "Same as above" (no theme of its own), naming the theme it follows and where from, then lists the themes; tapping one previews it live on the page, Apply or Cancel confirms. On the detail page the item's ⋯ sits in the bottom strip at the thumb's end (hand setting, D-52), not at the top; strip order from the far side: 🕘 history, ↩ linked from, 🔗 links, ⋯ item menu. Sketch: detail page themes | Owner |
+| D-66 | 2026-11-13 | 5 Layout, 7 Information architecture | On the detail page the item menu opens upwards from the ⋯ in the strip, in the same order as in the tree (D-59) without "Open". While any menu or popover is open, it covers the floating capture button: one menu at a time; capture is available again as soon as the menu closes | Owner |

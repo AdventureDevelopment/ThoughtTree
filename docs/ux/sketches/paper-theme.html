@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paper theme</title>
+</head>
+<body>
+<!-- Reference sketch, chosen variant only (UX decision D-47). Decision D-33. Where this sketch and docs/ux-concept.md differ, the concept wins. -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one comparison grid, columns = accents, rows = light and dark; scrolls sideways inside its own box on narrow screens */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--rule:#ddd5c8;--font:system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;--rule:#363029;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;--rule:#363029;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:65ch}
+.scroll{overflow-x:auto;padding-bottom:8px}
+.grid{display:grid;grid-template-columns:64px minmax(170px,320px);gap:12px;align-items:start}
+.colhead{font-weight:600;font-size:14px}
+.colhead small{display:block;font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-inline-end:6px}
+.rowhead{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:8px}
+.ph{border-radius:14px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:13px}
+.ph .top{padding:8px 10px;border-bottom:1px solid var(--t-line);font-size:11px;color:var(--t-muted)}
+.ph .top b{color:var(--t-text)}
+.ph .list{background:var(--t-card)}
+.ph .n{padding:6px 10px;border-bottom:1px solid var(--t-line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph .c1{padding-inline-start:24px}
+.ph .sel{background:var(--t-sel)}
+.ph .chip{font-size:10px;border-radius:8px;padding:0 5px;margin-inline-start:5px;background:var(--t-sel);color:var(--t-accent-text)}
+.ph .link{color:var(--t-accent-text);text-decoration:underline}
+.ph .mark{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--t-mark);margin-inline-start:5px;vertical-align:middle}
+.ph .bar{display:flex;justify-content:space-around;align-items:center;height:42px;border-top:1px solid var(--t-line);color:var(--t-muted);font-size:15px;margin-top:14px}
+.ph .dock{width:38px;height:38px;border-radius:50%;background:var(--t-accent);color:var(--t-accent-ink);display:flex;align-items:center;justify-content:center;margin-top:-20px;font-size:16px}
+.ph .btn{margin:10px 10px 0;padding:6px 10px;border-radius:8px;background:var(--t-accent);color:var(--t-accent-ink);font-size:12px;text-align:center}
+/* shared paper tones */
+.light{--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-line:#e9e1d4;--t-accent-ink:#fff;--t-mark:#7a6bb0}
+.dark{--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent-ink:#2a160d;--t-mark:#a99be0}
+/* accents: before #a4583a / A #9c5b2e / B #8a5a36 / C #9a5e28 (light); dark #e0916f / #df9a68 / #d2a07a / #e3a35f */
+.p0.light{--t-accent:#a4583a;--t-accent-text:#8e4a2f;--t-sel:#f3e4da}.p0.dark{--t-accent:#e0916f;--t-accent-text:#eba98c;--t-sel:#3a2a22}
+.p1.light{--t-accent:#9c5b2e;--t-accent-text:#87501f;--t-sel:#f2e5d8}.p1.dark{--t-accent:#df9a68;--t-accent-text:#e9b08a;--t-sel:#3a2c20}
+.p2.light{--t-accent:#8a5a36;--t-accent-text:#77502f;--t-sel:#efe5da}.p2.dark{--t-accent:#d2a07a;--t-accent-text:#dfb796;--t-sel:#382d22}
+.p3.light{--t-accent:#9a5e28;--t-accent-text:#84511f;--t-sel:#f3e7d5}.p3.dark{--t-accent:#e3a35f;--t-accent-text:#ecb985;--t-sel:#3b2e1e}
+</style>
+
+<h1>Paper theme</h1>
+<p class="lead">The first theme: warm paper tones with a rust ochre accent (D-33). The accent is used for the capture button, a button, a link, the selected row and a tag chip. All pairs meet WCAG AA contrast.</p>
+
+<div class="scroll"><div class="grid" id="grid"></div></div>
+
+<script>
+const acc=[["p3","Paper · rust ochre","#9a5e28"]];
+const phone=(c,m)=>`<div class="ph ${c} ${m}"><div class="top">Home › <b>Ideas</b></div><div class="list">
+<div class="n">💡 App for thinking<span class="chip">idea</span></div><div class="n c1 sel">Capture first</div>
+<div class="n c1">Tags with @@<span class="mark" title="conflict"></span></div><div class="n">📚 Book to read</div>
+<div class="n">See <span class="link">Ideas › Reading</span></div></div>
+<div class="btn">Move here</div><div class="bar"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span><span class="dock">📥</span></div></div>`;
+let h='<div></div>'+acc.map(a=>`<div class="colhead"><span class="sw" style="background:${a[2]}"></span>${a[1]}<small>${a[2]}</small></div>`).join('');
+for(const m of ["light","dark"]){h+=`<div class="rowhead">${m}</div>`+acc.map(a=>phone(a[0],m)).join('');}
+document.getElementById('grid').innerHTML=h;
+</script>
+</body>
+</html>
