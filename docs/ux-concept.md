@@ -240,7 +240,7 @@ Pain point: searching for the place where a new item belongs. In MLO the target 
 
 Remarks:
 
-- A swipe on an idea as a shortcut to "Move to…" is a wish; gestures are topic 6 and an open decision of the architecture
+- A swipe on an idea as a shortcut to "Move to…" was a wish; swipe left now opens the detail page (D-72), so "Move to…" stays in the item menu for now
 
 Principle candidates heard in journey B:
 
@@ -385,3 +385,4 @@ Store app (for the architecture):
 | D-69 | 2026-11-13 | 9 Onboarding | As decided in the architecture for release 1: on first start the app creates a tutorial tree, opened first, and the user's own tree "My thoughts"; the tutorial can be deleted and brought back with "Show the tutorial again"; its texts come from resource files in the device language; its content and flow are refined in topic 9, starting from the prototype's tutorial; its content consists of thoughts, not tasks (D-67) | Architecture, owner |
 | D-70 | 2026-11-13 | 10 Microcopy, 7 Information architecture | As decided in the architecture: Markdown only in titles (inline formatting) and notes; emojis everywhere, also in tags and other names; display names (tags, relation types) and view names stay plain text | Architecture, owner |
 | D-71 | 2026-11-13 | 5 Layout, 6 Touch | From the prototype test: items with children show a large arrow ▸ / ▾ in the accent colour, a real button (at least the touch-target size, ADR-033) that expands or collapses; items without children show a dot ●, slightly smaller than the arrows; a collapsed item shows a "+n" badge after its title with the number of items directly inside | Owner, prototype |
+| D-72 | 2026-11-13 | 6 Touch | From the prototype test: swiping a row towards the start of the line (left in left-to-right text) opens the item's detail page, with an "Open ›" hint while swiping; "Move to…" has no gesture for now and stays in the item menu; every swipe has its alternative in the item menu (Open, ADR-033). Swipe direction for right-to-left text and its relation to the hand setting are refined in topic 6 | Owner, prototype |
