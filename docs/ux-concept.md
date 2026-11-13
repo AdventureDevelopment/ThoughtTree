@@ -29,7 +29,7 @@ Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. T
 
 ## UX principles
 
-Derived from journeys A to C (decision D-16). They guide every later decision, including the agents'.
+Derived from journeys A to D (decisions D-16, D-24). They guide every later decision, including the agents'.
 
 1. **Capture first, sort later.** Nothing has to be decided before typing: not the place, not the tree, not the kind. (D-1, D-4, D-5)
 2. **Create in the tree, go deeper in the detail view.** New notes are created and named in place in the tree; titles take inline Markdown (emphasis, links, inline code) and emojis. Shortcuts live in the text itself (space, Backspace, `##`, `@@`), each with a visible alternative. Longer text is written in the node's detail view. Quick capture opens a light sheet whose lines behave exactly like the outline, so typing works the same everywhere. (D-2, D-3, D-10, D-11, D-14, D-18)
@@ -39,6 +39,7 @@ Derived from journeys A to C (decision D-16). They guide every later decision, i
 6. **Several dimensions.** The tree is one order; tags and relations add more. (D-13, D-14)
 7. **Saved at once and reliably.** The user never wonders whether something was stored. (Journey A; quality goal reliability)
 8. **Start simple.** A feature comes when use shows it is missed. (D-9, D-15)
+9. **Nothing happens behind the user's back.** The app shows what arrived and what clashed, and never decides silently for the user; when something needs the user, it waits calmly until they have time. (D-21, D-22, D-23; ADR-018)
 
 Inherited from the architecture and applying on top: accessible (ADR-033), and honest about what is protected (section 1).
 
@@ -180,3 +181,4 @@ Bottom toolbar (D-17):
 | D-21 | 2026-11-13 | 1 Principles (journey D) | After an exchange a short confirmation names how many notes arrived ("7 new or changed notes from Phone") and offers Show, which filters the tree to those notes and their ancestors, like search (D-12). Search also offers a filter "Changed recently" at any time, based on the time of the last change of each node. A filter by device is left out until use shows the need | Journey D |
 | D-22 | 2026-11-13 | 1 Principles (journey D) | Conflicts (ADR-018) are reported in two places: in the confirmation after an exchange or sync ("1 conflict", with a way to resolve it), and as a marker on the affected node that stays until the conflict is resolved; all conflicts are also listed in the Conflict View. The marker is noticeable but calm, no alarm colours (principle 5) [ASSUMPTION: look decided with the tokens, topic 4] | Journey D |
 | D-23 | 2026-11-13 | 1 Principles (journey D) | The resolve view shows both (or all) versions side by side with device and time; the user picks one or writes a new version starting from one of them (an ordinary event replacing all competing changes, ADR-018); it shows the node's context to help remember what was meant: path, children, relations and backlinks, each tappable; "Later" leaves the conflict open and the marker stays | Journey D |
+| D-24 | 2026-11-13 | 1 Principles | Principle 9 added: nothing happens behind the user's back | Journey D |
