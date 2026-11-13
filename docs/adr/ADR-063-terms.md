@@ -1,21 +1,21 @@
-# ADR-063: Terms: note, node, text, branch
+# ADR-063: Terms: item, note, branch, node
 
 id: ADR-063 · status: Proposed · kind: constraint
 
 applies_to: `docs/**`, `src/**`, `tests/**`
 
 - **MUST** use these terms in documents, code, tests and the test id catalogue:
-  - **Note:** the thing the user writes and works with: title, text, tags, and optionally theme and views
-  - **Node:** the graphical representation of a note: its line in the outline and its place in the tree
-  - **Text:** the optional longer content of a note (replaces the glossary's current meaning of "note")
-  - **Branch:** a note together with everything below it
-- **MUST** update the glossary of `architecture.md` (Node, Note, Title, Top-level Node, Zoom, Tree Name) on acceptance
-- **SHOULD** rename event types and fields to match before the first release, while nothing is stored yet (for example `node.created` → `note.created`, field `note` → `text`, `node.note-changed` → `note.text-changed`); the architect decides the final names
+  - **Item:** the thing in the tree: a title, a note, tags, and optionally a theme and views (later pictures and files); what it is (thought, idea, project, topic, vision) is the user's to decide, and an item can grow
+  - **Note:** the optional longer text of an item (unchanged from today's glossary)
+  - **Branch:** an item together with everything below it
+  - **Node:** how an item appears in the tree, its line and place; a technical term for rendering and specifications
+- **MUST** update the glossary of `architecture.md` on acceptance: "Node" as the thing becomes "Item" (also in Top-level Node, Zoom, Tree Name), "Branch" is added
+- **SHOULD** rename event types and fields to match before the first release, while nothing is stored yet (for example `node.created` → `item.created`, `node.note-changed` → `item.note-changed`); the architect decides the final names
 
 verify:
 
 ```bash
-grep -rniE '\bnode\.note-changed\b' src tests | wc -l   # expect 0 once renamed
+grep -rnE '"node\.(created|moved|deleted|title-changed|note-changed)"' src tests | wc -l   # expect 0 once renamed
 ```
 
-why: The owner thinks of a note as the whole thing and of a node as how it is shown; documents, UI specifications and code should speak the owner's language (UX decision D-44).
+why: Items grow from a single thought into projects or visions; a neutral term common to outliners leaves the meaning to the user (UX decision D-45).
