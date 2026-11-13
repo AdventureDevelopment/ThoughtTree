@@ -105,6 +105,7 @@ The library is chosen by a spike (decision D-30).
   - zoomed into the note, a view switcher (like tabs) appears when it has more than one view; the note's theme applies to all its views
   - at the tree level, a view "All views" lists every view of the tree with the path of its note
   - the start view of a device is a note plus one of its views
+  - start icons with their own view (decision D-40): the app understands a start parameter "note plus view" in its address from the start; Android: "Add to home screen" from such a link (spike: does it open in the app window or a tab); Windows and desktop: links with the start parameter; iPhone and iPad: with the store app, because each home-screen web app there has its own storage
   - proposed as [ADR-062](adr/ADR-062-views-on-notes.md) (Proposed)
 - **Signature feature:** a theme for a part of the tree, tinted in the overview and taking over the whole screen when zoomed in; the owner has not seen this anywhere else
 
@@ -222,6 +223,10 @@ Bottom toolbar (D-17):
 6. Which actions it holds besides 📥 capture and ＋ add here (search, move and more are candidates); decided with the layout model and touch interaction (topics 5 and 6)
 7. Reach with one hand: the outermost buttons may be too far for the thumb; to be checked on a real phone
 
+Store app (for the architecture):
+
+9. Native wrapper: .NET MAUI Blazor Hybrid looks like the most fitting route (same Razor components in C#, native shortcuts, widgets, background sync and shared-file sync; browser adapters swapped thanks to ADR-042); alternatives Capacitor and PWABuilder/TWA; Apple's minimum-functionality review and developer accounts to consider. Not decided here
+
 Custom views (owner's idea, to be expanded; reminder requested):
 
 8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. Started with views on notes (D-39); still open: layouts per project such as a board or columns (watch the risk of drifting into task management, architecture section 11)
@@ -269,3 +274,4 @@ Custom views (owner's idea, to be expanded; reminder requested):
 | D-37 | 2026-11-13 | 4 Tokens | Base font: the system font of each device, for a fast start; themes may bring their own open-licence font, downloaded in the background after start and kept for offline use, the system font shows until then. Proposed as [ADR-061](adr/ADR-061-shipped-fonts.md), including approval of the SIL Open Font License for fonts | Owner, font suggestions |
 | D-38 | 2026-11-13 | 4 Tokens (custom views) | A saved search is a node of the tree: placed anywhere, opened like a place, showing the tree filtered as in D-12, themeable like any node. Any node, including a saved search, can be chosen as the start view of the app on a device (device state, ADR-013); "the place last worked on" (D-4) stays the default. Proposed as ADR-062; revised by D-39 | Owner |
 | D-39 | 2026-11-13 | 4 Tokens (custom views) | Revises D-38: views belong to notes, not to nodes of their own. Every note, and the tree, carries one or more views (outline by default; saved searches over its branch now; layouts such as board or columns later), switched like tabs when zoomed in; the tree level offers "All views" listing every view; the start view of a device is a note plus one of its views. Views are shared like content. Proposed as [ADR-062](adr/ADR-062-views-on-notes.md) | Owner, discussion |
+| D-40 | 2026-11-13 | 4 Tokens (custom views) | Start icons with their own view: the app accepts a start parameter "note plus view" in its address from the start; Android uses "Add to home screen" from such a link (spike: app window or browser tab); desktop uses links; iPhone and iPad wait for the store app (separate storage per home-screen web app; automatic sync through a shared file or cloud folder also comes with the store app, as in the architecture) | Owner, discussion |
