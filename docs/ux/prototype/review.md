@@ -249,3 +249,4 @@ Line numbers ("L…") refer to the prototype file. Topic numbers refer to the co
 | Difference | Outcome |
 | --- | --- |
 | D-7: "place right below the last placed item" missing | Keep D-7; the prototype does not have it yet |
+| D-6, D-9: "Move to…" without position step; browse fully expanded, 4 levels | Keep D-6 and D-9: choose the position among the target's children; browse collapsed, level by level |
