@@ -270,6 +270,11 @@ Custom views (owner's idea, to be expanded):
 
 8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. Started with views on items (D-39); layouts per project such as a board or columns are parked (D-41; watch the risk of drifting into task management, architecture section 11)
 
+Release 1 scope (owner's wish, input to the open decision "Release 1 scope" of the architecture; decision D-50):
+
+10. Phone and tablet; no sync server, every device standalone (ADR-008); sync between devices only by file with the guided round trip (D-19, D-20); themes per tree and per item (D-41)
+11. Consequences for the architecture: the app is still served from a web address (static hosting over HTTPS) to be installable; server store, sync API, sync modes (ADR-057), registration and abuse protection can wait; the reminder to export becomes the main protection against losing a device
+
 Store app (for the architecture):
 
 9. Native wrapper: .NET MAUI Blazor Hybrid looks like the most fitting route (same Razor components in C#, native shortcuts, widgets, background sync and shared-file sync; browser adapters swapped thanks to ADR-042); alternatives Capacitor and PWABuilder/TWA; Apple's minimum-functionality review and developer accounts to consider. Not decided here
@@ -327,3 +332,4 @@ Store app (for the architecture):
 | D-47 | 2026-11-13 | 11 UX with agents | Sketches are shown as artifacts to choose from; only the chosen variant is stored as reference in `docs/ux/sketches/` and linked from its decision; rejected variants are not kept; the concept's text wins over a sketch | Owner |
 | D-48 | 2026-11-13 | 11 UX with agents | The UX concept is made binding for agents by three means together, like a definition of done: ADR-064 (Proposed: read the concept before UI work, sketch first, tokens only, specifications name the UX decisions they secure, screenshots and test link in the pull request), a UI checklist in the pull request template, and a pointer in the agents' entry file | Owner, usual UX practice (design system, handoff, design QA) |
 | D-49 | 2026-11-13 | 11 UX with agents | Definition of done for UI work: the push gate is green, the pull request checklist is complete, and the owner has approved after the design review (screenshots, test environment) | Owner |
+| D-50 | 2026-11-13 | Release 1 scope (input) | The owner's wish for release 1: phone and tablet, no sync server, sync between devices only by file (guided round trip), themes per tree and per item; the app is still served by static hosting; server-related parts can wait; the export reminder matters more. Input to the architecture's open decision "Release 1 scope", not decided here | Owner |
