@@ -5,9 +5,9 @@ id: ADR-058 · status: Proposed · kind: constraint
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
 - **MUST** define tags per tree as structural elements with an id (`tag.defined`), named only by `label.set` / `label.removed` (ADR-026)
-- **MUST** assign tags with `node.tagged` / `node.untagged`, identified by node id and tag id; adding the same tag twice yields one assignment; concurrent adding and removing is decided by the agreed event order, without conflict marking (as for relations, ADR-024)
-- **MUST NOT** keep tags in title or note text; `@@name` typed in a title is an input shortcut that the application layer turns into an assignment when editing ends, matching an existing tag by its label with the search matching rules, or defining a new tag
-- **MUST** hide the tags of deleted nodes and show them again on restore
+- **MUST** assign tags to notes with `node.tagged` / `node.untagged`, identified by note id and tag id; adding the same tag twice yields one assignment; concurrent adding and removing is decided by the agreed event order, without conflict marking (as for relations, ADR-024)
+- **MUST NOT** keep tags in a note's title or text; `@@name` typed in a title is an input shortcut that the application layer turns into an assignment when editing ends, matching an existing tag by its label with the search matching rules, or defining a new tag
+- **MUST** hide the tags of deleted notes and show them again on restore
 - **MUST** offer the same assignment without typing (tag picker in the node's detail view), as the accessible alternative (ADR-033)
 - **MUST NOT** connect trees: a tag belongs to one tree
 

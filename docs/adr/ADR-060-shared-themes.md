@@ -4,11 +4,11 @@ id: ADR-060 · status: Proposed · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
-- **MUST** record the theme of a tree or of a node by an event (`theme.set` with the target tree or node, a theme id and `replaces`), so all devices and all users of a tree show the same theme
+- **MUST** record the theme of a tree or of a note by an event (`theme.set` with the target tree or note, a theme id and `replaces`), so all devices and all users of a tree show the same theme
 - **MUST** treat concurrent `theme.set` events for the same target like other replaceable changes: last writer wins by the agreed event order, and the conflict is listed in the Conflict View; on acceptance, `theme.set` is added to the events of ADR-018 that carry `replaces`
-- **MUST** let a node's theme apply to its whole branch, unless a node further down sets its own; otherwise the tree's theme applies
+- **MUST** let a note's theme apply to its whole branch, shown for all its children unless a child sets its own; otherwise the tree's theme applies
 - **MUST** reference themes by fixed ids shipped with the app; **MUST** fall back to the default theme for an unknown theme id
-- **MUST** build every component from semantic design tokens, so a theme only swaps token values (palette, font, density, note preview); **MUST** meet the contrast rules (ADR-033) in every theme, also for a tinted branch inside another theme
+- **MUST** build every component from semantic design tokens, so a theme only swaps token values (palette, font, density, text preview); **MUST** meet the contrast rules (ADR-033) in every theme, also for a tinted branch inside another theme
 - **MUST NOT** treat themes as device state (ADR-013): the theme belongs to the content, like a tree's name
 
 verify:
