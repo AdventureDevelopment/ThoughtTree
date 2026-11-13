@@ -7,7 +7,7 @@ applies_to: `src/ThoughtTree.Client*/**`
 - **MUST** export unencrypted only the current tree (Markdown, OPML, JSON), without history, deleted items or device information
 - **MUST NOT** export the event log unencrypted
 - **MUST NOT** make readable export a default or automatic; MUST require a confirmed warning and mark the file name as unencrypted
-- **MUST** import readable files as a new tree or into an item, with ordinary events (`item.created`, and for JSON also `relation.added`, `relation-type.defined`, `label.set`)
+- **MUST** import readable files as a new tree or into an item, with ordinary events (`item.created`, and for JSON also `relation.added`, `relation-type.defined`, `display-name.set`)
 - **MUST** give every imported item a new id and rewrite `item:` links within the imported content; reuse predefined relation types by their fixed ids
 
 verify:

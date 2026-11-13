@@ -124,7 +124,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 **Code organisation**
 
 - A new project only for a real boundary: deployment (browser, container), sharing (client and server), or reuse (simulation, later native app); everything inside a project is separated by namespace and checked by architecture tests
-- Inside each project, folders by feature, named after the glossary and the same in every project: `Outline`, `Relations`, `Labels`, `Conflicts`, `Trees`, `Sync`, `Sharing`, `Search`, `Export`, `Feedback`, `Settings`; cross-cutting parts (`Clock`, `Text`, `Versioning`, `Crypto`) in their own folders
+- Inside each project, folders by feature, named after the glossary and the same in every project: `Outline`, `Relations`, `DisplayNames`, `Conflicts`, `Trees`, `Sync`, `Sharing`, `Search`, `Export`, `Feedback`, `Settings`; cross-cutting parts (`Clock`, `Text`, `Versioning`, `Crypto`) in their own folders
 - Shared build settings in the repository root: `Directory.Build.props` (nullable, warnings as errors, analyzers, banned API files), `Directory.Packages.props` (all package versions, checked for licences), `global.json` (fixed SDK), `.editorconfig`
 - Tests are grouped by intent, visible in folders, project names (by kind: `Specs`, `Properties`, `Model`, `Compatibility`, `Simulation`, `Rules`, `Contract`, `Security`, `Budgets`, `EndToEnd`, `Smoke`) and a trait (`Intent = Specify | Secure | Confirm`), and the CI summary is grouped by intent:
 
@@ -234,7 +234,7 @@ docs/        architecture, ADRs
 4. On any device, also one without the tree's key, the user chooses "Import readable" and picks such a file, for example an OPML export from another outliner
 5. As a new tree: the app creates a tree with its own key, writes the same starting events as for any new tree, then the imported content; into an existing item: the content is written under that item
 6. Every imported item gets a new id; `item:` links within the imported content are rewritten to the new ids; links to items outside the file are shown as not found
-7. A JSON import also restores relations, relation types and their labels (`relation.added`, `relation-type.defined`, `label.set`); types with a predefined fixed id are reused instead of duplicated
+7. A JSON import also restores relations, relation types and their display names (`relation.added`, `relation-type.defined`, `display-name.set`); types with a predefined fixed id are reused instead of duplicated
 
 **Scenario: Device with a clock far ahead**
 
@@ -368,11 +368,11 @@ docs/        architecture, ADRs
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
 - A relation is identified by its three parts (from item, type, to item), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
 - Relations of a deleted item are hidden but kept, and come back when the item is restored
-- Removing a relation type (`relation-type.removed`) hides its relations and labels but keeps them; they come back if the type is defined again
+- Removing a relation type (`relation-type.removed`) hides its relations and display names but keeps them; they come back if the type is defined again
 - An item restored while one of its ancestors is still deleted stays hidden as "in a deleted part" until that ancestor is restored; the UI offers to restore the ancestor
-- `label.removed` and a concurrent `label.set` for the same element, field and language are decided by the agreed event order
+- `display-name.removed` and a concurrent `display-name.set` for the same element, field and language are decided by the agreed event order
 - Relation types: a relation refers to a type id, never to a name, so renaming a type changes no relation; a type has a name, a name for the reverse direction (for example "supports" / "supported by") and whether it is symmetric; for symmetric types the two item ids are stored in a fixed order, so A–B and B–A are the same relation
-- Types are defined per tree by `relation-type.defined` events, their names by `label.set`; there are no built-in types: when a tree is created the app writes the predefined types (initially `related`, `supports`, `contradicts`, `example_of`, `cites`, `depends_on`) as ordinary events, after which they can be renamed, removed or extended like any other type
+- Types are defined per tree by `relation-type.defined` events, their names by `display-name.set`; there are no built-in types: when a tree is created the app writes the predefined types (initially `related`, `supports`, `contradicts`, `example_of`, `cites`, `depends_on`) as ordinary events, after which they can be renamed, removed or extended like any other type
 - Predefined types have fixed ids that are the same in every tree, so merging two trees does not duplicate them
 
 **Internationalisation**
@@ -383,13 +383,13 @@ docs/        architecture, ADRs
 - Dates, times and numbers are shown in the format of the chosen language; they are stored as before (ISO 8601 with UTC offset)
 - All languages are available offline: the service worker caches all resource files
 - The culture data for all languages is loaded from the start, so dates, numbers and sorting work in every language and adding a language later only needs its resource file, without further downloads; the price is a larger initial download
-- Structural elements that users can define (relation types now; tags, note kinds and similar later) carry no names themselves; their names are labels, one per language, set by `label.set` events, like a resource file inside the tree
+- Structural elements that users can define (relation types now; tags, note kinds and similar later) carry no names themselves; their names are display names, one per language, set by `display-name.set` events, like a resource file inside the tree
 - Languages are identified by standard language tags such as `de`, `de-CH`, `en`
-- A device shows the label in this order: label in the tree for the device's language (`de-CH`), label in the tree for its base language (`de`), for predefined elements the app's own resource files, any label in the tree
-- Predefined elements need no special case: the app ships translations for their fixed ids in its resource files, as it does for its own texts; a tree can override or add languages with `label.set`
-- All structural elements later use the same label mechanism; exporting a tree's labels as a resource file for translation elsewhere, and importing it again, is a possible later feature
+- A device shows the display name in this order: display name in the tree for the device's language (`de-CH`), display name in the tree for its base language (`de`), for predefined elements the app's own resource files, any label in the tree
+- Predefined elements need no special case: the app ships translations for their fixed ids in its resource files, as it does for its own texts; a tree can override or add languages with `display-name.set`
+- All structural elements later use the same display-name mechanism; exporting a tree's display names as a resource file for translation elsewhere, and importing it again, is a possible later feature
 - Content (titles and notes) is stored as written and never translated in the log
-- All text is normalised before it goes into an event (titles, notes, labels, names), by the Command Handler and by readable import: Unicode normalisation form NFC; line breaks in notes stored as `\n` only; line breaks in titles replaced by spaces; emoji sequences stay unchanged
+- All text is normalised before it goes into an event (titles, notes, display names, names), by the Command Handler and by readable import: Unicode normalisation form NFC; line breaks in notes stored as `\n` only; line breaks in titles replaced by spaces; emoji sequences stay unchanged
 - Search and comparisons normalise as well, as a safeguard against events from a faulty or very old app
 - Right-to-left text: every title and note paragraph is shown with automatic direction detection (`dir="auto"`), so content in Arabic, Hebrew or mixed languages displays correctly in any interface language
 - No right-to-left interface for now, but the UI is built direction-neutral from the start: CSS logical properties (`margin-inline-start` instead of `margin-left`), and gestures defined relative to the reading direction ("towards the end of the line" instead of "to the right"), so a mirrored interface later needs no rework
@@ -416,10 +416,10 @@ docs/        architecture, ADRs
 | `user.name-changed` | `userId`, `userName` |
 | `relation.added` | `fromItemId`, `typeId`, `toItemId` |
 | `relation.removed` | `fromItemId`, `typeId`, `toItemId` |
-| `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are labels (see below) |
+| `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are display names (see below) |
 | `relation-type.removed` | `typeId` |
-| `label.set` | `elementId`, `field` (for example `name`, `reverseName`), `language`, `text`, `replaces` |
-| `label.removed` | `elementId`, `field`, `language` |
+| `display-name.set` | `elementId`, `field` (for example `name`, `reverseName`), `language`, `text`, `replaces` |
+| `display-name.removed` | `elementId`, `field`, `language` |
 | `tree.feature-changed` | `feature`, `enabled`, `replaces` |
 | `tree.server-changed` | `address` (empty for no server), `joinCode` (optional), `replaces` |
 
@@ -481,17 +481,17 @@ Example of an event before encryption:
 
 - Merging a tree into another is the one sanctioned way content moves between trees: the merged tree's events are added to the target tree's log and re-encrypted with the target tree's key
 - Its top-level items become top-level items of the target tree; the tree name stays the title of the first visible top-level item by agreed order
-- Its predefined relation types and labels coincide with the target's (same fixed ids, same values), so they cause no conflicts; its own types and labels are added; a differing `tree.server-changed` becomes an ordinary conflict
+- Its predefined relation types and display names coincide with the target's (same fixed ids, same values), so they cause no conflicts; its own types and display names are added; a differing `tree.server-changed` becomes an ordinary conflict
 - Open: membership after a merge, and what happens to the merged tree's account and devices (see open decisions)
 
 **Conflict resolution**
 
 - Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`); with the hybrid clock this is usually the latest edit in real time
 - `Timestamp` is never used to decide anything; only `Clock` is, which stays consistent even when device clocks drift
-- Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `label.set`, `tree.feature-changed`, `tree.server-changed`
-- Conflict: two or more changes of the same field of the same element (item, relation type, label, tree feature, server address) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
+- Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `item.title-changed`, `item.note-changed`, `item.moved`, `relation-type.defined`, `display-name.set`, `tree.feature-changed`, `tree.server-changed`
+- Conflict: two or more changes of the same field of the same element (item, relation type, display name, tree feature, server address) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
 - Concurrent changes with the same value are not a conflict (for example the predefined relation types written by two trees that are later merged)
-- The Conflict View lists all conflicts of a tree, grouped by kind: items, relation types, labels, tree features, server address
+- The Conflict View lists all conflicts of a tree, grouped by kind: items, relation types, display names, tree features, server address
 - The user resolves a conflict by picking a value; this writes a new change that names all competing changes as replaced, so the conflict disappears deterministically on every device
 - Delete conflict: a deletion conflicts with every change to the deleted item or anywhere in its subtree (including items created or moved into it) that the deleting device had not seen when it deleted
 - To decide this, `item.deleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
@@ -565,7 +565,7 @@ Example of an event before encryption:
 - Server registration uses an account secret that is created on the device and shared only through pairing, sharing or an explicit key backup
 - Events are scoped per account; no cross-account access
 - HTTPS everywhere
-- Content is untrusted input: titles, notes, labels, imported files and feedback texts may come from other people (shared trees); Markdown is rendered without raw HTML; only the link schemes `item:`, `https:`, `http:` and `mailto:` are allowed, everything else is shown as plain text; a collection of known attack strings must render harmlessly (gate); the Content Security Policy is the second line of defence, not the only one
+- Content is untrusted input: titles, notes, display names, imported files and feedback texts may come from other people (shared trees); Markdown is rendered without raw HTML; only the link schemes `item:`, `https:`, `http:` and `mailto:` are allowed, everything else is shown as plain text; a collection of known attack strings must render harmlessly (gate); the Content Security Policy is the second line of defence, not the only one
 - The server stores account secrets and device tokens only as hashes, so stolen server data cannot be used to join an account or push events
 - Server counters for operations and bet signals: rejected registrations, rate-limit hits, number of accounts, storage used; counts only, no IP addresses or account ids, nothing per user; kept in memory or stored as daily totals at most; visible only to the operator
 - Abuse protection on the server: maximum request size; maximum events and storage per account; rate limiting of registrations and requests in memory only (the IP address is used for the moment, never stored); registration mode per server: open, or only with a server join code that the operator hands out; the owner's default server uses "join code only"
@@ -626,7 +626,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Quality goal | Test goal | Kind |
 | --- | --- | --- |
 | Reliability | No data loss: every written event survives any sequence of offline work, sync, merge, import, update, conflict resolution, the app closing while writing, and full storage | Gate |
-| Reliability | Convergence: the same events give the same tree, conflicts, labels, tree name and private/shared status on every device | Gate |
+| Reliability | Convergence: the same events give the same tree, conflicts, display names, tree name and private/shared status on every device | Gate |
 | Reliability | Longevity: all stored data of every released version stays readable; older apps see every item and text of newer data | Gate |
 | Privacy & Security | Confidentiality: nothing but the allowed plaintext fields leaves the device (server store, export files, network requests, logs) | Gate |
 | Privacy & Security | Metadata: padding, batching, no stored IP addresses or times, neutral headers and UTC scheduling work as decided | Gate |
@@ -676,7 +676,7 @@ Kinds of tests and loops: tests are not a numbered stack; they are grouped by ro
 
 Domain tests:
 
-- Covers everything that decides what the tree is: projection, sibling order, cycles, hybrid clock, conflict detection, relations, types, labels, tree features, derived facts (private or shared, tree name), text normalisation, versioning, and the command logic that decides which events a user action writes
+- Covers everything that decides what the tree is: projection, sibling order, cycles, hybrid clock, conflict detection, relations, types, display names, tree features, derived facts (private or shared, tree name), text normalisation, versioning, and the command logic that decides which events a user action writes
 - Domain is pure logic: no storage, network, browser or asynchronous I/O; time and ids come from outside
 - Invariant catalogue: the core rules, each with an id; every test that checks an invariant names its id, so a failure says which rule broke
 
@@ -781,7 +781,7 @@ Feedback, reports and signals:
 
 - Private feedback inbox (optional): instead of a GitHub issue, feedback can be sent to the server's inbox, end-to-end encrypted on the device with the operator's public key; the server stores only ciphertext, the operator collects and decrypts it on their own device, and it is deleted from the server after collection; available to accounts with the permission flag, assigned at first as an experiment to a share of accounts (an account is a tree, so the app offers the inbox if any tree on the device has the permission); the operator's public key is reported by the server with the capabilities; an operations flag can switch the inbox off; only on the user's initiative, with the same preview; the IP address is not stored; what arrives is untrusted input, and the operator decides what becomes a GitHub issue
 - Diagnostics view: the app shows its timing marks and the shape of the tree on demand, only on the device
-- Performance report: if a user finds the app too slow, they can send a report containing only numbers: timings, app version, build and environment, storage engine, AOT or interpreted, browser and operating system family, screen size class, the active switches (release, experiment and permission flags, the tree features of the affected tree, whether experimental features are on for this device), and the shape of the tree (number of items and events, depth, maximum width, distribution of note lengths, number of relations and conflicts); never titles, notes, names, labels, ids or timestamps; the user sees the report before sending and can edit or cancel it
+- Performance report: if a user finds the app too slow, they can send a report containing only numbers: timings, app version, build and environment, storage engine, AOT or interpreted, browser and operating system family, screen size class, the active switches (release, experiment and permission flags, the tree features of the affected tree, whether experimental features are on for this device), and the shape of the tree (number of items and events, depth, maximum width, distribution of note lengths, number of relations and conflicts); never titles, notes, names, device labels, display names, ids or timestamps; the user sees the report before sending and can edit or cancel it
 - The report is sent as a pre-filled GitHub issue that the user submits themselves, or copied or saved as a file, or optionally sent to the private feedback inbox end-to-end encrypted to the operator (ADR-055); never unencrypted through a server; the app says that a GitHub issue is linked to the user's GitHub account and public
 - Reports are untrusted input: the report is a JSON block with a fixed schema; the pipeline reads only that block, validated against the schema, and ignores all free text; agents treat it as data, never as instructions; a human label decides whether a report is worked on
 - From the tree shape in a report the harness generates a synthetic dataset of the same shape to reproduce the slowdown; once the cause is found, the dataset joins the reference datasets and its complexity check becomes a gate
@@ -867,7 +867,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-023](adr/ADR-023-one-parent.md) | One parent per item | `src/ThoughtTree.Domain/**` |
 | [ADR-024](adr/ADR-024-relations.md) | Relations separate from the tree | `src/ThoughtTree.Domain/**` |
 | [ADR-025](adr/ADR-025-predefined-relation-types.md) | Relation types defined per tree, predefined set | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-026](adr/ADR-026-translatable-labels.md) | Translatable labels for structural elements | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-026](adr/ADR-026-translatable-display-names.md) | Translatable display names for structural elements | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-027](adr/ADR-027-project-dependencies.md) | Domain and Contracts projects | `src/**` |
 | [ADR-028](adr/ADR-028-tree-access.md) | Tree access | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-029](adr/ADR-029-text-normalisation.md) | Text normalisation before writing | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
@@ -1029,7 +1029,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Parent / Children | The item directly above an item / the items directly below it |
 | Sibling Order | The order of the children under one parent; follows from replaying the events, each placing an item after a named sibling |
 | Hybrid Logical Clock | The clock carried by every event: UTC time plus a counter; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
-| Conflict | Two or more changes with different values of the same field of an element (item, relation type, label, tree feature, server address) made without seeing each other; shown to the user, who picks the value |
+| Conflict | Two or more changes with different values of the same field of an element (item, relation type, display name, tree feature, server address) made without seeing each other; shown to the user, who picks the value |
 | Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
 | Collapse | Hide an item's children in the view; UI state of one device, not a domain event |
 | Zoom | Make an item the temporary root of the view |
@@ -1077,7 +1077,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Relation / Relation Type | A typed, directed connection between two items of a tree / its type, defined per tree |
 | `item:` Link | A Markdown link to an item of the same tree by its id |
 | Backlink | A link or incoming relation shown on the item it points to |
-| Label | The name of a structural element (for example a relation type) in one language |
+| Display Name | The name of a structural element (for example a relation type) in one language |
 | Draft | Text being edited, saved locally until it becomes an event at the end of the editing session |
 | Gate / Watch | A test result that stops delivery on a single failure / a measure that is tracked over time |
 | Invariant | A core rule of the domain with an id (INV-n), checked by property tests |
