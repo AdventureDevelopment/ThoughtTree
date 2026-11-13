@@ -1,6 +1,6 @@
 # ThoughtTree – UX Concept
 
-Status: outline, to be worked out step by step. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
+Status: in progress; foundation topics 1, 2, 3, 4 and 11 worked out, topic 5 (phone) and parts of 7 (item detail) started; see the decision log. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
 
 ## Approach
 
@@ -155,6 +155,20 @@ Definition of done for UI work (decision D-49): a UI feature is done when all th
 | Pull request checklist (D-48) | What cannot be automated: principles checked, terms used, sketch linked, screenshots attached, keyboard and screen reader paths covered | The agent fills it, the owner checks it |
 | Design review (D-46) | The owner looks at the screenshots, tries the feature in the test environment and approves | The owner |
 
+
+Reference sketches (D-47), chosen variants only, in [ux/sketches/](ux/sketches/); where a sketch and this document differ, this document wins:
+
+| Sketch | Decisions |
+| --- | --- |
+| [bottom-bar.html](ux/sketches/bottom-bar.html) | D-52, D-55 |
+| [capture-while-typing.html](ux/sketches/capture-while-typing.html) | D-54 |
+| [item-menu.html](ux/sketches/item-menu.html) | D-53, D-58, D-59 |
+| [paper-theme.html](ux/sketches/paper-theme.html) | D-33 |
+| [branch-themes.html](ux/sketches/branch-themes.html) | D-34, D-35 |
+| [density-comfortable.html](ux/sketches/density-comfortable.html) | D-42 |
+| [note-editing.html](ux/sketches/note-editing.html) | D-61, D-62 |
+| [tags-editing.html](ux/sketches/tags-editing.html) | D-64 |
+| [detail-page.html](ux/sketches/detail-page.html) | D-63, D-65, D-66 |
 
 ## How this concept is worked out
 

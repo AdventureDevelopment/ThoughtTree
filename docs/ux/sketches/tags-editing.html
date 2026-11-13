@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editing tags</title>
+</head>
+<body>
+<!-- Reference sketch, chosen variant only (UX decision D-47). Decision D-64. Where this sketch and docs/ux-concept.md differ, the concept wins. -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: three phone frames (wrapping), Paper theme: chips with ＋, the tag picker, the popover on a tag */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--kb:#d9d3c9;--dim:#2a252066;--danger:#9b3b2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--kb:#2e2a25;--dim:#00000088;--danger:#f0a08f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--kb:#2e2a25;--dim:#00000088;--danger:#f0a08f;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:65ch}
+.row{display:flex;flex-wrap:wrap;gap:22px}
+.col{flex:1 1 250px;max-width:320px;min-width:0}
+.col h2{font-size:15px;margin:0 0 8px}
+.col p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
+.ph{position:relative;height:580px;border-radius:20px;overflow:hidden;background:var(--t-card);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:15px}
+.top{padding:10px 14px;border-bottom:1px solid var(--t-line);font-size:12px;color:var(--t-muted);background:var(--t-bg);display:flex;justify-content:space-between}
+.page{flex:1;padding:14px 16px;overflow:hidden;line-height:1.55;position:relative}
+.title{font-size:19px;font-weight:600;margin-bottom:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-size:13px;border-radius:10px;padding:2px 10px;background:var(--t-sel);color:var(--t-acc-text);min-height:24px;display:inline-flex;align-items:center}
+.chip.add{background:transparent;border:1px dashed var(--t-acc-text)}
+.chip.on{outline:2px solid var(--t-accent);outline-offset:1px}
+.page p{margin:4px 0}
+.fab{position:absolute;inset-inline-end:16px;bottom:62px;width:54px;height:54px;border-radius:50%;background:var(--t-accent);color:var(--t-ink);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 10px #0004}
+.strip{display:flex;justify-content:space-around;align-items:center;height:48px;border-top:1px solid var(--t-line);background:var(--t-bg);font-size:13px;color:var(--t-muted)}
+.strip b{color:var(--t-text)}
+.dimmer{position:absolute;inset:0;background:var(--dim)}
+.sheet{position:absolute;inset-inline:0;bottom:170px;background:var(--t-card);border-radius:16px 16px 0 0;padding:10px 0 4px}
+.sheet .hd{padding:0 16px 8px;font-size:13px;color:var(--t-muted);display:flex;justify-content:space-between}
+.search{margin:0 16px 6px;padding:8px 10px;border:1px solid var(--t-line);border-radius:10px;background:var(--t-bg)}
+.cur{display:inline-block;width:2px;height:15px;background:var(--t-accent);vertical-align:middle}
+.opt{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:15px}
+.box{width:20px;height:20px;border-radius:5px;border:2px solid var(--t-muted);display:flex;align-items:center;justify-content:center;font-size:13px}
+.box.x{background:var(--t-accent);border-color:var(--t-accent);color:var(--t-ink)}
+.opt .n{margin-inline-start:auto;font-size:12px;color:var(--t-muted)}
+.opt.new{color:var(--t-acc-text)}
+.kb{position:absolute;inset-inline:0;bottom:0;height:170px;background:var(--kb);display:flex;align-items:center;justify-content:center;color:var(--t-muted);font-size:13px}
+.pop{position:absolute;top:84px;inset-inline-start:40px;width:220px;background:var(--t-card);border:1px solid var(--t-line);border-radius:12px;box-shadow:0 6px 20px #0003;padding:4px 0}
+.pop .mi{padding:9px 12px;font-size:14px}
+.pop .mi.d{color:var(--danger)}
+.pop .sep{height:1px;background:var(--t-line);margin:2px 0}
+</style>
+
+<h1>Editing tags on the detail page</h1>
+<p class="lead">Tags are chips under the title, with a ＋ to add more. Tapping a tag does the same everywhere (show all with it); removing is a deliberate second step. Example content only.</p>
+
+<div class="row">
+<div class="col"><h2>1 · Chips with ＋</h2>
+<div class="ph"><div class="top"><span>‹ Ideas</span><span>⋯</span></div>
+<div class="page"><div class="title">Capture first, sort later</div>
+<div class="chips"><span class="chip">idea</span><span class="chip">principle</span><span class="chip add">＋</span></div>
+<p>Nothing has to be decided before typing: <b>not the place</b>, not the tree.</p></div>
+<div class="fab">📥</div><div class="strip"><span>🔗 <b>2</b></span><span>↩ <b>3</b></span><span>🕘 06:12</span></div></div>
+<p class="d">＋ opens the tag picker. Typing <code>@@name</code> in the title still works too.</p></div>
+
+<div class="col"><h2>2 · The tag picker</h2>
+<div class="ph"><div class="top"><span>‹ Ideas</span><span>⋯</span></div>
+<div class="page"><div class="title">Capture first, sort later</div>
+<div class="chips"><span class="chip">idea</span><span class="chip">principle</span><span class="chip add">＋</span></div></div>
+<div class="dimmer"></div>
+<div class="sheet"><div class="hd"><span>Tags for this item</span><span>Done</span></div>
+<div class="search">pri<span class="cur"></span></div>
+<div class="opt"><span class="box x">✓</span>principle<span class="n">4 items</span></div>
+<div class="opt"><span class="box"></span>priority later<span class="n">2 items</span></div>
+<div class="opt new">＋ Create "pri"</div></div>
+<div class="kb">keyboard</div></div>
+<p class="d">Search field focused; existing tags as you type, most used first; tick several; create a new one if none fits.</p></div>
+
+<div class="col"><h2>3 · Tapping a tag</h2>
+<div class="ph"><div class="top"><span>‹ Ideas</span><span>⋯</span></div>
+<div class="page"><div class="title">Capture first, sort later</div>
+<div class="chips"><span class="chip">idea</span><span class="chip on">principle</span><span class="chip add">＋</span></div>
+<p>Nothing has to be decided before typing: <b>not the place</b>, not the tree.</p>
+<div class="pop"><div class="mi">Remove from this item</div><div class="sep"></div><div class="mi">🔎 Show all with "principle"</div><div class="mi">✏️ Rename "principle" (4 items)…</div></div></div>
+<div class="fab">📥</div><div class="strip"><span>🔗 <b>2</b></span><span>↩ <b>3</b></span><span>🕘 06:12</span></div></div>
+<p class="d">A small popover: show all items with this tag, rename it everywhere, or remove it here. Removing can be undone.</p></div>
+</div>
+</body>
+</html>
