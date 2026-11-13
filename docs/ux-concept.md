@@ -261,10 +261,10 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`)
 5. Look: colours for tags or not (touches the design tokens, topic 4)
 
-Bottom toolbar (D-17):
+Bottom toolbar (D-17, revised by D-52):
 
-6. Which actions it holds besides 📥 capture and ＋ add here (search, move and more are candidates); decided with the layout model and touch interaction (topics 5 and 6)
-7. Reach with one hand: the outermost buttons may be too far for the thumb; to be checked on a real phone
+6. Contents and order decided in D-52; to be checked with a tappable prototype on the owner's phone
+7. Reach with one hand: answered by the hand setting and the order by reach (D-52)
 
 Custom views (owner's idea, to be expanded):
 
@@ -335,3 +335,4 @@ Store app (for the architecture):
 | D-49 | 2026-11-13 | 11 UX with agents | Definition of done for UI work: the push gate is green, the pull request checklist is complete, and the owner has approved after the design review (screenshots, test environment) | Owner |
 | D-50 | 2026-11-13 | Release 1 scope (input) | The owner's wish for release 1: phone and tablet (desktop added by D-51), no sync server, sync between devices only by file (guided round trip), themes per tree and per item; the app is still served by static hosting; server-related parts can wait; the export reminder matters more. Input to the architecture's open decision "Release 1 scope", not decided here | Owner |
 | D-51 | 2026-11-13 | Release 1 scope (input) | Desktop belongs to release 1 as well. The owner's main need for distribution is trying every change quickly on their own devices from the pull request; recommended to the architecture: a preview deployment per pull request, later public distribution via GitHub Pages and/or GitHub Releases; not decided here (ADR-046) | Owner |
+| D-52 | 2026-11-13 | 5 Layout (phone) | Revises D-17. Capture 📥 is a floating button at the thumb's corner, above the bar; the bottom bar holds four actions ordered by reach from the thumb: ＋ Add here (nearest), ↩ Undo, 🔍 Search, ⋯ More (farthest). "Back to selection" has no button: a label naming the selected item appears above the bar only while it is scrolled out of sight, and scrolls back to it on tap. A device setting "Hand: right / left" (default right, device state, ADR-013) mirrors the floating button and the bar; it is independent of the reading direction. Sketch: bottom bar, revised | Owner (right-handed, one-handed use) |
