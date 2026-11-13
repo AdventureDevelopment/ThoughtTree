@@ -230,7 +230,11 @@ mark{background:var(--hl);color:inherit;border-radius:3px}
 #detail textarea{flex:1;min-height:40vh;font:1rem/1.55 var(--font);color:var(--text);background:transparent;border:0;resize:none;outline:none}
 #detail .strip{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));background:var(--bg)}
 #detail .strip button{padding:8px 10px;border-radius:8px;color:var(--muted);font-size:0.875rem}
-#detail .strip .dmore{margin-inline-start:auto;font-size:1.25rem;color:var(--acctext)}
+#detail .strip .sb{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 10px;line-height:1.15}
+.strip .sb .n{display:flex;align-items:center;gap:4px;color:var(--text);font-weight:600;font-size:0.9375rem}
+.strip .sb small{font-size:0.6875rem;color:var(--muted)}
+.strip .sb svg{width:20px;height:20px;fill:none;stroke:var(--acctext);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.strip .dmore{margin-inline-start:auto;font-size:1.25rem;color:var(--acctext)}
 .hand-left #detail .strip{direction:rtl}.hand-left #detail .strip button{direction:ltr}
 </style>
 
@@ -425,7 +429,7 @@ function seedTutorial(){
   mk("shelf","p","p4","🗄 Template shelf","Four more templates, ready to copy into your own trees: open the “Templates” row below.");
   mk("p5","p","shelf","Any item can become a template: ⋯ › Use as template");
   mk("l3","l","l2","Tap a link to go there, like this one: [](item:"+ids.p+")");
-  mk("l4","l","l3","On the detail page, ↩ shows which thoughts link here, 🔗 where this one links to");
+  mk("l4","l","l3","On the detail page, ↙ Linked from shows which thoughts link here, ↗ Links where this one links to");
   mk("d",null,"p","🔁 More than one device");
   mk("d1","d",null,"More › Exchange with another device copies all changes over");
   mk("d2","d","d1","Every change is kept: ⋯ › History lists them, and each can be reverted");
@@ -1121,9 +1125,10 @@ function openDetail(id){commitDraft(false,true);closeAll();const it=P.items.get(
   const back=el("button",{"aria-label":"Back","text":"←",onclick:()=>{flush();if(location.hash==="#open"){history.back()}else{closeDetail()}}});
   detail.replaceChildren(el("div",{class:"dhead"},back,el("div",{class:"dpath",text:pathText(id)})),
     el("div",{class:"dbody"},tplInfo,title,tagsBox,view,note),bar,
-    el("div",{class:"strip"},el("button",{text:"🕘 "+hist,"aria-label":"History, "+hist+" changes",onclick:()=>{flush();historySheet(id)}}),
-      el("button",{text:"🔗 "+nOut,"aria-label":"Links, "+nOut,onclick:()=>{flush();linksSheet(id,"out")}}),
-      el("button",{text:"↩ "+nIn,"aria-label":"Linked from, "+nIn,onclick:()=>{flush();linksSheet(id,"in")}}),
+    el("div",{class:"strip"},stripBtn(document.createTextNode("🕘"),hist,"History","History, "+hist+" changes",()=>{flush();historySheet(id)}),
+      /* D-114: strong arrows out and in, with labels; ↩ stays reserved for Undo */
+      stripBtn(arrowIcon("out"),nOut,"Links","Links, "+nOut,()=>{flush();linksSheet(id,"out")}),
+      stripBtn(arrowIcon("in"),nIn,"Linked from","Linked from, "+nIn,()=>{flush();linksSheet(id,"in")}),
       el("button",{class:"dmore",text:"⋯","aria-label":"Item actions",onclick:ev=>{flush();itemMenu(id,ev.currentTarget,true)}})));
   if(location.hash!=="#open"){try{location.hash="open"}catch(e){}}
   detail.hidden=false;$("#bar").style.visibility="hidden";$("#fab").style.bottom="calc(64px + var(--kb,0px) + env(safe-area-inset-bottom,0px))";
@@ -1158,6 +1163,9 @@ window.addEventListener("hashchange",()=>{if(location.hash!=="#open"&&!detail.hi
   if(location.hash===""&&ui.focus&&detail.hidden){goBack();markFocusHistory()}});
 function closeDetail(){if(location.hash==="#open"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}detail.hidden=true;$("#bar").style.visibility="";$("#fab").style.bottom="";renderAll()}
 /* D-85: links of an item, two tabs: "Links" (the items its title and note link to) and "Linked from" (the items that mention it, with the line as context) */
+function arrowIcon(dir){const ns="http://www.w3.org/2000/svg";const sv=document.createElementNS(ns,"svg");sv.setAttribute("viewBox","0 0 24 24");sv.setAttribute("aria-hidden","true");
+  const pa=document.createElementNS(ns,"path");pa.setAttribute("d",dir==="out"?"M6 18 18 6M9 6h9v9":"M18 6 6 18M15 18H6V9");sv.append(pa);return sv}
+const stripBtn=(icon,n,label,aria,f)=>el("button",{class:"sb","aria-label":aria,onclick:f},el("span",{class:"n"},icon,String(n)),el("small",{text:label}));
 function linksSheet(id,tab){const it=P.items.get(id);const out=linksFrom(id),inc=linkedFrom(id);
   const go=x=>()=>{closeAll();closeDetail();goTo(x)};
   const tabs=el("div",{style:"display:flex;gap:8px;margin:4px 0 8px",role:"group","aria-label":"Which links"},
@@ -1165,10 +1173,10 @@ function linksSheet(id,tab){const it=P.items.get(id);const out=linksFrom(id),inc
     el("button",{class:"chipbtn","aria-pressed":String(tab==="in"),text:"Linked from · "+inc.length,onclick:()=>linksSheet(id,"in")}));
   const body=[tabs];
   if(tab==="out"){if(!out.length)body.push(el("p",{class:"hint",text:"No links yet. Type [[ in the title or the note to link another item."}));
-    for(const x of out)body.push(el("button",{class:"opt",onclick:go(x)},el("span",null,"→ "+itemLabel(x),el("span",{class:"path",text:pathText(x)}))))}
+    for(const x of out)body.push(el("button",{class:"opt",onclick:go(x)},el("span",null,"↗ "+itemLabel(x),el("span",{class:"path",text:pathText(x)}))))}
   else{if(!inc.length)body.push(el("p",{class:"hint",text:"No item links here yet."}));
     else body.push(el("div",{class:"lbl",text:"Mentioned in"}));
-    for(const r of inc)body.push(el("button",{class:"opt",onclick:go(r.item.id)},el("span",null,"↩ "+(mdStrip(r.item.title)||"Untitled"),
+    for(const r of inc)body.push(el("button",{class:"opt",onclick:go(r.item.id)},el("span",null,"↙ "+(mdStrip(r.item.title)||"Untitled"),
       ...r.lines.filter(l=>l!==r.item.title).slice(0,2).map(l=>el("span",{class:"path",text:"In the note: “"+mdStrip(l).trim().slice(0,120)+"”"})),el("span",{class:"path",text:pathText(r.item.id)}))))}
   openSheet(tab==="out"?"Links":"Linked from",mdStrip(it.title)||"Untitled",body)}
 function tagMenu(id,t,anchor){openPop(anchor,[{label:"Remove from this item",run:()=>{write("item.untagged",{itemId:id,tagId:t});refresh();openDetail(id)}},
