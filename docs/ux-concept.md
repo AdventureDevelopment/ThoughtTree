@@ -99,7 +99,13 @@ The library is chosen by a spike (decision D-30).
 - In the overview a branch with its own theme is tinted in that theme, so its mood is visible before zooming in; zoomed in, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus zoomed in)
 - Themes of trees and branches are shared: the same on every device and for every user of a tree, recorded by an event; proposed as [ADR-060](adr/ADR-060-shared-themes.md) (Proposed) (decision D-36)
 - Typography: the base font is the device's system font, so startup downloads nothing; a theme may bring its own font (for example Literata for writing, Nunito for creative, IBM Plex Mono for technical projects), downloaded in the background after start and kept offline; proposed as [ADR-061](adr/ADR-061-shipped-fonts.md) (Proposed), which also approves the SIL Open Font License for fonts (decision D-37)
-- Custom views, first step: a saved search is a node of the tree, placed anywhere (for example "🔎 Open questions" under a project), showing the tree filtered like a search, and themeable like any node; proposed as [ADR-062](adr/ADR-062-saved-searches.md) (Proposed) (decision D-38)
+- Custom views: views belong to a note (decision D-39, revising D-38):
+  - every note, and the tree itself, can carry one or more views; the default is the outline
+  - a view is a saved search over the note's branch (for example "🔎 Open questions", "Changed recently") and, later, a layout such as a board or columns
+  - zoomed into the note, a view switcher (like tabs) appears when it has more than one view; the note's theme applies to all its views
+  - at the tree level, a view "All views" lists every view of the tree with the path of its note
+  - the start view of a device is a note plus one of its views
+  - proposed as [ADR-062](adr/ADR-062-views-on-notes.md) (Proposed)
 - **Signature feature:** a theme for a part of the tree, tinted in the overview and taking over the whole screen when zoomed in; the owner has not seen this anywhere else
 
 All text and accent pairs above meet WCAG AA contrast; the contrast unit test (architecture section 8) will check them once they are code.
@@ -218,7 +224,7 @@ Bottom toolbar (D-17):
 
 Custom views (owner's idea, to be expanded; reminder requested):
 
-8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. Started with saved searches (D-38); still open: layouts per project such as a board or columns (watch the risk of drifting into task management, architecture section 11)
+8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. Started with views on notes (D-39); still open: layouts per project such as a board or columns (watch the risk of drifting into task management, architecture section 11)
 
 ## Decision log
 
@@ -261,4 +267,5 @@ Custom views (owner's idea, to be expanded; reminder requested):
 | D-35 | 2026-11-13 | 4 Tokens | A branch with its own theme is shown tinted in that theme in the overview (preferred over a small dot); zoomed into it, every bar, button and list takes on its theme. Every theme must meet the same contrast rules, also where a tinted branch sits inside another theme | Owner, sketch |
 | D-36 | 2026-11-13 | 4 Tokens | Themes of trees and branches are shared through an event, not kept as device state: they belong to the content like a tree's name, so every device and every user of a shared tree sees the same mood. Proposed as [ADR-060](adr/ADR-060-shared-themes.md) | Owner |
 | D-37 | 2026-11-13 | 4 Tokens | Base font: the system font of each device, for a fast start; themes may bring their own open-licence font, downloaded in the background after start and kept for offline use, the system font shows until then. Proposed as [ADR-061](adr/ADR-061-shipped-fonts.md), including approval of the SIL Open Font License for fonts | Owner, font suggestions |
-| D-38 | 2026-11-13 | 4 Tokens (custom views) | A saved search is a node of the tree: placed anywhere, opened like a place, showing the tree filtered as in D-12, themeable like any node. Any node, including a saved search, can be chosen as the start view of the app on a device (device state, ADR-013); "the place last worked on" (D-4) stays the default. Proposed as [ADR-062](adr/ADR-062-saved-searches.md) | Owner |
+| D-38 | 2026-11-13 | 4 Tokens (custom views) | A saved search is a node of the tree: placed anywhere, opened like a place, showing the tree filtered as in D-12, themeable like any node. Any node, including a saved search, can be chosen as the start view of the app on a device (device state, ADR-013); "the place last worked on" (D-4) stays the default. Proposed as ADR-062; revised by D-39 | Owner |
+| D-39 | 2026-11-13 | 4 Tokens (custom views) | Revises D-38: views belong to notes, not to nodes of their own. Every note, and the tree, carries one or more views (outline by default; saved searches over its branch now; layouts such as board or columns later), switched like tabs when zoomed in; the tree level offers "All views" listing every view; the start view of a device is a note plus one of its views. Views are shared like content. Proposed as [ADR-062](adr/ADR-062-views-on-notes.md) | Owner, discussion |
