@@ -22,5 +22,3 @@ dotnet test --filter "ADR=ADR-059"
 ```
 
 why: The log is never rewritten, so undo is a revert like in git; limiting quick undo to the user's own actions keeps it predictable while sync brings in other changes (UX decision D-25).
-
-Open: how far back it reaches.
