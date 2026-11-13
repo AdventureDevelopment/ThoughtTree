@@ -9,6 +9,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 - **MUST** let quick undo (undo button, Ctrl+Z) step back only through the actions of the user on this device, in one sequence across all views, never through changes that arrived from other devices or users
 - **MUST** keep the quick undo sequence as device state, never in the event log (ADR-013)
 - **MUST** show what an undo reverses: bring the affected node into view and highlight it, or name the change with a way to go there; announce it through the live region (ADR-033)
+- **MUST** offer the usual text undo and redo within a draft while text is being edited, and turn the whole text change into one step of quick undo when editing ends; **MUST NOT** offer redo for other actions
 - **MUST** decide undo in the application layer (ADR-041), so every component behaves the same
 
 verify:
@@ -19,4 +20,4 @@ dotnet test --filter "ADR=ADR-059"
 
 why: The log is never rewritten, so undo is a revert like in git; limiting quick undo to the user's own actions keeps it predictable while sync brings in other changes (UX decision D-25).
 
-Open: redo; whether the quick undo sequence survives closing the app; how far back it reaches; what undo does when the node was changed since by another device or user.
+Open: whether the quick undo sequence survives closing the app; how far back it reaches; what undo does when the node was changed since by another device or user.

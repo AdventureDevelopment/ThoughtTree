@@ -55,6 +55,7 @@ The owner thinks of undo like a git repository: every change is a commit that is
 
 - Quick undo does not go strictly by time: with live sync, a change from another device can arrive between the user's action and the undo; undoing that instead of the user's own slip would be surprising
 - Undo is not limited to the current view (zooming would lose it, and a move belongs to two places); instead undo always shows what it reverses
+- While text is being edited, it is a local draft (ADR-013): the editor's usual undo and redo apply within the draft, character by character or word by word; once editing ends, the whole text change is one step for quick undo; for all other actions there is undo but no redo, a regretted undo is reverted from the history (decision D-26)
 - Architecture change proposed as [ADR-059](adr/ADR-059-undo.md) (Proposed); the node history brings forward what the architecture names as "possible later"
 
 ## How this concept is worked out
@@ -197,3 +198,4 @@ Bottom toolbar (D-17):
 | D-23 | 2026-11-13 | 1 Principles (journey D) | The resolve view shows both (or all) versions side by side with device and time; the user picks one or writes a new version starting from one of them (an ordinary event replacing all competing changes, ADR-018); it shows the node's context to help remember what was meant: path, children, relations and backlinks, each tappable; "Later" leaves the conflict open and the marker stays | Journey D |
 | D-24 | 2026-11-13 | 1 Principles | Principle 9 added: nothing happens behind the user's back | Journey D |
 | D-25 | 2026-11-13 | 2 Undo | Undo writes new events that restore the previous state, like a git revert; every change can be reverted from the node's history, whoever made it; quick undo (button, Ctrl+Z) steps back through the user's own recent actions on this device, in one sequence across views; undo always shows what it reverses (brings the node into view and highlights it, or names the change with Go there). Proposed as [ADR-059](adr/ADR-059-undo.md) | Owner (git model), discussion |
+| D-26 | 2026-11-13 | 2 Undo | Two levels: while editing a title or note, the usual undo and redo of a text editor apply within the local draft; when editing ends, the whole text change becomes one step of quick undo. For other actions (move, nest, delete, finished text changes) quick undo has no redo; a regretted undo is reverted from the node's history | Owner |
