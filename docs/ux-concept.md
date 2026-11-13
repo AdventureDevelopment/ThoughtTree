@@ -56,6 +56,7 @@ Named by the owner after trying the first prototype (2026-11-13). These are the 
 - **Themes per branch:** every project or topic can carry its own mood, visible in the overview and filling the screen when focused
 - **The inbox, always at hand:** the capture button is there everywhere, even while editing another item; the inbox has its own entry in the global menu with its full item menu; and it can have its own theme, like any branch (capturing itself is known from MLO's widgets; what is new is having the inbox at hand everywhere)
 - **Markdown and emojis:** Markdown in titles (inline) and notes; emojis everywhere, also in tags and other names (tags and names stay unformatted)
+- **Focus:** concentrating on one item and its branch as if it were its own document, in the branch's theme, with the title shown in full and editable in place, and back always returning to the previous view and position (named by the owner as another killer feature after trying the prototype)
 
 ## UX principles
 
