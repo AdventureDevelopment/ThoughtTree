@@ -277,6 +277,8 @@ Remarks:
 
 ## Open questions
 
+- Onboarding (topic 9, owner's decision 2026-11-13, recorded in the architecture): the tutorial tree from the prototype is the first tree a new user sees; its content and flow are to be refined here (what it explains, in which order, how it ends)
+
 - Inbox theme (owner's wish, architecture ADR-066): every inbox starts with a predefined theme "Inbox"; its look is to be designed with the tokens: calm (no pressure, D-8) but clearly different from Paper, for example a cool, light "tray" tone; a draft is in the prototype
 
 Tags (core decided in D-14; details parked for feature work, none is a foundation decision):
