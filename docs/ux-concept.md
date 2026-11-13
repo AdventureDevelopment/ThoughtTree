@@ -135,6 +135,15 @@ The library is chosen by a spike (decision D-30).
 All text and accent pairs above meet WCAG AA contrast; the contrast unit test (architecture section 8) will check them once they are code.
 
 
+## UX with agents (topic 11)
+
+How the owner's UX intent reaches the agents, and how the owner checks the result (decision D-46):
+
+- Before: for a new screen or a visibly new part of one, the agent first makes an HTML sketch (as in this concept: variants side by side, real wording, Paper theme); the owner chooses or corrects it; only then the agent writes the UI specification and the code
+- The owner does not approve UI specifications separately beforehand; changes to specifications are reviewed anyway in the pull request, because `tests/specify/**` is a protected path (architecture section 2)
+- After: the pull request shows screenshots generated from the UI specifications, for phone and tablet, light and dark
+- After: the owner tries the feature in the test environment on their own devices, through a link in the pull request
+
 ## How this concept is worked out
 
 - Worked out interactively with the owner, one topic and one decision at a time, following the UX workflow of the BMAD Method (UX designer role); BMAD's split is kept as sections of this document: how it looks (visual identity, tokens) and how it works (information architecture, behaviour, states, flows)
@@ -303,3 +312,4 @@ Store app (for the architecture):
 | D-43 | 2026-11-13 | 4 Tokens | Text size follows the device's setting: theme sizes are the starting point and scale with it (relative units; system text style on iPhone and iPad for Dynamic Type); rows grow with the text; every layout holds at 200 % text size (WCAG 1.4.4); no in-app text-size slider | Owner |
 | D-44 | 2026-11-13 | Terms | [Replaced by D-45] The concept uses the owner's terms: a note is the thing (title, text, tags, theme, views), a node is its graphical representation (its line and place in the tree), text is a note's longer content, a branch is a note with everything below it; a theme applies to a branch and is shown for all its children rather than "inherited". Applied throughout this document; the change of the architecture's glossary is proposed as [ADR-063](adr/ADR-063-terms.md) | Owner |
 | D-45 | 2026-11-13 | Terms | Replaces D-44 after comparing the terms of other apps and of thinking methods: an item is the thing in the tree (title, note, tags, theme, views; later pictures and files) and can grow into whatever the user makes of it (thought, idea, project, topic, vision); a note is an item's longer text, as in outliners and today's architecture; a branch is an item with everything below it; node is the technical representation. The owner's description of ThoughtTree is recorded as its vision. Proposed for the architecture's glossary as [ADR-063](adr/ADR-063-terms.md) | Owner, exercise "describe ThoughtTree to a friend" |
+| D-46 | 2026-11-13 | 11 UX with agents | Before building a new screen, the agent makes an HTML sketch that the owner chooses or corrects; UI specifications are not approved separately beforehand (they are reviewed in the pull request as a protected path); after building, the pull request shows screenshots generated from the UI specifications (phone and tablet, light and dark) and a link to try the feature in the test environment | Owner |
