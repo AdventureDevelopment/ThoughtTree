@@ -80,6 +80,23 @@ The library is chosen by a spike (decision D-30).
 
 - Reference for the look: MyLifeOrganized (light, plain, a fresh accent colour), in ThoughtTree's own calm look (D-31)
 - The first theme is calm; more colourful themes may come later, so tokens are semantic (for example `surface`, `text`, `accent`, `conflict-marker`), and a theme only swaps the palette behind them (decision D-32)
+- First theme: **Paper**, warm paper tones with a rust ochre accent (decision D-33); compared against Fresh, Slate and Quiet mono, and against a terracotta, a burnt sienna and a warm brown accent
+
+| Token (draft) | Light | Dark |
+| --- | --- | --- |
+| `surface` (page, bars) | `#f7f3ec` | `#1c1915` |
+| `surface-content` (list) | `#fffdf8` | `#23201b` |
+| `text` | `#2a2520` | `#ece5da` |
+| `text-muted` | `#6d645a` | `#a89e90` |
+| `line` | `#e9e1d4` | `#363029` |
+| `accent` (capture button, buttons) | `#9a5e28` | `#e3a35f` |
+| `on-accent` (text on accent) | `#ffffff` | `#2a160d` |
+| `accent-text` (links, chips) | `#84511f` | `#ecb985` |
+| `selection` | `#f3e7d5` | `#3b2e1e` |
+| `conflict-marker` [ASSUMPTION: calm violet, to be confirmed] | `#7a6bb0` | `#a99be0` |
+
+All text and accent pairs above meet WCAG AA contrast; the contrast unit test (architecture section 8) will check them once they are code.
+
 
 ## How this concept is worked out
 
@@ -228,3 +245,4 @@ Bottom toolbar (D-17):
 | D-30 | 2026-11-13 | 3 Component library | The component library is chosen by a spike comparing MudBlazor, Fluent UI Blazor, Radzen Blazor and own components against the criteria in section "Component library"; the spike includes the libraries' tree components and whether one can carry the outliner; commercial libraries are out because of ADR-050 | Owner (challenge: tree components exist) |
 | D-31 | 2026-11-13 | 3 Component library, 4 Tokens | ThoughtTree has its own calm look, plain and quiet, made for thinking (in the spirit of iA Writer, Bear, Things), not a standard look such as Material or Fluent; a library must be restylable to it | Owner |
 | D-32 | 2026-11-13 | 4 Tokens | MLO is the reference for the look; the first theme is calm; more colourful themes may follow later, so all components use semantic tokens and a theme only swaps the palette behind them | Owner |
+| D-33 | 2026-11-13 | 4 Tokens | The first theme is Paper: warm paper tones with a rust ochre accent (`#9a5e28` light, `#e3a35f` dark); draft token values in section "Design tokens and theming" | Owner, colour comparison |
