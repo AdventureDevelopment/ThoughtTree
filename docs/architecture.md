@@ -1046,7 +1046,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Conflict | Two or more changes with different values of the same field of an element (item, relation type, display name, tree feature, server address, view) made without seeing each other; shown to the user, who picks the value |
 | Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
 | Collapse | Hide an item's children in the view; UI state of one device, not a domain event |
-| Focus | Make an item the temporary top of the view, showing only its branch; "focus" means only magnifying |
+| Focus | Make an item the temporary top of the view, showing only its branch; "zoom" is used only for magnifying (pinch or browser zoom) |
 | Event | Immutable record of one change to the tree |
 | Event Log | The sequence of all events of one tree |
 | Projection | The tree rebuilt by replaying events |
