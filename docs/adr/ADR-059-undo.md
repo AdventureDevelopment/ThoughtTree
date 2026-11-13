@@ -12,6 +12,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 - **MUST** show what an undo reverses: bring the affected node into view and highlight it, or name the change with a way to go there; announce it through the live region (ADR-033)
 - **MUST** offer the usual text undo and redo within a draft while text is being edited, and turn the whole text change into one step of quick undo when editing ends; **MUST NOT** offer redo for other actions
 - **MUST NOT** overwrite a later change from another device or user by quick undo: when the node was changed since, quick undo stops, names the later change and offers the node's history
+- **MUST NOT** limit how far back quick undo reaches
 - **MUST** decide undo in the application layer (ADR-041), so every component behaves the same
 
 verify:

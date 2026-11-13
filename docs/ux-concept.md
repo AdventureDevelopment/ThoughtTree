@@ -58,6 +58,7 @@ The owner thinks of undo like a git repository: every change is a commit that is
 - While text is being edited, it is a local draft (ADR-013): the editor's usual undo and redo apply within the draft, character by character or word by word; once editing ends, the whole text change is one step for quick undo; for all other actions there is undo but no redo, a regretted undo is reverted from the history (decision D-26)
 - Quick undo needs no list of its own: it is read from the log (this device's events, newest first); an undo event names the event it reverts, like git's "This reverts commit …", so the history can show "reverted by …" and undo survives closing the app (decision D-27)
 - When the node was changed since on another device or by another user, quick undo stops and asks instead of overwriting: "This note has been changed since on Tablet ('C'). Open history?" (decision D-28)
+- Quick undo reaches back without limit; since every undo shows what it reverses, an old step cannot happen unnoticed (decision D-29)
 - Architecture change proposed as [ADR-059](adr/ADR-059-undo.md) (Proposed); the node history brings forward what the architecture names as "possible later"
 
 ## How this concept is worked out
@@ -203,3 +204,4 @@ Bottom toolbar (D-17):
 | D-26 | 2026-11-13 | 2 Undo | Two levels: while editing a title or note, the usual undo and redo of a text editor apply within the local draft; when editing ends, the whole text change becomes one step of quick undo. For other actions (move, nest, delete, finished text changes) quick undo has no redo; a regretted undo is reverted from the node's history | Owner |
 | D-27 | 2026-11-13 | 2 Undo | Quick undo is derived from the log, without a separate list: this device's own events, newest first, skipping events already reverted; every undo event names the event it reverts (`reverts`), part of the event format from the start; the history shows "reverted by …"; undo therefore survives closing the app | Owner |
 | D-28 | 2026-11-13 | 2 Undo | Quick undo never overwrites a later change from another device or user: when the node was changed since, undo stops, names the later change (device and value) and offers the node's history | Owner, principle 9 |
+| D-29 | 2026-11-13 | 2 Undo | Quick undo has no limit: it reaches back through all of the user's actions on this device; no session needs to be defined; showing what each undo reverses (D-25) protects against surprises | Owner |
