@@ -318,7 +318,10 @@ Outliner comparison (research input, nothing decided; [ux/outliner-comparison.md
 
 Owner's dream features (named 2026-11-13, for later; nothing decided):
 
-15. A map of a branch like a mind map: an item and its children drawn as a map (comparison idea 38, a layout of an item's views, ADR-062); possibly also links between items shown in the map (comparison idea 35)
+15. Maps of a branch, as layouts of an item's views (ADR-062), in three kinds:
+   - a normal mind map: the item in the middle, its children around it (comparison idea 38); possibly links between items too (idea 35)
+   - a fantasy-style land map: branches drawn as regions of a hand-drawn country, with coasts, rivers and mountains, so a project feels like a world to explore; ThoughtTree's own art, never a copy of a specific existing map
+   - a Venn diagram: tags as overlapping circles, items placed in the circles of the tags they carry, so shared dimensions become visible (principle 6)
 16. A literature list export: the sources used in items (for example items linked with the predefined relation type `cites`) exported as a list of references; open how sources are described (a note in a citation format, tags, or structured fields, which the comparison advises against) and which formats (Markdown list, BibTeX, RIS); touches readable export (ADR-019)
 
 Store app (for the architecture):
