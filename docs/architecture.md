@@ -429,6 +429,7 @@ docs/        architecture, ADRs
 | `tree.server-changed` | `address` (empty for no server), `joinCode` (optional), `replaces` |
 
 - `afterItemId` names the sibling the item is placed directly after; empty means first child of the parent, or first top-level item when the parent is empty
+- `reverts` (optional, on events written by undo) names the event this event reverts, like git's "This reverts commit …"; the history shows it, and quick undo skips reverted events (ADR-059)
 - `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
 - `format` names the text format of title and note; initially always `markdown`; it keeps a later change of format possible without guessing what older texts meant
 - Title and note changes carry the full text; one event is written per editing session (when the user leaves the field or after a short pause), not per keystroke, so the log does not grow with every edit
@@ -700,6 +701,7 @@ Domain tests:
 | INV-11 | Normalised text: every text in every event is NFC; normalising twice changes nothing |
 | INV-12 | Symmetric relations are one: A–B and B–A of a symmetric type are the same relation |
 | INV-13 | One id, one content: envelopes with the same `EventId` are identical; a known id with different content is rejected and reported, never stored |
+| INV-14 | Undo returns: reverting a change and then reverting the undo gives back the same tree, as long as no other change touched the item in between |
 
 - Reference model: a deliberately naive projection (sort all events, replay one by one) is the referee; property tests check that the real, optimised projection always gives exactly what the model gives; the model is protected like the stored test data and changes only with human approval
 - Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterItemId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation
@@ -1074,6 +1076,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | `EventId` | Globally unique id of an event; readable in the envelope; the same id must always carry the same content (INV-13) |
 | `KeyId` | Short random id of a tree's key, readable in the envelope |
 | `ServerSequence` | Gap-free number the server gives each envelope of an account, in commit order; used only to track sync progress |
+| `reverts` | Event id of the change an undo event reverts |
 | `replaces` | List of event ids of the changes an event replaces; used to detect conflicts |
 | `seen` | For each device of a tree, the highest clock a device had received from it; carried by `item.deleted` |
 | Envelope / Schema / App Version | Version of the stored envelope format / of one event type's shape / of the installed release |
