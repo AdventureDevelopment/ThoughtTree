@@ -48,7 +48,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Licence: Apache 2.0 for the whole repository; the name "ThoughtTree" is not licensed
 - Dependencies may only use licences from an approved list (MIT, Apache 2.0, BSD and similar permissive licences), checked in the push gate; MPL-2.0 is also allowed for test-only dependencies that are not distributed (for example the accessibility checker axe)
 - Single developer, incremental delivery
-- Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible (Azure Container Apps, scaling to zero); target cost near zero for a single user
+- Hosting: Microsoft Azure (developer familiarity), free tiers wherever possible; release 1 has no sync server and serves only the static app from Azure Static Web Apps (free tier), with a preview address for every pull request; once a sync server exists, the container image runs on Azure Container Apps, scaling to zero; target cost near zero for a single user
 - The sync service (and the static app) must also be deployable by others on their own server, without Azure
 - Server storage stays minimal: an append-only encrypted event log per account (one account per tree); concrete store (Azure Table Storage, Blob Storage or SQLite) is an open decision
 - Development process: trunk-based development with short-lived branches: every change, by a person or an agent, reaches `main` only through a pull request; release flags (Microsoft.FeatureManagement) instead of long-lived feature branches
@@ -315,8 +315,9 @@ docs/        architecture, ADRs
 | Node | Content |
 | --- | --- |
 | User device (browser / installed PWA) | Blazor WASM app, Service Worker, local storage (events, snapshots, tree access) |
-| ThoughtTree container image | One image: ASP.NET Core server serving the sync API, the SignalR hub and the static client app from one origin; store chosen by configuration |
-| Azure Container Apps (test and production) | The container image, scaling to zero; store: the chosen Azure store (not SQLite, because file locking on Azure file shares is unreliable) |
+| Azure Static Web Apps (release 1: test, production, previews) | The static client app only (no sync server in release 1); the strict security headers of ADR-045 come from its configuration file; every pull request gets its own preview address, so changes can be tried on the owner's devices before merging |
+| ThoughtTree container image (once a sync server exists) | One image: ASP.NET Core server serving the sync API, the SignalR hub and the static client app from one origin; store chosen by configuration |
+| Azure Container Apps (test and production, once a sync server exists) | The container image, scaling to zero; store: the chosen Azure store (not SQLite, because file locking on Azure file shares is unreliable) |
 | Event log storage on Azure | Append-only encrypted event log per account; Table Storage or Blob Storage is an open decision |
 | Self-hosted server (optional) | The same container image on any server, with SQLite on a volume, behind a reverse proxy that provides HTTPS (example: Docker Compose with Caddy); backups of the volume contain only encrypted data |
 | Container registry | GitHub Container Registry; public image, amd64 and arm64, version tags such as `1.4.2` and `1.4` |
@@ -329,14 +330,15 @@ docs/        architecture, ADRs
 
 **Environments**
 
-- Two environments, test and production, each with its own instance of the container image (serving the app and the sync API from one origin) and its own storage
+- Two environments, test and production, plus a preview environment per pull request; in release 1 each is a static site on Azure Static Web Apps; once a sync server exists, test and production each run their own instance of the container image (serving the app and the sync API from one origin) with their own storage
 - Data is never shared between test and production
 - The test environment uses registration mode "open" with tight limits, and its data is deleted regularly; production uses "join code only"; no environment needs stored credentials for its checks
 
 **Delivery pipeline**
 
 - GitHub Actions builds and tests every push to `main`
-- A successful build deploys automatically to test
+- Every pull request is deployed to its own preview address (Azure Static Web Apps), removed when the pull request closes
+- A successful build on `main` deploys automatically to test
 - Test and production are created only from Bicep templates in the repository
 - GitHub Actions signs in to Azure through OpenID Connect federation; no deployment secrets are stored, and agents never see deployment credentials
 - Promotion to production is a manual approval step
@@ -763,7 +765,7 @@ End-to-end tests:
 
 Deployment tests:
 
-- After each deployment to test (each run creates a new tree and account, so no credentials are stored): the app loads and its service worker registers; a version endpoint shows the deployed commit; the service worker file is served without caching; an account registers with the join code, an event is pushed and pulled, SignalR connects; HTTPS with HSTS and security headers are present, the page makes no requests to third parties, logging and telemetry record no IP addresses
+- After each deployment to test; in release 1 without a sync server the sync checks are left out (once a server exists, each run creates a new tree and account, so no credentials are stored): the app loads and its service worker registers; a version endpoint shows the deployed commit; the service worker file is served without caching; an account registers with the join code, an event is pushed and pulled, SignalR connects; HTTPS with HSTS and security headers are present, the page makes no requests to third parties, logging and telemetry record no IP addresses
 - After promotion to production: read-only checks only (health, version, headers, service worker); sync is proven in the test environment with the identical image (ADR-047); if a check fails, the previous archived release is deployed again automatically
 - The self-hosted container image is built, published and checked with the same smoke tests as the test environment
 
@@ -897,6 +899,13 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-055](adr/ADR-055-private-feedback-inbox.md) | Private feedback inbox | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
 | [ADR-056](adr/ADR-056-server-store-migrations.md) | Server store migrations | `src/ThoughtTree.Server*/**`, `infra/**` |
 | [ADR-057](adr/ADR-057-sync-modes.md) | Sync modes, live preselected | `src/ThoughtTree.Client*/**` |
+| [ADR-058](adr/ADR-058-tags.md) | Tags as tree elements, typed with `@@` (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-059](adr/ADR-059-undo.md) | Undo writes new events; quick undo covers the user's own actions on this device (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-060](adr/ADR-060-shared-themes.md) | Themes of trees and branches are shared through events (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-061](adr/ADR-061-shipped-fonts.md) | System font first, shipped fonts under the SIL Open Font License (proposed) | `src/ThoughtTree.Client*/**`, `**/*.csproj`, `**/package.json` |
+| [ADR-062](adr/ADR-062-views-on-items.md) | Views belong to items (proposed) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-063](adr/ADR-063-terms.md) | Terms: item, note, branch, node (proposed) | `docs/**`, `src/**`, `tests/**` |
+| [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept (proposed) | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
 
 **Open decisions**
 
@@ -910,7 +919,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | Binary data (pictures, files) | Rule decided: separate encrypted blobs referenced from events (ADR-022). Open: random blob ids (not content hashes), padding or fixed-size chunks to hide file size, server blob storage next to the event log (affects the choice of store and the free tiers), fetching blobs only when needed, including files in exports, when blobs of deleted nodes may be removed |
 | Key backup | How a tree survives the loss of all devices: a passphrase-protected key in the export file, a recovery code, or both; the key stays random and is only wrapped for backup, so this does not affect the rest of the architecture |
 | Serialization format | JSON for now (ADR-017); a compact binary format such as MessagePack if logs grow too large |
-| Release 1 scope | Which requirements of section 1 the first release contains, and the order of the foundation work and blocking decisions (store, storage engine, AOT, UX foundation, API contract); decided after the UX concept |
+| Release 1 scope | Owner's input agreed (UX decisions D-50, D-51): phone, tablet and desktop; no sync server, sync by file only; themes per tree and per item; static hosting on Azure Static Web Apps with previews per pull request. Still open: which further requirements of section 1 belong to it, and the order of the foundation work and blocking decisions (storage engine, AOT, remaining UX foundation) |
 | Sync API contract | Endpoints, request and response shapes, paging and limits of pulls, error and status codes, authentication per endpoint, the "server needs updating" signal, the hub messages, account deletion; defined in Contracts before the first release, because `v1` is frozen from then on (ADR-037) |
 | Size limits | Padding bucket list and behaviour above the largest bucket; maximum title and note length; maximum request size; maximum events and storage per account; maximum user name and server address length; size budget of the first load; to be fixed before the first release, because they become part of stored formats |
 | Key rotation | `KeyId` leaves room for changing a tree's key (for example after a leak); whether and how rotation is offered |

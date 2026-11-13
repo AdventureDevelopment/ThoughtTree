@@ -96,7 +96,7 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 
 ## ADR-047: One container image everywhere
 
-**TL;DR:** We bet that one image everywhere is worth the cold start after idle, because what is tested is exactly what runs.
+**TL;DR:** We bet that one image everywhere is worth the cold start after idle, because what is tested is exactly what runs. (Applies once a sync server exists; release 1 is served as a static app.)
 
 - **Outcome:** One artifact for test, production and self-hosting; simple delivery; near-zero cost through scaling to zero.
 - **Assumption:** The cold start after idle (a few seconds) is acceptable, because the app starts from the PWA cache and only sync waits; the free monthly allowance of Container Apps covers normal use.

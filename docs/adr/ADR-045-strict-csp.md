@@ -8,6 +8,7 @@ applies_to: `src/**`, `infra/**`
 - **MUST** send `Referrer-Policy: no-referrer`
 - **MUST NOT** fetch link previews automatically
 - **MUST NOT** load anything from third parties (trackers, fonts, analytics, remote pictures in Markdown)
+- **MUST** send the policy as HTTP headers on every hosting (Azure Static Web Apps configuration file in release 1, the server later), not only as a page tag
 - **MUST** let a self-hosted package serve its own app with its own policy, instead of widening the policy of the hosted app
 - **MUST NOT** weaken the policy with `unsafe-inline` or `unsafe-eval` beyond what Blazor WebAssembly requires (`wasm-unsafe-eval`)
 
