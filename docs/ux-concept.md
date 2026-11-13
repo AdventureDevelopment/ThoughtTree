@@ -214,6 +214,10 @@ Bottom toolbar (D-17):
 6. Which actions it holds besides 📥 capture and ＋ add here (search, move and more are candidates); decided with the layout model and touch interaction (topics 5 and 6)
 7. Reach with one hand: the outermost buttons may be too far for the thumb; to be checked on a real phone
 
+Custom views (owner's idea, to be expanded; reminder requested):
+
+8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. To be taken up after the typography decision
+
 ## Decision log
 
 | # | Date | Topic | Decision | Source |
