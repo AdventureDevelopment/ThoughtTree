@@ -61,6 +61,21 @@ The owner thinks of undo like a git repository: every change is a commit that is
 - Quick undo reaches back without limit; since every undo shows what it reverses, an old step cannot happen unnoticed (decision D-29)
 - Architecture change proposed as [ADR-059](adr/ADR-059-undo.md) (Proposed); the node history brings forward what the architecture names as "possible later"
 
+## Component library (topic 3)
+
+The library is chosen by a spike (decision D-30).
+
+- Candidates: MudBlazor, Fluent UI Blazor, Radzen Blazor (all MIT), and own components; commercial libraries (Telerik, Syncfusion, DevExpress) are excluded by the licence rule (ADR-050)
+- The spike also checks the libraries' tree components (MudTreeView, FluentTreeView, RadzenTree): whether one can carry the outliner or serve as its base
+- Criteria:
+  - works under the strict Content Security Policy without `unsafe-inline` (ADR-045)
+  - accessible: no axe findings, keyboard only, screen readers (ADR-033)
+  - direction-neutral: CSS logical properties, works mirrored (ADR-033)
+  - download size within the budget (PF5)
+  - themeable through our own design tokens, light and dark (topic 4)
+  - touch targets of at least 24×24 CSS pixels (ADR-033)
+  - for the tree component: typing in place with Enter, leading space and Backspace (D-2, D-3), the `##` and `@@` shortcuts (D-11, D-14), 10,000 nodes stay responsive (PF1, PF2), dragging with an accessible alternative (D-6)
+
 ## How this concept is worked out
 
 - Worked out interactively with the owner, one topic and one decision at a time, following the UX workflow of the BMAD Method (UX designer role); BMAD's split is kept as sections of this document: how it looks (visual identity, tokens) and how it works (information architecture, behaviour, states, flows)
@@ -205,3 +220,4 @@ Bottom toolbar (D-17):
 | D-27 | 2026-11-13 | 2 Undo | Quick undo is derived from the log, without a separate list: this device's own events, newest first, skipping events already reverted; every undo event names the event it reverts (`reverts`), part of the event format from the start; the history shows "reverted by …"; undo therefore survives closing the app | Owner |
 | D-28 | 2026-11-13 | 2 Undo | Quick undo never overwrites a later change from another device or user: when the node was changed since, undo stops, names the later change (device and value) and offers the node's history | Owner, principle 9 |
 | D-29 | 2026-11-13 | 2 Undo | Quick undo has no limit: it reaches back through all of the user's actions on this device; no session needs to be defined; showing what each undo reverses (D-25) protects against surprises | Owner |
+| D-30 | 2026-11-13 | 3 Component library | The component library is chosen by a spike comparing MudBlazor, Fluent UI Blazor, Radzen Blazor and own components against the criteria in section "Component library"; the spike includes the libraries' tree components and whether one can carry the outliner; commercial libraries are out because of ADR-050 | Owner (challenge: tree components exist) |
