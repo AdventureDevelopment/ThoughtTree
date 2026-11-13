@@ -29,7 +29,7 @@ Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. T
 
 ## Terms
 
-This concept uses the following terms (decision D-45, replacing D-44). The architecture adopted them with [ADR-063](adr/ADR-063-terms.md) (Accepted); "Focus" instead of "Zoom" is proposed separately as [ADR-065](adr/ADR-065-focus.md) (Proposed).
+This concept uses the following terms (decision D-45, replacing D-44). The architecture adopted them with [ADR-063](adr/ADR-063-terms.md) (Accepted); "Focus" instead of "Zoom" with [ADR-065](adr/ADR-065-focus.md) (Accepted).
 
 | Term | Meaning |
 | --- | --- |
@@ -38,7 +38,7 @@ This concept uses the following terms (decision D-45, replacing D-44). The archi
 | Note | The optional longer text of an item, written in the detail view |
 | Branch | An item together with everything below it |
 | Node | How an item appears in the tree: its line in the outline and its place; a technical term for code and specifications |
-| Focus | Make an item the temporary top of the view, showing only its branch (D-57; the architecture still says "zoom" until ADR-065 is accepted) |
+| Focus | Make an item the temporary top of the view, showing only its branch (D-57, ADR-065) |
 
 What the app calls these things in its own wording is decided with microcopy (topic 10).
 
@@ -90,7 +90,7 @@ The owner thinks of undo like a git repository: every change is a commit that is
 - Quick undo needs no list of its own: it is read from the log (this device's events, newest first); an undo event names the event it reverts, like git's "This reverts commit …", so the history can show "reverted by …" and undo survives closing the app (decision D-27)
 - When the item was changed since on another device or by another user, quick undo stops and asks instead of overwriting: "This item has been changed since on Tablet ('C'). Open history?" (decision D-28)
 - Quick undo reaches back without limit; since every undo shows what it reverses, an old step cannot happen unnoticed (decision D-29)
-- Architecture change proposed as [ADR-059](adr/ADR-059-undo.md) (Proposed); the item history brings forward what the architecture names as "possible later"
+- Architecture change proposed as [ADR-059](adr/ADR-059-undo.md) (Accepted); the item history brings forward what the architecture names as "possible later"
 
 ## Component library (topic 3)
 
@@ -129,8 +129,8 @@ The library is chosen by a spike (decision D-30).
 
 - Themes can be chosen per tree and per item, to support the vibe of a project; an item's theme applies to its whole branch (shown for all its children, unless a child has its own theme), and shows when the user focuses on it (decision D-34)
 - In the overview a branch with its own theme is tinted in that theme, so its mood is visible before focusing on it; focused on it, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus zoomed in)
-- Themes of trees and branches are shared: the same on every device and for every user of a tree, recorded by an event; proposed as [ADR-060](adr/ADR-060-shared-themes.md) (Proposed) (decision D-36)
-- Typography: the base font is the device's system font, so startup downloads nothing; a theme may bring its own font (for example Literata for writing, Nunito for creative, IBM Plex Mono for technical projects), downloaded in the background after start and kept offline; proposed as [ADR-061](adr/ADR-061-shipped-fonts.md) (Proposed), which also approves the SIL Open Font License for fonts (decision D-37)
+- Themes of trees and branches are shared: the same on every device and for every user of a tree, recorded by an event; proposed as [ADR-060](adr/ADR-060-shared-themes.md) (Accepted) (decision D-36)
+- Typography: the base font is the device's system font, so startup downloads nothing; a theme may bring its own font (for example Literata for writing, Nunito for creative, IBM Plex Mono for technical projects), downloaded in the background after start and kept offline; proposed as [ADR-061](adr/ADR-061-shipped-fonts.md) (Accepted), which also approves the SIL Open Font License for fonts (decision D-37)
 - Custom views: views belong to an item (decision D-39, revising D-38):
   - every item, and the tree itself, can carry one or more views; the default is the outline
   - a view is a saved search over the item's branch (for example "🔎 Open questions", "Changed recently") and, later, a layout such as a board or columns
@@ -138,7 +138,7 @@ The library is chosen by a spike (decision D-30).
   - at the tree level, a view "All views" lists every view of the tree with the path of its item
   - the start view of a device is an item plus one of its views
   - start icons with their own view (decision D-40): the app understands a start parameter "item plus view" in its address from the start; Android: "Add to home screen" from such a link (spike: does it open in the app window or a tab); Windows and desktop: links with the start parameter; iPhone and iPad: with the store app, because each home-screen web app there has its own storage
-  - proposed as [ADR-062](adr/ADR-062-views-on-items.md) (Proposed)
+  - proposed as [ADR-062](adr/ADR-062-views-on-items.md) (Accepted)
 - A theme brings more than colours: palette, optionally a font (D-37), the density of the outline and whether the first line of an item's note is previewed under its title. Paper: density comfortable (rows about 44 px, text 16 px, system font) with the note preview shown (decision D-42; sketch: airy, comfortable, compact)
 - Text size follows the device: the theme's sizes are the starting point, and the device's text-size setting scales them (sizes in relative units; on iPhone and iPad the system text style is used so Dynamic Type applies); rows grow with the text, layouts must hold at 200 % text size; no slider of its own in the app (decision D-43)
 - **Signature feature:** a theme for a part of the tree, tinted in the overview and taking over the whole screen when focused on; the owner has not seen this anywhere else
@@ -156,7 +156,7 @@ How the owner's UX intent reaches the agents, and how the owner checks the resul
 - After: the owner tries the feature in the test environment on their own devices, through a link in the pull request
 - Example content in sketches, specifications and test data consists of thoughts (ideas, questions, observations, projects as thoughts), never of tasks or todos, matching the vision (decision D-67)
 - Sketches are shown as artifacts for choosing; only the chosen variant is kept in the repository as reference, in `docs/ux/sketches/`, linked from its decision; rejected variants are not kept; where a sketch and the text of this concept differ, the text wins (decision D-47)
-- Binding, as a definition of done for UI work, by three means together (decision D-48): a rule for agents, proposed as [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) (Proposed); a UI checklist in the pull request template; and a pointer to the UX concept in the agents' entry file (`CLAUDE.md` or `AGENTS.md`). The pull request template and the entry file do not exist yet; they are created when ADR-064 is accepted
+- Binding, as a definition of done for UI work, by three means together (decision D-48): a rule for agents, proposed as [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) (Accepted); a UI checklist in the pull request template; and a pointer to the UX concept in the agents' entry file (`CLAUDE.md` or `AGENTS.md`). The pull request template and the entry file do not exist yet; they are created when ADR-064 is accepted
 
 Definition of done for UI work (decision D-49): a UI feature is done when all three hold:
 
@@ -327,7 +327,7 @@ Store app (for the architecture):
 | D-11 | 2026-11-12 | 1 Principles (journey A) | While typing a title in the outline, `##` splits it: the text before is the title, the text after becomes the item's note (appended on a new line if the item already has a note), applied when editing the title ends; `\##` keeps two literal `#` in the title. Works the same everywhere a title is typed (as in MLO). [ASSUMPTION] appending to an existing note and the escape are to be confirmed in the UI specification | Owner tried it in MLO |
 | D-12 | 2026-11-12 | 1 Principles (journey C) | Search filters the outline in place: only matching nodes and their ancestors stay visible, matches are highlighted, a match in an item's note is marked on its node; clearing the search returns to the previous view. Uses the on-device search and its matching rules (architecture section 8) | Journey C |
 | D-13 | 2026-11-12 | 1 Principles (journey C) | A relation can be created from either end: "Link to…" on any item opens the target picker (D-9), the same picker for both directions; the new relation gets the type `related`, which can be changed afterwards [ASSUMPTION: default type]; relations and backlinks as in ADR-024 | Journey C |
-| D-14 | 2026-11-12 | 1 Principles (wish for tags) | Items can carry several tags, now rather than later; uses: finding, grouping across branches, context and status. Typing `@@name` in a title adds the tag (suggesting existing tags while typing); when editing ends the text is removed from the title and the tag is shown as a chip; tapping a chip filters the tree to the items with that tag, like search (D-12); a tag picker in the detail view is the alternative without typing. Architecture change proposed as [ADR-058](adr/ADR-058-tags.md) (Proposed) | Owner, Trello and MLO experience |
+| D-14 | 2026-11-12 | 1 Principles (wish for tags) | Items can carry several tags, now rather than later; uses: finding, grouping across branches, context and status. Typing `@@name` in a title adds the tag (suggesting existing tags while typing); when editing ends the text is removed from the title and the tag is shown as a chip; tapping a chip filters the tree to the items with that tag, like search (D-12); a tag picker in the detail view is the alternative without typing. Architecture change proposed as [ADR-058](adr/ADR-058-tags.md) (Accepted) | Owner, Trello and MLO experience |
 | D-15 | 2026-11-12 | 1 Principles (wish for tags) | The details of tags (duplicates, names with spaces, managing, nesting, colours) are parked as open questions for feature work | Owner |
 | D-16 | 2026-11-12 | 1 Principles | The eight UX principles in section "UX principles" are agreed, condensed from journeys A to C; accessible and honest about protection are inherited from the architecture | Journeys A–C |
 | D-17 | 2026-11-12 | 1 Principles (journeys A, B) | The phone layout has a bottom toolbar with the main actions; the capture button 📥 (capture into the inbox, D-4) sits in its middle, ＋ adds a new item at the current place. Only one floating-looking button (📥, docked in the bar); no second floating button. Contents of the bar and one-handed reach are open questions. Sketches of the variants compared: bottom toolbar, select then act, tap empty space, one button with inbox in the top bar | Owner, sketch comparison |
