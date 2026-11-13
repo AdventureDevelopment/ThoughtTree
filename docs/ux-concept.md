@@ -229,7 +229,7 @@ Store app (for the architecture):
 
 Custom views (owner's idea, to be expanded; reminder requested):
 
-8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. Started with views on notes (D-39); still open: layouts per project such as a board or columns (watch the risk of drifting into task management, architecture section 11)
+8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. Started with views on notes (D-39); layouts per project such as a board or columns are parked (D-41; watch the risk of drifting into task management, architecture section 11)
 
 ## Decision log
 
@@ -275,3 +275,4 @@ Custom views (owner's idea, to be expanded; reminder requested):
 | D-38 | 2026-11-13 | 4 Tokens (custom views) | A saved search is a node of the tree: placed anywhere, opened like a place, showing the tree filtered as in D-12, themeable like any node. Any node, including a saved search, can be chosen as the start view of the app on a device (device state, ADR-013); "the place last worked on" (D-4) stays the default. Proposed as ADR-062; revised by D-39 | Owner |
 | D-39 | 2026-11-13 | 4 Tokens (custom views) | Revises D-38: views belong to notes, not to nodes of their own. Every note, and the tree, carries one or more views (outline by default; saved searches over its branch now; layouts such as board or columns later), switched like tabs when zoomed in; the tree level offers "All views" listing every view; the start view of a device is a note plus one of its views. Views are shared like content. Proposed as [ADR-062](adr/ADR-062-views-on-notes.md) | Owner, discussion |
 | D-40 | 2026-11-13 | 4 Tokens (custom views) | Start icons with their own view: the app accepts a start parameter "note plus view" in its address from the start; Android uses "Add to home screen" from such a link (spike: app window or browser tab); desktop uses links; iPhone and iPad wait for the store app (separate storage per home-screen web app; automatic sync through a shared file or cloud folder also comes with the store app, as in the architecture) | Owner, discussion |
+| D-41 | 2026-11-13 | 4 Tokens (custom views) | Layouts per project (board, columns) are parked. The owner's wish for the release 1 scope (an open decision of the architecture): themes per tree and per node (D-34 to D-36) are in the first version | Owner |
