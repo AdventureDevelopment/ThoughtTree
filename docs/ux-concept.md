@@ -324,6 +324,10 @@ Owner's dream features (named 2026-11-13, for later; nothing decided):
    - a Venn diagram: tags as overlapping circles, items placed in the circles of the tags they carry, so shared dimensions become visible (principle 6)
 16. A literature list export: the sources used in items (for example items linked with the predefined relation type `cites`) exported as a list of references; open how sources are described (a note in a citation format, tags, or structured fields, which the comparison advises against) and which formats (Markdown list, BibTeX, RIS); touches readable export (ADR-019)
 
+Templates (owner's wish, 2026-11-13; nothing decided yet):
+
+17. Templates, predefined and made by the user, as first-class parts of a tree recorded by events (so they sync and are shared like content); first use: a "person" template to map the owner's connections to the people in their life (for example how we met, what connects us, shared memories, links to other people and thoughts); comparison idea 6. Possible shape, to be worked out with the owner and the architecture: a template is an ordinary branch marked as a template by an event (like the inbox, ADR-066); using it copies the branch as one action (ADR-067); predefined templates are written as events with fixed ids when a tree is created (like relation types, ADR-025) and can be changed or removed; people data is personal content, so the privacy rules apply as to everything else (end-to-end encrypted, never leaves the device unencrypted)
+
 Store app (for the architecture):
 
 9. Native wrapper: .NET MAUI Blazor Hybrid looks like the most fitting route (same Razor components in C#, native shortcuts, widgets, background sync and shared-file sync; browser adapters swapped thanks to ADR-042); alternatives Capacitor and PWABuilder/TWA; Apple's minimum-functionality review and developer accounts to consider. Not decided here
