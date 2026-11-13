@@ -76,6 +76,11 @@ The library is chosen by a spike (decision D-30).
   - touch targets of at least 24×24 CSS pixels (ADR-033)
   - for the tree component: typing in place with Enter, leading space and Backspace (D-2, D-3), the `##` and `@@` shortcuts (D-11, D-14), 10,000 nodes stay responsive (PF1, PF2), dragging with an accessible alternative (D-6)
 
+## Design tokens and theming (topic 4)
+
+- Reference for the look: MyLifeOrganized (light, plain, a fresh accent colour), in ThoughtTree's own calm look (D-31)
+- The first theme is calm; more colourful themes may come later, so tokens are semantic (for example `surface`, `text`, `accent`, `conflict-marker`), and a theme only swaps the palette behind them (decision D-32)
+
 ## How this concept is worked out
 
 - Worked out interactively with the owner, one topic and one decision at a time, following the UX workflow of the BMAD Method (UX designer role); BMAD's split is kept as sections of this document: how it looks (visual identity, tokens) and how it works (information architecture, behaviour, states, flows)
@@ -222,3 +227,4 @@ Bottom toolbar (D-17):
 | D-29 | 2026-11-13 | 2 Undo | Quick undo has no limit: it reaches back through all of the user's actions on this device; no session needs to be defined; showing what each undo reverses (D-25) protects against surprises | Owner |
 | D-30 | 2026-11-13 | 3 Component library | The component library is chosen by a spike comparing MudBlazor, Fluent UI Blazor, Radzen Blazor and own components against the criteria in section "Component library"; the spike includes the libraries' tree components and whether one can carry the outliner; commercial libraries are out because of ADR-050 | Owner (challenge: tree components exist) |
 | D-31 | 2026-11-13 | 3 Component library, 4 Tokens | ThoughtTree has its own calm look, plain and quiet, made for thinking (in the spirit of iA Writer, Bear, Things), not a standard look such as Material or Fluent; a library must be restylable to it | Owner |
+| D-32 | 2026-11-13 | 4 Tokens | MLO is the reference for the look; the first theme is calm; more colourful themes may follow later, so all components use semantic tokens and a theme only swaps the palette behind them | Owner |
