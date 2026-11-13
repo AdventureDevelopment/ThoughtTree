@@ -8,7 +8,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 - **MUST** treat concurrent `theme.set` events for the same target like other replaceable changes: last writer wins by the agreed event order, and the conflict is listed in the Conflict View; on acceptance, `theme.set` is added to the events of ADR-018 that carry `replaces`
 - **MUST** let a node's theme apply to its whole branch, unless a node further down sets its own; otherwise the tree's theme applies
 - **MUST** reference themes by fixed ids shipped with the app; **MUST** fall back to the default theme for an unknown theme id
-- **MUST** build every component from semantic design tokens, so a theme only swaps the palette; **MUST** meet the contrast rules (ADR-033) in every theme, also for a tinted branch inside another theme
+- **MUST** build every component from semantic design tokens, so a theme only swaps token values (palette, font, density, note preview); **MUST** meet the contrast rules (ADR-033) in every theme, also for a tinted branch inside another theme
 - **MUST NOT** treat themes as device state (ADR-013): the theme belongs to the content, like a tree's name
 
 verify:
