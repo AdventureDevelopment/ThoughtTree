@@ -365,6 +365,7 @@ docs/        architecture, ADRs
 - Later, with binary data: a preview picture of a linked page, created only when the user asks for it, on the device, and stored as an encrypted blob in the tree; never created automatically, never through our server or a third-party service, because the address itself is content
 - Remote pictures (`![](https://…)`) are not loaded; the app shows a placeholder with the address, and clicking opens the picture in the browser; later, with binary data, the user can store such a picture once as an encrypted blob in the tree
 - Nothing connects trees: links and relations only point to items of the same tree; the link picker offers only items of the current tree, and an `item:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import, with one sanctioned exception: merging a whole tree into another (see Merging trees)
+- Themes: a tree and any item can have a theme (`theme.set`), which applies to the whole branch unless a child sets its own; themes are content shared by all devices and users of the tree, referenced by fixed ids shipped with the app, with the default theme "Paper" as fallback; always available (ADR-060)
 - Tags: items can carry tags, structural elements of the tree named by display names (ADR-058); a tree feature, switched on by default
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
 - A relation is identified by its three parts (from item, type, to item), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
@@ -419,6 +420,7 @@ docs/        architecture, ADRs
 | `relation.removed` | `fromItemId`, `typeId`, `toItemId` |
 | `relation-type.defined` | `typeId`, `symmetric`, `replaces`; names are display names (see below) |
 | `relation-type.removed` | `typeId` |
+| `theme.set` | `target` (the tree or an `itemId`), `themeId`; concurrent changes are decided silently by the agreed order, no `replaces` (ADR-060) |
 | `tag.defined` | `tagId`; names are display names |
 | `tag.joined` | `fromTagId`, `intoTagId`; assignments of the joined tag count for the target tag |
 | `item.tagged` | `itemId`, `tagId` |
