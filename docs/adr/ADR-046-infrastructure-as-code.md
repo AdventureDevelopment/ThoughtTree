@@ -4,7 +4,7 @@ id: ADR-046 · status: Accepted · kind: constraint
 
 applies_to: `infra/**`, `.github/**`
 
-- **MUST** create test and production only from Bicep templates in `infra/`
+- **MUST** create test, production and the pull request previews only from Bicep templates in `infra/` (Azure Static Web Apps in release 1, Azure Container Apps once a sync server exists)
 - **MUST** keep test and production identical apart from parameters
 - **MUST** sign in from GitHub Actions to Azure through OpenID Connect federation; **MUST NOT** store deployment secrets
 - **MUST** keep promotion to production a manual approval step

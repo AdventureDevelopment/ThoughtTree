@@ -6,9 +6,9 @@ applies_to: `src/ThoughtTree.Domain/**`
 
 - **MUST** merge by taking the union of event logs, identified by `EventId`
 - **MUST NOT** merge projections or trees directly
-- **MUST** treat a node without parent as a top-level node; a tree may have several
-- **MUST NOT** introduce a root node, a fixed root id or any node not created by `node.created`
-- **MUST** take the tree name from the title of the first top-level node, with no event of its own
+- **MUST** treat an item without parent as a top-level item; a tree may have several
+- **MUST NOT** introduce a root item, a fixed root id or any item not created by `item.created`
+- **MUST** take the tree name from the title of the first top-level item, with no event of its own
 
 verify:
 
