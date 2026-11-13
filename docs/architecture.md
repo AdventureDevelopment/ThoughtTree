@@ -19,7 +19,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - Explicit sharing: pairing another device of one's own and sharing a tree with another user are two separate actions; every tree shows whether it is private or shared, and with whom
 - Usable where VPNs are blocked: file-only sync stays a full alternative, the user controls app updates, and the sync server can be self-hosted
 - Readable export and import: a tree can be exported unencrypted as Markdown, OPML or JSON, and such files can be imported as a new tree or into an existing item
-- Merging trees: another tree can be merged into a tree (union of their event logs, re-encrypted with this tree's key), after which its items can be moved anywhere; everyone who holds this tree can then read the merged tree including its history
+- Importing a tree into another: another tree can be imported into a tree as a new branch, keeping its history (union of their event logs, re-encrypted with this tree's key); the receiving tree keeps its name, theme and inbox; everyone who holds the receiving tree can then read the imported tree including its history
 - Honest about protection: the app states plainly what it protects (content) and what it does not hide (that and when ThoughtTree is used)
 
 **Quality goals**
@@ -106,6 +106,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - UI: Razor components that read state from the application layer and forward user input to use cases
 - Server in the same style: Server.Core with its ports (store, clock), store adapters, ASP.NET Core as the outermost shell
 - Dependency rule: dependencies only point inwards (UI → Application → Domain; adapters → Application); Domain depends on nothing; checked by architecture tests
+- Navigation state (focus, selection, scroll position) belongs to a view, and the application layer allows several views at once, so a structure sidebar and later side-by-side panes on tablet and desktop need no rework
 - The application layer offers view models shaped for display (for example: item with title, collapsed, has conflict, number of backlinks); the UI binds only to these and never references Domain types
 - Taken from Clean Architecture: the dependency rule, view models instead of domain types in the UI, a structure that shows what the system does; deliberately not taken: interactor, input and output port, request and response model and presenter per use case, and entities with behaviour as the centre
 
@@ -275,9 +276,9 @@ docs/        architecture, ADRs
 2. On a device that holds the tree the user opens "Pair my other device"
 3. App renders a QR code containing the tree access (see Tree access) plus the user identity, generated locally (also shown as a typed code for devices without a camera)
 4. The new device scans the QR code (or the user types the code)
-5. The new device asks the user what to do: add the tree next to the trees already on this device, merge one of this device's trees into it, or cancel
+5. The new device asks the user what to do: add the tree next to the trees already on this device, or cancel
 6. Add: the tree is stored as a further tree with its own key; nothing else on the device changes
-7. Merge: the chosen local tree gives up its own key and account identity and adopts the ones from the QR code; its events are kept, their envelopes are re-encrypted with the adopted key, and they are merged with the other device's events on the next sync
+7. Once the tree's events have arrived (by file or through the server), the user can import it into one of the device's own trees as a new branch ("Import 'Ideas' into 'My thoughts' as a new branch", see Importing a tree into another)
 8. The new device takes over the user identity from the QR code and writes a `device.joined` event, so the tree knows this device belongs to the same user; if the device already had a different user identity, the app asks whether both are the same person, and if so the device writes a new `device.joined` with the adopted identity in each of its other trees
 9. The devices now exchange the tree's events by file, or through the server if server sync is switched on for that tree
 
@@ -366,12 +367,12 @@ docs/        architecture, ADRs
 - External links are clickable and open in a new tab, or in the system browser for the installed app; the target address is shown before opening (hover or long press); the app sends no referrer (`Referrer-Policy: no-referrer`), so a self-hosted server's address is not revealed; no automatic link previews
 - Later, with binary data: a preview picture of a linked page, created only when the user asks for it, on the device, and stored as an encrypted blob in the tree; never created automatically, never through our server or a third-party service, because the address itself is content
 - Remote pictures (`![](https://…)`) are not loaded; the app shows a placeholder with the address, and clicking opens the picture in the browser; later, with binary data, the user can store such a picture once as an encrypted blob in the tree
-- Nothing connects trees: links and relations only point to items of the same tree; the link picker offers only items of the current tree, and an `item:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import, with one sanctioned exception: merging a whole tree into another (see Merging trees)
+- Nothing connects trees: links and relations only point to items of the same tree; the link picker offers only items of the current tree, and an `item:` link whose id is not in the tree is shown as not found; content moves between trees only by readable export and import, with one sanctioned exception: importing a whole tree into another as a new branch (see Importing a tree into another)
 - Fonts: the base font is the device's system font; fonts of themes are shipped from the app's own origin and downloaded in the background only when a theme in use needs them (ADR-061)
 - Views: a tree and any item can have an ordered list of views (saved searches now, layouts such as board or columns later), defined by events and shared like content; the query is structured data with its own format version, results are computed on the device; at the tree level a view lists all views; always available (ADR-062)
 - Themes: a tree and any item can have a theme (`theme.set`), which applies to the whole branch unless a child sets its own; themes are content shared by all devices and users of the tree, referenced by fixed ids shipped with the app (initially "Paper" and "Inbox"), with the default theme "Paper" as fallback; always available (ADR-060)
 - Tutorial tree: on first start the app creates a tutorial tree next to the user's own tree and opens it first; it is an ordinary tree that explains ThoughtTree by its own items; its texts come from the app's resource files and are written in the device's language when the tree is created (not translated afterwards); it can be deleted, and "Show the tutorial again" creates a fresh one in the current version; it is not paired or shared unless the user chooses to
-- Inbox: every tree has an inbox, an ordinary item marked as the tree's inbox by `tree.inbox-set` when the tree is created; captured thoughts are created inside it; it starts with the predefined theme "Inbox", set by an ordinary `theme.set` and changeable like any theme; it is always shown last at the top level, whatever its stored position, expands like any branch and can be focused, themed and tagged; it cannot be moved or deleted; the tree name skips it; after merging two trees the inbox that comes first in the agreed order stays the inbox, the other loses its marking and becomes an ordinary item, and the app offers to move its contents (ADR-066)
+- Inbox: every tree has an inbox, an ordinary item marked as the tree's inbox by `tree.inbox-set` when the tree is created; captured thoughts are created inside it; it starts with the predefined theme "Inbox", set by an ordinary `theme.set` and changeable like any theme; it is always shown last at the top level, whatever its stored position, expands like any branch and can be focused, themed and tagged; it cannot be moved or deleted; the tree name skips it; the latest `tree.inbox-set` in the agreed order wins, so after importing a tree the importing device confirms its own inbox and the other one becomes an ordinary item (ADR-066)
 - Tags: items can carry tags, structural elements of the tree named by display names (ADR-058); a tree feature, switched on by default
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
 - A relation is identified by its three parts (from item, type, to item), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
@@ -445,7 +446,7 @@ docs/        architecture, ADRs
 - `format` names the text format of title and note; initially always `markdown`; it keeps a later change of format possible without guessing what older texts meant
 - Title and note changes carry the full text; one event is written per editing session (when the user leaves the field or after a short pause), not per keystroke, so the log does not grow with every edit
 
-Every event has, besides its data: type name, schema version, `DeviceId`, `Clock` (hybrid logical clock) and `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`). `EventId` sits in the envelope (see Event envelope and encryption). Bookkeeping that only concerns one device, such as the order in which events were stored locally, is kept by the Local Event Store and is not part of the event.
+Every event has, besides its data: type name, schema version, `DeviceId`, `Clock` (hybrid logical clock), `actionId` (shared by all events of one user action, ADR-067) and `Timestamp` (for display only; ISO 8601 with the device's UTC offset at the time of writing, for example `2026-11-11T15:30:00+01:00`). `EventId` sits in the envelope (see Event envelope and encryption). Bookkeeping that only concerns one device, such as the order in which events were stored locally, is kept by the Local Event Store and is not part of the event.
 
 Example of an event before encryption:
 
@@ -454,6 +455,7 @@ Example of an event before encryption:
   "type": "item.title-changed",
   "schema": 1,
   "deviceId": "3f2a…",
+  "actionId": "5b19…",
   "clock": { "time": 1794407400123, "counter": 0 },
   "timestamp": "2026-11-11T15:30:00.123+01:00",
   "data": { "itemId": "a71c…", "title": "Ideas", "replaces": ["9e04…"] }
@@ -494,12 +496,14 @@ Example of an event before encryption:
   - These requirements are part of the store contract tests and a criterion of the open decision on the server store; the simulation injects concurrent pushes and failing batches
 - The exact `ISyncTransport` interface is left to the implementation
 
-**Merging trees**
+**Importing a tree into another**
 
-- Merging a tree into another is the one sanctioned way content moves between trees: the merged tree's events are added to the target tree's log and re-encrypted with the target tree's key
-- Its top-level items become top-level items of the target tree; the tree name stays the title of the first visible top-level item by agreed order
-- Its predefined relation types and display names coincide with the target's (same fixed ids, same values), so they cause no conflicts; its own types and display names are added; a differing `tree.server-changed` becomes an ordinary conflict
-- Open: membership after a merge, and what happens to the merged tree's account and devices (see open decisions)
+- From the user's view: "Import 'Ideas' into 'My thoughts' as a new branch"; offered for two trees on the same device, with the events of both present; the user's tree keeps its name, its theme and its inbox, and the imported tree arrives as one branch
+- This is the one sanctioned way content moves between trees with its history: the imported tree's events are added to the target tree's log (union, re-encrypted with the target tree's key), so ids, history, devices and links are kept
+- Right after, the importing device writes ordinary follow-up events as one action (one `actionId`, ADR-067): a new top-level item titled with the imported tree's name; `item.moved` of each of the imported tree's top-level items under it (its former inbox included, which loses its marking); `theme.set` for the target tree's own theme; `tree.inbox-set` for the target tree's own inbox (the latest marking wins, ADR-066); being newer, they win over the imported tree's name, theme and inbox
+- The app then offers to move the former inbox's contents into the target's inbox, and to delete the imported tree from this device
+- Predefined relation types and display names coincide (same fixed ids, same values), so they cause no conflicts; own types and display names are added; a differing `tree.server-changed` becomes an ordinary conflict
+- Devices or users that still hold the imported tree separately keep it; to work on the result there, they pair with the target tree (see open decision Membership)
 
 **Conflict resolution**
 
@@ -712,7 +716,7 @@ Domain tests:
 | INV-11 | Normalised text: every text in every event is NFC; normalising twice changes nothing |
 | INV-12 | Symmetric relations are one: A–B and B–A of a symmetric type are the same relation |
 | INV-13 | One id, one content: envelopes with the same `EventId` are identical; a known id with different content is rejected and reported, never stored |
-| INV-14 | Undo returns: reverting a change and then reverting the undo gives back the same tree, as long as no other change touched the item in between |
+| INV-14 | Undo returns: reverting an action (all events with its `actionId`) and then reverting the undo gives back the same tree, as long as no other change touched its items in between |
 
 - Reference model: a deliberately naive projection (sort all events, replay one by one) is the referee; property tests check that the real, optimised projection always gives exactly what the model gives; the model is protected like the stored test data and changes only with human approval
 - Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterItemId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation
@@ -926,6 +930,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) | UI work follows the UX concept | `src/ThoughtTree.Client*/**`, `tests/specify/**` |
 | [ADR-065](adr/ADR-065-focus.md) | "Focus" instead of "Zoom" | `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**` |
 | [ADR-066](adr/ADR-066-inbox.md) | The inbox is a marked item, always last | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-067](adr/ADR-067-one-action-one-undo-step.md) | One action, one undo step | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
 
 **Open decisions**
 
@@ -982,7 +987,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | --- | --- | --- | --- |
 | U1 | Capture a thought on the phone | New item within two taps of opening the app (design target) | UI specifications |
 | U2 | Use without touch or without sight | Every flow completable with keyboard and screen reader; WCAG 2.2 AA as the target, verified automatically for the automatable criteria and through feedback for the rest | Accessibility tests, ADR-033 |
-| U3 | Sharing, unencrypted export, merging trees | Never without a confirmed warning | Application layer tests, ADR-041 |
+| U3 | Sharing, unencrypted export, importing a tree into another | Never without a confirmed warning | Application layer tests, ADR-041 |
 | U4 | German interface with longer texts | Layout holds | Pseudo-localisation, UI specifications |
 
 **Portability**
@@ -1092,6 +1097,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | `KeyId` | Short random id of a tree's key, readable in the envelope |
 | `ServerSequence` | Gap-free number the server gives each envelope of an account, in commit order; used only to track sync progress |
 | `reverts` | Event id of the change an undo event reverts |
+| `actionId` | Id shared by all events written for one user action; quick undo reverts an action as one step |
 | `replaces` | List of event ids of the changes an event replaces; used to detect conflicts |
 | `seen` | For each device of a tree, the highest clock a device had received from it; carried by `item.deleted` |
 | Envelope / Schema / App Version | Version of the stored envelope format / of one event type's shape / of the installed release |

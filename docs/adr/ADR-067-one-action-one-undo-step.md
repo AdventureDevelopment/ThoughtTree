@@ -1,6 +1,6 @@
 # ADR-067: One action, one undo step
 
-id: ADR-067 · status: Proposed · kind: constraint
+id: ADR-067 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**`
 

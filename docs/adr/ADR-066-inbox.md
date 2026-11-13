@@ -10,7 +10,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 - **MUST** show the inbox last at the top level, whatever its stored position; "top level, last" places items before it
 - **MUST** let the inbox expand, be focused, themed and tagged like any branch; **MUST NOT** let it be moved or deleted
 - **MUST** skip the inbox when taking the tree name from the first visible top-level item
-- **MUST** keep one inbox after merging trees: the marking that comes first in the agreed order wins; the other inbox becomes an ordinary item, and the app offers to move its contents
+- **MUST** let the latest `tree.inbox-set` in the agreed order win; after importing a tree into another, the importing device writes `tree.inbox-set` for the target's own inbox, the other inbox becomes an ordinary item, and the app offers to move its contents
 - **MUST** offer the inbox's full item menu from the global menu (More › Inbox)
 
 verify:
