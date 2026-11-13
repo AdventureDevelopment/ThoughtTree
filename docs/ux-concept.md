@@ -54,7 +54,7 @@ What the app calls these things in its own wording is decided with microcopy (to
 Named by the owner after trying the first prototype (2026-11-13). These are the heart of ThoughtTree; when a decision is hard or a detail is unclear, they win:
 
 - **Themes per branch:** every project or topic can carry its own mood, visible in the overview and filling the screen when focused
-- **The inbox:** capture without deciding anything first, and sort later, calmly, with the inbox as an ordinary branch at the end of the tree
+- **The inbox, always at hand:** the capture button is there everywhere, even while editing another item; the inbox has its own entry in the global menu with its full item menu; and it can have its own theme, like any branch (capturing itself is known from MLO's widgets; what is new is having the inbox at hand everywhere)
 - **Markdown and emojis:** Markdown in titles (inline) and notes; emojis everywhere, also in tags and other names (tags and names stay unformatted)
 
 ## UX principles
