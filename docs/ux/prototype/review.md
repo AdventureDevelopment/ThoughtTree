@@ -256,3 +256,5 @@ Line numbers ("L…") refer to the prototype file. Topic numbers refer to the co
 | ADR-067: some actions need several undo steps (for example `Title ## note @@tag`) | Keep ADR-067: one action, one undo step |
 | D-54, D-80: 📥 while typing ends the edit, no return to the text; 📥 and toasts can sit behind the keyboard | Keep D-54 and D-80: return to the text with the cursor where it was; 📥 and messages stay above the keyboard |
 | D-65: theme preview from the detail page does not recolour that page | Keep D-65: the live preview recolours the page the user is on |
+| D-69: tutorial inside "My thoughts" | Keep D-69: the tutorial is its own tree next to "My thoughts" |
+| All remaining differences (D-78 confirmation after `##` on new items, D-82 inbox theme Deep stone, D-84 different tree, left-handed formatting bar, item count when renaming a tag, relative sizes, a theme for the whole tree) | Keep the decisions; the owner confirmed that the review covers decided ground and asked to adapt the prototype to the decisions instead |
