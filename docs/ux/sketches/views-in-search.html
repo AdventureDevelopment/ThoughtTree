@@ -1,0 +1,116 @@
+<title>Views in search</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout (v2): four phone frames; the views dropdown sits under the search options. Earlier: four phone frames (wrapping), Paper theme: search opened while focused on "Ideas" with its views; a view showing; a typed search offering "Save as a view"; the tree level with "All views" */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-faint:#9a9084;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--t-hit:#f6dfb8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-hit:#5a4020;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-hit:#5a4020;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:68ch}
+.row{display:flex;flex-wrap:wrap;gap:22px}
+.col{flex:1 1 250px;max-width:320px;min-width:0}
+.col h2{font-size:15px;margin:0 0 8px}
+.col p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
+.ph{position:relative;height:520px;border-radius:20px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:14px}
+.top{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--t-line);font-size:12.5px;color:var(--t-muted);min-height:40px}
+.top b{color:var(--t-text)}
+.sp{flex:1}
+.fb svg{width:16px;height:16px;fill:none;stroke:var(--t-faint);stroke-width:1.4;stroke-linejoin:round}
+.sf{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--t-line)}
+.field{flex:1;min-width:0;border:1.5px solid var(--t-accent);border-radius:10px;padding:7px 10px;background:var(--t-card);font-size:13.5px;color:var(--t-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.field.ph0{color:var(--t-faint)}
+.x{color:var(--t-acc-text);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:7px 10px 4px;align-items:center}
+.lbl{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t-muted);width:100%}
+.chip{font-size:12.5px;border:1.5px solid var(--t-line);border-radius:999px;padding:4px 11px;color:var(--t-text);background:var(--t-card)}
+.chip.on{background:var(--t-accent);border-color:var(--t-accent);color:var(--t-ink)}
+.chip.save{border-style:dashed;color:var(--t-acc-text)}
+.list{flex:1;background:var(--t-card);overflow:hidden}
+.n{display:flex;align-items:center;gap:6px;padding:9px 10px;border-bottom:1px solid var(--t-line);white-space:nowrap;overflow:hidden}
+.n .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.n small{color:var(--t-muted);font-size:11.5px}
+.c1{padding-inline-start:30px}.c2{padding-inline-start:50px}
+.tw{width:16px;color:var(--t-acc-text);font-weight:700;text-align:center}
+.dot{width:16px;color:var(--t-muted);font-size:9px;text-align:center}
+mark{background:var(--t-hit);color:inherit;border-radius:3px;padding:0 1px}
+.tag{font-size:11px;border-radius:999px;padding:1px 7px;background:var(--t-sel);color:var(--t-acc-text)}
+.filter{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--t-sel);font-size:12.5px;border-bottom:1px solid var(--t-line)}
+.filter b{font-weight:600}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;padding:8px 0;border-top:1px solid var(--t-line);color:var(--t-muted);font-size:15px}
+.bar small{display:block;font-size:10px}
+.bar .on{color:var(--t-acc-text)}
+.av .n{flex-wrap:wrap;white-space:normal}
+.av .n .path{width:100%;font-size:11.5px;color:var(--t-muted);padding-inline-start:22px}
+.dd{display:flex;align-items:center;gap:5px;padding:3px 12px 5px;font-size:12px;line-height:1.3;border-bottom:1px solid var(--t-line)}
+.dd b{color:var(--t-acc-text)}
+.dd .k{color:var(--t-muted);font-size:12px}
+.dd b{font-weight:600}
+.dd .car{color:var(--t-acc-text);font-weight:700;font-size:11px}
+.menu{margin:0 10px 0;border:1px solid var(--t-line);border-radius:0 0 12px 12px;background:var(--t-card);box-shadow:0 8px 20px #0002;font-size:13.5px}
+.menu .it{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--t-line)}
+.menu .it .t{flex:1;min-width:0}
+.menu .it small{display:block;color:var(--t-muted);font-size:11.5px}
+.menu .dots{width:30px;height:28px;border:1px solid var(--t-line);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--t-acc-text);font-weight:700}
+.menu .act{color:var(--t-acc-text);padding:9px 12px}
+.menu .cur{background:var(--t-sel)}
+.pop2{position:absolute;inset-inline-end:16px;width:190px;background:var(--t-card);border:1px solid var(--t-line);border-radius:12px;box-shadow:0 8px 24px #0003;padding:4px 0;font-size:13.5px;z-index:3}
+.pop2 div{padding:8px 14px}.pop2 hr{border:0;border-top:1px solid var(--t-line);margin:4px 0}.pop2 .del{color:#b0412e}
+.edit{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--t-sel);font-size:12.5px;border-bottom:1px solid var(--t-line)}
+.btn{background:var(--t-accent);color:var(--t-ink);border-radius:8px;padding:4px 11px;font-size:12.5px}
+</style>
+
+<h1>Views live in search (v3)</h1>
+<p class="lead">Revised: the search options come first; the views sit below them as one small line "View: Outline (3) ▾", text with a caret instead of a switch, so it takes little room and still looks different. Each view can be edited right there. Focused on "Ideas", which has two views. Example content only.</p>
+
+<div class="row">
+
+<div class="col"><h2>1 · 🔍 tapped while in "Ideas"</h2>
+<div class="ph"><div class="top"><span>My thoughts › <b>💡 Ideas</b></span><span class="sp"></span><span class="fb"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span></div>
+<div class="sf"><span class="field ph0">Search in “Ideas”</span><span class="x">✕</span></div>
+<div class="chips"><span class="chip">Changed recently</span></div>
+<div class="dd"><span class="k">View</span><b>Outline</b><span class="k">(3)</span><span class="car">▾</span></div>
+<div class="list"><div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div><div class="n c1"><span class="dot">●</span><span class="t">Why we forget what we read</span></div><div class="n c1"><span class="dot">●</span><span class="t">Night trains feel like time travel</span></div><div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span></div></div>
+<div class="bar"><span>⋯<small>More</small></span><span>↩<small>Undo</small></span><span class="on">🔍<small>Search</small></span><span>＋<small>Add here</small></span></div></div>
+<p class="d">Search field, the options as switches, then a thin line "View: Outline (3) ▾" in small type: plain text and a caret, not a switch, so the two don't mix.</p></div>
+
+<div class="col"><h2>2 · The dropdown open</h2>
+<div class="ph"><div class="top"><span>My thoughts › <b>💡 Ideas</b></span><span class="sp"></span><span class="fb"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span></div>
+<div class="sf"><span class="field ph0">Search in “Ideas”</span><span class="x">✕</span></div>
+<div class="chips"><span class="chip">Changed recently</span></div>
+<div class="dd"><span class="k">View</span><b>Outline</b><span class="car">▴</span></div>
+<div class="menu"><div class="it cur"><span class="t">Outline<small>Everything in “Ideas”</small></span></div>
+<div class="it"><span class="t">👤 Persons<small>Tagged person</small></span><span class="dots">⋯</span></div>
+<div class="it"><span class="t">📚 Recent sources<small>Tagged source · changed recently</small></span><span class="dots">⋯</span></div>
+<div class="act">＋ New view…</div></div>
+<div class="list"></div>
+<div class="bar"><span>⋯<small>More</small></span><span>↩<small>Undo</small></span><span class="on">🔍<small>Search</small></span><span>＋<small>Add here</small></span></div></div>
+<p class="d">Each view says what it searches for. ⋯ on a view edits it right here. "＋ New view…" asks for a name and starts from what is typed and switched on now (or from nothing), in the same way as changing a view (frame 4).</p></div>
+
+<div class="col"><h2>3 · ⋯ on a view</h2>
+<div class="ph"><div class="top"><span>My thoughts › <b>💡 Ideas</b></span><span class="sp"></span><span class="fb"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span></div>
+<div class="sf"><span class="field ph0">Search in “Ideas”</span><span class="x">✕</span></div>
+<div class="chips"><span class="chip">Changed recently</span></div>
+<div class="dd"><span class="k">View</span><b>Outline</b><span class="car">▴</span></div>
+<div class="menu"><div class="it cur"><span class="t">Outline<small>Everything in “Ideas”</small></span></div>
+<div class="it"><span class="t">👤 Persons<small>Tagged person</small></span><span class="dots">⋯</span></div>
+<div class="it"><span class="t">📚 Recent sources<small>Tagged source · changed recently</small></span><span class="dots">⋯</span></div>
+<div class="act">＋ New view…</div></div>
+<div class="pop2" style="top:250px"><div>Change its search</div><div>Rename</div><div>Move up</div><hr><div class="del">Remove</div></div>
+<div class="list"></div>
+<div class="bar"><span>⋯<small>More</small></span><span>↩<small>Undo</small></span><span class="on">🔍<small>Search</small></span><span>＋<small>Add here</small></span></div></div>
+<p class="d">The view's own menu, in the dropdown: change its search, rename, reorder, remove. Each is one undo step.</p></div>
+
+<div class="col"><h2>4 · Changing a view's search</h2>
+<div class="ph"><div class="top"><span>My thoughts › <b>💡 Ideas</b></span><span class="sp"></span><span class="fb"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span></div>
+<div class="edit"><span>Changing <b>👤 Persons</b></span><span class="sp"></span><span class="x">Cancel</span><span class="btn">Save</span></div>
+<div class="sf"><span class="field">@@person walk</span><span class="x">✕</span></div>
+<div class="chips"><span class="chip">Changed recently</span></div>
+<div class="list"><div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div><div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span><span class="tag">person</span><small>in note: <mark>walk</mark>ing</small></div></div>
+<div class="bar"><span>⋯<small>More</small></span><span>↩<small>Undo</small></span><span class="on">🔍<small>Search</small></span><span>＋<small>Add here</small></span></div></div>
+<p class="d">The view's search is loaded into the field and the switches; the outline shows the result live while you change it; Save updates the view, Cancel leaves it as it was.</p></div>
+
+</div>
