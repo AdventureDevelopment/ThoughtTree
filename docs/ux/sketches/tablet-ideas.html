@@ -1,0 +1,112 @@
+<title>Tablet ideas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: four wide frames stacked (tablet landscape), each a "desk" with sheets of paper on it instead of panes: margin notes, open notebook, unfold in place, two sheets */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--desk:#e9e3d8;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-faint:#a0968a;--t-line:#ece4d7;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--stone:#e6e3df;--stone-l:#f4f2ef;--stone-line:#d9d5d0;--shadow:#3a2a1420}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--desk:#141210;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#342e27;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--stone:#1d1b19;--stone-l:#24221f;--stone-line:#39352f;--shadow:#0008;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--desk:#141210;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#342e27;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--stone:#1d1b19;--stone-l:#24221f;--stone-line:#39352f;--shadow:#0008;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:70ch}
+.v{margin-bottom:30px}
+.v h2{font-size:16px;margin:0}.v p{font-size:13px;color:var(--muted);margin:2px 0 8px;max-width:75ch}
+.scroll{overflow-x:auto}
+.tab{position:relative;width:760px;height:440px;border-radius:18px;overflow:hidden;background:var(--desk);color:var(--t-text);font-size:14px}
+.crumb{position:absolute;top:12px;inset-inline-start:18px;font-size:12px;color:var(--t-muted)}
+.crumb b{color:var(--t-text)}
+.fbk{position:absolute;top:10px;inset-inline-end:16px}
+.fbk svg{width:16px;height:16px;fill:none;stroke:var(--t-faint);stroke-width:1.4;stroke-linejoin:round}
+.sheet{position:absolute;top:40px;bottom:0;background:var(--t-card);border-radius:10px 10px 0 0;box-shadow:0 2px 14px var(--shadow);overflow:hidden}
+.n{display:flex;align-items:center;gap:6px;padding:10px 16px;border-bottom:1px solid var(--t-line);white-space:nowrap;overflow:hidden}
+.n .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.c1{padding-inline-start:38px}
+.tw{width:16px;color:var(--t-acc-text);font-weight:700;text-align:center}
+.dot{width:16px;color:var(--t-muted);font-size:9px;text-align:center}
+.sel{background:var(--t-sel)}
+.more{color:var(--t-acc-text);font-weight:700}
+.tag{font-size:11px;border-radius:999px;padding:1px 8px;background:var(--t-sel);color:var(--t-acc-text)}
+.dock{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:22px;background:var(--t-card);border:1px solid var(--t-line);border-radius:999px;padding:7px 22px;box-shadow:0 3px 12px var(--shadow);color:var(--t-muted);font-size:15px;z-index:3}
+.fab{position:absolute;inset-inline-end:18px;bottom:14px;width:46px;height:46px;border-radius:50%;background:var(--t-accent);color:var(--t-ink);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px var(--shadow);z-index:3}
+/* A margin notes */
+.margin{position:absolute;inset-inline-start:572px;width:170px;font-size:12.5px;line-height:1.45;color:var(--t-muted)}
+.margin i{display:block;color:var(--t-text);font-style:italic}
+.margin .meta{margin-top:6px;font-size:11.5px}
+.rule{position:absolute;inset-inline-start:548px;width:18px;border-top:1px solid var(--t-accent)}
+/* B notebook */
+.gutter{position:absolute;top:40px;bottom:0;left:50%;width:26px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--shadow),transparent);z-index:2}
+.page{padding:20px 26px}
+.page h3{margin:0 0 6px;font-size:18px}
+.page .note{font-size:14px;line-height:1.6;margin-top:10px}
+.page .strip{position:absolute;bottom:60px;inset-inline:26px;display:flex;gap:18px;font-size:12px;color:var(--t-muted);border-top:1px solid var(--t-line);padding-top:8px}
+.page .strip b{color:var(--t-text)}
+/* C unfold */
+.unf{background:var(--t-sel);padding:4px 16px 12px 60px;border-bottom:1px solid var(--t-line);font-size:13.5px;line-height:1.55}
+.unf .strip{display:flex;gap:18px;font-size:12px;color:var(--t-muted);margin-top:8px}
+.unf .strip b{color:var(--t-text)}
+/* D two sheets */
+.stone{background:var(--stone-l)}
+.stone .n{border-color:var(--stone-line)}
+.stone .hd{background:var(--stone);font-weight:600}
+.lift{position:absolute;top:150px;inset-inline-start:300px;width:250px;background:var(--stone-l);border:1px solid var(--stone-line);border-radius:9px;box-shadow:0 8px 20px var(--shadow);padding:8px 12px;transform:rotate(-2deg);z-index:4;font-size:13.5px}
+.dropl{position:absolute;top:158px;inset-inline-start:66px;width:270px;height:3px;border-radius:2px;background:var(--t-accent);z-index:4}
+</style>
+
+<h1>Tablet and desktop: a desk, not an office</h1>
+<p class="lead">Other ideas for the wide screen. No panes, splitters or toolbars across the top: sheets of paper lie on a quiet desk, the actions float in a small dock, and the empty width is allowed to stay calm. Example content only.</p>
+
+<section class="v"><h2>1 · Margin notes</h2><p>One sheet in the middle at a comfortable reading width. The selected thought's note, tags and links appear beside its row, in the margin, like notes pencilled into a book. Nothing opens, nothing splits.</p>
+<div class="scroll"><div class="tab"><span class="crumb">My thoughts ▾ › <b>💡 Ideas</b></span><span class="fbk"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span>
+<div class="sheet" style="inset-inline-start:150px;width:400px">
+<div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div>
+<div class="n c1 sel"><span class="dot">●</span><span class="t">Why we forget what we read</span><span class="more">⋯</span></div>
+<div class="n c1"><span class="dot">●</span><span class="t">Night trains feel like time travel</span></div>
+<div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span></div>
+<div class="n"><span class="tw">▾</span><span class="t">🌿 Slow mornings</span></div>
+<div class="n c1"><span class="dot">●</span><span class="t">Silence as a material</span></div></div>
+<span class="rule" style="top:102px"></span>
+<div class="margin" style="top:90px"><i>We keep what we connect to something we know. Maybe writing a line about it is already a connection.</i><div class="meta"><span class="tag">reading</span> <span class="tag">memory</span></div><div class="meta">↗ 1 · ↙ 2 · 🕘 4</div></div>
+<div class="dock"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span></div><div class="fab">📥</div></div></div></section>
+
+<section class="v"><h2>2 · Open notebook</h2><p>Two facing pages: the outline on one, the selected thought as a full page on the other, with room to write a long note. Side by side like before, but as a book you leaf through; closing the right page returns to one sheet.</p>
+<div class="scroll"><div class="tab"><span class="crumb">My thoughts ▾ › <b>💡 Ideas</b></span><span class="fbk"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span>
+<div class="sheet" style="inset-inline-start:40px;width:340px">
+<div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div>
+<div class="n c1 sel"><span class="dot">●</span><span class="t">Why we forget what we read</span><span class="more">⋯</span></div>
+<div class="n c1"><span class="dot">●</span><span class="t">Night trains feel like time travel</span></div>
+<div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span></div>
+<div class="n"><span class="tw">▾</span><span class="t">🌿 Slow mornings</span></div></div>
+<div class="sheet page" style="inset-inline-start:380px;width:340px"><h3>Why we forget what we read</h3><span class="tag">reading</span> <span class="tag">memory</span>
+<div class="note">We keep what we connect to something we know. Maybe writing a line about it is already a connection.<br><br>From the talk by 👤 Mira.</div>
+<div class="strip"><span>🕘 <b>4</b> History</span><span>↗ <b>1</b> Links</span><span>↙ <b>2</b> Linked from</span></div></div>
+<div class="gutter"></div>
+<div class="dock"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span></div><div class="fab">📥</div></div></div></section>
+
+<section class="v"><h2>3 · Unfold in place</h2><p>One sheet. Opening a thought unfolds it right where it is: its note, tags and links appear under its row and push the rest down; folding it closes it again. You never leave the tree.</p>
+<div class="scroll"><div class="tab"><span class="crumb">My thoughts ▾ › <b>💡 Ideas</b></span><span class="fbk"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span>
+<div class="sheet" style="inset-inline-start:160px;width:440px">
+<div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div>
+<div class="n c1 sel" style="border-bottom:0"><span class="dot">●</span><span class="t"><b>Why we forget what we read</b></span><span class="more">⋯</span></div>
+<div class="unf"><span class="tag">reading</span> <span class="tag">memory</span><br>We keep what we connect to something we know. Maybe writing a line about it is already a connection.<div class="strip"><span>🕘 <b>4</b></span><span>↗ <b>1</b></span><span>↙ <b>2</b></span></div></div>
+<div class="n c1"><span class="dot">●</span><span class="t">Night trains feel like time travel</span></div>
+<div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span></div>
+<div class="n"><span class="tw">▾</span><span class="t">🌿 Slow mornings</span></div></div>
+<div class="dock"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span></div><div class="fab">📥</div></div></div></section>
+
+<section class="v"><h2>4 · Two sheets on the desk</h2><p>Two places of the tree lie next to each other, for example your Ideas and the Inbox. You carry a thought from one sheet to the other by hand. Made for the quiet hour of giving thoughts their place; the second sheet is laid down and taken away as needed.</p>
+<div class="scroll"><div class="tab"><span class="crumb">My thoughts ▾</span><span class="fbk"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg></span>
+<div class="sheet" style="inset-inline-start:40px;width:330px">
+<div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div>
+<div class="n c1"><span class="dot">●</span><span class="t">Why we forget what we read</span></div>
+<div class="n c1"><span class="dot">●</span><span class="t">Night trains feel like time travel</span></div>
+<div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span></div>
+<div class="n"><span class="tw">▾</span><span class="t">🌿 Slow mornings</span></div></div>
+<div class="sheet stone" style="inset-inline-start:392px;width:330px">
+<div class="n hd"><span class="tw">▾</span><span class="t">📥 Inbox</span></div>
+<div class="n c1"><span class="dot">●</span><span class="t">Why do ideas come while walking?</span></div>
+<div class="n c1" style="opacity:.3"><span class="dot">●</span><span class="t">Perhaps a quiet mind notices more</span></div>
+<div class="n c1"><span class="dot">●</span><span class="t">What makes a gift personal</span></div></div>
+<div class="dropl"></div><div class="lift">● Perhaps a quiet mind notices more</div>
+<div class="dock"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span></div><div class="fab">📥</div></div></div></section>
