@@ -330,7 +330,7 @@ Templates (owner's wish, 2026-11-13):
 
 Copy and paste (ADR-069, Accepted; the UI is ours to design):
 
-18. Where Copy and Paste live (item menu, sort mode action bar, More), how pasting into another tree works on a phone (switch tree, then paste at the selected row?), and how the calm hint for shared trees looks; to be worked out in topic 7 together with the tree switcher
+18. Closed (D-120): Copy in the item's ⋯ and in sort mode's action bar; Paste below in the item's ⋯; Paste at the top level under More
 
 Store app (for the architecture):
 
@@ -459,3 +459,4 @@ Store app (for the architecture):
 | D-117 | 2026-11-14 | 7 Information architecture (trees) | "＋ New tree" in both places: at the end of the tree list that opens from the tree's name at the top (create and go there), and under More › Trees (with managing trees) | Owner |
 | D-118 | 2026-11-14 | 7 Information architecture (trees) | "＋ New tree" opens a small sheet that asks only for the name, with the keyboard open; Enter creates the tree and opens it. A new tree starts with its inbox only (ADR-066), no templates (ADR-068), and the Paper theme (D-65); the theme is changed later. An empty name is not accepted (the button stays disabled), so every tree in the list has a name | Owner |
 | D-119 | 2026-11-14 | 7 Information architecture (trees) | Managing a tree happens in More › Trees: each tree's row has a ⋯ with Rename, Theme and Remove from this device (the tutorial: Delete, brought back with "Show the tutorial again"); no hidden long press on the name at the top | Owner |
+| D-120 | 2026-11-14 | 7 Information architecture, ADR-069 | Copy and paste (closes open question 18): ⋯ › Copy copies an item with its branch; in sort mode, Copy in the action bar copies all ticked items with their branches; ⋯ › Paste below pastes after the selected item (on the inbox: into it, at the end); More › Paste at the top level pastes into a tree, also an empty one, above the inbox. Paste entries appear only while something is copied; a paste is one undo step (ADR-067) and the message names what came from which tree, with Undo. The first paste into a shared tree adds the calm hint of ADR-069 | Owner, after trying the prototype |
