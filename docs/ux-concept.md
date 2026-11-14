@@ -62,7 +62,7 @@ Named by the owner after trying the first prototype (2026-11-13). These are the 
 
 Derived from journeys A to D (decisions D-16, D-24). They guide every later decision, including the agents'.
 
-1. **Capture first, sort later.** Nothing has to be decided before typing: not the place, not the tree, not the kind. (D-1, D-4, D-5)
+1. **Capture first, structure later.** Nothing has to be decided before typing: not the place, not the tree, not the kind. (D-1, D-4, D-5)
 2. **Create in the tree, go deeper in the detail view.** New items are created and named in place in the tree; titles take inline Markdown (emphasis, links, inline code) and emojis. Shortcuts live in the text itself (space, Backspace, `##`, `@@`), each with a visible alternative. Longer text is written in the item's detail view. Quick capture opens a light sheet whose lines behave exactly like the outline, so typing works the same everywhere. (D-2, D-3, D-10, D-11, D-14, D-18)
 3. **Stay in the flow.** After every action the user stays where they were, and the next step is right there. (D-2, D-7, D-13)
 4. **Effort fits the distance.** Near by hand (drag), far by choosing (search); finding the right place must be easy. (D-6, D-9)
@@ -71,6 +71,7 @@ Derived from journeys A to D (decisions D-16, D-24). They guide every later deci
 7. **Saved at once and reliably.** The user never wonders whether something was stored. (Journey A; quality goal reliability)
 8. **Start simple.** A feature comes when use shows it is missed. (D-9, D-15)
 9. **Nothing happens behind the user's back.** The app shows what arrived and what clashed, and never decides silently for the user; when something needs the user, it waits calmly until they have time. (D-21, D-22, D-23; ADR-018)
+10. **Your own thinking.** ThoughtTree has no AI that reads, structures or writes your thoughts. The structure grows from your own decisions: deciding where a thought belongs and how thoughts connect is the thinking itself, and some thoughts are for nobody else. That is the point, not a missing feature. (D-142; [ADR-071](adr/ADR-071-no-ai-on-content.md), Proposed)
 
 Inherited from the architecture and applying on top: accessible (ADR-033), and honest about what is protected (section 1).
 
@@ -481,3 +482,4 @@ Store app (for the architecture):
 | D-139 | 2026-11-14 | 10 Microcopy (wording rule) | "Structure" names the big idea: thoughts grow into a shape (lesson titles, the vision, the Welcome). "Place" / "find a place" names moving a thought out of the inbox (for example "Find a place for it"). "Sort" is used only for sort mode (D-88), where several items are put in order. Reason: to sort means putting things into places that already exist and undersells the vision; the same distinction holds in German ("sortieren" vs "strukturieren"). Existing texts (journey titles, tutorial lines, tips) are adjusted when they are next touched | Owner |
 | D-140 | 2026-11-14 | 9 Onboarding, 10 Microcopy | The lesson is named "🔎 Finding thoughts again", not "things": the app calls its content thoughts everywhere; even a person or a book is there as a thought (what the user thinks about them), and a view is a thought about what the user wants to see. Wording rule: user-facing texts say "thought(s)", not "thing(s)"; "item" stays the technical term (ADR-063) | Owner |
 | D-141 | 2026-11-14 | 9 Onboarding, 10 Microcopy | The templates lesson is named "🧩 Templates: thoughts with a shape ready": a template is a thought whose shape exists before its content. Wording: "shape" for the form of one thought, "structure" for how thoughts grow together (D-139) | Owner |
+| D-142 | 2026-11-14 | 1 Principles, 9 Onboarding | New principle 10 "Your own thinking": ThoughtTree has no AI that reads, structures or writes the user's thoughts; the structure grows from the user's decisions, which is the thinking itself, and private thoughts are for nobody else (the owner uses AI elsewhere and wants a place without it: brain training, old-fashioned, just me). The tutorial's privacy branch gets a line: "No AI reads your thoughts. ThoughtTree has none, on purpose." Principle 1 now reads "Capture first, structure later" (D-139). Proposed as [ADR-071](adr/ADR-071-no-ai-on-content.md) (Proposed), so agents do not add AI features | Owner |
