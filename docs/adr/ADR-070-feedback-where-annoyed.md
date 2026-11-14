@@ -1,6 +1,6 @@
 # ADR-070: Feedback offered where the user is, with the place it came from
 
-id: ADR-070 · status: Proposed · kind: constraint
+id: ADR-070 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`
 
@@ -10,6 +10,7 @@ Extends ADR-051 (Accepted, unchanged); proposed by the UX concept (decision D-12
 - **MUST**, while the setting is on, end every menu and sheet with a quiet line "Something not right? Tell us", except the capture sheet, which holds only writing
 - **MUST**, while the setting is on, show one small, unobtrusive feedback button at the top of the screen; it never covers content and is not part of the bottom bar
 - **MUST** add to the report's diagnostics block the place the report was started from, as a fixed identifier from a closed list (for example `item-menu`, `move-to`, `tags`, `theme`, `history`, `links`, `from-template`, `more`, `trees`, `settings`, `top-button`, `error`); never titles, search text or any other content
+- **MUST** version the closed list of origins with the report format, so the pipeline can validate it
 - **MUST** keep all other rules of ADR-051: the report is shown before sending and can be edited or cancelled, nothing is sent automatically
 - **MUST** still offer More › Send feedback when the setting is off, so feedback stays possible for everyone
 

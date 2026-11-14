@@ -390,6 +390,7 @@ docs/        architecture, ADRs
 
 - All app texts are kept in resource files (`.resx` with `IStringLocalizer`) from the start; no text is written directly into a component; the same files hold the names of predefined elements
 - Source language English, first translation German
+- Easy language: the tutorial (and later other texts) also exists in Easy language, as its own set of resource files per variant (for example `de-x-easy`, `en-x-easy`), chosen in the settings like a language
 - The app language follows the device's language and can be changed in the settings; this setting belongs to the device and is not synced; changing it reloads the app
 - Dates, times and numbers are shown in the format of the chosen language; they are stored as before (ISO 8601 with UTC offset)
 - All languages are available offline: the service worker caches all resource files
@@ -404,7 +405,7 @@ docs/        architecture, ADRs
 - Search and comparisons normalise as well, as a safeguard against events from a faulty or very old app
 - Right-to-left text: every title and note paragraph is shown with automatic direction detection (`dir="auto"`), so content in Arabic, Hebrew or mixed languages displays correctly in any interface language
 - No right-to-left interface for now, but the UI is built direction-neutral from the start: CSS logical properties (`margin-inline-start` instead of `margin-left`), and gestures defined relative to the reading direction ("towards the end of the line" instead of "to the right"), so a mirrored interface later needs no rework
-- Translating content on the fly is a possible later feature; it must run on the device, or only after explicit consent with a clear warning, because sending plain text to an external translation service would break end-to-end encryption
+- Content is never translated, neither stored nor on the fly: translation would need an AI model reading the user's thoughts, which ADR-071 rules out
 - Binary data (pictures, files) is planned for later: it is stored as separate encrypted blobs and referenced from events by id, never placed inside events
 - Tree name: the title of the first visible top-level item other than the inbox; renaming that item or placing another item first renames the tree, with no event of its own; a tree without visible top-level items is shown as "Untitled" (not stored)
 - `Device`: Id (GUID), Label; the label travels as a `device.label-changed` event in the log of every tree the device holds, so all other devices of that tree learn it, and it is encrypted like every other event
@@ -584,6 +585,7 @@ Example of an event before encryption:
 - End-to-end encryption: event payloads are encrypted on the device with the key (Web Crypto API); the server stores and relays only ciphertext
 - The key never leaves the user's devices except through pairing, sharing (QR code or typed code) or an explicit key backup; the server holds no key material
 - Readable export is unencrypted by design: it is never the default, never automatic, always for one tree only, confirmed after a warning, and the file name marks it as unencrypted
+- No AI on the user's thoughts: no AI model, on the device, on a server or at a third party, reads, summarises, classifies, places, links, completes or writes titles, notes, tags, views or structure; only deterministic helpers with visible rules (search, suggestions of known tags, templates, link suggestions by title match) (ADR-071)
 - Authorship is not proven: `DeviceId` and `userId` are not signed, so anyone holding a tree's key can write events that appear to come from another device or user; the server, or someone with a device token, can withhold events or send old ones again; the app's explanation of what it protects says so
 - Each tree's key is random; it is stored extractable, because pairing and sharing must put it into a QR code (accepted trade-off: a non-extractable key would be safer against theft from the device)
 - Authentication only by device token; all sync endpoints require a valid token; there are no user accounts or logins on the server, because they would link all trees of a user to one identity
@@ -937,6 +939,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-067](adr/ADR-067-one-action-one-undo-step.md) | One action, one undo step | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-068](adr/ADR-068-templates.md) | Templates are marked items, valid below their parent | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-069](adr/ADR-069-copy-paste-between-trees.md) | Copy and paste between trees | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-070](adr/ADR-070-feedback-where-annoyed.md) | Feedback offered where the user is, with the place it came from | `src/ThoughtTree.Client*/**` |
+| [ADR-071](adr/ADR-071-no-ai-on-content.md) | No AI on the user's thoughts | `src/**` |
 
 **Open decisions**
 

@@ -7,7 +7,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 - **MUST** give user-definable structural elements their names only through `display-name.set` / `display-name.removed`, per language
 - **MUST** show display names in this order: device language, its base language, app resource files (predefined elements), any display name
 - **MUST NOT** translate content (titles, notes) in the log
-- **MUST** translate content on the fly, if ever, on the device or only after explicit consent with a warning
+- **MUST NOT** translate content on the fly either: it would need an AI model reading the user's thoughts (ADR-071)
 
 verify:
 

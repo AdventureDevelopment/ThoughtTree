@@ -1,6 +1,6 @@
 # ADR-071: No AI on the user's thoughts
 
-id: ADR-071 · status: Proposed · kind: constraint
+id: ADR-071 · status: Accepted · kind: constraint
 
 applies_to: `src/**`
 
