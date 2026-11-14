@@ -356,7 +356,7 @@ docs/        architecture, ADRs
 - `Tree`: one independent outline, the projection over one event log; it has its own key and its own account identity (account id and account secret)
 - A device can hold several trees; they share nothing and are synced, searched and exported separately
 - Top level: an item without a parent is a top-level item; a tree can have one or several; there is no special root item, every item is created by `item.created`
-- Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are full Markdown; display names (tags, relation types and other structural elements) and view names are plain text without Markdown; all text is Unicode and may contain emojis; search and sorting work on the text without Markdown markers
+- Text: titles are a single line of Markdown limited to inline formatting (emphasis, links, inline code); notes are Markdown without headings (a heading is a thought: typing one in a note creates an item inside, ADR-072); display names (tags, relation types and other structural elements) and view names are plain text without Markdown; all text is Unicode and may contain emojis; search and sorting work on the text without Markdown markers
 - Every item has exactly one parent (or none at top level), for good; an item cannot appear in several places; where something is needed in two places, a link points to it
 - Links inside text: a title or note links to an item with a standard Markdown link using the `item:` scheme, for example `[project ideas](item:a71c4e0b-…)`; item ids never change, so links survive moves and renames
 - Link text: the link picker inserts a live link with empty text (`[](item:<id>)`), shown with the target's current title as plain text; if the user types their own text, it stays fixed; renaming an item writes no event for the links pointing to it; readable export fills in the target's title for live links
@@ -375,6 +375,7 @@ docs/        architecture, ADRs
 - Inbox: every tree has an inbox, an ordinary item marked as the tree's inbox by `tree.inbox-set` when the tree is created; captured thoughts are created inside it; it starts with the predefined theme "Inbox", set by an ordinary `theme.set` and changeable like any theme; it is always shown last at the top level, whatever its stored position, expands like any branch and can be focused, themed and tagged; it cannot be moved or deleted; the tree name skips it; the latest `tree.inbox-set` in the agreed order wins, so after importing a tree the importing device confirms its own inbox and the other one becomes an ordinary item (ADR-066)
 - Copy and paste: items with their branches can be copied into another tree or place; the paste creates new items as one action, carries titles, notes, structure, tags (matched by name), themes and template markings, rewrites links and relations within the copy, drops relations to outside items, and starts without history; pasting into a shared tree shows a calm hint the first time (ADR-069)
 - Templates: a template is an ordinary item marked by `item.template-set`, valid in its parent's branch; creating from it (`::name` at the start of an empty line, or "From template…") copies its branch as one action without a reference back; new trees get no templates, the tutorial tree offers a set to copy (ADR-068)
+- Focus shows a thought as a page: title, tags, a line with history and links, the note, then the branch, whose items are formatted like headings with their notes; there is no separate detail page (ADR-072)
 - Tags: items can carry tags, structural elements of the tree named by display names (ADR-058); a tree feature, switched on by default
 - Relations: besides the tree structure (parent, child, sibling order), items can be connected by typed, directed relations (for example `depends_on`, `references`), in any number and across the tree; relations never change where an item sits
 - A relation is identified by its three parts (from item, type, to item), so adding the same relation twice yields one relation; concurrent adding and removing is decided by the agreed event order, without conflict marking
@@ -941,6 +942,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-069](adr/ADR-069-copy-paste-between-trees.md) | Copy and paste between trees | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-070](adr/ADR-070-feedback-where-annoyed.md) | Feedback offered where the user is, with the place it came from | `src/ThoughtTree.Client*/**` |
 | [ADR-071](adr/ADR-071-no-ai-on-content.md) | No AI on the user's thoughts | `src/**` |
+| [ADR-072](adr/ADR-072-headings-are-thoughts.md) | A heading is a thought; Focus shows a thought as a page | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 

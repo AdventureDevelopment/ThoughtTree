@@ -1,6 +1,6 @@
 # ADR-072: A heading is a thought; Focus shows a thought as a page
 
-id: ADR-072 · status: Proposed · kind: constraint
+id: ADR-072 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
@@ -12,6 +12,7 @@ Proposed by the UX concept (decisions D-151, D-153, D-155). Touches section 8 (t
 - **MUST** ask before converting when text containing headings is pasted or imported into a note: turn the headings into items (deeper headings become items inside them; text before the first heading stays the note), or keep one note with the heading lines kept as bold text
 - **MUST** keep notes that already contain headings readable (events are immutable): they are rendered, and the user is offered the same conversion
 - **SHOULD** write items as headings in the readable Markdown export and read headings as items in the readable import (ADR-019), so a document and its tree round-trip
+- **MUST** write levels deeper than Markdown's six heading levels as nested lists in the readable export, and read them back as items, so deep branches round-trip too
 
 verify:
 
