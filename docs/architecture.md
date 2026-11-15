@@ -791,7 +791,7 @@ End-to-end tests:
 - Scenarios: (1) two devices sync through the real server, live mode with a SignalR notification and manual mode; (2) offline start from the service worker cache, edits survive a reload; (3) installability: manifest, service worker, installation criteria; (4) update control between two real builds, rebuild of snapshots and search index after consent; (5) migration of local storage from the previous release; (6) file export in one browser context, import in another; (7) pairing by typed code, and in Chromium by QR code with a video file as fake camera; (8) app closed while writing, no event lost; (9) scenario 1 against the self-hosted container
 - The fixture starts the whole system locally (published client as static files, server with SQLite), without Azure or secrets; every test gets fresh browser contexts and a fresh server store; no waiting for fixed times; the server can run with fake time
 - On failure Playwright keeps a trace, stored by CI as an artifact for diagnosis; no traces for passing runs; no automatic retries
-- Push gate: scenarios 1, 2, 6 and 8 in Chromium; nightly: all scenarios in Chromium, WebKit and Firefox, scenario 9 in CI with Docker
+- Push gate: scenarios 1, 2, 6 and 8 in Chromium (release 1, without a server: 2, 6, 7 and 8, owner decision 2026-11-15); nightly: all scenarios in Chromium, WebKit and Firefox, scenario 9 in CI with Docker
 - Every release is reproducible from its git tag and its build is archived (for example attached to a GitHub release), from the first release on; update, migration and "old reads new" tests depend on it
 
 Deployment tests:
