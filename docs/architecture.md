@@ -731,7 +731,7 @@ Domain tests:
 - Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterItemId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation
 - Scenario tests in readable form (given events, when an action, then the tree) cover the runtime scenarios of section 6
 - Runs in under about 30 seconds on every push, with fixed seeds plus one new random seed; nightly runs use many more cases
-- Tooling: xUnit v2 (2.9.x, because LambdaTale 2.9.x requires it; no LambdaTale 3.x exists on nuget.org, checked 2026-11-15; revisit when LambdaTale supports xUnit v3); CsCheck for property-based and model-based tests; Shouldly for assertions; LambdaTale 2.9.x (bbv's port of xBehave.net) for scenario tests; Verify for expected trees as text outlines; `FakeTimeProvider` for time; Stryker.NET for mutation testing (changed code via `--since`); Microsoft code coverage for information only; ArchUnitNET for architecture rules
+- Tooling: xUnit v2 (2.9.x, because LambdaTale 2.9.x requires it; no LambdaTale 3.x exists on nuget.org, checked 2026-11-15; revisit when LambdaTale supports xUnit v3, ADR-075); CsCheck for property-based and model-based tests; Shouldly for assertions; LambdaTale 2.9.x (bbv's port of xBehave.net) for scenario tests; Verify for expected trees as text outlines; `FakeTimeProvider` for time; Stryker.NET for mutation testing (changed code via `--since`); Microsoft code coverage for information only; ArchUnitNET for architecture rules
 
 Format tests:
 
@@ -947,6 +947,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-072](adr/ADR-072-headings-are-thoughts.md) | A heading is a thought; Focus shows a thought as a page | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-073](adr/ADR-073-encryption-hardening.md) | Encryption hardening before release 1 | `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-074](adr/ADR-074-release-1-scope.md) | Release 1 scope: standalone, file exchange, final formats | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-075](adr/ADR-075-xunit-v2-lambdatale.md) | xUnit v2 and LambdaTale 2.9.x for all test projects | `tests/**`, `Directory.Packages.props`, `**/*.csproj` |
 
 **Open decisions**
 
@@ -1071,7 +1072,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 - Live mode keeps connections open, which can prevent scaling to zero and raise cost; with several server replicas, in-memory rate limits and counters are per replica and reset on every cold start
 - WCAG 2.2 AA is only partly verifiable automatically; screen reader experience relies on feedback
 - Server data of accounts that are no longer used stays until account deletion and retention are decided
-- LambdaTale is a niche dependency that every specification relies on
+- LambdaTale is a niche dependency that every specification relies on (ADR-075, bet card with review triggers)
 
 ## 12. Glossary
 

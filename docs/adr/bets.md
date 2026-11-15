@@ -124,3 +124,14 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** Users with the permission use it responsibly; spam does not appear; more feedback arrives than through GitHub alone.
 - **Signal:** Server counters: inbox messages per day, rejected messages; share of feedback arriving privately versus as GitHub issues; feedback about the inbox itself.
 - **Review when:** the counters jump (switch the inbox off with the operations flag) · 20 inbox messages have arrived or the next release ships: raise the share to everyone or remove the inbox.
+
+<a id="adr-075"></a>
+
+## ADR-075: xUnit v2 and LambdaTale 2.9.x for all test projects
+
+**TL;DR:** We bet that staying on xUnit v2 with LambdaTale 2.9.x is worth the dependency on a niche library until LambdaTale supports xUnit v3.
+
+- **Outcome:** Every specification is written in one readable domain-language style, with one test framework, from the first line of code.
+- **Assumption:** LambdaTale stays maintained and compatible enough with the .NET version in use; xUnit v2 keeps working and receives fixes while it is needed; moving to xUnit v3 later is a contained change in the test projects.
+- **Signal:** The owner's own look at the LambdaTale releases on nuget.org when a review trigger below is considered; no data is collected.
+- **Review when:** LambdaTale publishes a release that supports xUnit v3 · xUnit v2 stops receiving fixes, or a new .NET or Playwright version no longer works with it · the maintainers of LambdaTale archive the repository or stop answering issues · an agent or the owner needs a spec feature LambdaTale does not offer.
