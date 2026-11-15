@@ -1,6 +1,6 @@
 # ThoughtTree – UX Concept
 
-Status: in progress; foundation topics 1, 2, 3, 4 and 11 worked out, topic 5 (phone) and parts of 7 (item detail) started; see the decision log. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
+Status: complete for release 1 (2026-11-15): all eleven topics are worked out, see the decision log (D-1 to D-163). Postponed and listed under Open questions: links as relations (19) with the link part of templates (D-111), the dream features (15, 16) and the review of dormant thoughts (comparison idea 39). Sketches are in [ux/sketches](ux/sketches/); the prototype in [ux/prototype](ux/prototype/) reflects the decisions up to D-114 only, and the concept wins where they differ. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
 
 ## Approach
 
