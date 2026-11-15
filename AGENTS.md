@@ -41,6 +41,7 @@ Read this first. Rules carry their ADR id in brackets; the ADR has the detail an
 - Never change or delete stored data in `tests/data/formats` or `tests/data/regression-seeds`; both are append-only [ADR-035].
 - Never accept new or changed `*.verified.*` snapshots automatically [ADR-035].
 - Never push directly to `main`; every change goes through a pull request [ADR-035, ADR-046].
+- Never force-push, or rewrite the history of, a branch you did not create.
 - Never write a nondeterministic test, and never make a gate test need Azure accounts, secrets or network [ADR-035].
 
 ## 4. Workflow
@@ -147,6 +148,5 @@ No application code exists yet. Do not invent commands; fill these in when the p
 
 ## Proposed additions (no ADR yet)
 
-- Never force-push, or rewrite the history of, a branch you did not create.
 - Commit messages and pull request descriptions: format and attribution lines.
 - Whether agents may run the push gate locally or only in CI once the project exists.
