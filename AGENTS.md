@@ -57,7 +57,7 @@ Read this first. Rules carry their ADR id in brackets; the ADR has the detail an
 
 ## 4a. Writing specs with LambdaTale
 
-- Package `bbv.LambdaTale`, version **2.9.306** (latest on nuget.org, depends on `xunit.core` 2.9.x). Source: https://www.nuget.org/packages/bbv.LambdaTale and https://github.com/bbvch/LambdaTale. ADR-054 and architecture.md say "LambdaTale v3 on xUnit v3"; no such release is documented (see Proposed additions). Do not add or change the package reference until the owner has settled this.
+- Package `bbv.LambdaTale` 2.9.x (2.9.306 at 2026-11-15; depends on `xunit.core` 2.9.x, so the test projects use xUnit v2). Owner decision: xUnit v2 throughout until LambdaTale supports xUnit v3 [docs/architecture.md section 8]. Source: https://www.nuget.org/packages/bbv.LambdaTale and https://github.com/bbvch/LambdaTale.
 - Syntax verified against the README: `[Scenario]` on the method, `using LambdaTale;`, steps as `"Given ...".x(() => ...)`, async steps as `.x(async () => ...)`. Share state through variables declared in the scenario method. Do not use anything not in the README (for example `[Example]`) without checking the docs first.
 - Location: `tests/specify/ThoughtTree.<Project>.Specs/<Feature>/...Specs.cs`, feature folder named after the glossary [ADR-054]. Tag the class `[Trait("Intent", "Specify")]`, plus `[Trait("ADR", "ADR-0xx")]` for each ADR it secures; name `INV-n` or `D-n` in the scenario title.
 
@@ -150,4 +150,3 @@ No application code exists yet. Do not invent commands; fill these in when the p
 - Never force-push, or rewrite the history of, a branch you did not create.
 - Commit messages and pull request descriptions: format and attribution lines.
 - Whether agents may run the push gate locally or only in CI once the project exists.
-- LambdaTale version mismatch: ADR-054 and architecture.md section 8 say "LambdaTale v3 (bbv's port of xBehave.net to xUnit v3)", but the documentation at nuget.org/packages/bbv.LambdaTale and github.com/bbvch/LambdaTale shows only 2.9.306 on xUnit 2.9.x, with no v3 release. The owner decides which package and version to use (and whether xUnit v3 stays).

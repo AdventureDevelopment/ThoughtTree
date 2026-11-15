@@ -729,7 +729,7 @@ Domain tests:
 - Generators create random but valid histories of several devices working concurrently, biased towards hard cases (same `afterItemId`, moves into deleted subtrees, cycles, equal clocks, clocks far ahead, unknown event types); they are reused by the simulation
 - Scenario tests in readable form (given events, when an action, then the tree) cover the runtime scenarios of section 6
 - Runs in under about 30 seconds on every push, with fixed seeds plus one new random seed; nightly runs use many more cases
-- Tooling: xUnit v3; CsCheck for property-based and model-based tests; Shouldly for assertions; LambdaTale v3 (bbv's port of xBehave.net to xUnit v3) for scenario tests; Verify for expected trees as text outlines; `FakeTimeProvider` for time; Stryker.NET for mutation testing (changed code via `--since`); Microsoft code coverage for information only; ArchUnitNET for architecture rules
+- Tooling: xUnit v2 (2.9.x, because LambdaTale 2.9.x requires it; no LambdaTale 3.x exists on nuget.org, checked 2026-11-15; revisit when LambdaTale supports xUnit v3); CsCheck for property-based and model-based tests; Shouldly for assertions; LambdaTale 2.9.x (bbv's port of xBehave.net) for scenario tests; Verify for expected trees as text outlines; `FakeTimeProvider` for time; Stryker.NET for mutation testing (changed code via `--since`); Microsoft code coverage for information only; ArchUnitNET for architecture rules
 
 Format tests:
 
