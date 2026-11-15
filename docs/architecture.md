@@ -698,7 +698,8 @@ Kinds of tests and loops: tests are not a numbered stack; they are grouped by ro
 | Loop | Time | Contains |
 | --- | --- | --- |
 | Inner loop (the agent while working) | Seconds | Compiler; specifications, properties and component rules of the area being changed; UI specifications in Chromium |
-| Push gate | Within the time budget (for example 10 minutes) | All specifications and all securing tests (including size budget and complexity checks), regression seeds, mutation testing of changed Domain code, UI specifications in all three browsers, end-to-end smoke set in Chromium, self-hosted container test (CI with Docker) |
+| Branch check | Within a few minutes; runs in CI on every push to a branch (owner decision 2026-11-15, saves CI minutes) | Build with warnings as errors, analyzers, banned APIs and architecture tests, all specifications and securing tests that need no browser (including regression seeds and format data), UI specifications in headless Chromium, licence check, fast `verify` checks of ADRs |
+| Push gate (runs on pull requests only; required for merge) | Within the time budget (for example 10 minutes) | All specifications and all securing tests (including size budget and complexity checks), regression seeds, mutation testing of changed Domain code, UI specifications in all three browsers, end-to-end smoke set in Chromium, self-hosted container test (CI with Docker) |
 | Nightly | Hours | Long simulations, full end-to-end in three browsers, mutation testing of the whole Domain |
 | After deployment | Minutes | Deployment smoke tests |
 | Before release | Minutes | Short release check on the owner's phone |
@@ -1148,7 +1149,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Reference Model | A deliberately naive projection that serves as the referee for the real one |
 | Regression Seed | A simulation seed that failed once and is replayed on every push |
 | Specify / Secure / Confirm | The three intents of tests: acceptance criteria / correctness and rules / the whole system in real environments |
-| Inner Loop / Push Gate | Tests an agent runs while working / tests that must pass on every push |
+| Inner Loop / Branch Check / Push Gate | Tests an agent runs while working / the smaller set CI runs on every push to a branch / the full set that must pass before a change can merge (runs on pull requests) |
 | Spec Host | A test build of the client with hooks to load state and control time, never shipped |
 | Test Id Catalogue | Shared C# constants naming the `data-testid` of every element that shows a domain concept |
 | Bet Card | The entry for a bet in `docs/adr/bets.md`: TL;DR, outcome, assumption, signal, review trigger |
