@@ -139,6 +139,7 @@ No application code exists yet. Do not invent commands; fill these in when the p
 | All tests | `TODO(step: project setup)` |
 | Tests of one ADR | `dotnet test --filter "ADR=ADR-0xx"` [docs/adr/README.md] |
 | Inner loop (area being changed) | `TODO(step: project setup)` |
+| Branch check | `TODO(step: project setup)` |
 | Push gate | `TODO(step: project setup)` |
 | Mutation tests (changed Domain code) | `TODO(step: project setup)` |
 | UI specifications | `TODO(step: project setup)` |
