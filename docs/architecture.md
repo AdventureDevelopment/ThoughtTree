@@ -945,7 +945,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-071](adr/ADR-071-no-ai-on-content.md) | No AI on the user's thoughts | `src/**` |
 | [ADR-072](adr/ADR-072-headings-are-thoughts.md) | A heading is a thought; Focus shows a thought as a page | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-073](adr/ADR-073-encryption-hardening.md) | Encryption hardening before release 1 | `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-074](adr/ADR-074-release-1-scope.md) | Release 1 scope: standalone, file exchange, final formats (Proposed) | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-074](adr/ADR-074-release-1-scope.md) | Release 1 scope: standalone, file exchange, final formats | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
 
 **Open decisions**
 
@@ -971,7 +971,7 @@ Ordered by when they must be settled (release 1 scope, decision 4).
 
 Closed: touch gestures for indent, outdent and move are decided in the UX concept (D-54, D-72, D-75, D-76, D-89). Release 1 scope is decided (below).
 
-**Release 1 scope** (decided by the owner, 2026-11-15; rules for agents in [ADR-073](adr/ADR-073-encryption-hardening.md), Accepted, and [ADR-074](adr/ADR-074-release-1-scope.md), Proposed)
+**Release 1 scope** (decided by the owner, 2026-11-15; rules for agents in [ADR-073](adr/ADR-073-encryption-hardening.md) and [ADR-074](adr/ADR-074-release-1-scope.md), both Accepted)
 
 Release 1 is the first public release. It gets the foundation right: everything it stores is final, so server sync, sharing, replicas and binary data can follow later without migrating data. Given by the owner: phone, tablet and desktop; no sync server, every device standalone, sync only by encrypted file with the guided round trip (D-19, D-20); themes per tree and per item; the tutorial tree as the first tree; static hosting on Azure Static Web Apps with a preview per pull request (D-50, D-51).
 
