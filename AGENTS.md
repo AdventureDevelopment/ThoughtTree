@@ -55,6 +55,58 @@ Read this first. Rules carry their ADR id in brackets; the ADR has the detail an
 - Open a pull request with `.github/pull_request_template.md`. Protected paths (`tests/specify/**`, `tests/data/**`, reference model, `*.verified.*`, `docs/**`) need the owner's review [ADR-035].
 - UI changes: read the UX principles, terms and decisions for the screen first [ADR-064]. Fill the template's UI checklist (principles, terms, tokens only, sketch linked, screenshots, keyboard and screen reader paths). Attach phone and tablet screenshots (light and dark), the sketch link and the preview link [ADR-064]. Use the terms of the glossary [ADR-063].
 
+## 4a. Writing specs with LambdaTale
+
+- Package `bbv.LambdaTale`, version **2.9.306** (latest on nuget.org, depends on `xunit.core` 2.9.x). Source: https://www.nuget.org/packages/bbv.LambdaTale and https://github.com/bbvch/LambdaTale. ADR-054 and architecture.md say "LambdaTale v3 on xUnit v3"; no such release is documented (see Proposed additions). Do not add or change the package reference until the owner has settled this.
+- Syntax verified against the README: `[Scenario]` on the method, `using LambdaTale;`, steps as `"Given ...".x(() => ...)`, async steps as `.x(async () => ...)`. Share state through variables declared in the scenario method. Do not use anything not in the README (for example `[Example]`) without checking the docs first.
+- Location: `tests/specify/ThoughtTree.<Project>.Specs/<Feature>/...Specs.cs`, feature folder named after the glossary [ADR-054]. Tag the class `[Trait("Intent", "Specify")]`, plus `[Trait("ADR", "ADR-0xx")]` for each ADR it secures; name `INV-n` or `D-n` in the scenario title.
+
+```csharp
+// placeholder types: not implemented yet
+using LambdaTale;
+using Shouldly;
+using Xunit;
+
+[Trait("Intent", "Specify")]
+[Trait("ADR", "ADR-005")]
+[Trait("ADR", "ADR-059")]
+public class DeleteAndUndoSpecs
+{
+    [Scenario]
+    public void Undoing_a_delete_brings_the_item_back_with_its_children() // INV-14
+    {
+        Device phone = default!;
+        ItemId ideas = default!;
+
+        "Given a tree with the item 'Ideas' that has one child"
+            .x(() => { phone = new Device(); ideas = phone.AddItem("Ideas", child: "Draft"); });
+
+        "When the user deletes 'Ideas'"
+            .x(() => phone.Delete(ideas));
+
+        "And the user undoes the last action"
+            .x(() => phone.Undo());
+
+        "Then 'Ideas' is visible again with its child"
+            .x(() => phone.Tree.Titles("Ideas", "Draft").ShouldBe(new[] { "Ideas", "Draft" }));
+
+        "And the undo is a new event that names the delete it reverts"
+            .x(() => phone.Log.Last().Reverts.ShouldNotBeNull());
+    }
+}
+
+// placeholder types: not implemented yet
+public record ItemId(string Value);
+public class Device { /* AddItem, Delete, Undo, Tree, Log */ }
+```
+
+- Write in domain language: items, trees, events, devices, undo, conflict [ADR-063]; no class, method or storage names in step texts.
+- One behaviour per scenario; the title states it. Steps read Given, When, Then, with "And" for more of the same kind.
+- Assert outcomes the user or the log shows, not how the code gets there; no mocks of Domain internals.
+- No UI test ids in Domain or application specs; they belong only to UI specs under `Client.Specs` [architecture.md section 8].
+- Add specs freely; never edit or delete an existing spec without the owner's approval [ADR-035, ADR-054].
+- Time, ids and randomness come from the fakes [ADR-034]; a spec is deterministic.
+
 ## 5. Project layout
 
 Code does not exist yet; only `docs/` and `.github/` are present. The target layout [ADR-054, architecture.md section 5]:
@@ -98,3 +150,4 @@ No application code exists yet. Do not invent commands; fill these in when the p
 - Never force-push, or rewrite the history of, a branch you did not create.
 - Commit messages and pull request descriptions: format and attribution lines.
 - Whether agents may run the push gate locally or only in CI once the project exists.
+- LambdaTale version mismatch: ADR-054 and architecture.md section 8 say "LambdaTale v3 (bbv's port of xBehave.net to xUnit v3)", but the documentation at nuget.org/packages/bbv.LambdaTale and github.com/bbvch/LambdaTale shows only 2.9.306 on xUnit 2.9.x, with no v3 release. The owner decides which package and version to use (and whether xUnit v3 stays).
