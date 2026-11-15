@@ -6,7 +6,7 @@ applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`
 
 - **MUST** use one random key per tree, the same for every holder
 - **MUST NOT** implement read-only roles, per-user keys or revocation (deferred)
-- **MUST** store the key extractable, because pairing and sharing put it into a code
+- **MUST** use the key in daily use only as a non-extractable handle and store the raw key only wrapped; unwrap it only for pairing, sharing or key backup (amended by ADR-073)
 
 verify:
 
