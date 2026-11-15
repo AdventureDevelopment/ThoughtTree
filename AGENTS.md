@@ -53,6 +53,8 @@ Read this first. Rules carry their ADR id in brackets; the ADR has the detail an
 - Loops: inner loop (seconds, area being changed, run before every commit), push gate (all specs and securing tests, mutation tests of changed Domain code, UI specs in three browsers), nightly, after deployment, before release [architecture.md section 8].
 - Run the `verify` of each ADR you touched. Push only when the push gate is green.
 - Use stable test ids on UI elements, never texts or layout, in UI tests [architecture.md section 8, harness principle 9].
+- Commit messages: first line is the TL;DR, imperative, up to 72 characters, `<prefix>: <outcome>`; prefixes `spec` (`tests/specify`), `feat`, `fix`, `test` (securing tests), `refactor`, `build` (project setup, CI, `infra/`), `docs`, `chore`. Body is technical and plain: what changed and how, naming the ADR, `INV-n` and `D-n` ids touched; a reason only where it is not obvious. The attribution line added by the tooling is the last line.
+- Pull request descriptions: follow `.github/pull_request_template.md`, with a one-line TL;DR first, then the technical description in the same style; the attribution line added by the tooling comes last.
 - Open a pull request with `.github/pull_request_template.md`. Protected paths (`tests/specify/**`, `tests/data/**`, reference model, `*.verified.*`, `docs/**`) need the owner's review [ADR-035].
 - UI changes: read the UX principles, terms and decisions for the screen first [ADR-064]. Fill the template's UI checklist (principles, terms, tokens only, sketch linked, screenshots, keyboard and screen reader paths). Attach phone and tablet screenshots (light and dark), the sketch link and the preview link [ADR-064]. Use the terms of the glossary [ADR-063].
 
@@ -148,5 +150,4 @@ No application code exists yet. Do not invent commands; fill these in when the p
 
 ## Proposed additions (no ADR yet)
 
-- Commit messages and pull request descriptions: format and attribution lines.
 - Whether agents may run the push gate locally or only in CI once the project exists.
