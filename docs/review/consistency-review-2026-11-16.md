@@ -276,7 +276,7 @@ Most important first.
 
 ### 2.24 "Thought" as a term
 
-- **Status:** decided by the owner, option (a): "Thought" added to ADR-063, the glossary and the UX Terms table; commit COMMIT.
+- **Status:** decided by the owner, option (a): "Thought" added to ADR-063, the glossary and the UX Terms table; commit `0ce5cca`.
 
 - **Where:**
   - D-140: user-facing texts say "thought(s)", and "item" stays the technical term;
