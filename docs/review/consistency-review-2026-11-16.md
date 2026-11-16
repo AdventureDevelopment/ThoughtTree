@@ -139,6 +139,8 @@ Most important first.
 
 ### 2.10 "No telemetry" against server telemetry
 
+- **Status:** decided by the owner, option (b): no telemetry on the server either; plain logs without IP addresses only; commit COMMIT. AGENTS.md and the README keep "no telemetry" as written.
+
 - **Where:**
   - AGENTS.md "Never add telemetry";
   - docs/adr/README.md "no telemetry";

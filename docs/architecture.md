@@ -604,7 +604,7 @@ Example of an event before encryption:
 **Metadata protection**
 
 - Threat model: (A) someone who obtains the stored server data, and (B) someone who can observe the running server, including the cloud provider and the operator
-- Store as little as possible: the server keeps no receive times and no IP addresses; logging and telemetry (for example Application Insights) are configured not to record IP addresses, and logs are kept only briefly
+- Store as little as possible: the server keeps no receive times and no IP addresses; the server writes plain logs only, which record no IP addresses and are kept only briefly; there is no telemetry on the server (no Application Insights or similar service), as there is none in the client
 - Envelopes are padded to size buckets (see Event envelope and encryption)
 - Events are pushed in batches after a short pause in editing rather than one by one, so the server does not see the rhythm of typing; the price is that other devices see changes a few seconds later
 - Priority: an observer of the running server (B) must not learn where the user is
