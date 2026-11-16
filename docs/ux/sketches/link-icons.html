@@ -1,0 +1,56 @@
+<title>Link icons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one column of option cards; each shows the detail page's bottom strip (History, Links, Linked from, ⋯) with one icon pair. Paper theme. */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-acc-text:#84511f;--warn:#a1452f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-acc-text:#ecb985;--warn:#e08a72;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-acc-text:#ecb985;--warn:#e08a72;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:65ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:20px}
+.opt h2{font-size:15px;margin:0}
+.opt p{font-size:13px;color:var(--muted);margin:2px 0 8px;max-width:60ch}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--t-bg);border:1px solid var(--t-line);border-radius:14px;padding:8px 4px;color:var(--t-acc-text);text-align:center}
+.strip span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:17px;line-height:1.2;min-width:0}
+.strip small{font-size:10.5px;color:var(--t-muted)}
+.strip b{font-weight:600;font-size:13px;color:var(--t-text)}
+.ic{display:flex;align-items:center;gap:4px}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.bad{color:var(--warn)}
+.cur .strip{opacity:.85}
+</style>
+
+<h1>Icons for links and "Linked from"</h1>
+<p class="lead">The bottom strip of an item's detail page (here Mira, who has 0 links and is linked from 1 item), with different icon pairs. Every option adds a short label under the icon. Example content only.</p>
+
+<div class="grid">
+
+<section class="opt cur"><h2>Today</h2><p class="bad">↩ is also the Undo icon, and nothing says what it means.</p>
+<div class="strip"><span>🕘 <b>3</b></span><span>🔗 <b>0</b></span><span>↩ <b>1</b></span><span>⋯</span></div></section>
+
+<section class="opt"><h2>A · Arrows out and in</h2><p>↗ points away from this item, ↙ points into it. Plain and calm.</p>
+<div class="strip"><span>🕘 <b>3</b><small>History</small></span><span><span class="ic">↗ <b>0</b></span><small>Links</small></span><span><span class="ic">↙ <b>1</b></span><small>Linked from</small></span><span>⋯<small>More</small></span></div></section>
+
+<section class="opt"><h2>B · Item with arrow out and in</h2><p>A small box is this item; the arrow leaves it or enters it. Thin lines, like the move grip.</p>
+<div class="strip"><span>🕘 <b>3</b><small>History</small></span>
+<span><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="11" height="11" rx="2"/><path d="M10 14 20 4M14 4h6v6"/></svg><b>0</b></span><small>Links</small></span>
+<span><span class="ic"><svg viewBox="0 0 24 24"><rect x="10" y="7" width="11" height="11" rx="2"/><path d="M3 4l10 10M13 8v6H7"/></svg><b>1</b></span><small>Linked from</small></span>
+<span>⋯<small>More</small></span></div></section>
+
+<section class="opt"><h2>C · Two thoughts joined</h2><p>The filled dot is this item, the ring another one; the arrow shows the direction. Echoes the dots of the outline.</p>
+<div class="strip"><span>🕘 <b>3</b><small>History</small></span>
+<span><span class="ic"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="3" fill="currentColor"/><circle cx="19" cy="12" r="3"/><path d="M8 12h7M13 9.5l2.5 2.5L13 14.5"/></svg><b>0</b></span><small>Links</small></span>
+<span><span class="ic"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="3"/><circle cx="19" cy="12" r="3" fill="currentColor"/><path d="M8 12h8M13.5 9.5 16 12l-2.5 2.5"/></svg><b>1</b></span><small>Linked from</small></span>
+<span>⋯<small>More</small></span></div></section>
+
+<section class="opt"><h2>D · Chain with direction</h2><p>Keeps 🔗 as "link" everywhere (it is also the [[ button above the keyboard) and adds a small arrow.</p>
+<div class="strip"><span>🕘 <b>3</b><small>History</small></span><span><span class="ic">🔗→ <b>0</b></span><small>Links</small></span><span><span class="ic">→🔗 <b>1</b></span><small>Linked from</small></span><span>⋯<small>More</small></span></div></section>
+
+<section class="opt"><h2>E · Words only</h2><p>No icon for the two link counts; the words carry it. Clearest, takes more width.</p>
+<div class="strip"><span>🕘 <b>3</b><small>History</small></span><span><b>0</b><small>Links</small></span><span><b>1</b><small>Linked from</small></span><span>⋯<small>More</small></span></div></section>
+
+</div>

@@ -1,0 +1,1346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body style="margin:0">
+<title>ThoughtTree Prototype 2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one-screen phone app. Top: breadcrumb/search; middle: outline; bottom: bar ordered by thumb reach, floating capture button at the thumb's corner. Sheets slide up from below. */
+:root{
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --text:#2a2520;--muted:#6d645a;--line:#e9e1d4;--ink:#fff;--mark:#7a6bb0;--hl:#f7e3a6;
+  --bg:#f7f3ec;--card:#fffdf8;--accent:#9a5e28;--acctext:#84511f;--sel:#f3e7d5;--tint:#f6ece0;
+  --shadow:0 3px 12px rgba(40,30,20,.22);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --text:#ece5da;--muted:#a89e90;--line:#363029;--ink:#2a160d;--mark:#a99be0;--hl:#5a4a1e;
+  --bg:#1c1915;--card:#23201b;--accent:#e3a35f;--acctext:#ecb985;--sel:#3b2e1e;--tint:#2b241c;--shadow:0 3px 12px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --text:#ece5da;--muted:#a89e90;--line:#363029;--ink:#2a160d;--mark:#a99be0;--hl:#5a4a1e;
+  --bg:#1c1915;--card:#23201b;--accent:#e3a35f;--acctext:#ecb985;--sel:#3b2e1e;--tint:#2b241c;--shadow:0 3px 12px rgba(0,0,0,.5);color-scheme:dark}
+
+/* Themes per tree and branch (prototype set): Paper, Sage, Dusk */
+.t-sage{--bg:#f1f5ee;--card:#fbfdf9;--accent:#4f7a52;--acctext:#3f6642;--sel:#e1ecdc;--tint:#e9f1e5;--ink:#fff}
+.t-dusk{--bg:#f0f0f6;--card:#fbfbfe;--accent:#5a5f9e;--acctext:#4a4f8c;--sel:#e3e4f3;--tint:#eaeaf6;--ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .t-sage{--bg:#161b17;--card:#1d231e;--accent:#93c497;--acctext:#a9d2ac;--sel:#24342a;--tint:#1f2a22;--ink:#10241a}
+:root:not([data-theme="light"]) .t-dusk{--bg:#17171f;--card:#1e1e29;--accent:#a9adf0;--acctext:#bdc0f4;--sel:#2a2b45;--tint:#232436;--ink:#16173a}}
+:root[data-theme="dark"] .t-sage{--bg:#161b17;--card:#1d231e;--accent:#93c497;--acctext:#a9d2ac;--sel:#24342a;--tint:#1f2a22;--ink:#10241a}
+:root[data-theme="dark"] .t-dusk{--bg:#17171f;--card:#1e1e29;--accent:#a9adf0;--acctext:#bdc0f4;--sel:#2a2b45;--tint:#232436;--ink:#16173a}
+/* Inbox theme "Deep stone" (D-82): surface, list, tinted rows, selection, accent, accent text, on accent */
+.t-inbox{--bg:#e6e3df;--card:#f4f2ef;--tint:#dcd9d5;--sel:#d3cfca;--accent:#4a4540;--acctext:#3d3934;--ink:#ffffff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .t-inbox{--bg:#1d1b19;--card:#24221f;--tint:#2e2b28;--sel:#39352f;--accent:#cfc7bd;--acctext:#ddd6cd;--ink:#1d1b19}}
+:root[data-theme="dark"] .t-inbox{--bg:#1d1b19;--card:#24221f;--tint:#2e2b28;--sel:#39352f;--accent:#cfc7bd;--acctext:#ddd6cd;--ink:#1d1b19}
+.t-paper{--bg:#f7f3ec;--card:#fffdf8;--accent:#9a5e28;--acctext:#84511f;--sel:#f3e7d5;--tint:#f6ece0;--ink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .t-paper{--bg:#1c1915;--card:#23201b;--accent:#e3a35f;--acctext:#ecb985;--sel:#3b2e1e;--tint:#2b241c;--ink:#2a160d}}
+:root[data-theme="dark"] .t-paper{--bg:#1c1915;--card:#23201b;--accent:#e3a35f;--acctext:#ecb985;--sel:#3b2e1e;--tint:#2b241c;--ink:#2a160d}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font:1rem/1.4 var(--font);overflow:hidden}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+#app{position:relative;height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--text);overflow:hidden}
+.top{display:flex;align-items:center;gap:8px;min-height:48px;padding-block:6px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));border-bottom:1px solid var(--line);background:var(--bg)}
+.upbtn{width:40px;height:36px;flex:0 0 40px;font-size:1.25rem;font-weight:700;line-height:1;border-radius:8px;color:var(--acctext);background:var(--sel);display:flex;align-items:center;justify-content:center;padding:0 0 2px}
+.focushead{flex:1;min-width:0;display:flex;flex-direction:column}
+.focushead .crumbs{font-size:0.75rem}
+.focushead .editin.focusedit{font-size:1.125rem;line-height:1.3}
+.focushead .crumbs button{padding:2px 3px}
+.focustitle{margin:0;font-size:1.125rem;line-height:1.3;font-weight:400;cursor:text;text-wrap:balance;overflow-wrap:anywhere}
+.crumbs{flex:1;min-width:0;display:flex;align-items:center;gap:2px;overflow-x:auto;white-space:nowrap;font-size:0.875rem;color:var(--muted);scrollbar-width:none}
+.crumbs button{padding:6px 4px;border-radius:6px}
+.crumbs button:last-child{color:var(--text);font-weight:600}
+.crumbs .sep{opacity:.6}
+.proto{font-size:0.6875rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:2px 7px;white-space:nowrap}
+.searchwrap{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+.searchbox{flex:1;display:flex;align-items:center;gap:6px}
+.searchfilters{display:flex;gap:8px;flex-wrap:wrap}
+.searchfilters .chipbtn{font-size:.875rem;padding:6px 12px;min-height:34px;color:var(--text);border-color:var(--muted)}
+.searchfilters .chipbtn[aria-pressed="true"]{background:var(--accent);color:var(--ink);border-color:transparent}
+.searchbox input{flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.chipbtn{font-size:0.8125rem;padding:5px 10px;border-radius:14px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chipbtn[aria-pressed="true"]{background:var(--sel);color:var(--acctext);border-color:transparent}
+
+#outline{position:relative;flex:1;overflow-y:auto;background:var(--card);padding-bottom:150px}
+.row{display:flex;align-items:flex-start;gap:4px;min-height:44px;border-bottom:1px solid var(--line);padding-block:6px;padding-right:max(8px,env(safe-area-inset-right,0px));padding-left:calc(max(8px,env(safe-area-inset-left,0px)) + var(--depth,0) * 22px);background:var(--card);position:relative}
+.row.tinted{background:var(--tint)}
+/* filtered views: rows shown only as context for a match are faded; changed items carry when and where (D-103) */
+.row.ctx .body,.row.ctx .tw{opacity:.5}
+.when{display:inline-block;font-size:.75rem;color:var(--muted);margin-inline-start:6px;white-space:nowrap}
+/* D-92: the item that carries the theme gets the full tint, the items inside its branch a lighter shade */
+.row.tinted.inner{background:color-mix(in srgb,var(--tint) 45%,var(--card))}
+.row[data-id]{touch-action:pan-y}
+.row.swiping{transition:none}
+.row.snap{transition:transform .18s ease-out}
+.swipehint{position:absolute;top:0;bottom:0;right:0;display:flex;align-items:center;padding:0 16px;color:var(--acctext);font-weight:600;font-size:0.875rem;pointer-events:none}
+.row.sel{background:var(--sel)}
+.row.flash{animation:flash 1.4s ease-out}
+@keyframes flash{0%{box-shadow:inset 0 0 0 2px var(--accent)}100%{box-shadow:inset 0 0 0 0 transparent}}
+.tw{width:36px;height:34px;flex:0 0 36px;color:var(--muted);font-size:0.75rem;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.tw.has{color:var(--acctext);font-size:1.25rem;font-weight:700}
+.tw.has.closed{background:var(--sel)}
+.tw.leaf{font-size:0.8125rem;color:var(--muted)}
+.kids{font-size:0.75rem;color:var(--acctext);background:var(--sel);border-radius:9px;padding:0 7px;margin-inline-start:6px;font-variant-numeric:tabular-nums;vertical-align:1px}
+.body{flex:1;min-width:0;padding-top:5px;cursor:default}
+.title{word-wrap:break-word}
+.title.empty{color:var(--muted);font-style:italic}
+.preview{font-size:0.8125rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.tag{display:inline-block;font-size:0.75rem;line-height:1.5;border-radius:9px;padding:0 7px;margin-inline-start:6px;background:var(--sel);color:var(--acctext);vertical-align:1px}
+.row.sel .tag{background:var(--card)}
+button.tag{font-family:inherit;cursor:pointer;min-height:24px;padding:2px 9px;line-height:1.3}
+.filterbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;padding:6px max(12px,env(safe-area-inset-right,0px)) 6px max(12px,env(safe-area-inset-left,0px));background:var(--sel);color:var(--acctext);font-size:0.875rem;border-bottom:1px solid var(--line)}
+.filterbar span{flex:1;min-width:0}
+.placebar{margin-top:6px}
+.placebar .chipbtn{color:var(--acctext);border-color:var(--accent);background:var(--card);max-width:100%;overflow:hidden;text-overflow:ellipsis}
+/* only the line being edited gets extra space on the capture button's side (D-54) */
+.hand-right .row.editing{padding-right:calc(84px + env(safe-area-inset-right,0px))}
+.hand-left .row.editing .body{padding-left:62px}
+/* D-109: suggestions where the user types: ghost text after the caret, a short list directly under the line */
+.body,.focushead,.capline{position:relative}
+.sghost{position:absolute;z-index:3;display:flex;align-items:center;min-height:24px;padding:0;font:inherit;color:var(--muted);opacity:.75;white-space:nowrap;overflow:hidden;cursor:pointer;background:none}
+.sugglist{display:flex;flex-direction:column;gap:2px;background:var(--card);border-bottom:1px solid var(--line);padding:4px max(8px,env(safe-area-inset-right,0px)) 6px calc(max(8px,env(safe-area-inset-left,0px)) + var(--depth,0) * 22px + 40px)}
+.capline + .sugglist,.focushead .sugglist{padding-left:8px;margin:0 -6px;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.focushead .sugglist{position:absolute;left:0;right:0;top:100%;z-index:20}
+.sugopt{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;text-align:start;padding:6px 10px;border-radius:8px}
+.sugopt:hover,.sugopt:focus-visible{background:var(--sel)}
+.sugopt .sub{margin-inline-start:auto;font-size:.75rem;color:var(--muted);white-space:nowrap}
+.sugopt .typed{font-weight:700}
+.suglbl{font-size:0.75rem;color:var(--muted);padding:2px 10px}
+/* templates (D-110): a faded, display-only group row with a stamp icon; template items carry the stamp instead of the dot */
+.stampic{display:inline-flex;width:18px;height:18px;flex:0 0 18px}
+.stampic svg{width:18px;height:18px}
+.tplrow{width:100%;text-align:start;align-items:center;color:var(--muted);font-size:.875rem;min-height:44px}
+.tplrow>*{opacity:.8}
+.tplrow .tw{color:var(--muted)}
+.tplrow .chev{margin-inline-start:4px;font-size:.75rem}
+.tw.stamp{gap:1px;color:var(--muted);font-weight:400}
+.tw.stamp .caret{font-size:.75rem;color:var(--acctext)}
+.slotmark{display:inline-block;font-size:.75rem;color:var(--muted);margin-inline-start:6px;border:1px dashed var(--line);border-radius:8px;padding:0 6px;vertical-align:1px}
+/* link slots in created items (D-107): linked items as small accent links, "＋ Link…" to add one */
+.slotbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:4px}
+.rlink{min-height:32px;padding:4px 8px;border-radius:8px;font-size:.8125rem;color:var(--acctext);background:color-mix(in srgb,var(--accent) 10%,transparent);text-align:start}
+.linkbtn{min-height:32px;padding:4px 10px;border-radius:14px;border:1px dashed var(--accent);font-size:.8125rem;color:var(--acctext)}
+.relgroup{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.relgroup .relname{color:var(--muted);font-size:.875rem;margin-inline-end:2px}
+.relgroup .rlink{font-size:.9375rem;min-height:40px;padding:6px 10px}
+.tplnote{font-size:.8125rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+#bar,#b-add{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.browse{display:flex;align-items:center;gap:2px}
+.browse .opt{flex:1;min-width:0}
+.treerow{display:flex;align-items:center;gap:8px}
+.treerow .opt{flex:1;min-width:0}
+.btn.small{padding:6px 10px;font-size:0.8125rem}
+.more{width:40px;height:32px;flex:0 0 40px;border-radius:8px;color:var(--acctext);font-size:1.25rem;line-height:1}
+mark{background:var(--hl);color:inherit;border-radius:3px}
+.inboxrow .title{font-weight:600}
+.count{font-size:0.8125rem;color:var(--muted);margin-inline-start:6px;font-variant-numeric:tabular-nums}
+.editin{width:100%;font:inherit;color:var(--text);background:transparent;border:0;border-bottom:1px solid var(--accent);padding:2px 0;outline:none}
+.emptystate{padding:28px 20px;color:var(--muted);text-align:center}
+
+/* bottom bar ordered by reach for the right thumb: More (far) … Add here (nearest) */
+#bar{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--bg);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+#bar button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 0 6px;color:var(--muted);font-size:1.25rem}
+#bar button small{font-size:0.6875rem}
+.hand-left #bar{direction:rtl}
+.hand-left #bar button{direction:ltr}
+#fab{position:absolute;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(76px + var(--kb,0px) + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--accent);color:var(--ink);font-size:1.5rem;box-shadow:var(--shadow);z-index:48}
+.hand-left #fab{right:auto;left:calc(16px + env(safe-area-inset-left,0px))}
+#backpill{position:absolute;left:0;right:0;bottom:calc(70px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;z-index:15;pointer-events:none}
+#backpill button{pointer-events:auto;background:var(--text);color:var(--bg);font-size:0.8125rem;border-radius:16px;padding:7px 14px;box-shadow:var(--shadow);max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* editing toolbar above the keyboard */
+.captools{display:flex;align-items:center;gap:2px;background:var(--bg);border-top:1px solid var(--line);padding:4px max(6px,env(safe-area-inset-right,0px)) 4px max(6px,env(safe-area-inset-left,0px));overflow-x:auto}
+.captools button{min-width:40px;height:40px;border-radius:8px;font-size:1rem;color:var(--text)}
+.captools button[disabled]{opacity:.35}
+.captools .done{margin-inline-start:auto;background:var(--accent);color:var(--ink);font-weight:700;font-size:1.125rem}
+.hand-left .captools{direction:rtl}.hand-left .captools button{direction:ltr}
+#tools{position:absolute;left:0;right:0;bottom:var(--kb,0px);display:flex;align-items:center;gap:2px;background:var(--bg);border-top:1px solid var(--line);padding:4px max(6px,env(safe-area-inset-right,0px)) 4px max(6px,env(safe-area-inset-left,0px));z-index:30;overflow-x:auto}
+#tools button{min-width:40px;height:40px;border-radius:8px;font-size:1rem;color:var(--text)}
+#tools .done{margin-inline-start:auto;background:var(--accent);color:var(--ink);font-weight:700;font-size:1.125rem}
+.hand-left #tools{direction:rtl}.hand-left #tools button{direction:ltr}
+
+/* toast */
+#toast{position:absolute;left:12px;right:12px;bottom:calc(144px + var(--kb,0px) + env(safe-area-inset-bottom,0px));background:var(--text);color:var(--bg);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow);z-index:70;font-size:0.875rem}
+#toast.attop{bottom:auto;top:calc(10px + env(safe-area-inset-top,0px))}
+#toast span{flex:1;min-width:0}
+#toast button{color:var(--bg);font-weight:600;padding:4px 6px;text-decoration:underline}
+
+/* sheets and popovers */
+#scrim{position:absolute;inset:0;background:rgba(20,15,10,.35);z-index:50}
+.sheet{position:absolute;left:0;right:0;bottom:var(--kb,0px);max-height:86%;display:flex;flex-direction:column;background:var(--bg);border-radius:16px 16px 0 0;box-shadow:var(--shadow);z-index:60;padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheethead{display:flex;align-items:center;gap:8px;padding:12px max(14px,env(safe-area-inset-right,0px)) 8px max(14px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.sheethead h2{flex:1;margin:0;font-size:1rem;text-wrap:balance}
+.sheethead .sub{display:block;font-size:0.75rem;font-weight:400;color:var(--muted)}
+.sheetbody{overflow-y:auto;padding:8px max(14px,env(safe-area-inset-right,0px)) 14px max(14px,env(safe-area-inset-left,0px))}
+.btn{padding:9px 14px;border-radius:10px;background:var(--accent);color:var(--ink);font-weight:600}
+.btn.ghost{background:transparent;color:var(--acctext);border:1px solid var(--line)}
+.btn.danger{background:#a33b2b;color:#fff}
+.lbl{font-size:0.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px}
+.opt{display:flex;align-items:center;gap:10px;width:100%;text-align:start;padding:10px 6px;border-bottom:1px solid var(--line);min-height:44px}
+.opt .path{display:block;font-size:0.75rem;color:var(--muted)}
+.opt[disabled]{opacity:.45;cursor:not-allowed}
+.opt .cnt{margin-inline-start:auto;font-size:0.8125rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.field{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.capline{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.capline.old{color:var(--muted);font-size:0.875rem}
+.capline input{flex:1;min-width:0;font:inherit;color:var(--text);background:transparent;border:0;border-bottom:1px solid var(--accent);padding:4px 0;outline:none}
+.hint{font-size:0.8125rem;color:var(--muted);margin:10px 0 0;max-width:62ch}
+.pop{position:absolute;z-index:60;min-width:200px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:4px;max-height:70%;overflow-y:auto}
+.pop button{display:block;width:100%;text-align:start;padding:11px 14px;border-radius:8px;min-height:44px}
+.pop button:hover{background:var(--sel)}
+.pop button[disabled]{opacity:.45;cursor:not-allowed;background:none}
+.pop hr{border:0;border-top:1px solid var(--line);margin:4px 6px}
+.pop .del{color:#b0412f}
+.ev{padding:9px 0;border-bottom:1px solid var(--line);font-size:0.875rem}
+.ev .meta{font-size:0.75rem;color:var(--muted)}
+.ev.rev .what{text-decoration:line-through;opacity:.7}
+.ev code{font-size:0.75rem}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.75rem}
+
+/* detail page */
+#detail{position:absolute;inset:0;z-index:45;display:flex;flex-direction:column;background:var(--bg)}
+#detail .dhead{display:flex;align-items:center;gap:6px;padding:6px max(10px,env(safe-area-inset-right,0px)) 6px max(10px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+#detail .dhead button{width:40px;height:36px;flex:0 0 40px;font-size:1.25rem;font-weight:700;line-height:1;border-radius:8px;color:var(--acctext);background:var(--sel);display:flex;align-items:center;justify-content:center;padding:0 0 2px}
+#detail .dhead .dpath{line-height:36px}
+.mdview{flex:1;min-height:40vh;font:1rem/1.55 var(--font);cursor:text;overflow-wrap:anywhere}
+.mdview p{margin:0 0 .7em}
+.mdview h3,.mdview h4,.mdview h5{margin:.6em 0 .3em;line-height:1.3}
+.mdview h3{font-size:1.1875rem}.mdview h4{font-size:1.0625rem}.mdview h5{font-size:1rem}
+.mdview ul,.mdview ol{margin:0 0 .7em;padding-inline-start:1.4em}
+.mdview code,.title code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:var(--sel);border-radius:4px;padding:0 4px}
+.mdview a,.title a{color:var(--acctext)}
+.mdview .ph{color:var(--muted);font-style:italic}
+.notebar{display:flex;gap:4px;align-items:center;position:absolute;left:0;right:0;bottom:var(--kb,0px);background:var(--bg);border-top:1px solid var(--line);padding:4px max(6px,env(safe-area-inset-right,0px)) 4px max(6px,env(safe-area-inset-left,0px));z-index:47;overflow-x:auto}
+.notebar button{min-width:40px;height:40px;border-radius:8px;font-size:1rem;color:var(--text)}
+.notebar .done{margin-inline-start:auto;background:var(--accent);color:var(--ink);font-weight:700;font-size:1.125rem}
+.hand-left .notebar{direction:rtl}.hand-left .notebar button{direction:ltr}
+#detail .dpath{flex:1;min-width:0;font-size:0.8125rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#detail .dbody{flex:1;overflow-y:auto;padding:14px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));background:var(--card);display:flex;flex-direction:column;gap:10px}
+#detail .dtitle{font:600 1.25rem/1.3 var(--font);color:var(--text);background:transparent;border:0;border-bottom:1px solid transparent;padding:2px 0;width:100%}
+#detail .dtitle:focus{border-bottom-color:var(--accent);outline:none}
+#detail .dtags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#detail .dtags .tag{margin:0;font-size:0.8125rem;padding:3px 10px;border-radius:12px}
+#detail .dtags button.tag{cursor:pointer}
+#detail textarea{flex:1;min-height:40vh;font:1rem/1.55 var(--font);color:var(--text);background:transparent;border:0;resize:none;outline:none}
+#detail .strip{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));background:var(--bg)}
+#detail .strip button{padding:8px 10px;border-radius:8px;color:var(--muted);font-size:0.875rem}
+#detail .strip .sb{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 10px;line-height:1.15}
+.strip .sb .n{display:flex;align-items:center;gap:4px;color:var(--text);font-weight:600;font-size:0.9375rem}
+.strip .sb small{font-size:0.6875rem;color:var(--muted)}
+.strip .sb svg{width:20px;height:20px;fill:none;stroke:var(--acctext);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.strip .dmore{margin-inline-start:auto;font-size:1.25rem;color:var(--acctext)}
+.hand-left #detail .strip{direction:rtl}.hand-left #detail .strip button{direction:ltr}
+</style>
+
+<div id="app" class="t-paper hand-right">
+  <header class="top" id="top"></header>
+  <main id="outline" aria-label="Outline"></main>
+  <div id="backpill" hidden><button id="backbtn"></button></div>
+  <button id="fab" aria-label="Capture a thought into the inbox">📥</button>
+  <nav id="bar" aria-label="Main actions">
+    <button id="b-more" aria-label="More"><span>⋯</span><small>More</small></button>
+    <button id="b-undo" aria-label="Undo"><span>↩</span><small>Undo</small></button>
+    <button id="b-search" aria-label="Search"><span>🔍</span><small>Search</small></button>
+    <button id="b-add" aria-label="Add here" aria-description="Press and hold for From template…" title="Tap: add here · hold: From template…"><span>＋</span><small>Add here</small></button>
+  </nav>
+  <div id="tools" hidden role="toolbar" aria-label="Editing">
+    <button data-t="undo" aria-label="Undo typing">↩</button>
+    <button data-t="redo" aria-label="Redo typing">↪</button>
+    <button data-t="out" aria-label="Outdent">⇤</button>
+    <button data-t="in" aria-label="Indent">⇥</button>
+    <button data-t="up" aria-label="Move up">↑</button>
+    <button data-t="down" aria-label="Move down">↓</button>
+    <button data-t="note" aria-label="Insert note separator">##</button>
+    <button data-t="tag" aria-label="Insert tag marker">@@</button>
+    <button data-t="tpl" aria-label="Create from a template: insert :: at the start of an empty line">::</button>
+    <button data-t="link" aria-label="Link to another item: insert [[">🔗</button>
+    <button data-t="done" class="done" aria-label="Done">✓</button>
+  </div>
+  <div id="toast" hidden role="status"></div>
+  <div id="scrim" hidden></div>
+  <section id="sheet" class="sheet" hidden role="dialog" aria-modal="true"></section>
+  <div id="pop" class="pop" hidden role="menu"></div>
+  <section id="detail" hidden aria-label="Item details"></section>
+  <div id="live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></div>
+</div>
+
+<script>
+(()=>{
+"use strict";
+/* ---------- storage (browser only; prototype) ---------- */
+/* v4: templates (ADR-068) and inline item links; v3: several trees (events carry `tree`), every event carries `actionId` (ADR-067) */
+const K={ev:"tt-proto-events-v6",dev:"tt-proto-device-v2",ui:"tt-proto-ui-v6"};
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const uuid=()=>{try{return crypto.randomUUID()}catch(e){return "x"+Math.random().toString(16).slice(2)+Date.now().toString(16)}};
+let device=load(K.dev,null);
+if(!device){device={id:uuid(),label:/iPad|Tablet/i.test(navigator.userAgent)?"Tablet":/Mobi|iPhone|Android/i.test(navigator.userAgent)?"Phone":"Desktop"};save(K.dev,device)}
+let all=load(K.ev,[]);      /* every event of every tree on this device */
+let events=[];              /* the events of the open tree */
+let curTree=null;
+const ui=Object.assign({tree:null,per:{},added:[],focus:null,collapsed:[],hand:"right",recent:[],lastPlaced:null,tplOpen:[]},load(K.ui,{}));
+const PER=["focus","collapsed","recent","lastPlaced","tplOpen"];
+const saveUi=()=>{if(curTree){ui.per[curTree]={};for(const k of PER)ui.per[curTree][k]=ui[k]}save(K.ui,{tree:curTree,per:ui.per,hand:ui.hand,added:ui.added||[],hinted:ui.hinted||[]})};
+const saveEvents=()=>save(K.ev,all);
+
+/* ---------- events, hybrid logical clock ---------- */
+let INBOX=null; /* the inbox is an ordinary item, marked by tree.inbox-set; always shown last at top level */
+const isoLocal=d=>{const o=-d.getTimezoneOffset(),s=o>=0?"+":"-",p=n=>String(Math.floor(Math.abs(n))).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds())+s+p(o/60)+":"+p(o%60)};
+function nextClock(){let mt=0,mc=0;for(const e of all){if(e.clock.t>mt||(e.clock.t===mt&&e.clock.c>mc)){mt=e.clock.t;mc=e.clock.c}}
+  const now=Date.now();return now>mt?{t:now,c:0}:{t:mt,c:mc+1}}
+const order=(a,b)=>a.clock.t-b.clock.t||a.clock.c-b.clock.c||(a.device<b.device?-1:a.device>b.device?1:0);
+/* one user action = one actionId shared by all events written inside action(fn) (ADR-067) */
+let curAction=null;
+function action(fn){if(curAction)return fn();curAction=uuid();try{return fn()}finally{curAction=null}}
+function write(type,data){const e={id:uuid(),type,schema:1,tree:curTree,actionId:curAction||uuid(),device:device.id,deviceLabel:device.label,clock:nextClock(),timestamp:isoLocal(new Date()),data};
+  events.push(e);all.push(e);saveEvents();return e}
+
+/* ---------- projection ---------- */
+let P=null;
+function project(evs){
+  let inbox=null,name=null,tutorial=false;const items=new Map(),kids=new Map([["",[]]]),tags=new Map(),tagOf=new Map(),themes=new Map(),reverted=new Map();
+  const list=k=>{if(!kids.has(k))kids.set(k,[]);return kids.get(k)};
+  const pk=p=>p==null?"":p;
+  const detach=it=>{const l=list(pk(it.parent));const i=l.indexOf(it.id);if(i>=0)l.splice(i,1)};
+  const place=(it,parent,after)=>{const l=list(pk(parent));let i=after?l.indexOf(after):-1;l.splice(i+1,0,it.id);it.parent=parent};
+  const isDesc=(id,anc)=>{let p=items.get(id);while(p){if(p.parent===anc)return true;p=items.get(p.parent)}return false};
+  for(const e of [...evs].sort(order)){
+    const d=e.data||{};if(d.reverts)reverted.set(d.reverts,e);
+    /* events copied in from an imported tree keep their history, but not their tree-level settings (D-84) */
+    if(e.fromTree&&(e.type==="tree.inbox-set"||e.type==="tree.named"||(e.type==="theme.set"&&d.target==="tree")))continue;
+    const it=items.get(d.itemId);
+    switch(e.type){
+      case"tree.named":name=d.name;tutorial=!!d.tutorial;break;
+      case"item.created":if(items.has(d.itemId))break;{const n={id:d.itemId,parent:null,title:d.title||"",note:d.note||"",deleted:false,tags:new Set(),created:e.clock.t,changed:e.clock.t,template:false,fromTemplate:d.fromTemplate||null};items.set(n.id,n);place(n,d.parentId??null,d.afterItemId)}break;
+      case"item.title-changed":if(it){it.title=d.title;it.changed=e.clock.t}break;
+      case"item.note-changed":if(it){it.note=d.note;it.changed=e.clock.t}break;
+      case"tree.inbox-set":inbox=d.itemId;break;
+      case"item.moved":if(it&&it.id!==inbox){let par=d.parentId??null;if(par&&par!==INBOX&&(par===it.id||isDesc(par,it.id)))par=null;detach(it);place(it,par,d.afterItemId);it.changed=e.clock.t}break;
+      case"item.deleted":if(it&&it.id!==inbox){it.deleted=true;it.changed=e.clock.t}break;
+      case"item.restored":if(it){it.deleted=false;it.changed=e.clock.t}break;
+      case"tag.defined":if(!tags.has(d.tagId))tags.set(d.tagId,{id:d.tagId,name:""});break;
+      case"display-name.set":if(tags.has(d.elementId))tags.get(d.elementId).name=d.text;break;
+      case"item.tagged":if(it){it.tags.add(d.tagId);it.changed=e.clock.t}break;
+      case"item.untagged":if(it){it.tags.delete(d.tagId);it.changed=e.clock.t}break;
+      case"theme.set":themes.set(d.target,d.themeId);if(it)it.changed=e.clock.t;break;
+      /* ADR-068: a template is an ordinary item marked by events */
+      case"item.template-set":if(it){it.template=true;it.changed=e.clock.t}break;
+      case"item.template-removed":if(it){it.template=false;it.changed=e.clock.t}break;
+    }
+  }
+  for(const [id,t] of themes){const i=items.get(id);if(i)i.theme=t||null}
+  return {items,kids,tags,themes,reverted,inbox,name,tutorial,treeTheme:themes.get("tree")||"paper",list,pk};
+}
+const refresh=()=>{P=project(events);INBOX=P.inbox};
+/* ---------- trees on this device (D-69): events are tagged with their tree ---------- */
+const treeIds=()=>{const s=[];for(const e of all)if(e.tree&&!s.includes(e.tree))s.push(e.tree);return s};
+const treeInfo=tid=>{const p=project(all.filter(e=>e.tree===tid));return{name:p.name||"Untitled tree",tutorial:p.tutorial}};
+const treeName=tid=>tid===curTree?(P.name||"Untitled tree"):treeInfo(tid).name;
+function setTree(tid){if(curTree)saveUi();curTree=tid;events=all.filter(e=>e.tree===tid);
+  const s=ui.per[tid]||{};ui.focus=s.focus||null;ui.collapsed=s.collapsed||[];ui.recent=s.recent||[];ui.lastPlaced=s.lastPlaced||null;ui.tplOpen=s.tplOpen||[];refresh();saveUi()}
+function newTree(name,extra){const tid=uuid();const prev=curTree,prevEvents=events;curTree=tid;events=[];
+  action(()=>{write("tree.named",Object.assign({treeId:tid,name},extra||{}));const ib=uuid();
+    write("item.created",{itemId:ib,parentId:null,afterItemId:null,title:"📥 Inbox",note:"",format:"markdown"});write("tree.inbox-set",{itemId:ib});write("theme.set",{target:ib,themeId:"inbox"});
+    ui.per[tid]=Object.assign({focus:null,recent:[],lastPlaced:null,tplOpen:[]},ui.per[tid]||{},{collapsed:[]})});
+  curTree=prev;events=prevEvents;return tid}
+/* D-113, ADR-068: new trees get no templates; the tutorial carries five, written as ordinary items marked as templates.
+   Names in sentence case; no task wording (D-67) */
+const TEMPLATES={
+  person:["👤 Person","",["🤝 How we met: ","🎂 Birthday: ","👪 Family: ","✨ Shared interests: ","🏘 Shared communities: ","📅 Shared events: "],"person"],
+  talk:["🎤 Talk or meeting","For what someone said and what it set off in you.",["🎙 Speaker: ","📍 Context: ","💬 Key points: ","❓ Questions: ","💡 My thoughts: "]],
+  source:["📚 Source","For a book, an article or a podcast that stayed with you.",["✍️ Author: ","🔑 Key ideas: ","❝ Quotes: ","💭 What it means to me: "]],
+  decision:["⚖️ Decision","For thinking a choice through before you make it.",["❓ The question: ","🅰️ Options: ","➕ For: ","➖ Against: ","✅ What I decide: ","💭 Why: "]],
+  idea:["💡 Idea","For an idea that deserves more than one line.",["✨ What it is: ","🌱 Why it matters: ","❓ Open questions: ","🔗 Related thoughts: "]]};
+function seedTemplate(key,parent,after){const [title,note,lines,tag]=TEMPLATES[key];const p=uuid();
+  write("item.created",{itemId:p,parentId:parent,afterItemId:after,title,note,format:"markdown"});
+  write("item.template-set",{itemId:p});
+  /* D-112: a template carries tags that every item made from it inherits; "person" finds all persons */
+  if(tag){const tg=uuid();write("tag.defined",{tagId:tg});write("display-name.set",{elementId:tg,field:"name",language:"en",text:tag});write("item.tagged",{itemId:p,tagId:tg})}
+  let prev=null;for(const t of lines){const id=uuid();write("item.created",{itemId:id,parentId:p,afterItemId:prev,title:t,note:"",format:"markdown"});prev=id}
+  return p}
+/* templates are left out of the children; they are shown in the branch's "Templates" row (D-110) */
+const kidsOf=id=>{const k=(P.kids.get(id==null?"":id)||[]).filter(k=>{const i=P.items.get(k);return i&&!i.deleted&&!i.template});if(id==null&&INBOX&&k.includes(INBOX)){k.splice(k.indexOf(INBOX),1);k.push(INBOX)}return k};
+const tplsOf=id=>(P.kids.get(id==null?"":id)||[]).filter(k=>{const i=P.items.get(k);return i&&!i.deleted&&i.template});
+const inTpl=id=>{let i=P.items.get(id);while(i){if(i.template)return true;i=P.items.get(i.parent)}return false};
+const visibleItem=id=>{let i=P.items.get(id);while(i){if(i.deleted)return false;if(i.parent==null||i.parent===INBOX)return true;i=P.items.get(i.parent)}return false};
+function pathOf(id){const out=[];let i=P.items.get(id);while(i){out.unshift(i);i=P.items.get(i.parent)}return out}
+const pathText=id=>[treeName(curTree),...pathOf(id).slice(0,-1).map(x=>x.title||"Untitled")].join(" › ");
+/* state.preview = {target, theme}: the theme picker's live preview, applied wherever the page shows that target (D-65) */
+const treeTheme=()=>state.preview&&state.preview.target==="tree"?(state.preview.theme||"paper"):P.treeTheme;
+const themeFor=id=>{let i=P.items.get(id);while(i){if(state.preview&&state.preview.target===i.id){if(state.preview.theme)return state.preview.theme}else if(i.theme)return i.theme;i=P.items.get(i.parent)}return treeTheme()};
+const tagName=t=>(P.tags.get(t)||{}).name||"tag";
+
+/* ---------- seed (example data, marked) ---------- */
+/* the tutorial is its own tree (D-69); its content consists of thoughts, not tasks (D-67) */
+function seedTutorial(){
+  const tid=uuid();const prev=curTree,prevEvents=events;curTree=tid;events=[];const start=all.length;
+  const ids={};const mk=(key,parent,after,title,note)=>{ids[key]=uuid();write("item.created",{itemId:ids[key],parentId:parent==null?null:ids[parent],afterItemId:after?ids[after]:null,title,note:note||"",format:"markdown"})};
+  write("tree.named",{treeId:tid,name:"Tutorial",tutorial:true});
+  mk("inbox",null,null,"📥 Inbox","Captured thoughts wait here until you sort them. It always stays last at the top level.");write("tree.inbox-set",{itemId:ids.inbox});write("theme.set",{target:ids.inbox,themeId:"inbox"});
+  mk("w",null,null,"👋 Welcome to ThoughtTree","This tree explains itself. Work through it from top to bottom and try everything. Your own thoughts live in the tree “My thoughts”: More › Trees switches to it. You can delete this tutorial whenever you like.");
+  mk("w1","w",null,"Tap a line once to select it, tap again to edit it");
+  mk("w2","w","w1","Swipe left on a line to open its note","You found a note. Notes can be **bold** or *italic*, have headings and lists:\n- like this one\n- and links, for example [back to the start](item:WELCOME)\n\nTap the note to write in it.");
+  mk("w3","w","w2","The arrow ▸ means there is more inside");
+  mk("w3a","w3",null,"Hidden until you open the arrow");
+  mk("w3b","w3","w3a","Tap the arrow again to close it");
+  mk("w4","w","w3","⋯ on a selected line opens its actions");
+  mk("c",null,"w","📥 Capture and sort");
+  mk("c1","c",null,"Tap 📥 to capture a thought, wherever you are, even while writing");
+  mk("c2","c","c1","Captured thoughts wait in the Inbox at the bottom, without pressure");
+  mk("c3","c","c2","Sort them when it suits you: ⋯ › Move to… finds a place and a position");
+  mk("c3a","c","c3","After one move, the next thought can go right below it with one tap");
+  mk("c4","c","c3a","↩ Undo takes back your last step, even a move");
+  mk("f",null,"c","✍️ Writing faster");
+  mk("f1","f",null,"Enter starts the next line");
+  mk("f2","f","f1","A space at the start of an empty line nests it under the line above");
+  mk("f3","f","f2","Backspace on an empty line moves it back out");
+  mk("f4","f","f3","Type “Title ## note” to add a note in one go");
+  mk("f5","f","f4","Type @@ and a name to add a tag; known tags are suggested");
+  mk("t",null,"f","🎨 Every branch can have its own mood");
+  mk("t1","t",null,"This branch uses the Sage theme");
+  mk("t2","t","t1","⋯ › Theme changes it, with a live preview");
+  mk("t3","t","t2","⋯ › Focus shows only this branch, in its theme");
+  mk("s",null,"t","🔎 Finding things again");
+  mk("s1","s",null,"🔍 Search filters the tree while you type");
+  mk("s2","s","s1","Tap a tag to see everything with it");
+  mk("s3","s","s2","“Changed recently” shows what is new");
+  mk("l",null,"s","🔗 Linking thoughts");
+  mk("l1","l",null,"Type [[ to link to another thought while writing","A few letters are enough: the best match appears as faded text after the cursor (tap it, or press Tab), and a short list opens under the line. “Create …” makes a new thought in the inbox and links it at once. The 🔗 button above the keyboard does the same.");
+  mk("l2","l","l1","A link shows the other thought's current title, even after renaming");
+  mk("p",null,"l","🧩 Templates");
+  mk("p1","p",null,"Type ::person Anna at the start of an empty line","Try it on a new line in this lesson: “👤 Anna” appears with the lines of the Person template and the tag “person”. Tap the tag to see every person. Capitals do not matter; `\\::` keeps two colons as text. The Person template waits in this lesson's faded “Templates” row at the end.");
+  mk("p2","p","p1","Press and hold ＋ for From template…");
+  mk("p3","p","p2","Take a template into your own tree: copy it, then paste it there","New trees start without templates. Open the “Templates” row, select “👤 Person”, ⋯ › Copy, switch to “My thoughts” (More › Trees) and paste it with More › Paste at the top level: there it is valid in the whole tree.");
+  mk("mira","p","p3","👤 Mira","An example person, made from the Person template.");
+  mk("mira1","mira",null,"🤝 How we met: after her talk on memory");
+  mk("mira2","mira","mira1","✨ Shared interests: how walking helps thinking");
+  mk("talk","p","mira","🎤 Why we forget what we read","An example made from the Talk or meeting template.");
+  mk("talk1","talk",null,"🎙 Speaker: [](item:"+ids.mira+")");
+  mk("talk2","talk","talk1","💬 Key points: we keep what we connect to something we know");
+  mk("talk3","talk","talk2","💡 My thoughts: maybe writing a line about it is already a connection");
+  mk("p4","p","talk","The speaker links to Mira, so Mira's detail page lists this talk under “Linked from”");
+  mk("shelf","p","p4","🗄 Template shelf","Four more templates, ready to copy into your own trees: open the “Templates” row below.");
+  mk("p5","p","shelf","Any item can become a template: ⋯ › Use as template");
+  mk("l3","l","l2","Tap a link to go there, like this one: [](item:"+ids.p+")");
+  mk("l4","l","l3","On the detail page, ↙ Linked from shows which thoughts link here, ↗ Links where this one links to");
+  mk("d",null,"p","🔁 More than one device");
+  mk("d1","d",null,"More › Exchange with another device copies all changes over");
+  mk("d2","d","d1","Every change is kept: ⋯ › History lists them, and each can be reverted");
+  mk("in1","inbox",null,"Sort me into “Capture and sort” with ⋯ › Move to…");
+  mk("in2","inbox","in1","Why do ideas come more easily while walking?");
+  mk("in3","inbox","in2","Perhaps a quiet mind notices more than a busy one");
+  const t1=uuid();write("tag.defined",{tagId:t1});write("display-name.set",{elementId:t1,field:"name",language:"en",text:"tip"});
+  for(const k of ["w2","f4","f5","c4","s2"])write("item.tagged",{itemId:ids[k],tagId:t1});
+  write("theme.set",{target:ids.t,themeId:"sage"});
+  const person=seedTemplate("person",ids.p,null);let prevT=null;for(const k of["talk","source","decision","idea"])prevT=seedTemplate(k,ids.shelf,prevT);
+  const ptag=[...all.slice(start)].find(e=>e.type==="display-name.set"&&e.data.text==="person");write("item.tagged",{itemId:ids.mira,tagId:ptag.data.elementId});
+  /* mark seed events as tutorial data */
+  for(const e of all.slice(start)){if(e.data&&typeof e.data.note==="string")e.data.note=e.data.note.replace("item:WELCOME","item:"+ids.w);e.device="tutorial";e.deviceLabel="Tutorial";e.actionId="tutorial-"+tid}
+  saveEvents();ui.per[tid]={focus:null,collapsed:[ids.w3,ids.mira,ids.talk],recent:[],lastPlaced:null,tplOpen:[]};
+  curTree=prev;events=prevEvents;return tid}
+/* first start: the tutorial (opened first) next to the user's own tree "My thoughts", empty except its inbox */
+function fresh(){all=[];saveEvents();ui.per={};curTree=null;const tut=seedTutorial();newTree("My thoughts");setTree(tut)}
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const app=$("#app"),outline=$("#outline"),top=$("#top"),sheet=$("#sheet"),scrim=$("#scrim"),pop=$("#pop"),toastEl=$("#toast"),tools=$("#tools"),detail=$("#detail");
+const el=(tag,props,...children)=>{const n=document.createElement(tag);if(props)for(const[k,v]of Object.entries(props)){if(k==="class")n.className=v;else if(k==="text")n.textContent=v;else if(k.startsWith("on"))n.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)n.setAttribute(k,v===true?"":v)}for(const c of children){if(c!=null)n.append(c)}return n};
+const announce=t=>{$("#live").textContent=t};
+/* a simple rubber stamp, thin strokes in the current colour */
+const STAMP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.6 9.2a3.4 3.4 0 1 1 4.8 0"/><path d="M10 9.2l-.6 3.8h5.2L14 9.2"/><path d="M5 15.2c0-1.2 1-2.2 2.2-2.2h9.6c1.2 0 2.2 1 2.2 2.2V17H5z"/><path d="M4 20.5h16"/></svg>';
+const stampIcon=()=>{const s=document.createElement("span");s.className="stampic";s.innerHTML=STAMP;return s};
+const norm=s=>(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ae/g,"a").replace(/oe/g,"o").replace(/ue/g,"u").replace(/ß/g,"ss");
+const normText=s=>(s||"").normalize("NFC");
+const ZW="\u200B";const clean=v=>(v||"").replace(/\u200B/g,""); /* invisible marker in empty lines, so Backspace on an empty line is noticed on every phone keyboard */
+let state={nav:[],sel:null,draft:null,search:null,recentOnly:false,preview:null,filter:null,resume:null};
+if(!all.length||!all.some(e=>e.tree))fresh();else setTree(treeIds().includes(ui.tree)?ui.tree:treeIds()[0]);
+
+/* ---------- write helpers ---------- */
+function lastChild(parent){const k=kidsOf(parent).filter(x=>x!==INBOX);return k.length?k[k.length-1]:null}
+function ensureTag(name){const n=norm(name);for(const t of P.tags.values())if(norm(t.name)===n)return t.id;
+  const id=uuid();write("tag.defined",{tagId:id});write("display-name.set",{elementId:id,field:"name",language:"en",text:name});refresh();return id}
+function parseTitle(raw){let title=normText(clean(raw)).replace(/\r?\n/g," ");let note=null;const tagsFound=[];
+  const m=title.match(/^(.*?)(?<!\\)##(.*)$/s);if(m){title=m[1];note=m[2].trim()}title=title.replace(/\\##/g,"##");
+  title=title.replace(/@@([\p{L}\p{N}_-]+)/gu,(_,t)=>{tagsFound.push(t);return""}).replace(/\s{2,}/g," ").trim();
+  return {title,note,tags:tagsFound}}
+/* `Title ## note @@tag` is one action: create or retitle, note, tags share one actionId (ADR-067) */
+function applyParsed(id,parsed,isNew,parent,after){action(()=>{
+  if(isNew){write("item.created",{itemId:id,parentId:parent,afterItemId:after,title:parsed.title,note:parsed.note||"",format:"markdown"});
+    if(parsed.note)setTimeout(()=>toast("Moved to the note",[["Open",()=>openDetail(id)]]),0)}
+  else{const it=P.items.get(id);if(it.title!==parsed.title)write("item.title-changed",{itemId:id,title:parsed.title,format:"markdown"});
+    if(parsed.note){const had=!!it.note.trim();write("item.note-changed",{itemId:id,note:had?it.note.replace(/\s+$/,"")+"\n\n"+parsed.note:parsed.note,format:"markdown"});
+      setTimeout(()=>toast(had?"Added to the end of the note":"Moved to the note",[["Open",()=>openDetail(id)]]),0)}}
+  refresh();for(const t of parsed.tags){const tid=ensureTag(t);if(!P.items.get(id).tags.has(tid))write("item.tagged",{itemId:id,tagId:tid})}
+  refresh()})}
+
+/* ---------- outline rendering ---------- */
+function rootTitle(){return treeName(curTree)}
+function renderTop(){
+  keepCaret();top.replaceChildren();
+  if(state.search!==null){
+    const inp=el("input",{type:"search",id:"q",placeholder:"Search titles and notes · :: for templates","aria-label":"Search",value:state.search});
+    inp.addEventListener("input",()=>{state.search=inp.value;renderOutline()});
+    /* D-105: the search field takes the full width; its filters sit in a row underneath, clearly visible */
+    top.append(el("div",{class:"searchwrap"},
+      el("div",{class:"searchbox"},inp,el("button",{class:"chipbtn",text:"✕","aria-label":"Close search",onclick:()=>{state.search=null;state.recentOnly=false;state.recentList=false;renderAll()}})),
+      el("div",{class:"searchfilters",role:"group","aria-label":"Search filters"},
+        el("button",{class:"chipbtn","aria-pressed":String(state.recentOnly),text:(state.recentOnly?"✓ ":"")+"Changed recently",onclick:()=>{state.recentOnly=!state.recentOnly;state.recentN=5;state.recentList=false;renderTop();renderOutline()}}),
+        state.recentOnly?el("button",{class:"chipbtn","aria-pressed":String(!!state.recentList),text:state.recentList?"✓ By time":"By time",onclick:()=>{state.recentList=!state.recentList;renderTop();renderOutline()}}):null)));
+    if(document.activeElement!==inp)setTimeout(()=>{inp.focus()},0);return}
+  const crumbs=el("div",{class:"crumbs","aria-label":"Where you are"});
+  crumbs.append(el("button",{text:rootTitle(),onclick:()=>setFocus(null)}));
+  if(!ui.focus){top.append(crumbs,el("span",{class:"proto",text:"Prototype"}))}
+  else{const path=pathOf(ui.focus);
+    for(const p of path.slice(0,-1)){crumbs.append(el("span",{class:"sep",text:"›"}),el("button",{text:p.title||"Untitled",onclick:()=>setFocus(p.id)}))}
+    const editing=state.draft&&!state.draft.isNew&&state.draft.id===ui.focus;
+    const titleEl=editing?editor():el("h1",{class:"focustitle",tabindex:"0",role:"button","aria-label":"Title, tap to edit"},mdInline(path[path.length-1].title||"Untitled"));
+    if(editing)titleEl.classList.add("focusedit");else{titleEl.addEventListener("click",ev=>{if(ev.target.closest("a"))return;startEdit(ui.focus)});titleEl.addEventListener("keydown",ev=>{if(ev.key==="Enter"){ev.preventDefault();startEdit(ui.focus)}})}
+    const fi=path[path.length-1];const head=el("div",{class:"focushead"},crumbs,titleEl);
+    if(!editing&&fi.note){const pv=el("div",{class:"preview focuspreview"});pv.append(mdStrip(fi.note.split("\n").find(l=>l.trim())||""));pv.addEventListener("click",()=>openDetail(fi.id));head.append(pv)}
+    if(editing)setTimeout(()=>{if(!state.resume&&document.activeElement!==titleEl)focusEditor(titleEl)},0);
+    top.append(el("button",{class:"upbtn",text:"←","aria-label":"Back to the previous view",onclick:()=>{if(location.hash==="#focus"){history.back()}else{goBack()}}}),head)}
+  requestAnimationFrame(()=>{crumbs.scrollLeft=crumbs.scrollWidth});
+}
+/* D-110: search leaves templates out, unless the search text starts with "::" (then it searches the templates) */
+const tplSearch=()=>state.search!=null&&state.search.trimStart().startsWith("::");
+const searchQ=()=>norm((state.search||"").trimStart().replace(/^::/,"")).trim();
+function matches(it){const q=searchQ();const hit=!q||norm(it.title).includes(q)||norm(it.note).includes(q)||[...it.tags].some(t=>norm(tagName(t)).includes(q.replace(/^@@/,"")));
+  const recent=!state.recentOnly||(state.recentSet&&state.recentSet.has(it.id));return hit&&recent}
+const lastChange=id=>{let best=null;for(const e of events){if(evItem(e)===id&&(!best||order(e,best)>0))best=e}return best};
+const ago=t=>{const m=Math.round((Date.now()-t)/60000);if(m<1)return"just now";if(m<60)return m+" min";const h=Math.round(m/60);if(h<24)return h+" h";const d=Math.round(h/24);return d===1?"yesterday":d<7?d+" days":new Date(t).toLocaleDateString()};
+/* D-98: "Changed recently" = the most recently changed items in the current view, five at a time */
+function computeRecent(){const inView=it=>!ui.focus||(it.id!==ui.focus&&inBranch(it.id,ui.focus));
+  const list=[...P.items.values()].filter(it=>!it.deleted&&it.id!==INBOX&&visibleItem(it.id)&&!inTpl(it.id)&&inView(it)).sort((a,b)=>b.changed-a.changed);
+  state.recentSet=new Set(list.slice(0,state.recentN||5).map(it=>it.id));state.recentTotal=list.length}
+function highlight(text){const q=searchQ();const frag=document.createDocumentFragment();
+  if(!q||!text){frag.append(text||"");return frag}
+  const n=norm(text);let i=n.indexOf(q);
+  if(i<0||n.length!==text.length){frag.append(text);return frag}
+  frag.append(text.slice(0,i),el("mark",{text:text.slice(i,i+q.length)}),text.slice(i+q.length));return frag}
+/* a re-render keeps the cursor of the title being edited */
+function keepCaret(){const a=document.activeElement;if(state.draft&&a&&a.classList&&a.classList.contains("editin")&&state.draft.caret==null)state.draft.caret=Math.max(0,(a.selectionStart??a.value.length)-(a.value.startsWith(ZW)?1:0))}
+function renderOutline(){
+  keepCaret();outline.replaceChildren();
+  const rootId=ui.focus;const pageTheme=rootId?themeFor(rootId):treeTheme();
+  app.className=app.className.replace(/\bt-\w+/g,"").trim()+" t-"+pageTheme;
+  const searching=state.search!==null&&(norm(state.search).trim()||state.recentOnly);
+  const filtering=searching||!!state.filter;
+  let keep=null;
+  if(state.recentOnly)computeRecent();
+  state.hits=null;
+  const tplMode=searching&&tplSearch()&&!state.recentOnly;
+  if(filtering){keep=new Set();state.hits=new Set();for(const it of P.items.values()){if(!it.deleted&&visibleItem(it.id)&&inTpl(it.id)===tplMode&&(!searching||matches(it))&&(!state.filter||state.filter.test(it))){state.hits.add(it.id);let x=it;while(x){keep.add(x.id);x=P.items.get(x.parent)}}}}
+  /* a filter (tag chip, "Show" after an exchange) works like search: matches and their ancestors, with a way to clear it */
+  if(state.filter){const n=[...keep].filter(id=>state.filter.test(P.items.get(id))).length;
+    outline.append(el("div",{class:"filterbar",role:"status"},el("span",{text:state.filter.label+" · "+n+(n===1?" item":" items")}),el("button",{class:"chipbtn",text:"✕ Clear","aria-label":"Clear the filter",onclick:()=>{state.filter=null;renderAll()}})))}
+  /* D-110: a branch's templates are gathered in one display-only row "Templates · n" (never stored), collapsed by default */
+  const tplGroup=(parent,depth)=>{const ts=tplsOf(parent).filter(t=>!keep||keep.has(t));if(!ts.length)return;
+    const key=parent==null?"":parent;const open=filtering||ui.tplOpen.includes(key);
+    const b=el("button",{class:"row tplrow",style:`--depth:${depth}`,"aria-expanded":String(open),"aria-label":"Templates, "+ts.length+(open?", collapse":", expand"),onclick:()=>{commitDraft(false,true);const i=ui.tplOpen.indexOf(key);i>=0?ui.tplOpen.splice(i,1):ui.tplOpen.push(key);saveUi();renderOutline()}},
+      el("span",{class:"tw","aria-hidden":"true"},stampIcon()),el("span",{text:"Templates · "+ts.length}),el("span",{class:"chev","aria-hidden":"true",text:open?"▾":"▸"}));
+    outline.append(b);
+    if(open)for(const t of ts){outline.append(row(P.items.get(t),depth,pageTheme));if(filtering||!ui.collapsed.includes(t))walk(t,depth+1)}};
+  const walk=(parent,depth)=>{
+    const ks=kidsOf(parent);
+    let draftDone=false,tplDone=false;
+    const draftHere=state.draft&&state.draft.isNew&&state.draft.parent===parent;
+    if(draftHere&&!state.draft.after){outline.append(draftRow(depth));draftDone=true}
+    for(const id of ks){const it=P.items.get(id);if(keep&&!keep.has(id))continue;
+      if(id===INBOX&&parent==null){if(draftHere&&!draftDone){outline.append(draftRow(depth));draftDone=true}tplGroup(parent,depth);tplDone=true}
+      outline.append(row(it,depth,pageTheme));
+      const open=filtering||!ui.collapsed.includes(id);
+      if(open)walk(id,depth+1);
+      if(draftHere&&!draftDone&&state.draft.after===id){outline.append(draftRow(depth));draftDone=true}}
+    if(draftHere&&!draftDone)outline.append(draftRow(depth));
+    if(!tplDone)tplGroup(parent,depth);
+  };
+  /* D-104: "By time" lists the latest changes newest first, each with its path, instead of the tree */
+  if(state.recentOnly&&state.recentList&&state.hits){const ids=[...state.hits].sort((x,y)=>P.items.get(y).changed-P.items.get(x).changed);
+    for(const id of ids){const r=row(P.items.get(id),0,pageTheme);const pth=el("div",{class:"preview",text:pathText(id)});const bd=r.querySelector(".body");if(bd)bd.append(pth);outline.append(r)}}
+  else walk(rootId,0);
+  /* D-98, D-101: "Show 5 more" and "Show 5 fewer" step through the latest changes */
+  if(state.recentOnly&&state.search!==null){const N=state.recentN||5;const btns=[];
+    if(N>5)btns.push(el("button",{class:"chipbtn",text:"Show 5 fewer",onclick:()=>{state.recentN=Math.max(5,N-5);renderOutline()}}));
+    if(N<(state.recentTotal||0))btns.push(el("button",{class:"chipbtn",text:"Show 5 more",onclick:()=>{state.recentN=N+5;renderOutline()}}));
+    if(btns.length)outline.append(el("div",{style:"padding:12px;display:flex;gap:8px;justify-content:center"},...btns))}
+  if(!outline.querySelector(".row")&&!state.draft){outline.append(el("div",{class:"emptystate",text:filtering?"Nothing matches.":rootId===INBOX?"The inbox is empty. Tap 📥 to capture a thought.":"Nothing here yet. Tap ＋ Add here."}))}
+  const ed=outline.querySelector(".editin");if(ed&&!state.resume&&document.activeElement!==ed)focusEditor(ed)
+  updatePill();
+}
+function row(it,depth,pageTheme){
+  const nk=kidsOf(it.id).length;const has=nk>0||tplsOf(it.id).length>0;const collapsed=ui.collapsed.includes(it.id);
+  const own=themeFor(it.id);const tinted=own!==pageTheme;
+  const editing=state.draft&&!state.draft.isNew&&state.draft.id===it.id;
+  const r=el("div",{class:"row"+(it.id===INBOX?" inboxrow":"")+(state.sel===it.id?" sel":"")+(editing?" editing":"")+(tinted?" tinted t-"+own+(it.theme?"":" inner"):"")+(state.hits&&!state.hits.has(it.id)?" ctx":""),style:`--depth:${depth}`,"data-id":it.id});
+  if(it.template){/* a template carries the stamp instead of the dot (D-110) */
+    const tw=el("button",{class:"tw stamp"+(has&&collapsed?" closed":""),"aria-label":"Template"+(has?(collapsed?", expand, "+nk+" lines inside":", collapse"):""),"aria-expanded":has?String(!collapsed):false,tabindex:has?"0":"-1",onclick:ev=>{ev.stopPropagation();if(has)toggleCollapse(it.id)}},stampIcon());
+    if(has)tw.append(el("span",{class:"caret","aria-hidden":"true",text:collapsed?"▸":"▾"}));r.append(tw)}
+  else r.append(el("button",{class:"tw"+(has?" has":" leaf")+(has&&collapsed?" closed":""),"aria-label":has?(collapsed?"Expand, "+nk+" items inside":"Collapse"):"No items inside","aria-expanded":has?String(!collapsed):false,tabindex:has?"0":"-1",text:has?(collapsed?"▸":"▾"):"●",onclick:ev=>{ev.stopPropagation();if(!has)return;toggleCollapse(it.id)}}));
+  const body=el("div",{class:"body",tabindex:"0"});
+  if(state.draft&&!state.draft.isNew&&state.draft.id===it.id){body.append(editor())}
+  else{const t=el("div",{class:"title"+(it.title?"":" empty")});t.append(state.search?highlight(mdStrip(it.title)||"Untitled"):mdInline(it.title||"Untitled"));
+    for(const tg of it.tags)t.append(el("button",{class:"tag",text:tagName(tg),"aria-label":"Show all with tag "+tagName(tg),onclick:ev=>{ev.stopPropagation();filterByTag(tg)}}));
+    if(state.recentOnly&&state.hits&&state.hits.has(it.id)){const lc=lastChange(it.id);if(lc)t.append(el("span",{class:"when",text:ago(lc.clock.t)+" · "+(lc.device===device.id?device.label:(lc.deviceLabel||"other device"))}))}
+    if(nk&&collapsed)t.append(el("span",{class:"kids",text:"+"+nk,title:nk+" items inside"}));
+    body.append(t);if(it.note){const pv=el("div",{class:"preview"});pv.append(highlight(mdStrip(it.note.split("\n").find(l=>l.trim())||"")));body.append(pv)}
+    /* D-7: for the next thought in the inbox, one tap places it right below the last placed item */
+    const lp=placeBelowTarget(it.id);
+    if(state.sel===it.id&&lp)body.append(el("div",{class:"placebar"},el("button",{class:"chipbtn",text:"↳ Below “"+(P.items.get(lp).title||"Untitled")+"”","aria-label":"Place right below “"+(P.items.get(lp).title||"Untitled")+"”, the last placed item",onclick:ev=>{ev.stopPropagation();placeBelow(it.id)}})))}
+  body.addEventListener("click",()=>{if(state.draft&&state.draft.id===it.id)return;if(state.sel===it.id){startEdit(it.id)}else{select(it.id)}});
+  body.addEventListener("keydown",ev=>{if(ev.key==="Enter"&&ev.target===body){ev.preventDefault();startEdit(it.id)}});
+  r.append(body);
+  addSwipe(r,it.id);
+  if(state.sel===it.id&&!(state.draft&&state.draft.id===it.id))r.append(el("button",{class:"more","aria-label":"Actions for "+(it.title||"item"),text:"⋯",onclick:ev=>{ev.stopPropagation();itemMenu(it.id,ev.currentTarget)}}));
+  return r}
+/* swipe left on a row opens the item (prototype gesture, UX topic 6) */
+function addSwipe(r,id){let sx=0,sy=0,dx=0,active=false,decided=false,pid=null;
+  const reset=()=>{r.classList.remove("swiping");r.classList.add("snap");r.style.transform="";const h=outline.querySelector(".swipehint");if(h)h.remove();setTimeout(()=>r.classList.remove("snap"),200)};
+  r.addEventListener("pointerdown",ev=>{if(ev.pointerType==="mouse"||(state.draft&&state.draft.id===id))return;sx=ev.clientX;sy=ev.clientY;dx=0;active=true;decided=false;pid=ev.pointerId});
+  r.addEventListener("pointermove",ev=>{if(!active||ev.pointerId!==pid)return;const mx=ev.clientX-sx,my=ev.clientY-sy;
+    if(!decided){if(Math.abs(mx)<10&&Math.abs(my)<10)return;decided=true;if(Math.abs(my)>Math.abs(mx)||mx>0){active=false;return}r.setPointerCapture(pid);r.classList.add("swiping");
+      const h=el("div",{class:"swipehint",text:"Open ›"});h.style.top=r.offsetTop+"px";h.style.height=r.offsetHeight+"px";h.style.bottom="auto";outline.style.position="relative";outline.append(h)}
+    dx=Math.min(0,mx);r.style.transform=`translateX(${dx}px)`});
+  const end=ev=>{if(!active||ev.pointerId!==pid)return;active=false;const go=dx<-70;reset();if(go){r.dataset.swiped="1";setTimeout(()=>{delete r.dataset.swiped},400);openDetail(id)}};
+  r.addEventListener("pointerup",end);r.addEventListener("pointercancel",ev=>{if(active){active=false;reset()}});
+  r.addEventListener("click",ev=>{if(r.dataset.swiped){ev.stopPropagation();ev.preventDefault()}},true)}
+function draftRow(depth){const r=el("div",{class:"row sel editing",style:`--depth:${depth}`});r.append(el("span",{class:"tw",text:"·"}),el("div",{class:"body"},editor()));return r}
+
+/* ---------- filters (tag chip, after an exchange) ---------- */
+function filterByTag(tid){commitDraft(false,true);const name=tagName(tid);state.filter={label:"Tagged “"+name+"”",test:it=>it.tags.has(tid)};state.sel=null;closeAll();renderAll();announce("Showing items tagged "+name)}
+function placeBelowTarget(id){const lp=ui.lastPlaced;const it=P.items.get(id);
+  if(!lp||lp===id||!it||it.parent!==INBOX)return null;const x=P.items.get(lp);
+  if(!x||x.deleted||!visibleItem(lp)||x.parent===INBOX||lp===INBOX||pathOf(lp).some(a=>a.id===id))return null;return lp}
+function placeBelow(id){const lp=placeBelowTarget(id);if(!lp)return;const x=P.items.get(lp);const next=nextInInbox(id);
+  action(()=>write("item.moved",{itemId:id,parentId:x.parent,afterItemId:lp}));refresh();ui.lastPlaced=id;saveUi();state.sel=next;renderAll();
+  toast("Placed below “"+(x.title||"Untitled")+"”",[["Undo",()=>quickUndo()],["Go there",()=>goTo(id)]])}
+const nextInInbox=id=>{const k=kidsOf(INBOX);const i=k.indexOf(id);return i<0?null:(k[i+1]||k[i-1]||null)};
+
+/* ---------- editing (drafts are local until editing ends) ---------- */
+function focusEditor(ed){ed.focus();const d=state.draft;
+  if(d&&d.selFrom!=null){const f=Math.min(d.selFrom,ed.value.length);delete d.selFrom;delete d.caret;try{ed.setSelectionRange(f,ed.value.length)}catch(e){}return}const c=d&&d.caret!=null?Math.min(d.caret,ed.value.length):ed.value.length;if(d)delete d.caret;try{ed.setSelectionRange(c,c)}catch(e){}}
+/* ---------- D-109: suggestions where the user types, for @@ (tags, D-14), :: (templates, D-108) and [[ (item links) ----------
+   the best match as faded ghost text right after the caret (tap it, or Tab), and up to five matches, most used first, directly under the line */
+let measureCtx=null;
+const textWidth=(inp,t)=>{measureCtx=measureCtx||document.createElement("canvas").getContext("2d");const cs=getComputedStyle(inp);measureCtx.font=cs.font||(cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily);return measureCtx.measureText(t).width};
+function hideSuggest(inp){if(!inp)return;if(inp._ghost)inp._ghost.remove();if(inp._list)inp._list.remove();inp._ghost=null;inp._list=null;inp._sugg=null}
+/* inp._ctx: place() gives the parent for template suggestions (only on a new line), self is the item being edited, mount(list) places the list */
+function runSuggest(inp){hideSuggest(inp);if(!inp.isConnected)return;const ctx=inp._ctx||{};
+  const focused=document.activeElement===inp;const s=focused?(inp.selectionStart??inp.value.length):inp.value.length;
+  const before=inp.value.slice(0,s).replace(/​/g,"");const atEnd=!inp.value.slice(s).replace(/​/g,"");
+  let m,mode=null,typed="",items=[];
+  if((m=before.match(/@@([\p{L}\p{N}_-]*)$/u))){mode="tag";typed=m[1];const q=norm(typed);const counts=new Map();for(const x of P.items.values())if(!x.deleted&&!inTpl(x.id))for(const t of x.tags)counts.set(t,(counts.get(t)||0)+1);
+    items=[...P.tags.values()].filter(t=>t.name&&/^[\p{L}\p{N}_-]+$/u.test(t.name)&&norm(t.name).startsWith(q)&&norm(t.name)!==q).sort((a,b)=>(counts.get(b.id)||0)-(counts.get(a.id)||0)).slice(0,5)
+      .map(t=>({label:t.name,sub:(counts.get(t.id)||0)+((counts.get(t.id)||0)===1?" item":" items"),insert:t.name+" ",ghost:t.name}))}
+  else if(ctx.place&&(m=before.match(/^::([\p{L}\p{N}_-]*)$/u))){mode="tpl";typed=m[1];
+    items=rankTemplates(typed,ctx.place()).slice(0,5).map(x=>({label:x.t.title||"Untitled",sub:x.where,insert:tplKey(x.t)+" ",ghost:tplKey(x.t),tpl:true}))}
+  else if((m=before.match(/\[\[([^\[\]\n]*)$/))){mode="link";typed=m[1];
+    items=rankItems(typed,ctx.self).slice(0,5).map(x=>{const t=mdStrip(x.title);const em=leadEmoji(t);return{label:t||"Untitled",sub:pathText(x.id),insertId:x.id,ghost:em&&!typed.startsWith(em)?t.slice(t.indexOf(em)+em.length).trimStart():t}});
+    if(typed.trim())items.push({label:"Create “"+typed.trim()+"”",sub:"New item in the inbox",create:typed.trim()})}
+  if(!mode||!items.length)return;
+  const cut=s-typed.length-(mode==="link"?2:0);
+  inp._sugg={mode,items,cut,end:s,typed};
+  const best=items[0];
+  /* ghost text: the rest of the best match, right after the caret */
+  if(atEnd&&!best.create&&best.ghost&&best.ghost.length>typed.length&&norm(best.ghost.slice(0,typed.length))===norm(typed)){
+    const rest=best.ghost.slice(typed.length);const cs=getComputedStyle(inp);
+    const left=inp.offsetLeft+parseFloat(cs.paddingLeft||0)+textWidth(inp,inp.value.slice(0,s).replace(/​/g,""))-inp.scrollLeft;
+    const room=inp.offsetLeft+inp.clientWidth-left;
+    if(room>12){const g=el("button",{class:"sghost",type:"button",tabindex:"-1","aria-label":"Accept suggestion: "+best.label,text:rest,onmousedown:e=>e.preventDefault(),onpointerdown:e=>e.preventDefault(),onclick:e=>{e.stopPropagation();acceptSuggest(inp,0)}});
+      g.style.left=left+"px";g.style.top=inp.offsetTop+"px";g.style.height=Math.max(24,inp.offsetHeight)+"px";g.style.maxWidth=room+"px";
+      inp.parentElement.append(g);inp._ghost=g}}
+  const list=el("div",{class:"sugglist",role:"group","aria-label":mode==="tag"?"Tag suggestions":mode==="tpl"?"Templates":"Items to link"});
+  if(mode==="tpl")list.append(el("div",{class:"suglbl",text:"Create from a template"}));
+  if(mode==="link")list.append(el("div",{class:"suglbl",text:"Link to an item"}));
+  items.forEach((it,i)=>{const b=el("button",{class:"sugopt",type:"button","aria-label":(it.create?it.label:(mode==="tag"?"Tag ":mode==="tpl"?"Template ":"Link to ")+it.label),onmousedown:e=>e.preventDefault(),onpointerdown:e=>e.preventDefault(),onclick:e=>{e.stopPropagation();acceptSuggest(inp,i)}});
+    if(it.tpl)b.append(stampIcon());b.append(el("span",{text:it.label}),it.sub?el("span",{class:"sub",text:it.sub}):null);list.append(b)});
+  const r=inp.closest(".row");
+  if(ctx.mount)ctx.mount(list);else if(r){list.style.setProperty("--depth",r.style.getPropertyValue("--depth")||0);r.after(list)}else inp.parentElement.append(list);
+  inp._list=list;if(r)requestAnimationFrame(()=>{try{list.scrollIntoView({block:"nearest"})}catch(e){}})}
+function acceptSuggest(inp,i){const sg=inp._sugg;if(!sg)return;const it=sg.items[i];let ins=it.insert;
+  if(it.create){const id=createInInbox(it.create);ins="[](item:"+id+") ";setTimeout(()=>toast("Created “"+mdStrip(P.items.get(id).title)+"” in the inbox and linked it"),0)}
+  else if(it.insertId)ins="[](item:"+it.insertId+") ";
+  const v=inp.value;inp.value=v.slice(0,sg.cut)+ins+v.slice(sg.end);const c=sg.cut+ins.length;inp.focus();try{inp.setSelectionRange(c,c)}catch(e){}
+  hideSuggest(inp);inp.dispatchEvent(new Event("input"))}
+/* keys while suggestions show: Tab accepts the best; Enter completes a template name or a link; Escape closes the suggestions */
+function suggestKey(inp,ev){const sg=inp._sugg;if(!sg)return false;
+  if(ev.key==="Tab"&&!ev.shiftKey){ev.preventDefault();acceptSuggest(inp,0);return true}
+  if(ev.key==="Enter"&&(sg.mode==="link"||sg.mode==="tpl")){ev.preventDefault();acceptSuggest(inp,0);return true}
+  if(ev.key==="Escape"){ev.preventDefault();ev.stopPropagation();hideSuggest(inp);return true}
+  return false}
+function insertMarker(inp,ins){const s=inp.selectionStart??inp.value.length;const v=inp.value.replace(/​/g,"");const at=Math.min(s,v.length);
+  const pre=ins==="[["&&at>0&&!/\s$/.test(v.slice(0,at))?" ":"";inp.value=v.slice(0,at)+pre+ins+v.slice(at);const c=at+pre.length+ins.length;inp.focus();inp.setSelectionRange(c,c);inp.dispatchEvent(new Event("input"))}
+
+/* ---------- templates (ADR-068, D-107, D-108, D-110) ---------- */
+const leadEmoji=t=>{const m=(t||"").match(/^((?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:️|‍\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Regional_Indicator})*)\s*/u);return m?m[1]:""};
+const tplKey=t=>norm(mdStrip(t.title).replace(/^(?:\p{Extended_Pictographic}|\p{Regional_Indicator}|️|‍|\p{Emoji_Modifier})+/u,"")).trim().replace(/\s+/g,"-")||"template";
+/* a template is valid in its parent's branch; at the top level in the whole tree; nearest branch first */
+function validTemplates(parent){const out=[];let p=parent;const chain=[];for(let n=0;n<100;n++){chain.push(p);if(p==null)break;const x=P.items.get(p);p=x?(x.parent??null):null}
+  for(const a of chain)for(const t of tplsOf(a)){if(parent!=null&&inBranch(parent,t))continue;out.push({t:P.items.get(t),where:a==null?"Whole tree":"In “"+(mdStrip(P.items.get(a).title)||"Untitled")+"”"})}
+  return out}
+const tplUse=id=>{let n=0;for(const x of P.items.values())if(!x.deleted&&x.fromTemplate===id)n++;return n};
+function rankTemplates(typed,parent){const q=norm(typed);const v=validTemplates(parent).map((x,i)=>Object.assign(x,{i,k:tplKey(x.t)}));
+  return v.filter(x=>x.k.startsWith(q)||(q&&x.k.includes(q))).sort((a,b)=>(b.k.startsWith(q)-a.k.startsWith(q))||(tplUse(b.t.id)-tplUse(a.t.id))||a.i-b.i)}
+function findTemplate(name,parent){const q=norm(name);const v=rankTemplates(name,parent);const exact=v.find(x=>x.k===q);return exact?exact.t:(v.length&&v[0].k.startsWith(q)?v[0].t:null)}
+/* copying a template's branch is one action (ADR-067): new ids, no template marking; the typed text becomes the title, keeping the template's emoji */
+function copyTemplate(tid,parent,after,rest){const t=P.items.get(tid);const parsed=parseTitle(rest||"");const em=leadEmoji(t.title);
+  const title=parsed.title?(leadEmoji(parsed.title)||!em?parsed.title:em+" "+parsed.title):t.title;const root=uuid();
+  action(()=>{write("item.created",{itemId:root,parentId:parent,afterItemId:after,title,note:parsed.note!=null?parsed.note:t.note,format:"markdown",fromTemplate:tid});
+    for(const tg of t.tags)write("item.tagged",{itemId:root,tagId:tg});
+    const copyKids=(src,dst)=>{let prev=null;for(const k of kidsOf(src)){const x=P.items.get(k);const nid=uuid();
+      write("item.created",{itemId:nid,parentId:dst,afterItemId:prev,title:x.title,note:x.note,format:"markdown"});for(const tg of x.tags)write("item.tagged",{itemId:nid,tagId:tg});prev=nid;copyKids(k,nid)}};
+    copyKids(tid,root);refresh();
+    for(const tg of parsed.tags){const id=ensureTag(tg);if(!P.items.get(root).tags.has(id))write("item.tagged",{itemId:root,tagId:id})}});
+  refresh();ui.collapsed=ui.collapsed.filter(c=>c!==root);if(parent&&parent!==INBOX)ui.collapsed=ui.collapsed.filter(c=>c!==parent);saveUi();return root}
+function createdToast(root,t){toast("Created “"+mdStrip(P.items.get(root).title)+"” from “"+mdStrip(t.title)+"”",[["Undo",()=>quickUndo()],["Open",()=>openDetail(root)]])}
+/* "From template…": the templates valid at the place where ＋ Add here would add (nearest branch first, then the tree's) */
+function fromTemplateSheet(place){commitDraft(false,true);const v=validTemplates(place.parent);const pn=place.parent==null?treeName(curTree):place.parent===INBOX?"Inbox":(mdStrip(P.items.get(place.parent).title)||"Untitled");
+  const body=[];let last=null;
+  for(const x of v){if(x.where!==last){body.push(el("div",{class:"lbl",text:x.where}));last=x.where}
+    const n=kidsOf(x.t.id).length;body.push(el("button",{class:"opt","aria-label":"From template "+mdStrip(x.t.title),onclick:()=>{closeAll();if(place.parent===INBOX)ui.collapsed=ui.collapsed.filter(c=>c!==INBOX);
+      const root=copyTemplate(x.t.id,place.parent,place.after,"");const it=P.items.get(root);const em=leadEmoji(it.title);
+      startEdit(root);if(state.draft){state.draft.selFrom=em?em.length+1:0;renderAll()}createdToast(root,x.t)}},stampIcon(),el("span",null,mdStrip(x.t.title)||"Untitled",el("span",{class:"path",text:n+(n===1?" line":" lines")+(x.t.note?" · "+mdStrip(x.t.note.split("\n")[0]).slice(0,60):"")}))))}
+  if(!v.length)body.push(el("p",{class:"hint",text:"No templates here yet. Any item can become one: ⋯ › Use as template."}));
+  body.push(el("p",{class:"hint",text:"Tip: type :: at the start of an empty line, for example “::person Anna”."}));
+  openSheet("From template…","Into “"+pn+"”",body)}
+/* ---------- inline item links: [](item:<id>) shows the target's current title ---------- */
+const linkRe=/\]\(item:([^)\s]+)\)/g;
+const linkTargets=text=>{const out=[];for(const m of (text||"").matchAll(linkRe))if(!out.includes(m[1]))out.push(m[1]);return out};
+const liveItem=id=>{const x=P.items.get(id);return x&&!x.deleted?x:null};
+const linksFrom=id=>{const it=P.items.get(id);return it?linkTargets(it.title+"\n"+it.note).filter(t=>t!==id&&liveItem(t)):[]};
+function linkedFrom(id){const out=[];for(const x of P.items.values()){if(x.deleted||x.id===id||!visibleItem(x.id))continue;
+  const lines=(x.title+"\n"+x.note).split("\n").filter(l=>linkTargets(l).includes(id));if(lines.length)out.push({item:x,lines})}return out}
+function rankItems(q,self){q=norm(q).trim();const bare=x=>{const t=mdStrip(x.title);const em=leadEmoji(t);return norm(em?t.slice(em.length).trimStart():t)};const inc=new Map();for(const x of P.items.values())if(!x.deleted)for(const t of linkTargets(x.title+"\n"+x.note))inc.set(t,(inc.get(t)||0)+1);
+  return [...P.items.values()].filter(x=>!x.deleted&&x.id!==self&&visibleItem(x.id)&&!inTpl(x.id)&&(!q||norm(mdStrip(x.title)).includes(q)))
+    .sort((a,b)=>(q?(bare(b).startsWith(q)-bare(a).startsWith(q)):0)||((inc.get(b.id)||0)-(inc.get(a.id)||0))||b.changed-a.changed)}
+/* "Create “…”" while linking: a new item in the inbox, also from a template ("::person Tom") */
+function createInInbox(text){const tm=text.match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],INBOX);
+  if(t)return copyTemplate(t.id,INBOX,lastChild(INBOX),tm[2]||"");
+  const id=uuid();applyParsed(id,parseTitle(text),true,INBOX,lastChild(INBOX));return id}
+function editor(){
+  const d=state.draft;const inp=el("input",{class:"editin",type:"text","aria-label":"Title",value:d.value||ZW,enterkeyhint:"next",autocomplete:"off"});
+  inp.addEventListener("input",()=>{const raw=inp.value;
+    if(raw===""){if(d.value===""){inp.value=ZW;backspaceEmpty();return}inp.value=ZW;d.value="";d.hist.push("");d.fut=[];return}
+    const v=clean(raw);
+    if(d.isNew&&v===" "){inp.value=ZW;d.value="";indentDraft();return}
+    if(raw.startsWith(ZW)&&v){inp.value=v;inp.setSelectionRange(v.length,v.length)}
+    d.value=v;d.hist.push(v);d.fut=[]});
+  inp._ctx={place:d.isNew?()=>d.parent:null,self:d.isNew?null:d.id};
+  inp.addEventListener("keydown",ev=>{
+    if(suggestKey(inp,ev))return;
+    if(ev.key==="Enter"){ev.preventDefault();commitDraft(!(!d.isNew&&d.id===ui.focus))}
+    else if(ev.key==="Escape"){ev.preventDefault();cancelDraft()}
+    else if(ev.key==="Tab"){ev.preventDefault();ev.shiftKey?outdentDraft():indentDraft()}
+    else if(ev.key==="Backspace"&&clean(inp.value)===""){ev.preventDefault();backspaceEmpty()}});
+  inp.addEventListener("beforeinput",ev=>{if(ev.inputType==="deleteContentBackward"&&clean(inp.value)===""){ev.preventDefault();backspaceEmpty()}});
+  inp.addEventListener("input",()=>runSuggest(inp));
+  inp.addEventListener("click",()=>runSuggest(inp));
+  requestAnimationFrame(()=>{if(inp.isConnected&&document.activeElement===inp)runSuggest(inp)});
+  inp.addEventListener("blur",()=>{setTimeout(()=>{const a=document.activeElement;if(state.draft===d&&!state.resume&&!tools.contains(a)&&!(a&&a.closest&&a.closest(".sugglist,.sghost"))&&!(a&&a.classList&&a.classList.contains("editin")))commitDraft(false)},150)});
+  return inp}
+function startNew(parent,after){commitDraft(false,true);state.draft={isNew:true,id:uuid(),parent,after,value:"",hist:[""],fut:[]};state.sel=null;showTools(true);renderOutline()}
+function startEdit(id){commitDraft(false,true);const it=P.items.get(id);const tagStr=[...it.tags].map(t=>" @@"+tagName(t)).join("");
+  state.draft={isNew:false,id,value:it.title,origTags:tagStr,hist:[it.title],fut:[]};showTools(true);renderAll()}
+function cancelDraft(){state.draft=null;showTools(false);renderAll()}
+function commitDraft(chain,quiet){
+  const d=state.draft;if(!d)return;state.draft=null;
+  const inp=document.querySelector(".editin");if(inp)d.value=clean(inp.value);
+  /* D-108: "::name rest" on a new line creates from the template "name"; the rest becomes the title */
+  /* ADR-068: "\\::" at the start keeps two literal colons */
+  const esc=d.value.trimStart().startsWith("\\::");if(esc)d.value=d.value.replace("\\::","::");
+  if(d.isNew&&!esc){const tm=d.value.trim().match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],d.parent);
+    if(t){const root=copyTemplate(t.id,d.parent,d.after,tm[2]||"");state.sel=root;showTools(false);if(!quiet)renderAll();createdToast(root,t);return}
+    if(tm)setTimeout(()=>toast("No template “"+tm[1]+"” here; saved as text"),0)}
+  const parsed=parseTitle(d.value);
+  if(d.isNew){
+    if(parsed.title||parsed.note||parsed.tags.length){applyParsed(d.id,parsed,true,d.parent,d.after);state.sel=d.id;
+      if(chain){state.draft={isNew:true,id:uuid(),parent:d.parent,after:d.id,value:"",hist:[""],fut:[]};state.sel=null}}
+  }else{applyParsed(d.id,parsed,false);state.sel=d.id;
+    if(chain){state.draft={isNew:true,id:uuid(),parent:P.items.get(d.id).parent,after:d.id,value:"",hist:[""],fut:[]};state.sel=null}}
+  if(!state.draft)showTools(false);
+  if(!quiet)renderAll()}
+function siblingsOfDraft(){return kidsOf(state.draft.parent)}
+function indentDraft(){const d=state.draft;if(!d)return;
+  if(d.isNew){const prev=d.after;if(!prev){toast("Nothing above to nest under");renderOutline();return}
+    d.parent=prev;d.after=lastChild(prev);ui.collapsed=ui.collapsed.filter(x=>x!==prev);renderOutline();return}
+  moveRelative(d.id,"in")}
+function outdentDraft(){const d=state.draft;if(!d)return;
+  if(d.isNew){const p=d.parent;if(p==null||p===INBOX||p===ui.focus){renderOutline();return}
+    const par=P.items.get(p);d.parent=par.parent;d.after=p;renderOutline();return}
+  moveRelative(d.id,"out")}
+function backspaceEmpty(){const d=state.draft;
+  if(d.isNew){const p=d.parent;if(p!=null&&p!==INBOX&&p!==ui.focus){outdentDraft()}else{state.draft=null;showTools(false);renderOutline()}}
+}
+function moveRelative(id,dir){
+  if(id===INBOX){toast("The inbox always stays last at the top level.");return}
+  const it=P.items.get(id);const sib=kidsOf(it.parent);const i=sib.indexOf(id);let parent=it.parent,after=null;
+  if(dir==="in"){if(i<=0){toast("Nothing above to nest under");return}parent=sib[i-1];after=lastChild(parent)}
+  else if(dir==="out"){if(it.parent==null||it.parent===INBOX||it.parent===ui.focus){return}parent=P.items.get(it.parent).parent;after=it.parent}
+  else if(dir==="up"){if(i<=0)return;after=i>=2?sib[i-2]:null}
+  else if(dir==="down"){if(i>=sib.length-1)return;after=sib[i+1]}
+  if(state.draft&&state.draft.id===id){const inp=document.querySelector(".editin");if(inp)state.draft.value=clean(inp.value)}
+  write("item.moved",{itemId:id,parentId:parent,afterItemId:after});refresh();
+  if(parent&&parent!==INBOX)ui.collapsed=ui.collapsed.filter(x=>x!==parent);renderOutline()}
+function draftUpDown(dir){const d=state.draft;if(!d)return;if(!d.isNew){moveRelative(d.id,dir);return}
+  const sib=siblingsOfDraft();const i=d.after?sib.indexOf(d.after):-1;
+  if(dir==="up"){if(i<0)return;d.after=i>=1?sib[i-1]:null}else{if(i>=sib.length-1)return;d.after=sib[i+1]}renderOutline()}
+
+/* editing toolbar above the keyboard */
+function showTools(on){tools.hidden=!on;app.classList.toggle("editing",on);$("#bar").style.visibility=on?"hidden":"";placeTools()}
+function placeTools(){const vv=window.visualViewport;let kb=0;if(vv){kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop)}app.style.setProperty("--kb",kb+"px")}
+/* 📥, toasts, toolbars and sheets sit above the on-screen keyboard: --kb is the keyboard's height (D-54, D-80) */
+if(window.visualViewport){visualViewport.addEventListener("resize",placeTools);visualViewport.addEventListener("scroll",placeTools)}
+placeTools();
+tools.addEventListener("mousedown",e=>e.preventDefault());
+tools.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;const t=b.dataset.t;const d=state.draft;const inp=document.querySelector(".editin");
+  if(t==="done"){commitDraft(false);return}
+  if(!d)return;
+  if(t==="undo"&&inp&&d.hist.length>1){d.fut.push(d.hist.pop());d.value=d.hist[d.hist.length-1];inp.value=d.value||ZW}
+  else if(t==="redo"&&inp&&d.fut.length){const v=d.fut.pop();d.hist.push(v);d.value=v;inp.value=v||ZW}
+  else if(t==="in")indentDraft();else if(t==="out")outdentDraft();
+  else if(t==="up"||t==="down")draftUpDown(t);
+  else if((t==="note"||t==="tag")&&inp){const ins=t==="note"?" ## ":" @@";const s=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,s)+ins+inp.value.slice(s);d.value=clean(inp.value);d.hist.push(d.value);inp.focus();inp.setSelectionRange(s+ins.length,s+ins.length);runSuggest(inp)}
+  else if(t==="link"&&inp){insertMarker(inp,"[[");return}
+  /* D-108, D-76: "::" starts an empty line with :: and shows the templates; a line with text first ends, and the next line starts with :: */
+  else if(t==="tpl"&&inp){if(d.isNew&&!clean(inp.value).trim()){insertMarker(inp,"::");return}
+    commitDraft(true,true);if(!state.draft){const s2=state.sel&&P.items.get(state.sel);startNew(s2?s2.parent:ui.focus,s2?s2.id:lastChild(ui.focus))}
+    state.draft.value="::";state.draft.hist.push("::");showTools(true);renderAll();return}
+  if(inp)inp.focus()});
+
+/* ---------- selection, focus, collapse ---------- */
+function select(id){state.sel=id;renderOutline()}
+function setFocus(id,back){commitDraft(false,true);if(!back&&id!==ui.focus)state.nav.push({focus:ui.focus,item:id,scroll:outline.scrollTop});ui.focus=id;state.sel=null;saveUi();closeAll();renderAll();if(id)markFocusHistory();announce(id?"Focused on "+(id===INBOX?"Inbox":P.items.get(id).title):"Showing the whole tree")}
+function goUp(){const it=ui.focus&&P.items.get(ui.focus);setFocus(it&&it.parent?it.parent:null,true);if(it)flash(it.id)}
+/* back returns to the previous view and scrolls to the item that was focused from there */
+function goBack(){const prev=state.nav.pop();if(!prev){goUp();return}
+  if(prev.focus&&!(P.items.get(prev.focus)&&visibleItem(prev.focus)))prev.focus=null;
+  const it=P.items.get(prev.item);if(it){for(const a of pathOf(prev.item).slice(0,-1))ui.collapsed=ui.collapsed.filter(c=>c!==a.id)}
+  setFocus(prev.focus,true);if(it&&visibleItem(prev.item)){state.sel=prev.item;renderOutline();outline.scrollTop=prev.scroll||0;flash(prev.item)}}
+function markFocusHistory(){if(ui.focus&&location.hash!=="#focus"&&location.hash!=="#open"){try{location.hash="focus"}catch(e){}}}
+function toggleCollapse(id){const i=ui.collapsed.indexOf(id);i>=0?ui.collapsed.splice(i,1):ui.collapsed.push(id);saveUi();renderOutline()}
+function updatePill(){const pill=$("#backpill");if(!state.sel||state.sel===INBOX){pill.hidden=true;return}
+  const r=outline.querySelector(`[data-id="${state.sel}"]`);if(!r){pill.hidden=true;return}
+  const o=outline.getBoundingClientRect(),b=r.getBoundingClientRect();const out=b.bottom<o.top||b.top>o.bottom-60;
+  pill.hidden=!out;if(out)$("#backbtn").textContent="↑ Back to “"+(P.items.get(state.sel).title||"Untitled")+"”"}
+outline.addEventListener("scroll",updatePill,{passive:true});
+$("#backbtn").addEventListener("click",()=>{const r=outline.querySelector(`[data-id="${state.sel}"]`);if(r)r.scrollIntoView({block:"center",behavior:"smooth"})});
+
+/* ---------- toast ---------- */
+let toastTimer=null;
+function toast(msg,actions){toastEl.replaceChildren(el("span",{text:msg}));for(const[a,f]of actions||[])toastEl.append(el("button",{text:a,onclick:()=>{toastEl.hidden=true;f()}}));
+  toastEl.classList.toggle("attop",!sheet.hidden||!detail.hidden);toastEl.hidden=false;announce(msg);clearTimeout(toastTimer);toastTimer=setTimeout(()=>{toastEl.hidden=true},5200)}
+function flash(id){requestAnimationFrame(()=>{const r=outline.querySelector(`[data-id="${id}"]`);if(r){r.scrollIntoView({block:"center",behavior:"smooth"});r.classList.remove("flash");void r.offsetWidth;r.classList.add("flash")}})}
+function goTo(id){const it=P.items.get(id);if(!it)return;if(state.filter&&!state.filter.test(it))state.filter=null;const p=pathOf(id);const first=p[0];
+  /* D-96: stay in Focus when the item is inside the focused branch; leave it only for items outside */
+  if(ui.focus&&!(id!==ui.focus&&inBranch(id,ui.focus)))ui.focus=null;for(const x of p.slice(0,-1))ui.collapsed=ui.collapsed.filter(c=>c!==x.id);
+  for(const x of p)if(x.template){const k=x.parent==null?"":x.parent;if(!ui.tplOpen.includes(k))ui.tplOpen.push(k)}
+  if(inTpl(id))state.search=null;saveUi();state.sel=id;closeAll();renderAll();flash(id)}
+
+/* ---------- sheets and popovers ---------- */
+/* onSheetClose runs however a sheet is closed (Close, backdrop, Escape, an action) */
+let onSheetClose=null;
+function closeAll(){const hadPreview=!!state.preview;sheet.className="sheet";sheet.hidden=true;pop.hidden=true;scrim.hidden=true;$("#fab").style.visibility="";state.preview=null;
+  if(hadPreview&&!detail.hidden&&detail.dataset.id)detail.className="t-"+themeFor(detail.dataset.id);
+  const f=onSheetClose;onSheetClose=null;if(f)f()}
+scrim.addEventListener("click",()=>{closeAll();renderAll()});
+function openSheet(title,sub,body,headExtra){{const f=onSheetClose;onSheetClose=null;if(f)f()}pop.hidden=true;sheet.replaceChildren(el("div",{class:"sheethead"},el("h2",null,title,sub?el("span",{class:"sub",text:sub}):null),headExtra||null,el("button",{class:"btn ghost",text:"Close",onclick:()=>{closeAll();renderAll()}})),el("div",{class:"sheetbody"},...[].concat(body)));
+  sheet.hidden=false;scrim.hidden=false;$("#fab").style.visibility="hidden"}
+function openPop(anchor,entries){pop.replaceChildren();for(const e of entries){if(!e)continue;if(e==="-"){pop.append(el("hr"));continue}pop.append(el("button",{role:"menuitem",class:e.cls||"",text:e.label,disabled:!!e.disabled,title:e.why||null,onclick:()=>{pop.hidden=true;scrim.hidden=true;$("#fab").style.visibility="";e.run()}}))}
+  pop.hidden=false;scrim.hidden=false;$("#fab").style.visibility="hidden";
+  const a=anchor.getBoundingClientRect(),A=app.getBoundingClientRect();const ph=pop.offsetHeight,pw=pop.offsetWidth;
+  let y=a.bottom-A.top+4;if(y+ph>A.height-10)y=Math.max(10,a.top-A.top-ph-4);
+  let x=ui.hand==="right"?a.right-A.left-pw:a.left-A.left;x=Math.max(8,Math.min(x,A.width-pw-8));
+  pop.style.top=y+"px";pop.style.left=x+"px";const first=pop.querySelector("button");if(first)first.focus()}
+
+function itemMenu(id,anchor,fromDetail){const it=P.items.get(id);
+  const entries=[];
+  if(!fromDetail)entries.push({label:"Open",run:()=>openDetail(id)});
+  entries.push({label:"Focus",run:()=>{if(fromDetail)closeDetail();setFocus(id)}},
+    {label:"Move to…"+(id===INBOX?" (the inbox stays last)":""),disabled:id===INBOX,run:()=>movePicker(id)},
+    {label:"Tags",run:()=>tagPicker(id)},
+    {label:"Theme",run:()=>themePicker(id)},
+    {label:"History",run:()=>historySheet(id)},
+    {label:"Copy",run:()=>copyItem(id)},
+    clip?{label:"Paste below"+(id===INBOX?" (into the inbox)":""),run:()=>id===INBOX?pasteAt(INBOX,lastChild(INBOX)):pasteAt(it.parent??null,id)}:null,
+    /* D-110, ADR-068: any item can become a template; a template can become an ordinary item again */
+    it.template?{label:"No longer a template",run:()=>setTemplate(id,false,fromDetail)}
+      :{label:"Use as template"+(id===INBOX?" (not the inbox)":inTpl(id)?" (already inside a template)":""),disabled:id===INBOX||inTpl(id),run:()=>setTemplate(id,true,fromDetail)},"-",
+    {label:"Delete"+(id===INBOX?" (the inbox cannot be deleted)":""),cls:"del",disabled:id===INBOX,run:()=>{action(()=>write("item.deleted",{itemId:id}));refresh();if(fromDetail)closeDetail();state.sel=null;renderAll();
+      toast("Deleted “"+(it.title||"Untitled")+"”",[["Undo",()=>quickUndo()]])}});
+  openPop(anchor,entries)}
+
+/* ADR-069 copy and paste between trees; where Copy and Paste live is provisional (open question 18):
+   ⋯ › Copy, ⋯ › Paste below, More › Paste at the top level. A paste gets new ids, is one action (ADR-067),
+   rewrites links inside the copy, matches tags by name, keeps themes and template markings, and has no history */
+let clip=null;
+function copyItem(id){let n=0;const snap=x=>{n++;return{id:x.id,title:x.title,note:x.note,template:x.template,theme:x.theme||null,tags:[...x.tags].map(tagName),
+    kids:(P.kids.get(x.id)||[]).map(k=>P.items.get(k)).filter(k=>k&&!k.deleted).map(snap)}};
+  clip={from:curTree,root:snap(P.items.get(id)),n};
+  const md=(x,d)=>"  ".repeat(d)+"- "+mdStrip(x.title)+(x.note?"\n"+x.note.split("\n").map(l=>"  ".repeat(d+1)+l).join("\n"):"")+"\n"+x.kids.map(k=>md(k,d+1)).join("");
+  try{navigator.clipboard.writeText(md(clip.root,0)).catch(()=>{})}catch(e){}
+  toast("Copied “"+(mdStrip(clip.root.title)||"Untitled")+"”"+(n>1?" with "+(n-1)+" more":"")+" · ⋯ › Paste below, in any tree")}
+function pasteAt(parent,after){if(!clip)return;const map=new Map();const walk=n=>{map.set(n.id,uuid());n.kids.forEach(walk)};walk(clip.root);
+  const rw=t=>(t||"").replace(linkRe,(m,x)=>map.has(x)?"](item:"+map.get(x)+")":m);
+  action(()=>{const put=(n,par,aft)=>{const nid=map.get(n.id);write("item.created",{itemId:nid,parentId:par,afterItemId:aft,title:rw(n.title),note:rw(n.note),format:"markdown"});
+      for(const tn of n.tags){const tg=ensureTag(tn);write("item.tagged",{itemId:nid,tagId:tg})}
+      if(n.theme)write("theme.set",{target:nid,themeId:n.theme});if(n.template)write("item.template-set",{itemId:nid});
+      let prev=null;for(const k of n.kids){put(k,nid,prev);prev=map.get(k.id)}};
+    put(clip.root,parent,after)});
+  refresh();const root=map.get(clip.root.id);if(parent)ui.collapsed=ui.collapsed.filter(c=>c!==parent);
+  if(clip.root.template){const key=parent==null?"":parent;if(!ui.tplOpen.includes(key))ui.tplOpen.push(key)}
+  state.sel=root;saveUi();closeAll();renderAll();flash(root);
+  const shared=(ui.added||[]).includes(curTree)&&!(ui.hinted||[]).includes(curTree);
+  if(shared){ui.hinted=[...(ui.hinted||[]),curTree];saveUi()}
+  toast(shared?"Pasted. This tree is shared with another device: the copy goes there with the next exchange":"Pasted “"+(mdStrip(clip.root.title)||"Untitled")+"”"+(clip.from!==curTree?" from “"+treeName(clip.from)+"”":""),[["Undo",()=>quickUndo()]])}
+function setTemplate(id,on,fromDetail){const it=P.items.get(id);action(()=>write(on?"item.template-set":"item.template-removed",{itemId:id}));refresh();
+  const key=it.parent==null?"":it.parent;const where=it.parent==null?"the whole tree":"“"+(mdStrip(P.items.get(it.parent).title)||"Untitled")+"”";
+  if(on&&!ui.tplOpen.includes(key))ui.tplOpen.push(key);if(it.parent)ui.collapsed=ui.collapsed.filter(c=>c!==it.parent);saveUi();state.sel=id;
+  if(fromDetail)openDetail(id);else renderAll();flash(id);
+  toast(on?"“"+(mdStrip(it.title)||"Untitled")+"” is now a template, valid in "+where:"“"+(mdStrip(it.title)||"Untitled")+"” is no longer a template",[["Undo",()=>quickUndo()]])}
+/* move picker (D-6, D-9): search first, fixed targets, recent targets, browse the tree collapsed and level by level;
+   after choosing a target, its children are shown so the item can be placed at a chosen position */
+function movePicker(id){const it=P.items.get(id);
+  const isBad=t=>t===id||(t&&t!==INBOX&&pathOf(t).some(x=>x.id===id));
+  const search=el("input",{class:"field",type:"search",placeholder:"Find the target by title or note","aria-label":"Find target"});
+  const res=el("div");const open=new Set();
+  const opt=(label,path,onclick,disabled,extra)=>el("button",{class:"opt",disabled:!!disabled,onclick},el("span",null,label,path?el("span",{class:"path",text:path}):null),extra||null);
+  const pick=t=>()=>positionStep(id,t);
+  const render=()=>{res.replaceChildren();const q=norm(search.value).trim();
+    if(q){res.append(el("div",{class:"lbl",text:"Matches"}));let n=0;for(const x of P.items.values()){if(x.deleted||!visibleItem(x.id)||!(norm(x.title).includes(q)||norm(x.note).includes(q)))continue;res.append(opt(x.title||"Untitled",pathText(x.id),pick(x.id),isBad(x.id)));if(++n>=20)break}
+      if(!n)res.append(el("p",{class:"hint",text:"No item matches."}));return}
+    res.append(el("div",{class:"lbl",text:"Fixed targets"}));
+    if(it.parent===INBOX){const lp=placeBelowTarget(id);if(lp)res.append(opt("↳ Below “"+(P.items.get(lp).title||"Untitled")+"”","The last placed item · "+pathText(lp),()=>{closeAll();placeBelow(id)}))}
+    res.append(opt("📥 Inbox","At the end",()=>doMove(id,INBOX,lastChild(INBOX),"Inbox")),
+      opt("Top level, start",null,()=>doMove(id,null,null,"the top level")),opt("Top level, end",null,()=>doMove(id,null,lastChild(null),"the top level")));
+    const rec=ui.recent.filter(r=>P.items.has(r)&&visibleItem(r)&&r!==id&&r!==INBOX);
+    if(rec.length){res.append(el("div",{class:"lbl",text:"Recent targets"}));for(const r of rec.slice(0,5))res.append(opt(P.items.get(r).title||"Untitled",pathText(r),pick(r),isBad(r)))}
+    res.append(el("div",{class:"lbl",text:"Browse the tree"}));
+    const walk=(p,d)=>{for(const k of kidsOf(p)){const x=P.items.get(k);const n=kidsOf(k).filter(c=>c!==id).length;const isOpen=open.has(k);
+      const tw=n?el("button",{class:"tw has"+(isOpen?"":" closed"),text:isOpen?"▾":"▸","aria-label":(isOpen?"Close ":"Open ")+(x.title||"Untitled")+", "+n+" inside","aria-expanded":String(isOpen),onclick:ev=>{ev.stopPropagation();isOpen?open.delete(k):open.add(k);render()}}):el("span",{class:"tw leaf",text:"●","aria-hidden":"true"});
+      const b=opt(x.title||"Untitled",null,pick(k),isBad(k),n?el("span",{class:"cnt",text:String(n)}):null);
+      res.append(el("div",{class:"browse",style:"padding-inline-start:"+(d*1.1)+"rem"},tw,b));if(isOpen&&k!==id)walk(k,d+1)}};walk(null,0)};
+  search.addEventListener("input",render);render();
+  openSheet("Move “"+(it.title||"Untitled")+"” to…",pathText(id),[search,res]);setTimeout(()=>search.focus(),50)}
+function positionStep(id,target){const it=P.items.get(id),t=P.items.get(target);const tn=t.title||"Untitled";
+  const ks=kidsOf(target).filter(k=>k!==id&&k!==INBOX);const res=el("div");
+  const opt=(label,after)=>el("button",{class:"opt",onclick:()=>doMove(id,target,after,tn)},el("span",{text:label}));
+  res.append(opt("At the start",null));
+  for(const k of ks)res.append(opt("After “"+(P.items.get(k).title||"Untitled")+"”",k));
+  if(ks.length)res.append(opt("At the end",ks[ks.length-1]));
+  openSheet("Place in “"+tn+"”","Choose where “"+(it.title||"Untitled")+"” goes",[
+    el("button",{class:"btn ghost",style:"margin:4px 0 6px",text:"← Choose another target",onclick:()=>movePicker(id)}),res])}
+function doMove(id,target,after,label){const from=P.items.get(id).parent;const next=from===INBOX?nextInInbox(id):null;
+  if(after===id)after=null;
+  action(()=>write("item.moved",{itemId:id,parentId:target,afterItemId:after}));refresh();
+  if(target&&target!==INBOX){ui.recent=[target,...ui.recent.filter(r=>r!==target)].slice(0,8);ui.collapsed=ui.collapsed.filter(c=>c!==target)}
+  /* D-7: the user stays where they were; the next inbox item is selected, ready for "Below …" */
+  ui.lastPlaced=target===INBOX?ui.lastPlaced:id;saveUi();closeAll();state.sel=from===INBOX&&next&&P.items.get(next).parent===INBOX?next:null;renderAll();
+  toast("Moved to “"+label+"”",[["Undo",()=>quickUndo()],["Go there",()=>goTo(id)]])}
+
+/* tag picker */
+function tagPicker(id){const it=P.items.get(id);const search=el("input",{class:"field",type:"search",placeholder:"Find or create a tag","aria-label":"Find or create a tag"});const res=el("div");
+  const counts=new Map();for(const x of P.items.values())if(!x.deleted)for(const t of x.tags)counts.set(t,(counts.get(t)||0)+1);
+  const render=()=>{res.replaceChildren();const q=norm(search.value).trim();const cur=P.items.get(id);
+    const list=[...P.tags.values()].filter(t=>!q||norm(t.name).includes(q)).sort((a,b)=>(counts.get(b.id)||0)-(counts.get(a.id)||0));
+    for(const t of list){const on=cur.tags.has(t.id);res.append(el("button",{class:"opt","aria-pressed":String(on),onclick:()=>{write(on?"item.untagged":"item.tagged",{itemId:id,tagId:t.id});refresh();render();renderOutline()}},
+      el("span",{text:(on?"☑ ":"☐ ")+t.name}),el("span",{class:"cnt",text:String(counts.get(t.id)||0)})))}
+    if(q&&!list.some(t=>norm(t.name)===q))res.append(el("button",{class:"opt",onclick:()=>{action(()=>{const tid=ensureTag(search.value.trim());write("item.tagged",{itemId:id,tagId:tid})});refresh();search.value="";render();renderOutline()}},el("span",{text:"＋ Create “"+search.value.trim()+"”"})))};
+  search.addEventListener("input",render);render();openSheet("Tags",it.title||"Untitled",[search,res,el("p",{class:"hint",text:"Tip: type @@name while writing a title to tag it without opening this."})]);
+  if(!detail.hidden&&detail.dataset.id===id)onSheetClose=()=>{if(!detail.hidden)setTimeout(()=>openDetail(id),0)}}
+
+/* theme picker with live preview on the page the user is on, the detail page included (D-65); also for the whole tree (D-34) */
+const THEMES=[["paper","Paper","Warm paper, rust ochre"],["inbox","Inbox","Deep stone, a calm warm grey for what waits"],["sage","Sage","Quiet green"],["dusk","Dusk","Evening blue"]];
+const themeLabel=t=>(THEMES.find(x=>x[0]===t)||[0,"Paper"])[1];
+function themeSource(id){let i=P.items.get(P.items.get(id).parent);while(i){if(i.theme)return{theme:i.theme,from:"from “"+(i.title||"Untitled")+"”"};i=P.items.get(i.parent)}
+  return{theme:P.treeTheme,from:"from the tree “"+treeName(curTree)+"”"}}
+function themePicker(target){const isTree=target==="tree";const it=isTree?null:P.items.get(target);
+  const own=isTree?(P.themes.get("tree")||null):(it.theme||null);
+  const src=isTree?{theme:"paper",from:"the theme of a new tree"}:themeSource(target);
+  let choice=own;const res=el("div");
+  const render=()=>{res.replaceChildren();
+    res.append(el("button",{class:"opt","aria-pressed":String(choice===null),onclick:()=>{choice=null;preview()}},el("span",null,(choice===null?"● ":"○ ")+(isTree?"Default":"Same as above"),el("span",{class:"path",text:isTree?"Paper, "+src.from:"Follows "+themeLabel(src.theme)+", "+src.from})) ));
+    for(const[t,n,dsc]of THEMES)res.append(el("button",{class:"opt","aria-pressed":String(choice===t),onclick:()=>{choice=t;preview()}},el("span",null,(choice===t?"● ":"○ ")+n,el("span",{class:"path",text:dsc}))));
+    res.append(el("div",{style:"display:flex;gap:8px;margin-top:12px"},el("button",{class:"btn",text:"Apply",onclick:()=>{if(choice!==own){action(()=>write("theme.set",{target,themeId:choice}))}refresh();closeAll();renderAll();if(!detail.hidden&&detail.dataset.id)openDetail(detail.dataset.id)}}),el("button",{class:"btn ghost",text:"Cancel",onclick:()=>{closeAll();renderAll()}})))};
+  const preview=()=>{state.preview={target,theme:choice};renderAll();if(!detail.hidden&&detail.dataset.id)detail.className="t-"+themeFor(detail.dataset.id);sheet.className="sheet t-"+(isTree?treeTheme():themeFor(target));render()};
+  render();openSheet(isTree?"Theme of this tree":"Theme",isTree?treeName(curTree):(it.title||"Untitled"),[res,el("p",{class:"hint",text:isTree?"Applies to every branch without a theme of its own. Tap a theme to preview it.":"A theme applies to this item's whole branch. Tap a theme to preview it."})])}
+
+/* history: every change can be reverted from here */
+function describe(e){const d=e.data,t=d.reverts?" (undo of an earlier change)":"";
+  switch(e.type){case"item.created":return"Created “"+mdStrip(d.title||"")+"”"+(d.fromTemplate?" from the template “"+mdStrip((P.items.get(d.fromTemplate)||{}).title||"…")+"”":"")+(d.parentId===INBOX?" in the inbox":"")+t;
+    case"item.template-set":return"Made a template"+t;case"item.template-removed":return"No longer a template"+t;
+    case"item.title-changed":return"Title → “"+d.title+"”"+t;case"item.note-changed":return"Note changed"+t;
+    case"item.moved":return"Moved to "+(d.parentId===INBOX?"Inbox":d.parentId?"“"+((P.items.get(d.parentId)||{}).title||"…")+"”":"top level")+t;
+    case"item.deleted":return"Deleted"+t;case"item.restored":return"Restored"+t;
+    case"item.tagged":return"Tag “"+tagName(d.tagId)+"” added"+t;case"item.untagged":return"Tag “"+tagName(d.tagId)+"” removed"+t;
+    case"theme.set":return(d.target==="tree"?"Tree theme → ":"Theme → ")+(d.themeId?themeLabel(d.themeId):d.target==="tree"?"default":"same as above")+t;
+    case"display-name.set":return"Tag renamed to “"+d.text+"”"+t;
+    case"tree.named":return"Tree named “"+d.name+"”";case"tree.inbox-set":return"Inbox marked";case"tag.defined":return"Tag created";default:return e.type}}
+const evItem=e=>e.data.itemId||(e.type==="theme.set"?e.data.target:null);
+const who=e=>e.device===device.id?"this device ("+device.label+")":(e.deviceLabel||"other device");
+const when=e=>{const d=new Date(e.clock.t);return d.toLocaleString([], {dateStyle:"medium",timeStyle:"short"})};
+function inBranch(itemId,root){let i=P.items.get(itemId);while(i){if(i.id===root)return true;i=P.items.get(i.parent)}return false}
+function historySheet(id,scope){const it=P.items.get(id);const hasKids=(P.kids.get(id)||[]).length>0;scope=scope||(hasKids?"branch":"item");
+  const list=events.filter(e=>{const i=evItem(e);return i&&(scope==="item"?i===id:inBranch(i,id))}).sort(order).reverse();
+  const tabs=hasKids?el("div",{style:"display:flex;gap:8px;margin:4px 0 8px"},
+    el("button",{class:"chipbtn","aria-pressed":String(scope==="branch"),text:"This branch",onclick:()=>historySheet(id,"branch")}),
+    el("button",{class:"chipbtn","aria-pressed":String(scope==="item"),text:"Only this item",onclick:()=>historySheet(id,"item")})):null;
+  const body=list.map(e=>{const rev=P.reverted.has(e.id);const i=evItem(e);const x=P.items.get(i);
+    const label=scope==="branch"&&i!==id?el("div",{class:"meta",text:"“"+((x&&x.title)||"Untitled")+"”"+(x&&x.deleted?" · deleted":"")}):null;
+    return el("div",{class:"ev"+(rev?" rev":"")},label,el("div",{class:"what",text:describe(e)}),el("div",{class:"meta",text:when(e)+" · "+who(e)}),rev?el("div",{class:"meta revby",text:"Reverted by "+who(P.reverted.get(e.id))+", "+when(P.reverted.get(e.id))}):null,
+      el("div",{class:"meta"},el("code",{text:e.type}),"  ",el("span",{class:"mono",text:"clock "+e.clock.t+"."+e.clock.c})),
+      !rev?el("button",{class:"btn ghost",style:"margin-top:6px;font-size:.8125rem;padding:5px 10px",text:e.data.reverts?"Revert this undo":"Revert this change",onclick:()=>{revert(e);historySheet(id,scope);renderOutline();if(!detail.hidden)openDetail(id)}}):null)});
+  openSheet("History",it.title||"Untitled",[tabs,...(body.length?body:[el("p",{class:"hint",text:"No changes yet."})])].filter(Boolean))}
+
+/* ---------- undo: new events that name what they revert; one action = one undo step (ADR-067) ---------- */
+function stateBefore(e){const before=events.filter(x=>order(x,e)<0);return project(before)}
+function inverse(e){const d=e.data,B=stateBefore(e),prev=B.items.get(d.itemId);
+  switch(e.type){
+    case"item.created":return["item.deleted",{itemId:d.itemId}];
+    case"item.title-changed":return prev?["item.title-changed",{itemId:d.itemId,title:prev.title,format:"markdown"}]:null;
+    case"item.note-changed":return prev?["item.note-changed",{itemId:d.itemId,note:prev.note,format:"markdown"}]:null;
+    case"item.moved":{if(!prev)return null;const sib=(B.kids.get(prev.parent==null?"":prev.parent)||[]).filter(k=>{const x=B.items.get(k);return x&&!x.deleted});const i=sib.indexOf(d.itemId);return["item.moved",{itemId:d.itemId,parentId:prev.parent,afterItemId:i>0?sib[i-1]:null}]}
+    case"item.deleted":return["item.restored",{itemId:d.itemId}];
+    case"item.restored":return["item.deleted",{itemId:d.itemId}];
+    case"item.template-set":return["item.template-removed",{itemId:d.itemId}];
+    case"item.template-removed":return["item.template-set",{itemId:d.itemId}];
+    case"item.tagged":return["item.untagged",{itemId:d.itemId,tagId:d.tagId}];
+    case"item.untagged":return["item.tagged",{itemId:d.itemId,tagId:d.tagId}];
+    case"theme.set":return["theme.set",{target:d.target,themeId:B.themes.get(d.target)||null}];
+    case"display-name.set":{const t=B.tags.get(d.elementId);return t&&t.name?["display-name.set",{elementId:d.elementId,field:d.field,language:d.language,text:t.name}]:null}
+  }return null}
+function revert(e,quiet){const inv=inverse(e);if(!inv){if(!quiet)toast("This change cannot be reverted here.");return null}
+  inv[1].reverts=e.id;const ne=write(inv[0],inv[1]);refresh();return ne}
+const UNDOABLE=["item.template-set","item.template-removed","item.created","item.title-changed","item.note-changed","item.moved","item.deleted","item.restored","item.tagged","item.untagged","theme.set","display-name.set"];
+const evKey=e=>evItem(e)||(e.type==="display-name.set"?e.data.elementId:null);
+/* one sentence for a whole action, e.g. "Created “A” with @@idea", "Moved 3 items to “Ideas”" */
+function describeAction(evs){const main=evs.filter(e=>UNDOABLE.includes(e.type));if(!main.length)return"a change";
+  const cr=main.filter(e=>e.type==="item.created"),mv=main.filter(e=>e.type==="item.moved");
+  if(cr.length&&cr[0].data.fromTemplate)return describe(cr[0])+(cr.length>1?" ("+(cr.length-1)+(cr.length===2?" line)":" lines)"):"");
+  if(cr.length===1&&mv.length>1&&mv.every(e=>e.data.parentId===cr[0].data.itemId))return"Imported “"+cr[0].data.title+"” as a new branch ("+mv.length+" items)";
+  if(mv.length>1&&mv.length===main.length)return"Moved "+mv.length+" items"+describe(mv[0]).replace(/^Moved/,"");
+  const first=main[0];let s=describe(first);const tags=main.filter(e=>e.type==="item.tagged"&&e!==first).map(e=>"“"+tagName(e.data.tagId)+"”");
+  if(tags.length)s+=" with the tag"+(tags.length>1?"s ":" ")+tags.join(", ");const others=main.length-1-tags.length;
+  if(others>0)s+=" and "+others+(others===1?" more change":" more changes");return s}
+function quickUndo(){
+  const open=e=>e.device===device.id&&!e.data.reverts&&!P.reverted.has(e.id)&&UNDOABLE.includes(e.type);
+  const own=events.filter(open).sort(order);
+  const last=own[own.length-1];if(!last){toast("Nothing of yours to undo on this device.");return}
+  const act=events.filter(e=>e.actionId===last.actionId&&open(e)).sort(order);
+  /* D-28: never overwrite a later change from another device; name it with device and value, offer the history */
+  for(const e of act){const k=evKey(e);if(!k)continue;const later=events.filter(x=>evKey(x)===k&&x.device!==device.id&&order(x,e)>0).sort(order).pop();
+    if(later){const x=P.items.get(k);const what=x?"“"+(x.title||"Untitled")+"”":"“"+tagName(k)+"”";
+      toast(what+" has been changed since on "+(later.deviceLabel||"another device")+" ("+describe(later).replace(/\s*\(undo of an earlier change\)$/,"")+"). Undo stops here.",x?[["Open history",()=>historySheet(k)]]:[]);return}}
+  const msg=describeAction(act);
+  action(()=>{for(const e of [...act].reverse())revert(e,true)});
+  const id=act.map(evItem).find(i=>i&&P.items.has(i));const it=id&&P.items.get(id);renderAll();
+  if(it&&!it.deleted&&visibleItem(id)){goTo(id)}
+  toast("Undone: "+msg,it&&!it.deleted?[["Go there",()=>goTo(id)]]:[])}
+
+/* ---------- capture sheet: a small window onto the inbox ---------- */
+/* D-54: 📥 while editing saves the text but keeps the edit; closing the sheet returns to it with the cursor where it was */
+function holdDraftForCapture(){const d=state.draft;const inp=document.querySelector(".editin");let caret=null;
+  if(inp){caret=Math.max(0,(inp.selectionStart??inp.value.length)-(inp.value.startsWith(ZW)?1:0));d.value=clean(inp.value)}
+  const parsed=parseTitle(d.value);
+  if(d.isNew){if(parsed.title||parsed.note||parsed.tags.length){applyParsed(d.id,parsed,true,d.parent,d.after);state.draft={isNew:false,id:d.id,value:parsed.title,hist:[parsed.title],fut:[]}}}
+  else{applyParsed(d.id,parsed,false);if(parsed.title!==d.value){d.value=parsed.title;d.hist.push(parsed.title)}}
+  state.draft.caret=caret;state.resume=true;showTools(false)}
+function capture(){const resuming=!!state.draft;if(resuming)holdDraftForCapture();let parent=INBOX,after=lastChild(INBOX);let lastId=null;const done=[];
+  const list=el("div");const inp=el("input",{type:"text","aria-label":"New thought",value:ZW,enterkeyhint:"next",autocomplete:"off"});let capPrev="";const where=el("div",{class:"hint",style:"margin:6px 0 0"});
+  const nestUnder=()=>{if(!after){toast("Nothing above to nest under");return}parent=after;after=lastChild(parent);ui.collapsed=ui.collapsed.filter(c=>c!==parent);render()};
+  const unnest=()=>{if(parent===INBOX)return;const p=P.items.get(parent);after=parent;parent=p.parent;render()};
+  const keep=e=>e.preventDefault();
+  const tb=(t,a,f,cls)=>el("button",{text:t,"aria-label":a,class:cls||"",onmousedown:keep,onpointerdown:keep,onclick:()=>{f();inp.focus()}});
+  const insert=ins=>{const st=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,st)+ins+inp.value.slice(st);capPrev=clean(inp.value);inp.setSelectionRange(st+ins.length,st+ins.length);runSuggest(inp)};
+  /* D-108: "::" on an empty line shows the templates; a line with text is saved first */
+  const tplBtn=()=>{if(clean(inp.value).trim()){if(saveLine()){render();renderOutline()}}insertMarker(inp,"::")};
+  const outBtn=tb("⇤","Outdent: move this line out",()=>unnest());
+  const capTools=el("div",{class:"captools",role:"toolbar","aria-label":"Editing"},outBtn,tb("⇥","Indent: nest this line under the one above",()=>nestUnder()),
+    tb("##","Insert note separator",()=>insert(" ## ")),tb("@@","Insert tag marker",()=>insert(" @@")),
+    tb("::","Create from a template: insert :: at the start of an empty line",tplBtn),tb("🔗","Link to another item: insert [[",()=>insertMarker(inp,"[[")),
+    tb("✓","Done",()=>{hideSuggest(inp);if(clean(inp.value).trim())inp.dispatchEvent(new KeyboardEvent("keydown",{key:"Enter"}));closeAll();renderAll()},"done"));
+  const line=el("div",{class:"capline"},el("span",{text:"•"}),inp);
+  /* D-102: the sheet shows only the thoughts captured in this session, not older inbox content */
+  const render=()=>{list.replaceChildren();
+    for(const id of done){const x=P.items.get(id);const dep=pathOf(id).length-2;list.append(el("div",{class:"capline",style:`padding-inline-start:${dep*18}px`},el("span",{text:"✓"}),el("span",{text:mdStrip(x.title)||"Untitled"})))}
+    line.style.paddingInlineStart=(parent===INBOX?0:(pathOf(parent).length-1)*18)+"px";outBtn.disabled=parent===INBOX;
+    where.textContent=parent===INBOX?"Next thought goes into the inbox":"Next thought goes under “"+(P.items.get(parent).title||"Untitled")+"”"};
+  inp.addEventListener("input",()=>{const raw=inp.value;if(raw===""){inp.value=ZW;if(capPrev==="")unnest();capPrev="";return}const v=clean(raw);if(v===" "){inp.value=ZW;capPrev="";nestUnder();return}if(raw.startsWith(ZW)&&v){inp.value=v;inp.setSelectionRange(v.length,v.length)}capPrev=v});
+  inp.addEventListener("beforeinput",ev=>{if(ev.inputType==="deleteContentBackward"&&clean(inp.value)===""){ev.preventDefault();unnest()}});
+  /* principle 7, saved at once: a typed line is kept however the sheet is closed */
+  const saveLine=()=>{hideSuggest(inp);const raw=clean(inp.value).trim();
+    /* D-108: "::name rest" creates from a template here too */
+    if(raw.startsWith("\\::"))inp.value=inp.value.replace("\\::","::");
+    const tm=raw.match(/^::([\p{L}\p{N}_-]+)(?:\s+([\s\S]*))?$/u);const t=tm&&findTemplate(tm[1],parent);
+    if(t){const id=copyTemplate(t.id,parent,after,tm[2]||"");done.push(id);lastId=id;after=id;inp.value=ZW;capPrev="";announce("Created “"+mdStrip(P.items.get(id).title)+"” from “"+mdStrip(t.title)+"”");return id}
+    const parsed=parseTitle(inp.value);if(!parsed.title&&!parsed.note&&!parsed.tags.length)return null;
+    const id=uuid();applyParsed(id,parsed,true,parent,after);done.push(id);lastId=id;after=id;inp.value=ZW;capPrev="";return id};
+  inp._ctx={place:()=>parent,self:null,mount:l=>line.after(l)};
+  inp.addEventListener("input",()=>runSuggest(inp));inp.addEventListener("click",()=>runSuggest(inp));
+  inp.addEventListener("keydown",ev=>{
+    if(suggestKey(inp,ev))return;
+    if(ev.key==="Enter"){ev.preventDefault();if(!saveLine())return;render();renderOutline();announce("Captured")}
+    else if(ev.key==="Backspace"&&clean(inp.value)===""){ev.preventDefault();unnest()}});
+  render();
+  openSheet("Capture","Into the inbox of “"+treeName(curTree)+"”",[list,line,where,el("p",{class:"hint",text:"Enter starts the next thought. A space at the start of an empty line, or ⇥ above the keyboard, nests it under the line above; Backspace on an empty line, or ⇤, moves it back out. Use ## to add a note, @@ for tags, [[ to link another item, and :: at the start of a line to create from a template."})],
+    el("button",{class:"btn ghost",text:"Details",onclick:()=>{if(lastId){closeAll();openDetail(lastId)}else toast("Capture a thought first.")}}));
+  sheet.className="sheet t-"+themeFor(INBOX);sheet.append(capTools);placeTools();
+  onSheetClose=()=>{const id=saveLine();const n=done.length;
+    const msg=id?"Saved “"+(P.items.get(id).title||"Untitled")+"” in the inbox":n?"Captured "+n+(n===1?" thought":" thoughts"):null;
+    if(resuming&&state.draft&&state.resume){state.resume=null;const t=state.draft.isNew?"the new line":"“"+(state.draft.value||"Untitled")+"”";showTools(true);renderAll();
+      toast((msg?msg+" · b":"B")+"ack to "+t)}
+    else{state.resume=null;renderAll();if(msg)toast(msg)}};
+  setTimeout(()=>inp.focus(),60)}
+
+/* ---------- detail page: note first ---------- */
+let noteTimer=null;
+function openDetail(id){commitDraft(false,true);closeAll();const it=P.items.get(id);if(!it)return;
+  const th=themeFor(id);detail.className="t-"+th;detail.dataset.id=id;
+  const title=el("input",{class:"dtitle",value:it.title,"aria-label":"Title"});
+  title.addEventListener("change",()=>{const p=parseTitle(title.value);applyParsed(id,p,false);openDetail(id)});
+  const tagsBox=el("div",{class:"dtags"});
+  for(const t of it.tags)tagsBox.append(el("button",{class:"tag",text:tagName(t),onclick:ev=>tagMenu(id,t,ev.currentTarget)}));
+  tagsBox.append(el("button",{class:"btn ghost",style:"padding:3px 10px;font-size:.8125rem",text:"＋ Tag",onclick:()=>tagPicker(id)}));
+  const note=el("textarea",{"aria-label":"Note",placeholder:"Write the note…"});note.value=it.note;note.hidden=true;
+  const view=el("div",{class:"mdview",tabindex:"0",role:"button","aria-label":"Note, tap to edit"});
+  const flush=()=>{clearTimeout(noteTimer);const v=normText(note.value).replace(/\r\n/g,"\n");if(v!==P.items.get(id).note){write("item.note-changed",{itemId:id,note:v,format:"markdown"});refresh()}};
+  const show=()=>{view.replaceChildren(note.value.trim()?mdBlocks(note.value):el("p",{class:"ph",text:"Write the note…"}))};show();
+  const bar=el("div",{class:"notebar",role:"toolbar","aria-label":"Formatting"});bar.hidden=true;
+  const wrap=(a,b,ph)=>{const s=note.selectionStart,e=note.selectionEnd,sel=note.value.slice(s,e)||ph;note.value=note.value.slice(0,s)+a+sel+b+note.value.slice(e);note.focus();note.setSelectionRange(s+a.length,s+a.length+sel.length);note.dispatchEvent(new Event("input"))};
+  const linePrefix=p=>{const s=note.selectionStart;const ls=note.value.lastIndexOf("\n",s-1)+1;note.value=note.value.slice(0,ls)+p+note.value.slice(ls);note.focus();note.setSelectionRange(s+p.length,s+p.length);note.dispatchEvent(new Event("input"))};
+  for(const[l,a,f]of[["B","Bold",()=>wrap("**","**","bold")],["I","Italic",()=>wrap("*","*","italic")],["H","Heading",()=>linePrefix("## ")],["•","List",()=>linePrefix("- ")],["🔗","Link",()=>wrap("[","](https://)","text")]])bar.append(el("button",{text:l,"aria-label":a,onclick:f}));
+  bar.append(el("button",{class:"done",text:"✓","aria-label":"Done",onclick:()=>note.blur()}));
+  bar.addEventListener("mousedown",e=>e.preventDefault());bar.addEventListener("pointerdown",e=>e.preventDefault());
+  const edit=()=>{view.hidden=true;note.hidden=false;bar.hidden=false;placeTools();note.focus()};
+  view.addEventListener("click",ev=>{if(ev.target.closest("a"))return;edit()});view.addEventListener("keydown",ev=>{if(ev.key==="Enter"){ev.preventDefault();edit()}});
+  note.addEventListener("input",()=>{clearTimeout(noteTimer);noteTimer=setTimeout(flush,1200)});
+  note.addEventListener("blur",()=>{setTimeout(()=>{if(document.activeElement===note)return;flush();show();note.hidden=true;bar.hidden=true;view.hidden=false},100)});
+  const hist=events.filter(e=>evItem(e)===id).length;const nOut=linksFrom(id).length,nIn=linkedFrom(id).length;
+  const tplInfo=it.template?el("div",{class:"tplnote"},stampIcon(),el("span",{text:"Template · valid in "+(it.parent==null?"the whole tree":"“"+(mdStrip(P.items.get(it.parent).title)||"Untitled")+"”")+" · type ::"+tplKey(it)+" to use it"})):null;
+  const back=el("button",{"aria-label":"Back","text":"←",onclick:()=>{flush();if(location.hash==="#open"){history.back()}else{closeDetail()}}});
+  detail.replaceChildren(el("div",{class:"dhead"},back,el("div",{class:"dpath",text:pathText(id)})),
+    el("div",{class:"dbody"},tplInfo,title,tagsBox,view,note),bar,
+    el("div",{class:"strip"},stripBtn(document.createTextNode("🕘"),hist,"History","History, "+hist+" changes",()=>{flush();historySheet(id)}),
+      /* D-114: strong arrows out and in, with labels; ↩ stays reserved for Undo */
+      stripBtn(arrowIcon("out"),nOut,"Links","Links, "+nOut,()=>{flush();linksSheet(id,"out")}),
+      stripBtn(arrowIcon("in"),nIn,"Linked from","Linked from, "+nIn,()=>{flush();linksSheet(id,"in")}),
+      el("button",{class:"dmore",text:"⋯","aria-label":"Item actions",onclick:ev=>{flush();itemMenu(id,ev.currentTarget,true)}})));
+  if(location.hash!=="#open"){try{location.hash="open"}catch(e){}}
+  detail.hidden=false;$("#bar").style.visibility="hidden";$("#fab").style.bottom="calc(64px + var(--kb,0px) + env(safe-area-inset-bottom,0px))";
+  if(!it.note)setTimeout(edit,80)}
+
+/* safe Markdown rendering: DOM nodes only, never HTML; links only https, http, mailto, item */
+function mdInline(text){const frag=document.createDocumentFragment();const re=/(`[^`]+`)|(\*\*[^*]+\*\*)|(\*[^*\s][^*]*\*|_[^_\s][^_]*_)|(\[[^\]]*\]\([^)\s]*\))/g;let last=0,m;
+  while((m=re.exec(text))){frag.append(text.slice(last,m.index));const s=m[0];
+    if(m[1])frag.append(el("code",{text:s.slice(1,-1)}));
+    else if(m[2])frag.append(el("strong",null,mdInline(s.slice(2,-2))));
+    else if(m[3])frag.append(el("em",null,mdInline(s.slice(1,-1))));
+    else{const lm=s.match(/^\[([^\]]*)\]\(([^)\s]*)\)$/);const label=lm[1],href=lm[2];
+      if(/^item:/i.test(href)){const tid=href.slice(5);const t=P.items.get(tid);frag.append(el("a",{href:"#",class:"ilink",text:label||itemLabel(tid),"aria-label":"Go to "+(label||itemLabel(tid)),onclick:ev=>{ev.preventDefault();ev.stopPropagation();if(t&&!t.deleted){commitDraft(false,true);if(!detail.hidden)closeDetail();goTo(tid)}}}))}
+      else if(/^(https?:|mailto:)/i.test(href))frag.append(el("a",{href,target:"_blank",rel:"noopener noreferrer",text:label||href}));
+      else frag.append(s)}
+    last=m.index+s.length}frag.append(text.slice(last));return frag}
+function mdBlocks(text){const frag=document.createDocumentFragment();let list=null,para=null;
+  const endPara=()=>{para=null},endList=()=>{list=null};
+  for(const line of text.split("\n")){
+    let m;
+    if(!line.trim()){endPara();endList();continue}
+    if((m=line.match(/^(#{1,3})\s+(.*)$/))){endPara();endList();frag.append(el("h"+(m[1].length+2),null,mdInline(m[2])));continue}
+    if((m=line.match(/^\s*[-*]\s+(.*)$/))){endPara();if(!list||list.tagName!=="UL"){list=el("ul");frag.append(list)}list.append(el("li",null,mdInline(m[1])));continue}
+    if((m=line.match(/^\s*\d+[.)]\s+(.*)$/))){endPara();if(!list||list.tagName!=="OL"){list=el("ol");frag.append(list)}list.append(el("li",null,mdInline(m[1])));continue}
+    endList();if(!para){para=el("p");frag.append(para)}else para.append(el("br"));para.append(mdInline(line))}
+  return frag}
+/* an item link without its own text shows the target's current title */
+const itemLabel=id=>{const t=P.items.get(id);if(!t)return"not found";return (t.title||"Untitled").replace(/\[([^\]]*)\]\(([^)]*)\)/g,"$1").replace(/\*\*([^*]+)\*\*/g,"$1").replace(/[*_`]/g,"")+(t.deleted?" (deleted)":"")};
+const mdStrip=s=>(s||"").replace(/^#{1,3}\s+/,"").replace(/^\s*[-*]\s+/,"").replace(/\*\*([^*]+)\*\*/g,"$1").replace(/[*_`]/g,"").replace(/\[([^\]]*)\]\(([^)]*)\)/g,(_,l,h)=>l||(/^item:/i.test(h)?itemLabel(h.slice(5)):h));
+window.addEventListener("hashchange",()=>{if(location.hash!=="#open"&&!detail.hidden){const n=detail.querySelector("textarea");if(n)n.blur();closeAll();closeDetail();return}
+  /* the device's back steps out of focus one level at a time */
+  if(location.hash===""&&ui.focus&&detail.hidden){goBack();markFocusHistory()}});
+function closeDetail(){if(location.hash==="#open"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}detail.hidden=true;$("#bar").style.visibility="";$("#fab").style.bottom="";renderAll()}
+/* D-85: links of an item, two tabs: "Links" (the items its title and note link to) and "Linked from" (the items that mention it, with the line as context) */
+function arrowIcon(dir){const ns="http://www.w3.org/2000/svg";const sv=document.createElementNS(ns,"svg");sv.setAttribute("viewBox","0 0 24 24");sv.setAttribute("aria-hidden","true");
+  const pa=document.createElementNS(ns,"path");pa.setAttribute("d",dir==="out"?"M6 18 18 6M9 6h9v9":"M18 6 6 18M15 18H6V9");sv.append(pa);return sv}
+const stripBtn=(icon,n,label,aria,f)=>el("button",{class:"sb","aria-label":aria,onclick:f},el("span",{class:"n"},icon,String(n)),el("small",{text:label}));
+function linksSheet(id,tab){const it=P.items.get(id);const out=linksFrom(id),inc=linkedFrom(id);
+  const go=x=>()=>{closeAll();closeDetail();goTo(x)};
+  const tabs=el("div",{style:"display:flex;gap:8px;margin:4px 0 8px",role:"group","aria-label":"Which links"},
+    el("button",{class:"chipbtn","aria-pressed":String(tab==="out"),text:"Links · "+out.length,onclick:()=>linksSheet(id,"out")}),
+    el("button",{class:"chipbtn","aria-pressed":String(tab==="in"),text:"Linked from · "+inc.length,onclick:()=>linksSheet(id,"in")}));
+  const body=[tabs];
+  if(tab==="out"){if(!out.length)body.push(el("p",{class:"hint",text:"No links yet. Type [[ in the title or the note to link another item."}));
+    for(const x of out)body.push(el("button",{class:"opt",onclick:go(x)},el("span",null,"↗ "+itemLabel(x),el("span",{class:"path",text:pathText(x)}))))}
+  else{if(!inc.length)body.push(el("p",{class:"hint",text:"No item links here yet."}));
+    else body.push(el("div",{class:"lbl",text:"Mentioned in"}));
+    for(const r of inc)body.push(el("button",{class:"opt",onclick:go(r.item.id)},el("span",null,"↙ "+(mdStrip(r.item.title)||"Untitled"),
+      ...r.lines.filter(l=>l!==r.item.title).slice(0,2).map(l=>el("span",{class:"path",text:"In the note: “"+mdStrip(l).trim().slice(0,120)+"”"})),el("span",{class:"path",text:pathText(r.item.id)}))))}
+  openSheet(tab==="out"?"Links":"Linked from",mdStrip(it.title)||"Untitled",body)}
+function tagMenu(id,t,anchor){openPop(anchor,[{label:"Remove from this item",run:()=>{write("item.untagged",{itemId:id,tagId:t});refresh();openDetail(id)}},
+  {label:"Show all with “"+tagName(t)+"”",run:()=>{closeDetail();filterByTag(t)}},
+  {label:"Rename “"+tagName(t)+"” ("+tagCount(t)+(tagCount(t)===1?" item":" items")+")…",run:()=>renameTag(id,t)}])}
+const tagCount=t=>[...P.items.values()].filter(x=>!x.deleted&&x.tags.has(t)).length;
+function renameTag(id,t){const inp=el("input",{class:"field",value:tagName(t),"aria-label":"New name"});
+  openSheet("Rename tag","Changes the name on "+tagCount(t)+(tagCount(t)===1?" item":" items"),[inp,el("div",{style:"display:flex;gap:8px;margin-top:12px"},el("button",{class:"btn",text:"Rename",onclick:()=>{const v=inp.value.trim();if(v&&v!==tagName(t)){action(()=>write("display-name.set",{elementId:t,field:"name",language:"en",text:v}));refresh()}closeAll();openDetail(id)}}))])}
+
+/* ---------- more: trees, exchange, hand, event log, about ---------- */
+function moreSheet(){
+  const handBtn=el("button",{class:"opt",onclick:()=>{ui.hand=ui.hand==="right"?"left":"right";saveUi();applyHand();moreSheet()}},el("span",null,"Hand: "+(ui.hand==="right"?"right":"left"),el("span",{class:"path",text:"Mirrors the capture button, the bar and the toolbars"})));
+  const name=treeName(curTree);
+  /* D-84: an added tree offers to be imported into one of this device's own trees as a new branch */
+  const imports=(ui.added||[]).includes(curTree)?treeIds().filter(t=>t!==curTree&&!treeInfo(t).tutorial).map(t=>
+    el("button",{class:"opt",onclick:()=>importAsBranch(curTree,t)},el("span",null,"Import “"+name+"” into “"+treeName(t)+"” as a new branch",el("span",{class:"path",text:"Keeps its history; “"+treeName(t)+"” keeps its name, theme and inbox"})))):[];
+  openSheet("More",null,[
+    el("div",{style:"display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)"},
+      el("button",{class:"btn ghost",style:"flex:1",text:"▸ Collapse all",onclick:()=>{setCollapsedAll(true);closeAll();renderAll();toast("Everything collapsed")}}),
+      el("button",{class:"btn ghost",style:"flex:1",text:"▾ Expand all",onclick:()=>{setCollapsedAll(false);closeAll();renderAll();toast("Everything expanded")}})),
+    el("button",{class:"opt",onclick:treesSheet},el("span",null,"Trees",el("span",{class:"path",text:"Open: “"+name+"” · switch, show the tutorial again"})),el("span",{class:"cnt",text:String(treeIds().length)})),
+    ...imports,
+    clip?el("button",{class:"opt",onclick:()=>{const k=kidsOf(null).filter(x=>x!==INBOX);pasteAt(null,k.length?k[k.length-1]:null)}},el("span",null,"Paste at the top level",el("span",{class:"path",text:"“"+(mdStrip(clip.root.title)||"Untitled")+"”"+(clip.n>1?" with "+(clip.n-1)+" more":"")+" · a copy with new ids"}))):null,
+    el("button",{class:"opt",onclick:()=>{closeAll();itemMenu(INBOX,$("#b-more"))}},el("span",null,"📥 Inbox",el("span",{class:"path",text:"Open, focus, tags, theme, history"}))),
+    el("button",{class:"opt",onclick:()=>themePicker("tree")},el("span",null,"Theme of this tree",el("span",{class:"path",text:themeLabel(P.treeTheme)+" · for every branch without its own theme"}))),
+    el("button",{class:"opt",onclick:exchangeSheet},el("span",null,"Exchange with another device",el("span",{class:"path",text:"Copies the changes of “"+name+"” both ways"}))),
+    handBtn,
+    el("button",{class:"opt",onclick:logSheet},el("span",null,"Event log",el("span",{class:"path",text:events.length+" events in “"+name+"” (prototype only)"}))),
+    el("button",{class:"opt",onclick:aboutSheet},el("span",null,"About this prototype")),
+    el("button",{class:"opt",onclick:resetSheet},el("span",null,"Reset prototype…",el("span",{class:"path",text:"Start again with the tutorial and an empty “My thoughts”"})))])}
+/* D-69: trees on this device; the tutorial is a tree of its own */
+function switchTree(tid,quiet){commitDraft(false,true);state.filter=null;state.search=null;state.sel=null;state.nav=[];
+  if(location.hash){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}}
+  setTree(tid);closeAll();if(!detail.hidden)closeDetail();renderAll();if(!quiet)toast("Opened the tree “"+treeName(tid)+"”");announce("Opened the tree "+treeName(tid))}
+function treesSheet(){const ids=treeIds();const tut=ids.find(t=>treeInfo(t).tutorial);
+  const rows=ids.map(t=>{const inf=treeInfo(t);const cur=t===curTree;const n=all.filter(e=>e.tree===t&&e.type==="item.created").length;
+    return el("div",{class:"treerow"},
+      el("button",{class:"opt","aria-current":cur?"true":null,onclick:()=>{if(!cur)switchTree(t);else{closeAll();renderAll()}}},el("span",null,(cur?"● ":"○ ")+inf.name,el("span",{class:"path",text:(cur?"Open · ":"")+(inf.tutorial?"The tutorial":(ui.added||[]).includes(t)?"Added from another device":"Your tree")+" · "+n+" items"}))),
+      ids.length>1?el("button",{class:"btn ghost small",text:inf.tutorial?"Delete":"Remove","aria-label":(inf.tutorial?"Delete the tutorial":"Remove “"+inf.name+"” from this device"),onclick:()=>removeTreeSheet(t)}):null)});
+  openSheet("Trees","On this device",[...rows,
+    el("button",{class:"opt",onclick:()=>{if(tut){switchTree(tut);return}const t=seedTutorial();switchTree(t,true);toast("The tutorial is back")}},el("span",null,"Show the tutorial again",el("span",{class:"path",text:tut?"Opens the tutorial":"Creates the tutorial tree again"})))])}
+function removeTreeSheet(tid){const inf=treeInfo(tid);const n=all.filter(e=>e.tree===tid).length;
+  openSheet(inf.tutorial?"Delete the tutorial?":"Remove “"+inf.name+"”?",inf.tutorial?"More › Trees › Show the tutorial again brings it back":"From this device only",[
+    el("p",{class:"hint",text:inf.tutorial?"The tutorial tree and its "+n+" changes are deleted on this device. Your other trees stay as they are.":"“"+inf.name+"” and its "+n+" changes are removed from this device. Other devices keep their copy."}),
+    el("div",{style:"display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"},
+      el("button",{class:"btn danger",text:inf.tutorial?"Delete the tutorial":"Remove “"+inf.name+"”",onclick:()=>{removeTree(tid);toast(inf.tutorial?"The tutorial is deleted":"“"+inf.name+"” is removed from this device")}}),
+      el("button",{class:"btn ghost",text:"Cancel",onclick:treesSheet}))])}
+function removeTree(tid){all=all.filter(e=>e.tree!==tid);saveEvents();delete ui.per[tid];ui.added=(ui.added||[]).filter(t=>t!==tid);
+  if(tid===curTree){curTree=null;const rest=treeIds();switchTree(rest.find(t=>!treeInfo(t).tutorial)||rest[0],true)}else{saveUi();closeAll();renderAll()}}
+/* D-84: import an added tree into one of this device's own trees as a new branch, written as one action (ADR-067) */
+function importAsBranch(src,dst){const srcEv=all.filter(e=>e.tree===src);const SP=project(srcEv);const srcName=SP.name||"Imported tree";
+  const tops=(SP.kids.get("")||[]).filter(k=>{const x=SP.items.get(k);return x&&!x.deleted});if(SP.inbox&&tops.includes(SP.inbox)){tops.splice(tops.indexOf(SP.inbox),1);tops.push(SP.inbox)}
+  const have=new Set(all.filter(e=>e.tree===dst).map(e=>e.id));
+  for(const e of srcEv)if(!have.has(e.id))all.push(Object.assign({},e,{tree:dst,fromTree:src}));
+  saveEvents();switchTree(dst,true);
+  const bid=uuid();
+  action(()=>{write("item.created",{itemId:bid,parentId:null,afterItemId:lastChild(null),title:srcName,note:"",format:"markdown"});refresh();
+    let after=null;for(const t of tops){write("item.moved",{itemId:t,parentId:bid,afterItemId:after});after=t}
+    if(INBOX)write("tree.inbox-set",{itemId:INBOX})});
+  refresh();state.sel=bid;ui.collapsed=[...new Set([...ui.collapsed,...tops])];saveUi();renderAll();flash(bid);
+  const formerInbox=SP.inbox;const dstName=treeName(dst);
+  const moveBtn=()=>{const kids=formerInbox&&P.items.has(formerInbox)?kidsOf(formerInbox):[];if(!kids.length)return null;
+    const b=el("button",{class:"btn",text:"Move the "+kids.length+(kids.length===1?" thought":" thoughts")+" of its former inbox into the inbox of “"+dstName+"”",onclick:()=>{
+      action(()=>{let after=lastChild(INBOX);for(const k of kids){write("item.moved",{itemId:k,parentId:INBOX,afterItemId:after});after=k}});refresh();renderAll();
+      b.replaceWith(el("p",{class:"hint",text:"✓ Moved into the inbox of “"+dstName+"”."}))}});return b};
+  const rm=el("button",{class:"btn ghost",text:"Remove the tree “"+srcName+"” from this device",onclick:()=>{all=all.filter(e=>e.tree!==src);saveEvents();delete ui.per[src];ui.added=(ui.added||[]).filter(t=>t!==src);saveUi();
+    rm.replaceWith(el("p",{class:"hint",text:"✓ “"+srcName+"” is removed from this device; its content lives on as a branch."}))}});
+  openSheet("Imported “"+srcName+"”","Now a branch of “"+dstName+"”",[
+    el("p",{class:"hint",text:"Its top-level items, its former inbox too, are now inside the branch “"+srcName+"”, with their history. “"+dstName+"” keeps its name, theme and inbox. ↩ Undo takes the import back as one step."}),
+    el("div",{style:"display:flex;flex-direction:column;gap:8px;margin-top:12px"},moveBtn(),rm,el("button",{class:"btn ghost",text:"Done",onclick:()=>{closeAll();renderAll()}}))].filter(Boolean))}
+function resetSheet(){openSheet("Reset prototype","Deletes everything in this browser",[
+  el("p",{class:"hint",text:"All "+all.length+" events on this device are deleted, in every tree, including everything you entered. The tutorial and an empty “My thoughts” are created again. Export first if you want to keep anything."}),
+  el("div",{style:"display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"},
+    el("button",{class:"btn danger",text:"Delete everything and reset",onclick:resetAll}),
+    el("button",{class:"btn ghost",text:"Cancel",onclick:moreSheet}))])}
+function resetAll(){commitDraft(false,true);state.draft=null;showTools(false);ui.added=[];fresh();state.sel=null;state.filter=null;state.search=null;state.nav=[];closeAll();if(!detail.hidden)closeDetail();renderAll();toast("Reset to the tutorial")}
+/* collapse or expand every branch in the current view (the whole tree, or the focused branch) */
+function setCollapsedAll(on){const list=[];const walk=p=>{for(const k of kidsOf(p)){if(kidsOf(k).length){list.push(k);walk(k)}}};walk(ui.focus);
+  if(on){ui.collapsed=[...new Set([...ui.collapsed,...list])]}else{ui.collapsed=ui.collapsed.filter(c=>!list.includes(c))}saveUi()}
+function applyHand(){app.classList.toggle("hand-left",ui.hand==="left");app.classList.toggle("hand-right",ui.hand!=="left")}
+function treeIdOf(evs){const m=evs.filter(e=>e&&e.type==="tree.inbox-set"&&e.clock).sort(order)[0];return m?m.data.itemId:null}
+function exportText(){return JSON.stringify({format:"thoughttree-prototype-export",version:4,from:device.label,treeId:curTree,treeName:treeName(curTree),events})}
+function exchangeSheet(){
+  const status=el("div",{class:"hint",text:""});const area=el("textarea",{class:"field",rows:"4",placeholder:"Paste the text exported on the other device","aria-label":"Paste export"});
+  const file=el("input",{type:"file",accept:".json,.txt,application/json,text/plain","aria-label":"Choose an export file"});
+  const valid=list=>list.filter(e=>e&&e.id&&e.clock&&e.type&&e.data);
+  const home=curTree;
+  const merge=(data,evs,tid)=>{if(tid!==curTree)switchTree(tid,true);
+    const byId=new Map(events.map(e=>[e.id,JSON.stringify(e)]));let added=0,same=0,rejected=0;const changed=new Set();
+    for(const e of evs){const s=JSON.stringify(e);if(byId.has(e.id)){byId.get(e.id)===s?same++:rejected++;continue}events.push(e);all.push(e);byId.set(e.id,s);added++;const i=evItem(e);if(i)changed.add(i)}
+    saveEvents();refresh();renderAll();
+    const from=data.from||"the other device";
+    const shown=new Set([...changed].filter(i=>P.items.has(i)&&!P.items.get(i).deleted&&visibleItem(i)&&i!==INBOX));
+    status.replaceChildren(`${added} new events from ${from} (${shown.size} items new or changed). ${same} already known.`+(rejected?` ${rejected} rejected: same id, different content.`:""));
+    /* D-21: Show filters the tree to all arrived or changed items and their ancestors */
+    if(added){toast(`${shown.size} new or changed ${shown.size===1?"item":"items"} from ${from}`,[...(shown.size?[["Show",()=>{commitDraft(false,true);ui.focus=null;state.search=null;state.sel=null;state.filter={label:"New or changed from "+from,test:it=>shown.has(it.id)};closeAll();if(!detail.hidden)closeDetail();renderAll()}]]:[]),["Send back",()=>exchangeSheet()]])}
+    else toast(`Nothing new from ${from}: both devices already have the same events.`)};
+  const doImport=txt=>{let data;try{data=JSON.parse(txt)}catch(e){status.replaceChildren("That is not a ThoughtTree export. Was the whole text pasted?");return}
+    if(!data||data.format!=="thoughttree-prototype-export"||!Array.isArray(data.events)){status.replaceChildren("That is not a ThoughtTree export.");return}
+    const theirs=data.treeId||("old-"+(treeIdOf(data.events)||uuid()));
+    const evs=valid(data.events).map(e=>Object.assign({},e,{tree:theirs,actionId:e.actionId||e.id}));
+    const name=data.treeName||project(evs).name||"Tree from "+(data.from||"another device");
+    if(treeIds().includes(theirs)){merge(data,evs,theirs);status.scrollIntoView({block:"nearest"});return}
+    /* D-84: a different tree is never merged silently and never replaces this device's tree */
+    status.replaceChildren(el("p",{style:"margin:0 0 8px;color:var(--text)",text:`“${name}” from ${data.from||"the other device"} is a tree that is not on this device yet.`}),
+      el("div",{style:"display:flex;gap:8px;flex-wrap:wrap"},
+        el("button",{class:"btn",text:"Add as a further tree",onclick:()=>{all.push(...evs);saveEvents();ui.added=[...new Set([...(ui.added||[]),theirs])];saveUi();
+          const target=home!==theirs&&!treeInfo(home).tutorial?home:treeIds().find(t=>t!==theirs&&!treeInfo(t).tutorial);
+          status.replaceChildren(el("p",{style:"margin:0 0 8px;color:var(--text)",text:`Added “${name}” as a further tree on this device.`}),
+            el("div",{style:"display:flex;flex-direction:column;gap:8px"},
+              el("button",{class:"btn ghost",text:`Open “${name}”`,onclick:()=>switchTree(theirs)}),
+              target?el("button",{class:"btn ghost",text:`Import “${name}” into “${treeName(target)}” as a new branch`,onclick:()=>importAsBranch(theirs,target)}):null,
+              el("span",{class:"hint",style:"margin:0",text:`You can import it later too: open “${name}”, then More.`})));
+          renderAll()}}),
+        el("button",{class:"btn ghost",text:"Cancel",onclick:()=>{status.replaceChildren("Nothing was changed.")}})));
+    status.scrollIntoView({block:"nearest"})};
+  file.addEventListener("change",()=>{const f=file.files[0];if(!f)return;const r=new FileReader();r.onload=()=>doImport(String(r.result));r.readAsText(f)});
+  const exportBtn=el("button",{class:"btn",text:"Copy the events of “"+treeName(curTree)+"”",onclick:async()=>{const t=exportText();try{await navigator.clipboard.writeText(t);status.textContent=`Copied ${events.length} events. Paste them on the other device, for example through a note or a message to yourself.`}catch(e){area.value=t;area.focus();area.select();status.textContent="Copying was refused here. The text is selected below: copy it by hand."}}});
+  openSheet("Exchange with another device","Both devices end up with all events of “"+treeName(curTree)+"”",[
+    el("div",{class:"lbl",text:"1 · Send"}),exportBtn,
+    el("div",{class:"lbl",text:"2 · Receive"}),area,el("div",{style:"display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap"},el("button",{class:"btn ghost",text:"Import pasted text",onclick:()=>doImport(area.value)}),file),
+    status,el("p",{class:"hint",text:"Events with an id you already have are skipped. Afterwards, send your own events back so both devices are equal. In the real app this is an encrypted file; here it is plain text, so do not use private notes."})])}
+function logSheet(){const list=[...events].sort(order).reverse().slice(0,200);
+  const reset=el("button",{class:"btn danger",text:"Reset prototype…",onclick:()=>{reset.replaceWith(el("div",{style:"display:flex;gap:8px;align-items:center;flex-wrap:wrap"},el("span",{class:"hint",text:"Delete all events in this browser?"}),
+    el("button",{class:"btn danger",text:"Delete everything",onclick:resetAll})))}});
+  openSheet("Event log",events.length+" events in “"+treeName(curTree)+"”, newest first",[...list.map(e=>el("div",{class:"ev"+(P.reverted.has(e.id)?" rev":"")},el("div",null,el("code",{text:e.type}),el("span",{class:"what",text:"  "+describe(e)})),el("div",{class:"meta",text:when(e)+" · "+who(e)+" · clock "+e.clock.t+"."+e.clock.c+" · action "+String(e.actionId).slice(0,8)+(e.fromTree?" · imported":"")}))),el("div",{style:"margin-top:14px"},reset)])}
+function aboutSheet(){const p=t=>el("p",{class:"hint",text:t});
+  openSheet("About this prototype","A clickable sketch, not the app",[
+    p("You start in the tutorial, a tree of its own; your own thoughts go into the tree “My thoughts” (More › Trees). This page lets you try the UX decisions of ThoughtTree on your phone: capturing into the inbox, sorting with Move to…, the item menu, Focus, the detail page, tags with @@, notes with ##, themes per branch and per tree, quick undo and the history."),
+    p("Every change is written as an event (item.created, item.moved, theme.set, …) with a hybrid logical clock and an action id; events written for one action are undone together. The outline is computed from the event log, as in the architecture. The log lives only in this browser; clearing site data deletes it."),
+    p("Templates: a template is an ordinary item marked as a template, valid in its parent's branch (at the top level in the whole tree); new trees start without templates; the tutorial carries five (Person, Talk or meeting, Source, Decision, Idea) to copy with ⋯ › Copy and paste into your own tree (provisional places). Type ::person Anna on an empty line, or hold ＋ Add here. Type [[ to link another item inside a title; the detail page counts links and “Linked from”."),
+    p("Not real: no encryption, no Blazor, no installation as an app, no typed relations or views yet, no drag and drop, no conflict view. The inbox is an ordinary item marked as the inbox, always last at the top level, as in the architecture."),
+    p("This device: "+device.label+" · "+device.id.slice(0,8))])}
+
+/* ---------- wiring ---------- */
+$("#fab").addEventListener("click",capture);
+$("#fab").addEventListener("pointerdown",ev=>{if(state.draft)ev.preventDefault()}); /* keeps the keyboard and the cursor while editing (D-54) */
+$("#fab").addEventListener("mousedown",ev=>{if(state.draft)ev.preventDefault()});
+/* D-95: an expanded parent gets the new line as its first child; a leaf or a collapsed item gets it directly below; the inbox, which stays last, gets it as its first child;
+   below a collapsed template the line goes to the end of the branch's ordinary items */
+function addPlace(){const sel=state.sel?P.items.get(state.sel):null;
+  if(sel&&sel.id===INBOX)return{parent:INBOX,after:null};
+  if(sel&&kidsOf(sel.id).length&&!ui.collapsed.includes(sel.id))return{parent:sel.id,after:null};
+  if(sel&&sel.template)return{parent:sel.parent,after:lastChild(sel.parent)};
+  if(sel)return{parent:sel.parent,after:sel.id};
+  return{parent:ui.focus,after:lastChild(ui.focus)}}
+/* D-108: press and hold "＋ Add here" (about half a second) offers "From template…"; a normal tap adds a line */
+const addBtn=$("#b-add");let holdTimer=null,held=false;
+addBtn.addEventListener("pointerdown",()=>{held=false;clearTimeout(holdTimer);holdTimer=setTimeout(()=>{held=true;try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}fromTemplateSheet(addPlace())},500)});
+for(const t of["pointerup","pointerleave","pointercancel"])addBtn.addEventListener(t,()=>clearTimeout(holdTimer));
+addBtn.addEventListener("contextmenu",ev=>ev.preventDefault());
+addBtn.addEventListener("click",()=>{if(held){held=false;return}const pl=addPlace();
+  if(pl.parent===INBOX)ui.collapsed=ui.collapsed.filter(c=>c!==INBOX);startNew(pl.parent,pl.after)});
+$("#b-search").addEventListener("click",()=>{state.search=state.search===null?"":null;state.recentOnly=false;renderAll()});
+$("#b-undo").addEventListener("click",()=>{commitDraft(false,true);quickUndo()});
+$("#b-more").addEventListener("click",moreSheet);
+document.addEventListener("keydown",ev=>{if((ev.ctrlKey||ev.metaKey)&&ev.key==="z"&&!ev.target.closest("input,textarea")){ev.preventDefault();quickUndo()}
+  if(ev.key==="Escape"&&(!sheet.hidden||!pop.hidden)){closeAll();renderAll()}});
+function renderAll(){renderTop();renderOutline()}
+applyHand();
+if(ui.focus&&ui.focus!==INBOX&&!(P.items.get(ui.focus)&&visibleItem(ui.focus)))ui.focus=null;
+renderAll();
+})();
+</script>
+
+</body>
+</html>

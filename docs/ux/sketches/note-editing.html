@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Writing a note</title>
+</head>
+<body>
+<!-- Reference sketch, chosen variant only (UX decision D-47). Decisions D-61, D-62. Where this sketch and docs/ux-concept.md differ, the concept wins. -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: three phone frames (wrapping), Paper theme; same note in three editing styles; keyboard as a neutral block */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-faint:#b3a999;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--kb:#d9d3c9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#6b6358;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--kb:#2e2a25;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#6b6358;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--kb:#2e2a25;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:65ch}
+.row{display:flex;flex-wrap:wrap;gap:22px}
+.col{flex:1 1 250px;max-width:320px;min-width:0}
+.col h2{font-size:15px;margin:0 0 8px}
+.col p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
+.ph{position:relative;height:580px;border-radius:20px;overflow:hidden;background:var(--t-card);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:15px}
+.top{padding:10px 14px;border-bottom:1px solid var(--t-line);font-size:12px;color:var(--t-muted);background:var(--t-bg)}
+.page{flex:1;padding:14px 16px;overflow:hidden;line-height:1.55}
+.title{font-size:19px;font-weight:600;margin-bottom:10px}
+.raw{font-family:var(--mono);font-size:13.5px;white-space:pre-wrap;color:var(--t-text)}
+.mk{color:var(--t-faint)}
+.cur{display:inline-block;width:2px;height:16px;background:var(--t-accent);vertical-align:middle}
+.h{font-size:16px;font-weight:600;margin:10px 0 4px}
+.page ul{margin:4px 0;padding-inline-start:20px}
+.page p{margin:4px 0}
+a.l{color:var(--t-acc-text)}
+.curline{background:var(--t-sel);border-radius:4px;margin-inline:-4px;padding-inline:4px}
+.fab{position:absolute;inset-inline-end:14px;bottom:226px;width:52px;height:52px;border-radius:50%;background:var(--t-accent);color:var(--t-ink);display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 3px 10px #0004}
+.tb{display:flex;align-items:center;gap:2px;height:44px;padding-inline:6px;border-top:1px solid var(--t-line);background:var(--t-bg);font-size:14px}
+.tb span{min-width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.tb .sp{flex:1}
+.kb{height:170px;background:var(--kb);display:flex;align-items:center;justify-content:center;color:var(--t-muted);font-size:13px}
+.hint{font-size:11px;color:var(--t-muted);text-align:center;padding:4px;background:var(--t-bg);border-top:1px solid var(--t-line)}
+</style>
+
+<h1>Writing a note</h1>
+<p class="lead">The note is formatted as you type (D-61), shown while the keyboard is up. Example content only.</p>
+
+<div class="row">
+<div class="col"><h2>Formatted as you type</h2>
+<div class="ph"><div class="top">Ideas › Capture first, sort later</div>
+<div class="page"><div class="title">Capture first, sort later</div>
+<div class="h">Why</div>
+<p>Nothing has to be decided before typing: <b>not the place</b>, not the tree.</p>
+<ul><li>Inbox catches everything</li><li class="curline"><span class="mk">- </span>Sorting comes later<span class="cur"></span></li></ul>
+<p>See <a class="l">App for thinking</a></p></div>
+<div class="fab">📥</div><div class="tb"><span>↩</span><span>↪</span><span>B</span><span>I</span><span>H</span><span>•</span><span>🔗</span><span class="sp"></span><span>✓</span></div><div class="kb">keyboard</div></div>
+<p class="d">Looks finished while you write; markers show faintly only on the line with the cursor.</p></div>
+</div>
+</body>
+</html>

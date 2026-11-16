@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Item menu</title>
+</head>
+<body>
+<!-- Reference sketch, chosen variant only (UX decision D-47). Decisions D-53, D-58, D-59. Where this sketch and docs/ux-concept.md differ, the concept wins. -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: three phone frames (wrapping), Paper theme; 1 = selected row with its ⋯, 2 = menu as bottom sheet, 3 = menu as popover */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--dim:#2a252066;--danger:#9b3b2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--dim:#00000088;--danger:#f0a08f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--dim:#00000088;--danger:#f0a08f;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:65ch}
+.row{display:flex;flex-wrap:wrap;gap:22px}
+.col{flex:1 1 250px;max-width:320px;min-width:0}
+.col h2{font-size:15px;margin:0 0 8px}
+.col p{font-size:13px;color:var(--muted);margin:8px 0 0}
+.ph{position:relative;height:560px;border-radius:20px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:15px}
+.top{padding:10px 14px;border-bottom:1px solid var(--t-line);font-size:12px;color:var(--t-muted)}
+.top b{color:var(--t-text)}
+.list{flex:1;background:var(--t-card);overflow:hidden}
+.n{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--t-line);white-space:nowrap}
+.n .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.c1{padding-inline-start:34px}
+.sel{background:var(--t-sel)}
+.dots{width:32px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t-acc-text);font-weight:700;border:1px solid var(--t-line);background:var(--t-card)}
+.bar{display:grid;grid-template-columns:repeat(4,1fr);align-items:center;height:58px;border-top:1px solid var(--t-line);background:var(--t-bg)}
+.b{display:flex;flex-direction:column;align-items:center;font-size:18px;color:var(--t-muted)}
+.b small{font-size:10px}
+.fab{position:absolute;inset-inline-end:16px;bottom:72px;width:54px;height:54px;border-radius:50%;background:var(--t-accent);color:var(--t-ink);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 10px #0004}
+.dimmer{position:absolute;inset:0;background:var(--dim)}
+.sheet{position:absolute;inset-inline:0;bottom:0;background:var(--t-card);border-radius:16px 16px 0 0;padding:8px 0 10px}
+.grab{width:36px;height:4px;border-radius:2px;background:var(--t-line);margin:0 auto 8px}
+.sheet .hd{padding:0 16px 8px;border-bottom:1px solid var(--t-line)}
+.sheet .hd b{display:block;font-size:15px}
+.sheet .hd span{font-size:12px;color:var(--t-muted)}
+.mi{display:flex;align-items:center;gap:12px;padding:11px 16px;font-size:15px}
+.mi i{font-style:normal;width:22px;text-align:center}
+.mi.d{color:var(--danger)}
+.sep{height:1px;background:var(--t-line);margin:4px 0}
+.pop{position:absolute;inset-inline-end:12px;top:118px;width:200px;background:var(--t-card);border:1px solid var(--t-line);border-radius:12px;box-shadow:0 6px 20px #0003;padding:4px 0}
+.pop .mi{padding:8px 12px;font-size:14px}
+</style>
+
+<h1>The item menu</h1>
+<p class="lead">The selected item shows a small ⋯ on its row. Tapping it opens the item's own actions. It opens as a popover at the row (D-58); the order is D-59, with Open first. Example content only.</p>
+
+<div class="row">
+
+<div class="col"><h2>1 · Selected item with its ⋯</h2>
+<div class="ph"><div class="top">Private › <b>Ideas</b></div>
+<div class="list"><div class="n"><span class="t">💡 App for thinking</span></div><div class="n c1 sel"><span class="t">Capture first, sort later</span><span class="dots">⋯</span></div><div class="n c1"><span class="t">Tags with @@</span></div><div class="n"><span class="t">📚 Reading</span></div><div class="n c1"><span class="t">Why we forget what we read</span></div><div class="n"><span class="t">✈️ Slow travel</span></div></div>
+<div class="fab">📥</div>
+<div class="bar"><div class="b"><span>⋯</span><small>More</small></div><div class="b"><span>↩</span><small>Undo</small></div><div class="b"><span>🔍</span><small>Search</small></div><div class="b"><span>＋</span><small>Add here</small></div></div></div>
+<p>Only the selected row shows its ⋯, at the thumb's end of the row. Other rows stay clean.</p></div>
+<div class="col"><h2>2 · Menu as a popover at the row</h2>
+<div class="ph"><div class="top">Private › <b>Ideas</b></div>
+<div class="list"><div class="n"><span class="t">💡 App for thinking</span></div><div class="n c1 sel"><span class="t">Capture first, sort later</span><span class="dots">⋯</span></div><div class="n c1"><span class="t">Tags with @@</span></div><div class="n"><span class="t">📚 Reading</span></div><div class="n c1"><span class="t">Why we forget what we read</span></div><div class="n"><span class="t">✈️ Slow travel</span></div></div>
+<div class="pop"><div class="mi"><i>📄</i>Open</div><div class="mi"><i>🎯</i>Focus</div><div class="mi"><i>↕</i>Move to…</div><div class="mi"><i>🔗</i>Link to…</div><div class="mi"><i>🏷</i>Tags</div><div class="mi"><i>🎨</i>Theme</div><div class="mi"><i>🗂</i>Views</div><div class="mi"><i>🕘</i>History</div><div class="sep"></div><div class="mi d"><i>🗑</i>Delete</div></div>
+<div class="fab">📥</div>
+<div class="bar"><div class="b"><span>⋯</span><small>More</small></div><div class="b"><span>↩</span><small>Undo</small></div><div class="b"><span>🔍</span><small>Search</small></div><div class="b"><span>＋</span><small>Add here</small></div></div></div>
+<p>Opens right next to the item on the side of the hand setting; the tree stays visible.</p></div>
+</div>
+</body>
+</html>

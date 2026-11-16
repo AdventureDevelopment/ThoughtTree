@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Outline density</title>
+</head>
+<body>
+<!-- Reference sketch, chosen variant only (UX decision D-47). Decision D-42. Where this sketch and docs/ux-concept.md differ, the concept wins. -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: three equal phone frames side by side (wrapping when narrow), same height, Paper theme; only row height and text size change */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 18px;color:var(--muted);max-width:65ch}
+.row{display:flex;flex-wrap:wrap;gap:20px}
+.col{flex:1 1 240px;max-width:320px;min-width:0}
+.col h2{font-size:15px;margin:0}
+.col .spec{font-size:12px;color:var(--muted);margin:2px 0 8px;font-variant-numeric:tabular-nums}
+.ph{height:520px;border-radius:18px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column}
+.top{padding:10px 12px;border-bottom:1px solid var(--t-line);font-size:12px;color:var(--t-muted);flex:none}
+.top b{color:var(--t-text)}
+.list{flex:1;overflow:hidden;background:var(--t-card)}
+.n{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--t-line);padding-inline-end:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tw{color:var(--t-muted);width:14px;flex:none;text-align:center;font-size:.8em}
+.sel{background:var(--t-sel)}
+.t{display:flex;flex-direction:column;min-width:0;padding-block:4px}
+.t .tt{overflow:hidden;text-overflow:ellipsis}
+.pv{font-size:.8em;color:var(--t-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip{font-size:.72em;border-radius:8px;padding:0 6px;background:var(--t-sel);color:var(--t-acc-text)}
+.bar{flex:none;display:flex;justify-content:space-around;align-items:center;height:48px;border-top:1px solid var(--t-line);color:var(--t-muted);font-size:17px}
+.dock{width:44px;height:44px;border-radius:50%;background:var(--t-accent);color:var(--t-ink);display:flex;align-items:center;justify-content:center;margin-top:-22px}
+.airy .n{min-height:56px;font-size:17px}
+.comf .n{min-height:44px;font-size:16px}
+.comp .n{min-height:32px;font-size:14px}
+.count{font-size:13px;color:var(--muted);margin-top:8px}
+</style>
+
+<h1>Outline density: comfortable</h1>
+<p class="lead">The Paper theme uses the comfortable density with the note preview (D-42). Notes that have a note text show its first line in small, muted type under the title. Count how many notes fit, and imagine tapping them with your thumb.</p>
+
+<div class="row" id="row"></div>
+
+<script>
+const nodes=[[0,"▾","📥 Inbox"],[1,"","☀️ Idea for the walk",null,false,"Start at the lake, then up the hill and back through the village"],[0,"▾","💡 Ideas"],[1,"","App for thinking",'<span class="chip">idea</span>',false,"An outliner that feels calm and keeps everything private"],[1,"","Capture first, sort later",null,true,"Nothing has to be decided before typing"],[1,"▸","Tags with @@"],[0,"▾","📖 Writing project"],[1,"▸","Characters",null,false,"Who wants what, and why"],[1,"▸","Chapter 3"],[1,"","Open questions"],[0,"▸","🎸 Music project"],[0,"▾","📚 Reading"],[1,"","Why we forget what we read",null,false,"Maybe notes help more than highlights"],[1,"","Article about outliners"],[0,"▸","🗂 Archive"],[0,"","✈️ Slow travel",null,false,"The journey as part of the holiday"],[0,"","Night trains feel like time travel"],[0,"","What makes a gift personal"]];
+const v=[["comf","Comfortable","rows 44 px · text 16 px"]];
+const ph=c=>`<div class="ph ${c}"><div class="top">Private › <b>Top level</b></div><div class="list">`+
+nodes.map(n=>`<div class="n${n[4]?' sel':''}" style="padding-inline-start:${12+n[0]*20}px"><span class="tw">${n[1]}</span><span class="t"><span class="tt">${n[2]}${n[3]||''}</span>${n[5]?`<span class="pv">${n[5]}</span>`:''}</span></div>`).join('')+
+`</div><div class="bar"><span>⋯</span><span>↩</span><span>🔍</span><span>＋</span><span class="dock">📥</span></div></div>`;
+document.getElementById('row').innerHTML=v.map(x=>`<div class="col"><h2>${x[1]}</h2><p class="spec">${x[2]}</p>${ph(x[0])}<p class="count" data-c="${x[0]}"></p></div>`).join('');
+document.querySelectorAll('.ph').forEach(p=>{const l=p.querySelector('.list');const h=l.getBoundingClientRect().height;let c=0;l.querySelectorAll('.n').forEach(n=>{if(n.offsetTop+n.offsetHeight-l.offsetTop<=h+1)c++});const cls=[...p.classList].find(k=>k!=='ph');document.querySelector(`.count[data-c="${cls}"]`).textContent=`About ${c} notes visible`;});
+</script>
+</body>
+</html>
