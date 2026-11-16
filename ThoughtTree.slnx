@@ -7,4 +7,8 @@
     <Project Path="src/ThoughtTree.Server.Core/ThoughtTree.Server.Core.csproj" />
     <Project Path="src/ThoughtTree.Server/ThoughtTree.Server.csproj" />
   </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/specify/">
+    <Project Path="tests/specify/ThoughtTree.Domain.Specs/ThoughtTree.Domain.Specs.csproj" />
+  </Folder>
 </Solution>
