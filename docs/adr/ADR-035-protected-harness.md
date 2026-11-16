@@ -9,7 +9,7 @@ applies_to: `tests/**`, `.github/**`
 - **MUST NOT** accept new or changed snapshot files (`*.verified.*`) automatically, in CI or by an agent; changes need human approval
 - **MUST NOT** change or delete specs in `tests/specify` without human approval
 - **MUST** bring every change to `main` through a pull request; branch protection forbids direct pushes and requires the push gate
-- **MUST** require the owner's review (CODEOWNERS) for changes to `tests/specify/**`, `tests/data/**`, the reference model, `*.verified.*` and `docs/**`
+- **MUST** require the owner's review (CODEOWNERS) for changes to `tests/specify/**`, `tests/data/**`, the reference model, `*.verified.*`, `docs/**`, `AGENTS.md`, `CLAUDE.md` and `.github/**` (workflows, pull request template, CODEOWNERS); an agent MAY propose a change to these files in a pull request, and it merges only after the owner's approval of the latest push (new push, new approval)
 - **MUST NOT** delete gate tests or weaken assertions without human approval
 - **MUST** tag every test that secures an ADR with its id (`[Trait("ADR", "ADR-0xx")]`)
 - **MUST** run the whole gate suite without Azure accounts, secrets or network

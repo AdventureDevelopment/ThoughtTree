@@ -184,6 +184,8 @@ Most important first.
 
 ### 2.17 Protected paths leave out the agent guide and CI
 
+- **Status:** decided by the owner: `AGENTS.md`, `CLAUDE.md` and `.github/**` are protected; agents may propose changes, the owner approves the latest push; commit COMMIT. CODEOWNERS file: pending the owner's GitHub username. Class 3 item 1 follows this.
+
 - **Where:** ADR-035, AGENTS.md section 4 and architecture.md section 2 protect `tests/specify/**`, `tests/data/**`, the reference model, `*.verified.*` and `docs/**`. They do not protect `AGENTS.md`, `CLAUDE.md` or `.github/**`: the PR template, CI workflows and CODEOWNERS itself. Yet architecture.md section 8, harness principle 8, counts the agent guide as part of the harness.
 - **Recommendation:** add `AGENTS.md`, `CLAUDE.md` and `.github/**` to the protected paths (ADR-035 change).
 
