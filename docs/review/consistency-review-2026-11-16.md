@@ -219,6 +219,8 @@ Most important first.
 
 ### 2.21 "The whole gate suite runs in an agent's sandbox"
 
+- **Status:** parked by the owner until the server is planned; open decision in architecture.md section 9; commit COMMIT.
+
 - **Where:**
   - architecture.md section 8, harness principle 5;
   - against it: the container test in the push gate "because the agent's sandbox may not have Docker", and ADR-046's verify, which needs the Bicep CLI.
