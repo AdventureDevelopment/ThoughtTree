@@ -527,7 +527,7 @@ Example of an event before encryption:
 - A move that would create a cycle is applied with the moved item placed at top level instead of under the requested parent
 - Deleted items are tombstoned, never physically removed, to keep merges consistent
 - Merging always means taking the union of two event logs, with events identified by `EventId`; trees are never merged directly, the projection rebuilds the tree from the combined log
-- This also covers two devices that were used on their own before pairing: their top-level items simply sit side by side at top level
+- Two devices that were used on their own before pairing keep separate trees; pairing only adds a further tree, and content moves between them by importing a tree into another under a new item (see Importing a tree into another, D-84), after which the ordinary merge rule applies
 
 **Event envelope and encryption**
 

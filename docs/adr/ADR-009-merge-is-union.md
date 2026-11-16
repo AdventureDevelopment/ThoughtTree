@@ -16,4 +16,4 @@ verify:
 dotnet test --filter "ADR=ADR-009"
 ```
 
-why: One merge rule for server sync, file sync and pairing of devices that started on their own.
+why: One merge rule for server sync and file sync of devices that hold the same tree; trees of devices that started on their own are brought together only by importing a tree into another (ADR-010).
