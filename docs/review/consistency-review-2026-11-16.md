@@ -209,6 +209,8 @@ Most important first.
 
 ### 2.20 End-to-end smoke set after the first server release
 
+- **Status:** parked by the owner; now an open decision in architecture.md section 9; commit COMMIT.
+
 - **Where:**
   - architecture.md section 8 end-to-end: "Push gate: scenarios 1, 2, 6 and 8 … (release 1: 2, 6, 7 and 8)", with scenario 9 nightly;
   - decision 5: "end-to-end scenarios 1 and 9" switch on with the server, and "scenario 7 (pairing) stays".
