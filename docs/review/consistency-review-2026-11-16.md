@@ -66,7 +66,7 @@ Most important first.
 
 ### 2.4 The zero-match rule against release 1 without a server
 
-- **Status:** decided by the owner, option (a): marker `# when: server`; commit COMMIT.
+- **Status:** decided by the owner, option (a): marker `# when: server`; commit `3a9c20c`.
 
 - **Where:**
   - docs/adr/README.md: "A `verify` with `dotnet test --filter` must match at least one test; CI fails on zero matches";
