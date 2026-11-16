@@ -84,6 +84,8 @@ Most important first.
 
 ### 2.5 Conflicts "marked seen" against conflicts derived from the log
 
+- **Status:** decided by the owner, option (a): "Keep as it is" writes the ordinary resolving event; D-127 stays as written and D-165 revises it; commit COMMIT.
+
 - **Where:**
   - ux-concept.md D-127: ""Keep as it is" marks it seen. When all are seen, the marks and the More entry disappear";
   - ADR-018: "MUST derive conflicts from the log; MUST NOT store them" and "resolve a conflict by an ordinary event that replaces all competing changes".
