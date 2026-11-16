@@ -151,6 +151,8 @@ Most important first.
 
 ### 2.11 SQLite as an Azure store
 
+- **Status:** parked by the owner until the server is planned; the open decision row "Server event store" carries the finding and the PostgreSQL idea; commit COMMIT.
+
 - **Where:**
   - architecture.md section 2 and the open decision "Server event store": "Azure Table Storage, Blob Storage or SQLite";
   - section 7: "the chosen Azure store (not SQLite, because file locking on Azure file shares is unreliable)" and "Table Storage or Blob Storage is an open decision";
