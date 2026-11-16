@@ -35,7 +35,7 @@ This concept uses the following terms (decision D-45, replacing D-44). The archi
 | --- | --- |
 | Tree | One independent outline with its own key and event log, for example "Private" or "Work" |
 | Item | The thing in the tree: a title, a note, tags, and optionally a theme and views; later also pictures and files. What it is (a thought, an idea, a seed, a project, a topic, a vision) is the user's to decide, for example with tags; an item can grow |
-| Note | The optional longer text of an item, written in the detail view |
+| Note | The optional longer text of an item, written in Focus on the item (D-151) |
 | Branch | An item together with everything below it |
 | Node | How an item appears in the tree: its line in the outline and its place; a technical term for code and specifications |
 | Focus | Make an item the temporary top of the view, showing only its branch (D-57, ADR-065) |
@@ -63,7 +63,7 @@ Named by the owner after trying the first prototype (2026-11-13). These are the 
 Derived from journeys A to D (decisions D-16, D-24). They guide every later decision, including the agents'.
 
 1. **Capture first, structure later.** Nothing has to be decided before typing: not the place, not the tree, not the kind. (D-1, D-4, D-5)
-2. **Create in the tree, go deeper in the detail view.** New items are created and named in place in the tree; titles take inline Markdown (emphasis, links, inline code) and emojis. Shortcuts live in the text itself (space, Backspace, `##`, `@@`), each with a visible alternative. Longer text is written in the item's detail view. Quick capture opens a light sheet whose lines behave exactly like the outline, so typing works the same everywhere. (D-2, D-3, D-10, D-11, D-14, D-18)
+2. **Create in the tree, go deeper in Focus.** New items are created and named in place in the tree; titles take inline Markdown (emphasis, links, inline code) and emojis. Shortcuts live in the text itself (space, Backspace, `##`, `@@`), each with a visible alternative. Longer text is written in Focus on the item, which shows the thought as a page (D-151). Quick capture opens a light sheet whose lines behave exactly like the outline, so typing works the same everywhere. (D-2, D-3, D-10, D-11, D-14, D-18)
 3. **Stay in the flow.** After every action the user stays where they were, and the next step is right there. (D-2, D-7, D-13)
 4. **Effort fits the distance.** Near by hand (drag), far by choosing (search); finding the right place must be easy. (D-6, D-9)
 5. **Calm, no pressure.** No badges, no warning colours, no reminders that push. (D-8)
@@ -71,7 +71,7 @@ Derived from journeys A to D (decisions D-16, D-24). They guide every later deci
 7. **Saved at once and reliably.** The user never wonders whether something was stored. (Journey A; quality goal reliability)
 8. **Start simple.** A feature comes when use shows it is missed. (D-9, D-15)
 9. **Nothing happens behind the user's back.** The app shows what arrived and what clashed, and never decides silently for the user; when something needs the user, it waits calmly until they have time. (D-21, D-22, D-23; ADR-018)
-10. **Your own thinking.** ThoughtTree has no AI that reads, structures or writes your thoughts. The structure grows from your own decisions: deciding where a thought belongs and how thoughts connect is the thinking itself, and some thoughts are for nobody else. That is the point, not a missing feature. (D-142; [ADR-071](adr/ADR-071-no-ai-on-content.md), Proposed)
+10. **Your own thinking.** ThoughtTree has no AI that reads, structures or writes your thoughts. The structure grows from your own decisions: deciding where a thought belongs and how thoughts connect is the thinking itself, and some thoughts are for nobody else. That is the point, not a missing feature. (D-142; [ADR-071](adr/ADR-071-no-ai-on-content.md), Accepted)
 
 Inherited from the architecture and applying on top: accessible (ADR-033), and honest about what is protected (section 1).
 
@@ -129,13 +129,13 @@ The library is chosen by a spike (decision D-30).
 | `conflict-marker` [ASSUMPTION: calm violet, to be confirmed] | `#7a6bb0` | `#a99be0` |
 
 - Themes can be chosen per tree and per item, to support the vibe of a project; an item's theme applies to its whole branch (shown for all its children, unless a child has its own theme), and shows when the user focuses on it (decision D-34)
-- In the overview a branch with its own theme is tinted in that theme, so its mood is visible before focusing on it; focused on it, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus zoomed in)
+- In the overview a branch with its own theme is tinted in that theme, so its mood is visible before focusing on it; focused on it, the whole screen takes on the theme (decision D-35; sketch: dot versus tinted branch versus focused)
 - Themes of trees and branches are shared: the same on every device and for every user of a tree, recorded by an event; proposed as [ADR-060](adr/ADR-060-shared-themes.md) (Accepted) (decision D-36)
 - Typography: the base font is the device's system font, so startup downloads nothing; a theme may bring its own font (for example Literata for writing, Nunito for creative, IBM Plex Mono for technical projects), downloaded in the background after start and kept offline; proposed as [ADR-061](adr/ADR-061-shipped-fonts.md) (Accepted), which also approves the SIL Open Font License for fonts (decision D-37)
 - Custom views: views belong to an item (decision D-39, revising D-38):
   - every item, and the tree itself, can carry one or more views; the default is the outline
   - a view is a saved search over the item's branch (for example "🔎 Open questions", "Changed recently") and, later, a layout such as a board or columns
-  - focused on the item, a view switcher (like tabs) appears when it has more than one view; the item's theme applies to all its views
+  - views are reached through 🔍 Search, not at the top (D-125); the item's theme applies to all its views
   - at the tree level, a view "All views" lists every view of the tree with the path of its item
   - the start view of a device is an item plus one of its views
   - start icons with their own view (decision D-40): the app understands a start parameter "item plus view" in its address from the start; Android: "Add to home screen" from such a link (spike: does it open in the app window or a tab); Windows and desktop: links with the start parameter; iPhone and iPad: with the store app, because each home-screen web app there has its own storage
@@ -157,7 +157,7 @@ How the owner's UX intent reaches the agents, and how the owner checks the resul
 - After: the owner tries the feature in the test environment on their own devices, through a link in the pull request
 - Example content in sketches, specifications and test data consists of thoughts (ideas, questions, observations, projects as thoughts), never of tasks or todos, matching the vision (decision D-67)
 - Sketches are shown as artifacts for choosing; only the chosen variant is kept in the repository as reference, in `docs/ux/sketches/`, linked from its decision; rejected variants are not kept; where a sketch and the text of this concept differ, the text wins (decision D-47)
-- Binding, as a definition of done for UI work, by three means together (decision D-48): a rule for agents, proposed as [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) (Accepted); a UI checklist in the pull request template; and a pointer to the UX concept in the agents' entry file (`CLAUDE.md` or `AGENTS.md`). The pull request template and the entry file do not exist yet; they are created when ADR-064 is accepted
+- Binding, as a definition of done for UI work, by three means together (decision D-48): a rule for agents, proposed as [ADR-064](adr/ADR-064-ui-follows-ux-concept.md) (Accepted); a UI checklist in the pull request template; and a pointer to the UX concept in the agents' entry file (`CLAUDE.md` or `AGENTS.md`). Both exist: the UI checklist in `.github/pull_request_template.md` and the pointer in `AGENTS.md` (read through `CLAUDE.md`)
 
 Definition of done for UI work (decision D-49): a UI feature is done when all three hold:
 
@@ -180,7 +180,14 @@ Reference sketches (D-47), chosen variants only, in [ux/sketches/](ux/sketches/)
 | [density-comfortable.html](ux/sketches/density-comfortable.html) | D-42 |
 | [note-editing.html](ux/sketches/note-editing.html) | D-61, D-62 |
 | [tags-editing.html](ux/sketches/tags-editing.html) | D-64 |
-| [detail-page.html](ux/sketches/detail-page.html) | D-63, D-65, D-66 |
+| [detail-page.html](ux/sketches/detail-page.html) | D-63, D-65, D-66 (the detail page was replaced by Focus as a page, D-151) |
+| [link-icons.html](ux/sketches/link-icons.html) | D-114 |
+| [feedback-button.html](ux/sketches/feedback-button.html) | D-124 |
+| [views-in-search.html](ux/sketches/views-in-search.html) | D-125 |
+| [tablet-ideas.html](ux/sketches/tablet-ideas.html) | D-149 (chosen direction) |
+| [tablet-layouts.html](ux/sketches/tablet-layouts.html) | D-149 (not chosen as a look) |
+| [wide-three-columns.html](ux/sketches/wide-three-columns.html) | D-152 |
+| [focus-page.html](ux/sketches/focus-page.html) | D-154, D-155 |
 
 The owner's clickable prototype of the phone UX is kept as a reference in [ux/prototype/](ux/prototype/) with screenshots of key screens (D-86); as with the sketches, this document wins where they differ.
 
@@ -212,7 +219,7 @@ Remarks:
 - The next idea of a chain is a sibling; a space typed into its empty title nests it under the previous idea (decision D-2)
 - Backspace in an empty title moves it one level up; at the top level of the inbox it removes the empty line (decision D-3)
 - The capture view shows the tree the idea goes into (the open tree); one tap switches to another tree (decision D-5)
-- Inside the app, capture happens directly in the outline: a new line in the tree, typed in place; there is one way of entering titles, the note is written in the item's detail view (decision D-10)
+- Inside the app, capture happens directly in the outline: a new line in the tree, typed in place; there is one way of entering titles, the note is written in Focus on the item (decisions D-10, D-151)
 - Fast typers write `Title ## Note` in one go; what follows `##` becomes the item's note (decision D-11)
 - The light capture sheet of MLO comes from its home-screen widget; a PWA cannot offer widgets, so this waits for the later store app or package; until then app shortcuts (press and hold the app icon: "New idea", Android and Windows only, not iPhone) are an option to consider
 - Tags are added while typing with `@@` (decision D-14)
@@ -243,7 +250,7 @@ Pain point: searching for the place where a new item belongs. In MLO the target 
 
 Remarks:
 
-- A swipe on an idea as a shortcut to "Move to…" was a wish; swipe left now opens the detail page (D-72), so "Move to…" stays in the item menu for now
+- A swipe on an idea as a shortcut to "Move to…" was a wish; the swipe on a row now does Focus (D-72, D-151), so "Move to…" stays in the item menu for now
 
 Principle candidates heard in journey B:
 
@@ -303,7 +310,7 @@ Custom views (owner's idea, to be expanded):
 
 8. Themes could bring more than colours, for example their own font; the owner wants to expand this into "custom views" for projects. Started with views on items (D-39); layouts per project such as a board or columns are parked (D-41; watch the risk of drifting into task management, architecture section 11)
 
-Release 1 scope (owner's wish, input to the open decision "Release 1 scope" of the architecture; decision D-50):
+Release 1 scope (owner's wish, input to the decision "Release 1 scope" of the architecture, decided 2026-11-15 in section 9 and [ADR-074](adr/ADR-074-release-1-scope.md); decision D-50):
 
 10. Phone, tablet and desktop (D-51); no sync server, every device standalone (ADR-008); sync between devices only by file with the guided round trip (D-19, D-20); themes per tree and per item (D-41)
 11. Consequences for the architecture: the app is still served from a web address (static hosting over HTTPS) to be installable; server store, sync API, sync modes (ADR-057), registration and abuse protection can wait; the reminder to export becomes the main protection against losing a device
