@@ -4,7 +4,7 @@ id: ADR-073 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`
 
-Amends ADR-015 (authenticated data), ADR-012 (extractable key) and ADR-028 (key handed in for each operation); owner decision 2026-11-15.
+Amends ADR-015 (authenticated data), ADR-012 (extractable key), ADR-028 (key handed in for each operation) and ADR-007 (exchange file header); owner decision 2026-11-15.
 
 - **MUST** bind every plaintext envelope field except the nonce (the encryption's own input) and `ServerSequence` (envelope version, `KeyId`, `EventId`) plus the account id and a fixed context label as additional authenticated data
 - **MUST** encrypt a payload wrapper object with room for optional parts (for example a later device signature), not the bare event
