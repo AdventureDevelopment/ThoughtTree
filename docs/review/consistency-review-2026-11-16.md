@@ -250,7 +250,7 @@ Most important first.
 
 ### 2.22 Search index encryption: MUST against an open option
 
-- **Status:** decided by the owner, option (a): ADR-073 unchanged; the open decision row says choosing the option needs an ADR-073 change; commit COMMIT.
+- **Status:** decided by the owner, option (a): ADR-073 unchanged; the open decision row says choosing the option needs an ADR-073 change; commit `d320439`.
 
 - **Where:**
   - ADR-073: "MUST encrypt snapshots, search index and drafts at rest";
