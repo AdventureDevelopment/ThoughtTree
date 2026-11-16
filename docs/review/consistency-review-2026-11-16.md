@@ -173,6 +173,8 @@ Most important first.
 
 ### 2.13 Search scope
 
+- **Status:** decided by the owner, option (b): all-trees search is part of release 1; scope decision 3 updated; an open decision tracks the sketch and the UX decision that extends D-97; commit COMMIT.
+
 - **Where:**
   - architecture.md section 8 "Search": "one search can cover the open tree or all trees on the device";
   - ux-concept.md D-97: "search covers the current view: the whole tree, or only the focused item's branch". No all-trees search appears in the UX.
