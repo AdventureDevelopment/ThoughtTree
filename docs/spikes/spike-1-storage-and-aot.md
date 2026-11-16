@@ -1,6 +1,8 @@
 # Spike 1 plan: local storage engine and Blazor AOT
 
 Status: plan, proposed 2026-11-15. The owner agreed the scope of the spike (open decisions "Blazor AOT compilation and spike" and "Local storage engine" in [architecture.md](../architecture.md) section 9); this document only says how it is done. Nothing here reopens a decision. No spike code exists yet.
+Owner confirmed 2026-11-16: the proposed acceptance thresholds (Q1), the locations (`spikes/spike-1/` for code, `docs/spikes/spike-1/data/` for results) and Playwright's Firefox build for the kill tests (Q3).
+
 
 ## 1. Purpose and questions
 
