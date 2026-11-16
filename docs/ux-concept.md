@@ -326,7 +326,7 @@ Outliner comparison (research input, nothing decided; [ux/outliner-comparison.md
 
 Owner's dream features (named 2026-11-13, for later; nothing decided):
 
-15. Maps of a branch, as layouts of an item's views (ADR-062), in three kinds:
+15. Maps of a branch, as layouts of an item's views (ADR-062), in three kinds (the plain connection map of relations is not one of them: it is part of release 1, see architecture.md section 9; the atlas stays a dream):
    - a normal mind map: the item in the middle, its children around it (comparison idea 38); possibly links between items too (idea 35)
    - a fantasy-style land map: branches drawn as regions of a hand-drawn country, with coasts, rivers and mountains, so a project feels like a world to explore; ThoughtTree's own art, never a copy of a specific existing map
    - the atlas (D-149, replaces the land map idea with more shape): an old-fashioned map of a tree or branch as a view (ADR-062), fitting the notebook look: regions are the top-level branches, tinted by their themes; places are thoughts (a branch with many thoughts is a town, a single thought a hamlet); roads are the links between thoughts; a legend explains tags and themes; a register of known places is the index by name; markers show where you are, what was placed last and places to return to; a tap on a place turns to its page. Conditions: a map must not move (positions are stored, which touches the architecture), the outline stays the main and accessible form, and it is only worth doing beautifully
