@@ -13,7 +13,7 @@
 ## Checks that always apply
 
 - [ ] Tests added or changed (tagged with the ADR id where an ADR secures the change)
-- [ ] No protected path (including `AGENTS.md`, `CLAUDE.md`, `.github/**`) merged without the owner's review of the latest push (see CODEOWNERS)
+- [ ] No owner-only path (see CODEOWNERS) merged without the owner's review of the latest push; `AGENTS.md`, `CLAUDE.md` and `.github/**` need the independent reviewer's approval (the owner's review until it exists)
 - [ ] ADRs updated if a decision changed
 
 <!-- UI CHECKLIST: start. Only for pull requests that change UI (ADR-064). Delete this block for non-UI changes. -->
