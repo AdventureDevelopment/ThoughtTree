@@ -1092,6 +1092,7 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Branch | An item together with everything below it |
 | Node | Technical term only: how an item appears in the tree, its line and place; used in rendering and specifications |
 | Title | The short text on an item's line |
+| Thought | The user-facing word for an item in the texts the user reads (D-140); documents and code say item |
 | Note | The optional longer body of an item |
 | Top-level Item | An item without a parent; a tree can have several |
 | Parent / Children | The item directly above an item / the items directly below it |

@@ -35,6 +35,7 @@ This concept uses the following terms (decision D-45, replacing D-44). The archi
 | --- | --- |
 | Tree | One independent outline with its own key and event log, for example "Private" or "Work" |
 | Item | The thing in the tree: a title, a note, tags, and optionally a theme and views; later also pictures and files. What it is (a thought, an idea, a seed, a project, a topic, a vision) is the user's to decide, for example with tags; an item can grow |
+| Thought | The user-facing word for an item: the app's texts say thought(s) (D-140, D-161 "Gedanke"); item stays the technical term in documents, code and tests (ADR-063) |
 | Note | The optional longer text of an item, written in Focus on the item (D-151) |
 | Branch | An item together with everything below it |
 | Node | How an item appears in the tree: its line in the outline and its place; a technical term for code and specifications |
