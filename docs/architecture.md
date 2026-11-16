@@ -267,7 +267,7 @@ docs/        architecture, ADRs
 
 1. User chooses "New tree" and gives it a name
 2. App generates a new key and a new account identity for this tree, locally; the first event of the tree is a `device.joined` for this device and user
-3. The tree starts with the same events as the first tree: `device.joined`, the predefined relation types, and a first top-level item whose title is the name; it is independent of all other trees on the device
+3. The tree starts with the same events as the first tree: `device.joined`, the predefined relation types, the inbox item with `tree.inbox-set` and the predefined theme "Inbox" (`theme.set`, ADR-066), and a first top-level item whose title is the name; it is independent of all other trees on the device
 4. User moves between trees with the tree switcher
 
 **Scenario: Pairing another device of the same user**
@@ -398,7 +398,7 @@ docs/        architecture, ADRs
 - The culture data for all languages is loaded from the start, so dates, numbers and sorting work in every language and adding a language later only needs its resource file, without further downloads; the price is a larger initial download
 - Structural elements that users can define (relation types now; tags, note kinds and similar later) carry no names themselves; their names are display names, one per language, set by `display-name.set` events, like a resource file inside the tree
 - Languages are identified by standard language tags such as `de`, `de-CH`, `en`
-- A device shows the display name in this order: display name in the tree for the device's language (`de-CH`), display name in the tree for its base language (`de`), for predefined elements the app's own resource files, any label in the tree
+- A device shows the display name in this order: display name in the tree for the device's language (`de-CH`), display name in the tree for its base language (`de`), for predefined elements the app's own resource files, any display name in the tree
 - Predefined elements need no special case: the app ships translations for their fixed ids in its resource files, as it does for its own texts; a tree can override or add languages with `display-name.set`
 - All structural elements later use the same display-name mechanism; exporting a tree's display names as a resource file for translation elsewhere, and importing it again, is a possible later feature
 - Content (titles and notes) is stored as written and never translated in the log
@@ -1121,14 +1121,14 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Bet | An architecture decision that rests on an assumption; its bet card says what should improve, how we notice it and when we review it |
 | Tree Feature | A feature the user switches on or off for a tree, recorded as an event so all devices of the tree agree |
 | View | A saved perspective of an item's branch or the whole tree: a name, a query and a layout |
-| Inbox | The item of a tree where captured thoughts wait to be sorted; always shown last at the top level |
+| Inbox | The item of a tree where captured thoughts wait to be placed; always shown last at the top level |
 | Template | An item marked as a template; creating from it copies its branch, valid in its parent's branch |
 | Tag | A structural element of a tree, named by display names, that items can carry in any number; typed with `@@` or chosen in the tag picker |
 | PWA | Progressive Web App: installable, offline-capable web application |
 | Installation | The app as loaded from one server (the hosted service or a self-hosted one), with its own local store and trees; it syncs only with that server |
 | Tree Access | What a device needs outside the event log to read and sync a tree: key, `KeyId`, account id, account secret |
 | User Identity | User id and user name of a person; carried to their other devices by pairing |
-| Tree Name | The title of the first visible top-level item |
+| Tree Name | The title of the first visible top-level item other than the inbox |
 | `EventId` | Globally unique id of an event; readable in the envelope; the same id must always carry the same content (INV-13) |
 | `KeyId` | Short random id of a tree's key, readable in the envelope |
 | `ServerSequence` | Gap-free number the server gives each envelope of an account, in commit order; used only to track sync progress |
