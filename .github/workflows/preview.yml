@@ -1,0 +1,108 @@
+# Pull request preview on the test site (ADR-046, ADR-047; owner decision D-50, D-51).
+# Signs in to Azure with OpenID Connect as the test identity, whose role covers the test resource
+# group only; the deployment token is fetched at run time and never stored. Pull requests from forks
+# get no OpenID Connect token and are skipped.
+name: preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  RESOURCE_GROUP: rg-thoughttree-test
+  SITE_NAME: swa-thoughttree-test
+
+jobs:
+  preview:
+    name: Deploy the preview
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the .NET SDK from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: "**/packages.lock.json"
+
+      - name: Publish the client
+        run: |
+          dotnet restore src/ThoughtTree.Client --locked-mode
+          dotnet publish src/ThoughtTree.Client --no-restore --configuration Release --output publish
+
+      - name: Sign in to Azure (OpenID Connect, test identity)
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_TEST }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Apply the test template
+        run: az deployment group create --resource-group "$RESOURCE_GROUP" --template-file infra/main.bicep --parameters infra/test.bicepparam --output none
+
+      - name: Fetch the deployment token for this run
+        id: token
+        run: |
+          token=$(az staticwebapp secrets list --name "$SITE_NAME" --resource-group "$RESOURCE_GROUP" --query properties.apiKey --output tsv)
+          echo "::add-mask::$token"
+          echo "value=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Upload the preview
+        id: deploy
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.token.outputs.value }}
+          action: upload
+          app_location: publish/wwwroot
+          skip_app_build: true
+
+      - name: Link the preview
+        env:
+          URL: ${{ steps.deploy.outputs.static_web_app_url }}
+        run: |
+          echo "Preview: $URL" >> "$GITHUB_STEP_SUMMARY"
+
+  close:
+    name: Remove the preview
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Sign in to Azure (OpenID Connect, test identity)
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_TEST }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Fetch the deployment token for this run
+        id: token
+        run: |
+          token=$(az staticwebapp secrets list --name "$SITE_NAME" --resource-group "$RESOURCE_GROUP" --query properties.apiKey --output tsv)
+          echo "::add-mask::$token"
+          echo "value=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Close the preview environment
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.token.outputs.value }}
+          action: close
+          app_location: publish/wwwroot

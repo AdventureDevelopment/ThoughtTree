@@ -1,0 +1,157 @@
+# Deploys main to test, then to production after the owner's approval (ADR-046).
+# Test and production are separate sites in separate resource groups, created from infra/main.bicep
+# with their own parameter file. Each job signs in with OpenID Connect as the identity of its
+# environment; the production identity accepts tokens only for the "production" environment, which
+# requires the owner's review and allows only main. Deployment tokens are fetched at run time.
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+
+jobs:
+  build:
+    name: Publish the client
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the .NET SDK from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: "**/packages.lock.json"
+
+      - name: Publish
+        run: |
+          dotnet restore src/ThoughtTree.Client --locked-mode
+          dotnet publish src/ThoughtTree.Client --no-restore --configuration Release --output publish
+
+      - name: Keep the published site for both environments
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site
+          path: publish/wwwroot
+          retention-days: 30
+
+  test:
+    name: Deploy to test
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: test
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RESOURCE_GROUP: rg-thoughttree-test
+      SITE_NAME: swa-thoughttree-test
+    steps:
+      - name: Check out (templates)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Get the published site
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: site
+
+      - name: Sign in to Azure (OpenID Connect, test identity)
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_TEST }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Apply the test template
+        run: az deployment group create --resource-group "$RESOURCE_GROUP" --template-file infra/main.bicep --parameters infra/test.bicepparam --output none
+
+      - name: Fetch the deployment token for this run
+        id: token
+        run: |
+          token=$(az staticwebapp secrets list --name "$SITE_NAME" --resource-group "$RESOURCE_GROUP" --query properties.apiKey --output tsv)
+          echo "::add-mask::$token"
+          echo "value=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Upload
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.token.outputs.value }}
+          action: upload
+          app_location: site
+          skip_app_build: true
+
+      - name: Smoke test (ADR-045 headers on the deployed site)
+        run: eng/smoke-headers.sh "https://$(az staticwebapp show --name "$SITE_NAME" --resource-group "$RESOURCE_GROUP" --query defaultHostname --output tsv)"
+
+  production:
+    name: Deploy to production
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RESOURCE_GROUP: rg-thoughttree-prod
+      SITE_NAME: swa-thoughttree-production
+    steps:
+      - name: Check out (templates)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Get the published site
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: site
+
+      - name: Sign in to Azure (OpenID Connect, production identity)
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_PRODUCTION }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Apply the production template
+        run: az deployment group create --resource-group "$RESOURCE_GROUP" --template-file infra/main.bicep --parameters infra/production.bicepparam --output none
+
+      - name: Fetch the deployment token for this run
+        id: token
+        run: |
+          token=$(az staticwebapp secrets list --name "$SITE_NAME" --resource-group "$RESOURCE_GROUP" --query properties.apiKey --output tsv)
+          echo "::add-mask::$token"
+          echo "value=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Upload
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.token.outputs.value }}
+          action: upload
+          app_location: site
+          skip_app_build: true
+
+      - name: Smoke test (read-only, ADR-045 headers)
+        run: eng/smoke-headers.sh "https://$(az staticwebapp show --name "$SITE_NAME" --resource-group "$RESOURCE_GROUP" --query defaultHostname --output tsv)"

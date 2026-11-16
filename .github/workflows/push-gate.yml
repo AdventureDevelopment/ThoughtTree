@@ -60,7 +60,6 @@ jobs:
             echo "- End-to-end smoke set in Chromium (release 1: scenarios 2, 6, 7 and 8): from the client shell (foundation step 4)."
             echo "- Download size budget and complexity checks: from the first published client and Domain code."
             echo "- Licence check over the resolved dependency graph (ADR-050): not implemented yet."
-            echo "- Static Web Apps preview per pull request (ADR-046, ADR-047): needs the owner's Azure subscription and OpenID Connect setup."
             echo "- Self-hosted container test: from the first server release (ADR-074)."
             echo "- ADR-035 report of removed or renamed tests and changed assertions: not implemented yet."
           } >> "$GITHUB_STEP_SUMMARY"
