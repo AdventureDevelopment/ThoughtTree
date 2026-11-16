@@ -191,7 +191,7 @@ Most important first.
 
 ### 2.18 The PR template invites ADR changes
 
-- **Status:** decided by the owner, option A: reworded to "ADR proposal"; commit COMMIT.
+- **Status:** decided by the owner, option A: reworded to "ADR proposal"; commit `9ce21d4`.
 
 - **Where:**
   - .github/pull_request_template.md: "ADRs updated if a decision changed" and the kind "ADR change";
