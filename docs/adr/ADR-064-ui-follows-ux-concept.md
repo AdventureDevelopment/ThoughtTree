@@ -9,7 +9,7 @@ applies_to: `src/ThoughtTree.Client*/**`, `tests/specify/**`
 - **MUST** use only the semantic design tokens for colour, font, spacing and density; **MUST NOT** use literal colours or sizes in components
 - **MUST** name the UX decisions a UI specification secures (for example `D-12`) in the specification, as ADR ids are named in tests
 - **MUST** attach to every pull request that changes UI: screenshots generated from the UI specifications (phone and tablet, light and dark), the link to the chosen sketch, and the link to the pull request's preview address (Azure Static Web Apps, ADR-047)
-- **MUST** fill the UI checklist of the pull request template (`.github/pull_request_template.md`, created together with the agent guide): principles checked, terms used, tokens only, sketch linked, screenshots attached, keyboard and screen reader paths covered
+- **MUST** fill the UI checklist of the pull request template (`.github/pull_request_template.md`, created together with the agent guide): principles checked, terms used, tokens only, sketch linked, screenshots attached, keyboard paths and screen reader names, roles and announcements (checked by specs and component rules) covered
 - **MUST** point to this ADR and to the UX concept from the agents' entry file (`CLAUDE.md` or `AGENTS.md`), so every agent starting UI work reads them
 
 verify:

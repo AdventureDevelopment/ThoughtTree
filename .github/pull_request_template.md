@@ -26,6 +26,6 @@
 - [ ] Sketch linked (stored in `docs/ux/sketches/`, linked from its UX decision, e.g. D-46, D-47)
 - [ ] Screenshots attached from the UI specifications: phone and tablet, light and dark
 - [ ] Link to this pull request's preview address (Azure Static Web Apps, ADR-047)
-- [ ] Keyboard and screen reader paths covered
+- [ ] Keyboard paths covered; accessible names, roles and live-region announcements checked by specs and component rules
 
 <!-- UI CHECKLIST: end -->

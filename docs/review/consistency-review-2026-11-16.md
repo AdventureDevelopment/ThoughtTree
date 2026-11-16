@@ -200,6 +200,8 @@ Most important first.
 
 ### 2.19 "Screen reader paths covered" against no manual screen reader tests
 
+- **Status:** decided by the owner, option (a); manual screen reader testing (option B) parked as an open decision for later; commit COMMIT.
+
 - **Where:**
   - PR template and ADR-064: "Keyboard and screen reader paths covered";
   - architecture.md section 8: "Screen reader experience (VoiceOver, TalkBack, NVDA) is not tested manually; it relies on user feedback".
