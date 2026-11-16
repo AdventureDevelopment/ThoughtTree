@@ -14,7 +14,7 @@ applies_to: `infra/**`, `.github/**`
 verify:
 
 ```bash
-az bicep build --file infra/main.bicep   # templates compile; when: push gate (needs the Bicep CLI, no Azure login)
+az bicep build --file infra/main.bicep   # templates compile (needs the Bicep CLI, no Azure login)
 dotnet test --filter "ADR=ADR-046"   # template rules: no stored secrets, IP logging off, identical parameters
 ```
 

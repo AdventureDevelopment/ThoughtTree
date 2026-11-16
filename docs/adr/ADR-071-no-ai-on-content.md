@@ -14,7 +14,7 @@ Proposed by the UX concept (principle 10 "Your own thinking", decision D-142).
 verify:
 
 ```bash
-# review gate: new dependencies and outbound calls are checked against this ADR; no AI SDKs or model endpoints in src/**
+grep -rniE 'openai|anthropic|semantic.?kernel|microsoft.extensions.ai|onnx' src --include=*.csproj --include=*.cs | wc -l   # expect 0 (a first list of AI SDKs and endpoints, to be extended)
 ```
 
 why: Building the structure of one's thoughts is the thinking itself and the reason ThoughtTree exists; private thoughts are for nobody else. Keeps the privacy promise (section 1) simple and true, and keeps agents from adding AI features by habit.

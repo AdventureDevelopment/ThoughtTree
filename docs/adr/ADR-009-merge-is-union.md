@@ -8,7 +8,7 @@ applies_to: `src/ThoughtTree.Domain/**`
 - **MUST NOT** merge projections or trees directly
 - **MUST** treat an item without parent as a top-level item; a tree may have several
 - **MUST NOT** introduce a root item, a fixed root id or any item not created by `item.created`
-- **MUST** take the tree name from the title of the first top-level item, with no event of its own
+- **MUST** take the tree name from the title of the first visible top-level item other than the inbox (ADR-066), with no event of its own
 
 verify:
 

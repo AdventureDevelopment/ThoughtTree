@@ -15,7 +15,7 @@ applies_to: `src/**`, `infra/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-045"   # headers in deployment and end-to-end tests
+dotnet test --filter "ADR=ADR-045"   # headers in deployment and end-to-end tests; when: after deployment
 ```
 
 why: The browser itself blocks every request to third parties, whatever code creeps in.

@@ -13,6 +13,7 @@ verify:
 
 ```bash
 dotnet build -warnaserror   # banned APIs are compile errors
+dotnet test --filter "ADR=ADR-039"   # architecture rules
 ```
 
 why: The simulation decides the order of everything; uncontrolled concurrency makes runs unrepeatable.

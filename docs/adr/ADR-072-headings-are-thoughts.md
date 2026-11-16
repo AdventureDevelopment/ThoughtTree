@@ -4,7 +4,7 @@ id: ADR-072 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
-Proposed by the UX concept (decisions D-151, D-153, D-155). Touches section 8 (text: "notes are full Markdown") and ADR-065 (Focus).
+Proposed by the UX concept (decisions D-151, D-153, D-155). Touches section 8 (text: "notes are Markdown without headings") and ADR-065 (Focus).
 
 - **MUST** show, when focused on an item, its title, tags, note and its branch on one page; there is no separate detail page
 - **MUST** treat a heading entered in a note as a new item: on confirming the heading line, create an item inside the focused item (first position), with the heading text as its title and the text that followed the heading as its note, as one action (ADR-067); only existing events are used (`item.created`, `item.note-changed`)

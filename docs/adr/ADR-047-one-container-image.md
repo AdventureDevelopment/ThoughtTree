@@ -14,7 +14,7 @@ applies_to: `src/ThoughtTree.Server*/**`, `infra/**`, `.github/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-047"   # deployment smoke tests run against the image
+dotnet test --filter "ADR=ADR-047"   # deployment smoke tests run against the image; when: server
 ```
 
 why: What is tested is exactly what runs; one origin keeps the Content Security Policy simple.

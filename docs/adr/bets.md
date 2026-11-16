@@ -70,17 +70,6 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Signal:** Feedback about editing and formatting; answers to "How is formatting text on your phone?" (easy / okay / annoying); in the usage summary, the share of titles and of notes with Markdown, and how often formatting is applied by toolbar versus typed.
 - **Review when:** repeated feedback calls formatting on the phone annoying · Markdown in titles is hardly used · a good touch editor is only available as a JavaScript library (same trigger as ADR-001; both bets are reviewed together).
 
-<a id="adr-057"></a>
-
-## ADR-057: Sync modes, live preselected
-
-**TL;DR:** We bet that reliability matters more to users than hiding activity patterns, so live sync is preselected, while manual and scheduled remain available.
-
-- **Outcome:** Changes reach other devices quickly and are not lost because they never left a device; users who care more about activity patterns can choose manual or scheduled sync.
-- **Assumption:** Most users prefer automatic sync and accept that the server sees when they are online; users of manual or scheduled sync notice the indicator and reminder and do not lose changes.
-- **Signal:** Feedback about sync and lost changes; answers to "Have you ever lost changes that weren't synced?" (no / once / more than once) and "Which sync mode do you use?" (live / manual / scheduled); in the usage summary, the sync mode in use and the number of reminders about unsynced changes in the last 30 days.
-- **Review when:** users of manual or scheduled sync report lost changes · many users switch from live to manual · the store app or package exists, so reliable background sync could make scheduled sync the better default.
-
 <a id="adr-044"></a>
 
 ## ADR-044: Abuse protection and registration modes
@@ -124,6 +113,17 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** Users with the permission use it responsibly; spam does not appear; more feedback arrives than through GitHub alone.
 - **Signal:** Server counters: inbox messages per day, rejected messages; share of feedback arriving privately versus as GitHub issues; feedback about the inbox itself.
 - **Review when:** the counters jump (switch the inbox off with the operations flag) · 20 inbox messages have arrived or the next release ships: raise the share to everyone or remove the inbox.
+
+<a id="adr-057"></a>
+
+## ADR-057: Sync modes, live preselected
+
+**TL;DR:** We bet that reliability matters more to users than hiding activity patterns, so live sync is preselected, while manual and scheduled remain available.
+
+- **Outcome:** Changes reach other devices quickly and are not lost because they never left a device; users who care more about activity patterns can choose manual or scheduled sync.
+- **Assumption:** Most users prefer automatic sync and accept that the server sees when they are online; users of manual or scheduled sync notice the indicator and reminder and do not lose changes.
+- **Signal:** Feedback about sync and lost changes; answers to "Have you ever lost changes that weren't synced?" (no / once / more than once) and "Which sync mode do you use?" (live / manual / scheduled); in the usage summary, the sync mode in use and the number of reminders about unsynced changes in the last 30 days.
+- **Review when:** users of manual or scheduled sync report lost changes · many users switch from live to manual · the store app or package exists, so reliable background sync could make scheduled sync the better default.
 
 <a id="adr-075"></a>
 

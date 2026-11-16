@@ -16,4 +16,4 @@ verify:
 dotnet test --filter "ADR=ADR-067"
 ```
 
-why: Bulk actions on touch (multi-select, paste as items) write many events at once; undoing them one by one would take as many taps as items (UX decision D-83, outliner comparison); the field is cheap now and hard to add once events are stored.
+why: Bulk actions on touch (multi-select, paste as items) write many events at once; undoing them one by one would take as many taps as items (open question 14 of the UX concept and the outliner comparison); the field is cheap now and hard to add once events are stored.
