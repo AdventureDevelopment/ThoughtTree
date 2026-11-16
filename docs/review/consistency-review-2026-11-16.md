@@ -219,7 +219,7 @@ Most important first.
 
 ### 2.21 "The whole gate suite runs in an agent's sandbox"
 
-- **Status:** parked by the owner until the server is planned; open decision in architecture.md section 9; commit COMMIT.
+- **Status:** parked by the owner until the server is planned; open decision in architecture.md section 9; commit `4976479`.
 
 - **Where:**
   - architecture.md section 8, harness principle 5;
