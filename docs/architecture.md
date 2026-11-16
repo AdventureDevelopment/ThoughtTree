@@ -258,7 +258,7 @@ docs/        architecture, ADRs
 3. App generates a device id and asks for a device label, with a suggestion such as "Phone" or "Tablet"; name and label can be changed later
 4. App creates two trees locally, each with its own key and account identity (account id and account secret) generated with the Web Crypto API and stored in the local store; nothing is sent anywhere:
    - the tutorial tree, written in the device's language from the app's resource files, which explains ThoughtTree by its own items; it is opened first
-   - the user's own tree, named "My thoughts" by default (changeable at any time), empty apart from its inbox; no decision about a name is needed before the user has seen anything
+   - the user's own tree, named "My thoughts" by default (changeable at any time), with its inbox and the name item (step 5); no decision about a name is needed before the user has seen anything
 5. Each tree starts with these events: `device.joined` for this device and user, the predefined relation types (`relation-type.defined`), the inbox item with `tree.inbox-set` and the predefined theme "Inbox" (`theme.set`), and a first top-level item whose title is the tree name; the tutorial tree then contains its tutorial items
 6. User works through the tutorial or starts taking notes; events are stored locally
 7. No internet, login or server is needed at any point
