@@ -286,6 +286,8 @@ Most important first.
 
 ### 2.25 Application-layer tests: Specify or Secure
 
+- **Status:** decided by the owner, option (a): use cases are specs in `Client.App.Specs`; privacy confirmations and language resources are rules in the new test folder `Client.App.Rules` (Secure); commit COMMIT.
+
 - **Where:**
   - architecture.md section 5: "use cases, privacy confirmations and language resources in `Client.App.Specs`" (under `tests/specify`);
   - the role table in section 8 lists "application layer" under Secure, and calls the privacy confirmations and language resources "gates".

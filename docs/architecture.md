@@ -136,7 +136,7 @@ src/
 tests/
   specify/   ThoughtTree.Domain.Specs  ThoughtTree.Client.App.Specs  ThoughtTree.Client.Specs  ThoughtTree.Server.Specs
   secure/    ThoughtTree.Domain.Properties  ThoughtTree.Domain.Model  ThoughtTree.Formats.Compatibility
-             ThoughtTree.Simulation  ThoughtTree.Client.Rules  ThoughtTree.Server.Contract
+             ThoughtTree.Simulation  ThoughtTree.Client.Rules  ThoughtTree.Client.App.Rules  ThoughtTree.Server.Contract
              ThoughtTree.Server.Security  ThoughtTree.Architecture.Rules  ThoughtTree.Performance.Budgets
   confirm/   ThoughtTree.EndToEnd  ThoughtTree.Deployment.Smoke
   support/   ThoughtTree.Testing  ThoughtTree.Client.SpecHost
@@ -146,7 +146,7 @@ deploy/      Docker Compose example for self-hosting
 docs/        architecture, ADRs
 ```
 
-- Where tests of each kind live: Domain specs in `Domain.Specs`; invariants and properties in `Domain.Properties`; use cases, privacy confirmations and language resources in `Client.App.Specs`; generic component rules (test ids, accessible names, pseudo-localisation) in `Client.Rules`; UI and accessibility specifications in `Client.Specs`; store contract tests in `Server.Contract`
+- Where tests of each kind live: Domain specs in `Domain.Specs`; invariants and properties in `Domain.Properties`; use cases in `Client.App.Specs` (Specify); privacy confirmations and language resources as rules in `Client.App.Rules` (Secure); generic component rules (test ids, accessible names, pseudo-localisation) in `Client.Rules`; UI and accessibility specifications in `Client.Specs`; store contract tests in `Server.Contract`
 - `tests/specify/` is protected as a whole: specs may be added, changing or deleting one needs human approval; every runtime scenario of section 6 is covered by at least one spec that names it
 - Specs are written with LambdaTale in domain language at every level (Domain, application layer, UI, server); end-to-end tests use LambdaTale too but confirm rather than specify
 
@@ -692,7 +692,7 @@ Kinds of tests and loops: tests are not a numbered stack; they are grouped by ro
 | Role | Kinds |
 | --- | --- |
 | Specify: what the system should do, as acceptance criteria, written first | Domain specifications (scenario tests), UI specifications |
-| Secure: correctness and rules | Compiler and analyzers, Domain properties and invariants, formats, simulation, application layer, component rules, server, performance (size budget, complexity) |
+| Secure: correctness and rules | Compiler and analyzers, Domain properties and invariants, formats, simulation, application layer rules (privacy confirmations, language resources), component rules, server, performance (size budget, complexity) |
 | Confirm: the whole system in real environments | End-to-end, deployment, manual |
 
 | Loop | Time | Contains |
@@ -755,7 +755,7 @@ Simulation tests:
 
 Application layer and component rule tests:
 
-- Use cases, UI state and UI decisions of the client application layer are tested with xUnit, fast and without a browser; privacy-critical confirmations (sharing, unencrypted export, importing a tree into another) and language resources (every key in English and German, matching placeholders, no unused keys) are gates
+- Use cases, UI state and UI decisions of the client application layer are specified in `Client.App.Specs` (Specify), with xUnit, fast and without a browser; privacy-critical confirmations (sharing, unencrypted export, importing a tree into another) and language resources (every key in English and German, matching placeholders, no unused keys) are rules in `Client.App.Rules` (Secure) and gates
 - bUnit is used only for generic rule checks: every component is rendered in a catalogue of sample states and checked for: test ids from the catalogue on every element that shows a domain concept, an accessible name on every interactive element, `dir="auto"` on user content, and no hard-coded text (rendered with pseudo-localisation, every visible text must be changed)
 - The test id catalogue is a set of C# constants named after the glossary concepts, shared by components and tests; UI specification and end-to-end tests are written in C# with Playwright for .NET
 
