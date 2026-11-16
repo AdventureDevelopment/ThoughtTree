@@ -1,6 +1,6 @@
 # ThoughtTree – UX Concept
 
-Status: complete for release 1 (2026-11-15): all eleven topics are worked out, see the decision log (D-1 to D-165). Postponed and listed under Open questions: links as relations (19) with the link part of templates (D-111), the dream features (15, 16) and the review of dormant thoughts (comparison idea 39). Sketches are in [ux/sketches](ux/sketches/); the prototype in [ux/prototype](ux/prototype/) reflects the decisions up to D-114 only, and the concept wins where they differ. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
+Status: complete for release 1 (2026-11-15): all eleven topics are worked out, see the decision log (D-1 to D-165). Postponed and listed under Open questions: links as relations (19) with the link part of templates (D-111), the dream features (15, 16) and the review of dormant thoughts (comparison idea 39, not yet an open question). Sketches are in [ux/sketches](ux/sketches/); the prototype in [ux/prototype](ux/prototype/) reflects the decisions up to D-113 only, and the concept wins where they differ. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
 
 ## Approach
 
@@ -25,7 +25,7 @@ Status: complete for release 1 (2026-11-15): all eleven topics are worked out, s
 
 ## Order
 
-Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. Topics 9 and 10 later.
+Worked out in detail now: 1, 2, 3, 4, 11. Only the foundation parts of 5 to 8. Topics 9 and 10 were worked out later (see the status line above).
 
 ## Terms
 
@@ -39,7 +39,7 @@ This concept uses the following terms (decision D-45, replacing D-44). The archi
 | Note | The optional longer text of an item, written in Focus on the item (D-151) |
 | Branch | An item together with everything below it |
 | Node | How an item appears in the tree: its line in the outline and its place; a technical term for code and specifications |
-| Focus | Make an item the temporary top of the view, showing only its branch (D-57, ADR-065) |
+| Focus | Make an item the temporary top of the view, showing its branch and the item as a page: title, tags and note (D-57, D-151, ADR-065, ADR-072) |
 
 What the app calls these things in its own wording is decided with microcopy (topic 10).
 
@@ -289,13 +289,13 @@ Remarks:
 
 ## Open questions
 
-- Onboarding (topic 9, owner's decision 2026-11-13, recorded in the architecture): the tutorial tree from the prototype is the first tree a new user sees; its content and flow are to be refined here (what it explains, in which order, how it ends)
+- Onboarding (topic 9, owner's decision 2026-11-13, recorded in the architecture): the tutorial tree from the prototype is the first tree a new user sees; its content and flow are decided in D-134 to D-147
 
-- Inbox theme (owner's wish, architecture ADR-066; decided in D-82: Deep stone): every inbox starts with a predefined theme "Inbox"; its look is to be designed with the tokens: calm (no pressure, D-8) but clearly different from Paper, for example a cool, light "tray" tone; a draft is in the prototype
+- Inbox theme (owner's wish, architecture ADR-066; decided in D-82: Deep stone): every inbox starts with a predefined theme "Inbox"; its look is decided in D-82 (Deep stone): calm (no pressure, D-8) but clearly different from Paper, for example a cool, light "tray" tone; a draft is in the prototype
 
 Tags (core decided in D-14; details parked for feature work, none is a foundation decision):
 
-1. Duplicates: two devices that define the same tag name offline create two tags; whether and how the app offers to join them
+1. Duplicates: two devices that define the same tag name offline create two tags; decided: the app offers to join them by a `tag.joined` event (ADR-058)
 2. Names with spaces: where `@@name` ends, and whether a tag name can contain spaces
 3. Managing tags: renaming is decided (D-64); deleting a tag everywhere and a list of all tags are still open
 4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`)

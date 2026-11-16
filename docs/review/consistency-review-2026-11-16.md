@@ -312,6 +312,8 @@ Most important first.
 
 ## Class 3: gaps and risks
 
+- **Status:** decided by the owner (accept all recommendations): items 2, 11, 12, 14, 15, 16, 18, 19, 21, 22 fixed; items 4 to 10, 13, 17 and 20 recorded as open decisions in architecture.md section 9; item 1 done earlier; item 3 closed (the repository is public, no card has the trigger); commit COMMIT.
+
 1. **Decided by the owner, commit `e657c6d`: `.github/CODEOWNERS` added with `@ProductOwnerRole` (write access checked on the collaborator list); the interim lines for AGENTS.md, CLAUDE.md and .github/ are removed once the reviewer agent exists.** Original finding: no CODEOWNERS file exists. The PR template, ADR-035 and ADR-046 rely on it, and foundation step (1) in architecture.md does not list it. Without it, the owner review of protected paths is not enforced.
 2. **ADR-035's snapshot check misses new snapshots.** Its verify uses `git diff --diff-filter=DM … '*.verified.*'`, which ignores added files, although the rule also forbids accepting new snapshots automatically.
 3. **Release 1 relies on a bet trigger that no card has.** Decision 6 says "bets whose review trigger is "the repository goes public" listed by an agent". No card in bets.md has that trigger; it appears only as an example in docs/adr/README.md.

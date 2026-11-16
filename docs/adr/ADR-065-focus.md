@@ -4,7 +4,7 @@ id: ADR-065 · status: Accepted · kind: constraint
 
 applies_to: `docs/**`, `src/ThoughtTree.Client*/**`, `tests/**`
 
-- **MUST** call making an item the temporary top of the view, showing only its branch, **Focus** in documents, code, tests, the test id catalogue and the app's wording; **MUST NOT** call it "zoom"
+- **MUST** call making an item the temporary top of the view, showing its branch and the item as a page (title, tags, note; ADR-072), **Focus** in documents, code, tests, the test id catalogue and the app's wording; **MUST NOT** call it "zoom"
 - **MUST** keep "zoom" only for magnifying (pinch or browser zoom), which the app does not redefine
 
 verify:

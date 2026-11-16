@@ -8,6 +8,10 @@
 - [ ] Fix
 - [ ] Docs
 - [ ] Test harness
+- [ ] Spec
+- [ ] Refactor
+- [ ] Build or CI
+- [ ] Chore
 - [ ] ADR proposal
 
 ## Checks that always apply

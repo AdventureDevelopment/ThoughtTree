@@ -128,6 +128,7 @@ Code does not exist yet; only `docs/` and `.github/` are present. The target lay
 | `src/ThoughtTree.Server.Core` | Server logic and ports, independent of ASP.NET Core |
 | `src/ThoughtTree.Server` | ASP.NET Core shell: sync API, SignalR hub, stores |
 
+- Spikes live in `spikes/` (disposable, not part of `src/` or the gate); repo-wide build properties, banned API lists and CI builds leave them out.
 - Tests live in `tests/specify`, `tests/secure`, `tests/confirm`, `tests/support`; stored data in `tests/data`. Infrastructure in `infra/`.
 - Inside each project, folders by feature, named after the glossary (`Outline`, `Relations`, `Conflicts`, `Trees`, `Sync`, `Sharing`, `Search`, `Export`, `Feedback`, `Settings`, and so on); same names in every project [ADR-054].
 - Dependencies point inwards only: UI to Application to Domain; adapters to Application; Domain depends on nothing. Architecture tests enforce this [ADR-053, ADR-027].

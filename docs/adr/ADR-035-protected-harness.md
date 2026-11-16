@@ -22,7 +22,7 @@ verify:
 ```bash
 git diff --diff-filter=DM origin/main...HEAD -- tests/data/formats tests/data/regression-seeds | wc -l   # expect 0; runs on every pull request against its base
 git diff origin/main...HEAD -- tests/secure/ThoughtTree.Domain.Model | wc -l   # expect 0 unless approved
-git diff --diff-filter=DM origin/main...HEAD -- '*.verified.*' | wc -l   # expect 0 unless approved
+git diff --diff-filter=ADM origin/main...HEAD -- '*.verified.*' | wc -l   # expect 0 unless approved
 dotnet test --filter "ADR=ADR-035"   # reports removed or renamed test methods and changed assertions in the pull request
 ```
 

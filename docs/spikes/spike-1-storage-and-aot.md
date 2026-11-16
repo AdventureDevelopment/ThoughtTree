@@ -114,6 +114,8 @@ A short report `docs/spikes/spike-1-report.md` (at most about 150 lines): answer
 | Reproduction | `docs/spikes/spike-1/README.md` | Exact commands: generate, serve, run, summarise; the same commands regenerate the tables of the report |
 | Report | `docs/spikes/spike-1-report.md` | Tables are generated from the result files, not typed by hand |
 
+Results hold device class, model and browser version only, no names, accounts or other personal data (ADR-049; the repository is public).
+
 The data is deliberately not placed in `tests/data/formats` or `tests/data/regression-seeds` (append-only, ADR-035), and the spike writes nothing under `tests/specify`, the reference model or any `*.verified.*` file. `docs/**` needs the owner's review (ADR-035), which suits a report that the owner decides from. No telemetry or automatic reports (ADR-051); the files contain device model and browser versions of the owner's own test devices, no user content.
 
 ## 5. Order of work
