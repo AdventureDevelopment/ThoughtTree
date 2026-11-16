@@ -11,7 +11,7 @@ applies_to: `src/ThoughtTree.Client*/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-057"
+dotnet test --filter "ADR=ADR-057"   # when: server
 ```
 
 why: Reliability comes first; users who care more about activity patterns can still choose manual or scheduled sync.

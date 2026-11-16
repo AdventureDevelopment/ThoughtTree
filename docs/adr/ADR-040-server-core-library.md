@@ -12,7 +12,7 @@ verify:
 
 ```bash
 grep -l 'Microsoft.AspNetCore' src/ThoughtTree.Server.Core/*.csproj | wc -l   # expect 0
-dotnet test --filter "ADR=ADR-040"   # architecture rules
+dotnet test --filter "ADR=ADR-040"   # architecture rules; when: server
 ```
 
 why: The simulation uses the real server logic directly, without HTTP and without non-determinism.

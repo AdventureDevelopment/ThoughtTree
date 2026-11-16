@@ -38,5 +38,5 @@ why: <one line>
 - Creating, changing or superseding an ADR is a human decision; agents may propose one with status `Proposed`
 - Project layout assumed by `applies_to` (ADR-054): `src/ThoughtTree.Domain`, `src/ThoughtTree.Contracts`, `src/ThoughtTree.Client.App`, `src/ThoughtTree.Client`, `src/ThoughtTree.Server.Core`, `src/ThoughtTree.Server`; tests under `tests/specify`, `tests/secure`, `tests/confirm`, `tests/support`; stored test data in `tests/data`
 - Globs use `src/ThoughtTree.Client*/**` and `src/ThoughtTree.Server*/**` to cover both projects of a side; a CI check reports any `src/` project not covered by the ADRs of its layer
-- A `verify` with `dotnet test --filter` must match at least one test; CI fails on zero matches
-- A `verify` line runs in the push gate unless it is marked `# when: after deployment` or `# when: release`; the branch check (small set on every push to a branch) also runs every `verify` line that needs no browser, container, Azure account or network
+- A `verify` with `dotnet test --filter` must match at least one test; CI fails on zero matches, except for a line marked `# when: server`
+- A `verify` line runs in the push gate unless it is marked `# when: after deployment`, `# when: release` or `# when: server` (skipped until the first server release, ADR-074; the marker is then removed and the filter must match); the branch check (small set on every push to a branch) also runs every `verify` line that needs no browser, container, Azure account or network

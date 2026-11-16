@@ -15,7 +15,7 @@ applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-055"
+dotnet test --filter "ADR=ADR-055"   # when: server
 ```
 
 why: A private, easy channel lowers the barrier for feedback without the server being able to read it.

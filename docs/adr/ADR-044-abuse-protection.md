@@ -13,7 +13,7 @@ applies_to: `src/ThoughtTree.Server*/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-044"
+dotnet test --filter "ADR=ADR-044"   # when: server
 ```
 
 why: Without user accounts anyone can register; limits keep a server, and its free tier, from being abused.

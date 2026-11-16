@@ -12,7 +12,7 @@ applies_to: `src/ThoughtTree.Server*/**`, `infra/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-056"
+dotnet test --filter "ADR=ADR-056"   # when: server
 ```
 
 why: Production rolls back automatically when checks fail; a rollback must never corrupt the store.

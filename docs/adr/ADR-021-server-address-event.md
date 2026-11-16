@@ -13,7 +13,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-021"
+dotnet test --filter "ADR=ADR-021"   # when: server
 ```
 
 why: All devices of a tree must meet on the same server; one installation per server keeps the Content Security Policy strict.

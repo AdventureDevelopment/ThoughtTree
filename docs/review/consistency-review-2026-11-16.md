@@ -66,6 +66,8 @@ Most important first.
 
 ### 2.4 The zero-match rule against release 1 without a server
 
+- **Status:** decided by the owner, option (a): marker `# when: server`; commit COMMIT.
+
 - **Where:**
   - docs/adr/README.md: "A `verify` with `dotnet test --filter` must match at least one test; CI fails on zero matches";
   - ADR-074: "MUST leave server tests out of the release 1 push gate";

@@ -11,7 +11,7 @@ applies_to: `src/ThoughtTree.Server*/**`
 verify:
 
 ```bash
-dotnet test --filter "ADR=ADR-043"
+dotnet test --filter "ADR=ADR-043"   # when: server
 ```
 
 why: Stolen server data must not let anyone join an account or push events.
