@@ -638,7 +638,7 @@ Example of an event before encryption:
 | Kind | Purpose | Source | Lifetime |
 | --- | --- | --- | --- |
 | Release flag | Hide unfinished code | Configuration shipped with the app, per environment | Temporary: removed once the feature is complete |
-| Experiment flag | Give a feature to part of the users and learn whether it works | Assignment per account on the server (a random share, adjustable), or drawn by the device from a share in the shipped configuration | Until the review of its bet card decides: raise to everyone or remove |
+| Experiment flag | Give a feature to part of the users and learn whether it works | Assignment per account on the server (a random share, adjustable), or drawn by the device from a share in the shipped configuration (a locally drawn flag is device state, never synced, ADR-031) | Until the review of its bet card decides: raise to everyone or remove |
 | Operations flag (kill switch) | Switch something off quickly if it causes trouble | Server configuration | Long-lived |
 | Permission flag | What an account may do (for example use the private feedback inbox) | Stored per account on the server, reported to the device during sync | Long-lived |
 | Tree feature | Features the user chooses for a tree (for example relations, tags; tags are on by default) | `tree.feature-changed` events, so all devices of a tree agree; older apps ignore unknown names | As long as the user wants |
