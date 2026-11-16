@@ -97,6 +97,8 @@ Most important first.
 
 ### 2.6 ADR-068: link slots are open, yet a MUST rule uses them
 
+- **Status:** decided by the owner, option (a): slot rule removed from ADR-068, now an open decision in architecture.md section 9; commit COMMIT.
+
 - **Where:** ADR-068 has the rule "**OPEN** (UX decision D-111): whether template lines can be link slots …", and the next rule reads "MUST … slot markings not copied; each slot becomes a line that offers to link an item by the slot's relation type". The `why` cites D-107, which D-111 left open. "OPEN" is also not a keyword of the ADR format.
 - **Options:**
   - (a) remove the slot part of the MUST and move "OPEN" to the open decisions table;
@@ -104,6 +106,8 @@ Most important first.
 - **Recommendation:** (a). Templates may slip to 1.x anyway (release 1 scope, decision 3).
 
 ### 2.7 Templates and the "full JSON export"
+
+- **Status:** decided by the owner: the JSON export always contains templates (Markdown and OPML leave them out unless asked); ADR-019's import list now reads "ordinary events of the current event types" (also fixes the ADR-019 item in the ADR-file table); commit COMMIT.
 
 - **Where:**
   - ADR-068: templates are left out of "the readable export of content, unless the user asks …; they are included in the full JSON export (ADR-019)";
