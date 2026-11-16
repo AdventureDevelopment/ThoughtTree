@@ -1,0 +1,3 @@
+<Project>
+  <!-- Stops MSBuild from importing a repository-wide Directory.Build.targets into spikes (AGENTS.md section 5). -->
+</Project>

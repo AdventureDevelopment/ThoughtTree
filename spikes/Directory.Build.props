@@ -1,0 +1,6 @@
+<Project>
+  <!--
+    Stops MSBuild from importing the repository-wide Directory.Build.props: spikes are disposable and
+    not part of src/, the gate or the CI builds (AGENTS.md section 5). Do not import the parent file.
+  -->
+</Project>

@@ -1,0 +1,6 @@
+<Project>
+  <!-- Spikes manage their own package versions; central package management of the repository does not apply (AGENTS.md section 5). -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
