@@ -161,7 +161,7 @@ Most important first.
 
 ### 2.12 Devices that started on their own
 
-- **Status:** decided by the owner, option (a): the architecture sentence and ADR-009's `why` name the import; commit COMMIT. The other ADR-009 fix ("visible" and the inbox exception) stays in the ADR-file table.
+- **Status:** decided by the owner, option (a): the architecture sentence and ADR-009's `why` name the import; commit `8dd08ff`. The other ADR-009 fix ("visible" and the inbox exception) stays in the ADR-file table.
 
 - **Where:**
   - ADR-009 `why`: "pairing of devices that started on their own";
