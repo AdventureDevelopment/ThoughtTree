@@ -661,7 +661,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Privacy & Security | Metadata: padding, batching, no stored IP addresses or times, neutral headers and UTC scheduling work as decided | Gate |
 | Privacy & Security | Integrity: tampered, moved or swapped envelopes and wrong keys are detected and rejected | Gate |
 | Privacy & Security | Access: the server never gives one account's events to another account's token | Gate |
-| Usability | Core flows on touch (capture, edit, move, indent, Focus, search, resolve conflicts, pair, share) work on phone and tablet screen sizes | Gate (the UX foundation decisions are made; release 1 scope, decision 5) |
+| Usability | Core flows on touch (capture, edit, move, indent, Focus, search, resolve conflicts, pair, file round trip, move along connections on the map; share once the sharing UI exists) work on phone and tablet screen sizes | Gate (the UX foundation decisions are made; release 1 scope, decision 5) |
 | Usability | Accessibility: no violations in automated checks; screen reader experience through user feedback | Gate (automated), watch (feedback) |
 | Usability | Languages: every text exists in English and German, a missing text fails the build; layouts hold with longer German texts | Gate |
 | Usability | Feel: daily use by the owner and user feedback | Watch (judgement) |
@@ -702,7 +702,7 @@ Kinds of tests and loops: tests are not a numbered stack; they are grouped by ro
 | Push gate (runs on pull requests only; required for merge) | Within the time budget (for example 10 minutes) | Everything in the branch check, plus: all specifications and all securing tests (including size budget and complexity checks), regression seeds, mutation testing of changed Domain code, UI specifications in all three browsers, end-to-end smoke set in Chromium, self-hosted container test (CI with Docker; from the first server release, decision 5) |
 | Nightly | Hours | Long simulations, full end-to-end in three browsers, mutation testing of the whole Domain |
 | After deployment | Minutes | Deployment smoke tests |
-| Before release | Minutes | Short release check on the owner's phone |
+| Before release | Minutes | Short guided release check: release 1 on phone, tablet and desktop (release 1 scope, decision 5); later releases on the owner's phone and on every device type whose code changed |
 
 Domain tests:
 
@@ -826,7 +826,7 @@ Manual tests and feedback:
 
 - The owner's daily use on phone, tablet and desktop is the main manual test
 - In-app feedback: users (and the owner) send findings (bug, usability, accessibility, performance, other) from within the app, using the same mechanism as the performance report: a pre-filled GitHub issue the user submits, copy or file, or the private feedback inbox (ADR-055); the user's own description, plus optionally the diagnostics block with numbers only; previewed and editable; never unencrypted through a server; free text is untrusted input (ADR-051); a human label decides whether agents work on it; the feedback form itself is accessible
-- Release check: before promotion to production, the owner runs a guided check of about five minutes on the phone, shown in the test build of the app: the update arrives and is applied with consent; the tree is complete; sync works; on the iPhone started from the home screen and offline (on a borrowed iPhone, see the Safari decision); the result is sent with the same mechanism as an issue linked to the release, and is part of the manual approval
+- Release check: before promotion to production, the owner runs a guided check of about five minutes on each device (release 1: phone, tablet and desktop; later releases: the phone and every device type whose code changed), shown in the test build of the app: the update arrives and is applied with consent; the tree is complete; sync works; on the iPhone started from the home screen and offline (on a borrowed iPhone, see the Safari decision); the result is sent with the same mechanism as an issue linked to the release, and is part of the manual approval
 - Exploratory testing by an agent: nightly or before a release, an agent uses the app with tasks (for example "collect ideas for a trip and sort them", "share a tree") at phone size and with keyboard only, and reports what was confusing, slow or broken; findings become issues that need a human label
 - No paid device clouds; free programmes for open-source projects can be checked once the repository is public
 

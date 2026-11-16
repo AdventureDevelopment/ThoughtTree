@@ -201,6 +201,8 @@ Most important first.
 
 ### 2.16 Usability gate list and the release check
 
+- **Status:** decided by the owner, option (a): flows say file round trip (share once the sharing UI exists); the release check is three devices for release 1 and phone plus changed device types later; commit COMMIT.
+
 - **Where:**
   - architecture.md section 8 quality table, core flows: "… pair, share";
   - release 1 scope, decision 5: "… pair, file round trip", and the sharing UI is out in release 1;
