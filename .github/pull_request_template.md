@@ -8,13 +8,13 @@
 - [ ] Fix
 - [ ] Docs
 - [ ] Test harness
-- [ ] ADR change
+- [ ] ADR proposal
 
 ## Checks that always apply
 
 - [ ] Tests added or changed (tagged with the ADR id where an ADR secures the change)
 - [ ] No owner-only path (see CODEOWNERS) merged without the owner's review of the latest push; `AGENTS.md`, `CLAUDE.md` and `.github/**` need the independent reviewer's approval (the owner's review until it exists)
-- [ ] ADRs updated if a decision changed
+- [ ] ADR proposed (status `Proposed`) if a decision would change; existing ADRs are changed only by the owner
 
 <!-- UI CHECKLIST: start. Only for pull requests that change UI (ADR-064). Delete this block for non-UI changes. -->
 
