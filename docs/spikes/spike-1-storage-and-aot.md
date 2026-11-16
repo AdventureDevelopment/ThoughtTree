@@ -11,13 +11,13 @@ IndexedDB is the release 1 engine (decided). The spike measures whether it, toge
 | # | Question | Decides |
 | --- | --- | --- |
 | Q1 | How long do start and replay take with 100,000 events in IndexedDB, with batched Web Crypto decryption and snapshot loading, on a mid-range Android phone and on desktop? | Whether PF1 (tree visible within 1 s) holds; review trigger of the engine row |
-| Q2 | The same for an AOT build and an interpreted build, and how large is each download? | AOT yes or no; first-load size budget (PF5, decision 5) |
+| Q2 | The same for an AOT build and an interpreted build, and how large is each download? | AOT yes or no; first-load size budget (PF5, release 1 scope decision 5) |
 | Q3 | Is any acknowledged write lost when the browser is closed or killed during writing, in Chromium and Firefox, over repeated kills? | Review trigger of the engine row |
 | Q4 | Search: persisted encrypted index against an index built in memory at start; numbers for the optional unencrypted index | Search design; open decision "Optional unencrypted search index" |
 | Q5 | Which numbers should the stored size limits have? | Proposal for the ADR on size limits |
 | Q6 | What is the recommendation? | Owner decides AOT from the report |
 
-Out of scope: Safari (no cloud accounts, open decision "Safari support"), SQLite on OPFS (revisit only through its review triggers), sync, UI.
+Out of scope: Safari (no cloud accounts, open decision "Safari (iPhone and iPad) support"), SQLite on OPFS (revisit only through its review triggers), sync, UI.
 
 ## 2. Shared method and test data
 
@@ -61,7 +61,7 @@ Snapshots for the tests are built by the spike from the dataset (encrypted with 
 - **Measurements (marks):** page load to app ready; open database; read envelopes (chunks of 1,000, 5,000, 10,000: choose the best); Web Crypto decryption per batch (batch sizes 100, 1,000, 5,000; one `decrypt` per envelope in parallel against sequential); JSON parse and payload unwrap; replay into the projection; snapshot read, decrypt and parse; tree visible (first render of the top level); peak JS heap and WebAssembly memory; bytes stored per event; time to import 100,000 events (PF4 scaled).
 - **Scenarios:** snapshot plus 1,000 tail events; full replay without snapshot; import into an empty store; 1,000 and 10,000 events for the complexity ratio.
 - **Devices:** phone, desktop Chromium, desktop Firefox. Interpreted build and AOT build both (Q2).
-- **Acceptance (proposed, for the owner to confirm in the report):** with snapshot, tree visible within 1 s on the phone (PF1, a design target, report-only otherwise); full replay of 100,000 events within 10 s on the phone with a progress display; time for 10,000 events versus 100,000 events at most 12 times (PF6). Misses are reported, not hidden; they trigger the engine review in the table.
+- **Acceptance (confirmed by the owner 2026-11-16):** with snapshot, tree visible within 1 s on the phone (PF1, a design target, report-only otherwise); full replay of 100,000 events within 10 s on the phone with a progress display; time for 10,000 events versus 100,000 events at most 12 times (PF6). Misses are reported, not hidden; they trigger the engine review in the table.
 - **Changes in the architecture if:** the snapshot path is fast but full replay is slow, snapshots become more frequent and rebuilding after updates is done in the background (Persistence section); both slow, the engine row is reviewed (SQLite on OPFS) and the decision goes to the owner; decryption dominates, the batch size becomes a stored tuning value in Client.
 
 ### Q2 AOT against interpreted
