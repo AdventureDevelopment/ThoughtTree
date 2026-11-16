@@ -200,7 +200,7 @@ Most important first.
 
 ### 2.19 "Screen reader paths covered" against no manual screen reader tests
 
-- **Status:** decided by the owner, option (a); manual screen reader testing (option B) parked as an open decision for later; commit COMMIT.
+- **Status:** decided by the owner, option (a); manual screen reader testing (option B) parked as an open decision for later; commit `e55e509`.
 
 - **Where:**
   - PR template and ADR-064: "Keyboard and screen reader paths covered";
