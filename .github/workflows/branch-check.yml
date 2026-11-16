@@ -1,0 +1,19 @@
+# Branch check: on every push to a branch other than main (docs/architecture.md section 8, loops;
+# owner decision 2026-11-15). main only changes through pull requests (ADR-035, ADR-046).
+name: branch-check
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: branch-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml

@@ -1,0 +1,66 @@
+# Push gate: on pull requests to main; required for merge (docs/architecture.md section 8, loops).
+# Runs on the pull_request event only (never pull_request_target), with a read-only token and no secrets.
+name: push-gate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: push-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  branch-check:
+    name: Everything in the branch check
+    uses: ./.github/workflows/checks.yml
+
+  protected-harness:
+    name: Protected harness data (ADR-016, ADR-035)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out with history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Stored format data and regression seeds are append-only
+        run: |
+          changed=$(git diff --diff-filter=DM "origin/${GITHUB_BASE_REF}...HEAD" -- tests/data/formats tests/data/regression-seeds | wc -l)
+          echo "Changed or deleted lines in tests/data/formats and tests/data/regression-seeds: $changed"
+          test "$changed" -eq 0
+
+      - name: Reference model and snapshots need the owner's approval
+        run: |
+          model=$(git diff "origin/${GITHUB_BASE_REF}...HEAD" -- tests/secure/ThoughtTree.Domain.Model | wc -l)
+          snapshots=$(git diff --diff-filter=ADM "origin/${GITHUB_BASE_REF}...HEAD" -- '*.verified.*' | wc -l)
+          echo "Changed lines in the reference model: $model; in *.verified.* snapshots: $snapshots"
+          if [ "$model" -ne 0 ] || [ "$snapshots" -ne 0 ]; then
+            echo "::warning::Reference model or snapshots changed: needs the owner's review of the latest push (ADR-035, CODEOWNERS)."
+          fi
+
+  not-yet-in-place:
+    name: Push gate parts that need later stages (placeholder, runs nothing)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: List what this gate does not run yet
+        run: |
+          {
+            echo "## Not yet in place (push gate)"
+            echo "These parts of the push gate do not run yet; nothing below is checked."
+            echo "- Mutation tests of changed Domain code (Stryker.NET, 80 % on changed code): from the first Domain code (foundation step 2a)."
+            echo "- UI specifications in Chromium, WebKit and Firefox: from the client shell (foundation step 4)."
+            echo "- End-to-end smoke set in Chromium (release 1: scenarios 2, 6, 7 and 8): from the client shell (foundation step 4)."
+            echo "- Download size budget and complexity checks: from the first published client and Domain code."
+            echo "- Licence check over the resolved dependency graph (ADR-050): not implemented yet."
+            echo "- Static Web Apps preview per pull request (ADR-046, ADR-047): needs the owner's Azure subscription and OpenID Connect setup."
+            echo "- Self-hosted container test: from the first server release (ADR-074)."
+            echo "- ADR-035 report of removed or renamed tests and changed assertions: not implemented yet."
+          } >> "$GITHUB_STEP_SUMMARY"
