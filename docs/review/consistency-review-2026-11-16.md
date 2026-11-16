@@ -186,7 +186,7 @@ Most important first.
 
 ### 2.15 Far-future events: an open decision against ADR-014
 
-- **Status:** decided by the owner, option (b): ADR-014 is the answer (accept and warn, never reject or cap); the open decision row "Far-future events" is removed; commit COMMIT.
+- **Status:** decided by the owner, option (b): ADR-014 is the answer (accept and warn, never reject or cap); the open decision row "Far-future events" is removed; commit `af6c01b`.
 
 - **Where:**
   - open decision "Far-future events": "Whether the user can accept or reject events from a clock far ahead";
