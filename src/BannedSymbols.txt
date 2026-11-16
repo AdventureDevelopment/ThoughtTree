@@ -1,0 +1,17 @@
+# ADR-034: time comes only through TimeProvider; ids, nonces and random values only through the replaceable generator.
+# Exemption: the provider implementations only, listed in eng/approved-suppressions.txt (ADR-042).
+P:System.DateTime.Now;ADR-034: use TimeProvider
+P:System.DateTime.UtcNow;ADR-034: use TimeProvider
+P:System.DateTime.Today;ADR-034: use TimeProvider
+P:System.DateTimeOffset.Now;ADR-034: use TimeProvider
+P:System.DateTimeOffset.UtcNow;ADR-034: use TimeProvider
+T:System.Diagnostics.Stopwatch;ADR-034: use TimeProvider.GetTimestamp and GetElapsedTime
+P:System.Environment.TickCount;ADR-034: use TimeProvider
+P:System.Environment.TickCount64;ADR-034: use TimeProvider
+M:System.Guid.NewGuid;ADR-034: use the replaceable id generator
+M:System.Guid.CreateVersion7;ADR-034: use the replaceable id generator
+M:System.Guid.CreateVersion7(System.DateTimeOffset);ADR-034: use the replaceable id generator
+M:System.Random.#ctor;ADR-034: use the replaceable random generator
+M:System.Random.#ctor(System.Int32);ADR-034: use the replaceable random generator
+P:System.Random.Shared;ADR-034: use the replaceable random generator
+T:System.Security.Cryptography.RandomNumberGenerator;ADR-034: use the replaceable random generator

@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ThoughtTree.Client.App/ThoughtTree.Client.App.csproj" />
+    <Project Path="src/ThoughtTree.Client/ThoughtTree.Client.csproj" />
+    <Project Path="src/ThoughtTree.Contracts/ThoughtTree.Contracts.csproj" />
+    <Project Path="src/ThoughtTree.Domain/ThoughtTree.Domain.csproj" />
+    <Project Path="src/ThoughtTree.Server.Core/ThoughtTree.Server.Core.csproj" />
+    <Project Path="src/ThoughtTree.Server/ThoughtTree.Server.csproj" />
+  </Folder>
+</Solution>
