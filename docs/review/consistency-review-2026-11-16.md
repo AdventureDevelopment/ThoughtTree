@@ -10,7 +10,7 @@ Line numbers refer to the files after the class 1 commits.
 
 - **ADR index:** all 75 ADRs (ADR-001 to ADR-075) are listed exactly once in architecture.md section 9. Title, file name and `applies_to` match every ADR header. Every ADR is `Accepted`, none is superseded, and no ADR or other document references an ADR beyond ADR-075.
 - **Bets:** there are 12 bet ADRs (001, 007, 012, 023, 025, 029, 044, 047, 051, 055, 057, 075), and each has a card in bets.md with a matching anchor. No constraint ADR has a card.
-- **Identifiers:** D-1 to D-163 are continuous. INV-1 to INV-14 are defined once (architecture.md section 8), and every INV reference resolves.
+- **Identifiers:** D-1 to D-164 are continuous. INV-1 to INV-14 are defined once (architecture.md section 8), and every INV reference resolves.
 - **Links:** every relative link in the reviewed Markdown files resolves, including the links into `docs/ux/sketches/` and `docs/ux/prototype/`.
 - **Test framework:** no leftover xUnit v3 or LambdaTale v3 wording remains. The only v3 mentions are the intended "until LambdaTale supports xUnit v3".
 - **Retired terms:**
@@ -38,7 +38,7 @@ Most important first.
 
 ### 2.2 What a new tree starts with, and its name
 
-- **Status:** decided by the owner, option (a): a new tree starts with its inbox and a first top-level item that carries the name; architecture.md section 6 step 4 aligned; commit `56c78a4`. D-118 and D-129 are log entries and were not edited: they still say "inbox only"; the owner may append a new decision that revises them.
+- **Status:** decided by the owner, option (a): a new tree starts with its inbox and a first top-level item that carries the name; architecture.md section 6 step 4 aligned; commit `56c78a4`. D-118 and D-129 are log entries and stay as written; the new decision D-164 revises them (commit COMMIT2).
 
 - **Where:**
   - architecture.md section 6, step 4: the own tree is "empty apart from its inbox";
