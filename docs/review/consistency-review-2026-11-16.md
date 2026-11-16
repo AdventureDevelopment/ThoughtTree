@@ -53,7 +53,7 @@ Most important first.
 
 ### 2.3 Exchange file header: room for optional parts, or only two fields
 
-- **Status:** decided by the owner, option (a): header = format version and `KeyId`; commit COMMIT. D-81 and D-128 are log entries and stay unchanged; their wording (naming a tree before pairing) is read through this decision.
+- **Status:** decided by the owner, option (a): header = format version and `KeyId`; commit `5e3531f`. D-81 and D-128 are log entries and stay unchanged; their wording (naming a tree before pairing) is read through this decision.
 
 - **Where:**
   - ADR-007: "a header with room for optional parts";
