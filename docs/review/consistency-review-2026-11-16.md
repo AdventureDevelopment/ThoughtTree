@@ -182,6 +182,8 @@ Most important first.
 
 ### 2.14 Easy-language tutorial in release 1
 
+- **Status:** decided by the owner, option (a): in release 1 as core; scope decision 3 updated; commit COMMIT.
+
 - **Where:**
   - ADR-032: "the tutorial exists in Easy language from the start";
   - D-146;
