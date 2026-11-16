@@ -254,8 +254,8 @@ docs/        architecture, ADRs
 **Scenario: First device setup**
 
 1. User installs ThoughtTree and opens it for the first time
-2. App asks for a user name and generates a user id; this is the user identity
-3. App generates a device id and asks for a device label, with a suggestion such as "Phone" or "Tablet"; name and label can be changed later
+2. App generates a user id, with an empty user name; this is the user identity; nothing is asked, in line with D-134 (first start goes straight into the tutorial)
+3. App generates a device id and a device label from the platform (such as "Phone" or "Tablet"); name and label are asked for later, at the first pairing and in More › Settings, and can be changed at any time (owner decision 2026-11-16)
 4. App creates two trees locally, each with its own key and account identity (account id and account secret) generated with the Web Crypto API and stored in the local store; nothing is sent anywhere:
    - the tutorial tree, written in the device's language from the app's resource files, which explains ThoughtTree by its own items; it is opened first
    - the user's own tree, named "My thoughts" by default (changeable at any time), with its inbox and the name item (step 5); no decision about a name is needed before the user has seen anything

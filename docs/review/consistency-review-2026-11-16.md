@@ -26,6 +26,8 @@ Most important first.
 
 ### 2.1 First start: setup questions or straight into the tutorial
 
+- **Status:** decided by the owner, option (a): defaults at first start, name and label asked later; architecture.md section 6 steps 2 and 3 aligned; commit COMMIT.
+
 - **Where:**
   - architecture.md section 6 "First device setup", steps 2 and 3: "App asks for a user name …", "asks for a device label, with a suggestion such as "Phone"".
   - ux-concept.md D-134: "First start goes straight into the tutorial, without welcome screens".
