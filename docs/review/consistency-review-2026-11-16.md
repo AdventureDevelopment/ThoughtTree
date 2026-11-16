@@ -117,7 +117,7 @@ Most important first.
 
 ### 2.8 Links across trees
 
-- **Status:** decided by the owner, option (a): ADR-024 allows dangling `item:` text links (shown as not found), never relations across trees; commit COMMIT.
+- **Status:** decided by the owner, option (a): ADR-024 allows dangling `item:` text links (shown as not found), never relations across trees; commit `b8ae1bd`.
 
 - **Where:**
   - ADR-024: "MUST NOT connect trees: relations and `item:` links only point to items of the same tree";
