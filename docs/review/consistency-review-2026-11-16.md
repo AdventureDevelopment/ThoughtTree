@@ -266,7 +266,7 @@ Most important first.
 
 ## Class 3: gaps and risks
 
-1. **No CODEOWNERS file exists.** The PR template, ADR-035 and ADR-046 rely on it, and foundation step (1) in architecture.md does not list it. Without it, the owner review of protected paths is not enforced.
+1. **Decided by the owner, commit COMMIT: `.github/CODEOWNERS` added with `@ProductOwnerRole` (write access checked on the collaborator list); the interim lines for AGENTS.md, CLAUDE.md and .github/ are removed once the reviewer agent exists.** Original finding: no CODEOWNERS file exists. The PR template, ADR-035 and ADR-046 rely on it, and foundation step (1) in architecture.md does not list it. Without it, the owner review of protected paths is not enforced.
 2. **ADR-035's snapshot check misses new snapshots.** Its verify uses `git diff --diff-filter=DM … '*.verified.*'`, which ignores added files, although the rule also forbids accepting new snapshots automatically.
 3. **Release 1 relies on a bet trigger that no card has.** Decision 6 says "bets whose review trigger is "the repository goes public" listed by an agent". No card in bets.md has that trigger; it appears only as an example in docs/adr/README.md.
 4. **Importing a tree carries its `device.joined` events.** ADR-010 adds the imported tree's events to the target. ADR-011 derives private or shared from `device.joined`, so importing a shared tree would turn a private tree "shared". Nothing addresses this.

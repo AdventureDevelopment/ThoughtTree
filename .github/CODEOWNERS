@@ -1,0 +1,24 @@
+# Owner review for protected paths (ADR-035, ADR-046). Agents may propose
+# changes to every path here; none merges without the owner's approval of the
+# latest push (branch protection: "Require review from Code Owners").
+# The owner must be a collaborator with write access, or the entry is invalid.
+
+# Specifications, stored data, reference model, snapshots
+/tests/specify/                              @ProductOwnerRole
+/tests/data/                                 @ProductOwnerRole
+/tests/secure/ThoughtTree.Domain.Model/      @ProductOwnerRole
+*.verified.*                                 @ProductOwnerRole
+
+# Documentation, including all ADRs and the invariant catalogue
+/docs/                                       @ProductOwnerRole
+
+# Owner-only for good: this file, the reviewer agent's workflow and prompt
+/.github/CODEOWNERS                          @ProductOwnerRole
+/.github/workflows/agent-review*             @ProductOwnerRole
+/.github/agent-review/                       @ProductOwnerRole
+
+# Interim, until the independent reviewer agent exists: remove these three
+# lines (owner decision 2026-11-16, ADR-035) when it is a required check.
+/AGENTS.md                                   @ProductOwnerRole
+/CLAUDE.md                                   @ProductOwnerRole
+/.github/                                    @ProductOwnerRole
