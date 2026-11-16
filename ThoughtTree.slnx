@@ -8,6 +8,9 @@
     <Project Path="src/ThoughtTree.Server/ThoughtTree.Server.csproj" />
   </Folder>
   <Folder Name="/tests/" />
+  <Folder Name="/tests/secure/">
+    <Project Path="tests/secure/ThoughtTree.Architecture.Rules/ThoughtTree.Architecture.Rules.csproj" />
+  </Folder>
   <Folder Name="/tests/specify/">
     <Project Path="tests/specify/ThoughtTree.Domain.Specs/ThoughtTree.Domain.Specs.csproj" />
   </Folder>

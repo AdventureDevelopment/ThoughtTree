@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="TngTech.ArchUnitNET" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <!-- Not an analyzer of this project: only its DLLs are copied to the output, so the tests can run it on code snippets. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(PkgMicrosoft_CodeAnalysis_BannedApiAnalyzers)/analyzers/dotnet/cs/*.dll" Link="BannedApiAnalyzer/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+
+  <!-- The architecture rules load the compiled source assemblies. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Domain\ThoughtTree.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Contracts\ThoughtTree.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Client.App\ThoughtTree.Client.App.csproj" />
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Client\ThoughtTree.Client.csproj" />
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Server.Core\ThoughtTree.Server.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Server\ThoughtTree.Server.csproj" />
+  </ItemGroup>
+
+</Project>
