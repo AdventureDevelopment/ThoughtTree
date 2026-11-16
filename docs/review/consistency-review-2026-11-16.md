@@ -38,7 +38,7 @@ Most important first.
 
 ### 2.2 What a new tree starts with, and its name
 
-- **Status:** decided by the owner, option (a): a new tree starts with its inbox and a first top-level item that carries the name; architecture.md section 6 step 4 aligned; commit COMMIT. D-118 and D-129 are log entries and were not edited: they still say "inbox only"; the owner may append a new decision that revises them.
+- **Status:** decided by the owner, option (a): a new tree starts with its inbox and a first top-level item that carries the name; architecture.md section 6 step 4 aligned; commit `56c78a4`. D-118 and D-129 are log entries and were not edited: they still say "inbox only"; the owner may append a new decision that revises them.
 
 - **Where:**
   - architecture.md section 6, step 4: the own tree is "empty apart from its inbox";
