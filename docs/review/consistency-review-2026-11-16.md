@@ -129,7 +129,7 @@ Most important first.
 
 ### 2.9 Experiment flags: a local draw against stored per account
 
-- **Status:** decided by the owner, option (a): a locally drawn flag is device state, never synced; commit COMMIT.
+- **Status:** decided by the owner, option (a): a locally drawn flag is device state, never synced; commit `6217b36`.
 
 - **Where:**
   - ADR-031: "assign experiment flags only per account on the server or by a local draw on the device";
