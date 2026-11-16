@@ -355,7 +355,7 @@ Most important first.
 
 ### Class 1 left for the owner (inside ADRs)
 
-- **Status:** accepted by the owner (all 13 rows); ADR-019 and the ADR-009 `why` were already done by decisions 2.7 and 2.12; the ADR-071 sentence is unchanged by decision (row 11); the README "Amends" claim was partly wrong (only ADR-073 has such a line); commit COMMIT.
+- **Status:** accepted by the owner (all 13 rows); ADR-019 and the ADR-009 `why` were already done by decisions 2.7 and 2.12; the ADR-071 sentence is unchanged by decision (row 11); the README "Amends" claim was partly wrong (only ADR-073 has such a line); commit `6462bb6`.
 
 These have one clear fix, but each changes an ADR file, which is a human decision (docs/adr/README.md, AGENTS.md section 2). They were not edited.
 
