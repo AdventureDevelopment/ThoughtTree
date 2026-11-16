@@ -295,6 +295,8 @@ Most important first.
 
 ### 2.26 Smaller disagreements
 
+- **Status:** decided by the owner: (1) the PR description is a one-line TL;DR plus a short paragraph with the intent and the why, no list of changes (AGENTS.md and the template); (2) "text size" dropped from ADR-013; (3) `tablet-layouts.html` deleted under D-47 (D-149, a log entry, still names it); commit COMMIT.
+
 - **PR description format:**
   - AGENTS.md: "a one-line TL;DR first";
   - the template: "Two lines: what changes and why".

@@ -186,7 +186,6 @@ Reference sketches (D-47), chosen variants only, in [ux/sketches/](ux/sketches/)
 | [feedback-button.html](ux/sketches/feedback-button.html) | D-124 |
 | [views-in-search.html](ux/sketches/views-in-search.html) | D-125 |
 | [tablet-ideas.html](ux/sketches/tablet-ideas.html) | D-149 (chosen direction) |
-| [tablet-layouts.html](ux/sketches/tablet-layouts.html) | D-149 (not chosen as a look) |
 | [wide-three-columns.html](ux/sketches/wide-three-columns.html) | D-152 |
 | [focus-page.html](ux/sketches/focus-page.html) | D-154, D-155 |
 

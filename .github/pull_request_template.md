@@ -1,6 +1,6 @@
 ## What and why
 
-<!-- Two lines: what changes and why. Link ADR ids (e.g. ADR-064) or the issue. -->
+<!-- A one-line TL;DR first, then a short paragraph: the intent and why. Do not list the changes; the diff and the commit messages show them. Link ADR ids (e.g. ADR-064) or the issue. -->
 
 ## Kind of change
 
