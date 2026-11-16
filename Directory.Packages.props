@@ -17,6 +17,10 @@
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" />
   </ItemGroup>
 
+  <ItemGroup Label="Infrastructure (ADR-046): the Bicep CLI for template tests, no Azure login needed">
+    <PackageVersion Include="Azure.Bicep.CommandLine.linux-x64" Version="0.48.1" />
+  </ItemGroup>
+
   <ItemGroup Label="Tests (ADR-075: xUnit v2 and LambdaTale 2.9.x; changing these is a human decision)">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />

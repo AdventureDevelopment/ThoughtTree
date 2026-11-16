@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <!-- The Bicep CLI (Linux build, as on the CI runners); its build props set BicepPath. -->
+    <PackageReference Include="Azure.Bicep.CommandLine.linux-x64" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BicepPath</_Parameter1>
+      <_Parameter2>$(BicepPath)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>
