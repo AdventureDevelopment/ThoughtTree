@@ -235,6 +235,8 @@ Most important first.
 
 ### 2.23 Spike complexity threshold against PF6
 
+- **Status:** decided by the owner, option (b): the spike uses 10 times, as PF6; commit COMMIT.
+
 - **Where:**
   - spike-1 plan, Q1 acceptance (owner-confirmed 2026-11-16): "at most 12 times (PF6)";
   - architecture.md section 10, PF6: "About ten times the time, never more".
