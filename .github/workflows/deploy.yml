@@ -1,4 +1,5 @@
 # Deploys main to test, then to production after the owner's approval (ADR-046).
+# Production is switched off until the repository variable AZURE_CLIENT_ID_PRODUCTION exists.
 # Test and production are separate sites in separate resource groups, created from infra/main.bicep
 # with their own parameter file. Each job signs in with OpenID Connect as the identity of its
 # environment; the production identity accepts tokens only for the "production" environment, which
@@ -104,9 +105,12 @@ jobs:
       - name: Smoke test (ADR-045 headers on the deployed site)
         run: eng/smoke-headers.sh "https://$(az staticwebapp show --name "$SITE_NAME" --resource-group "$RESOURCE_GROUP" --query defaultHostname --output tsv)"
 
+  # Switched off until release 1 comes close (owner decision 2026-11-17): the job runs only once the
+  # owner has created the production identity and set the repository variable AZURE_CLIENT_ID_PRODUCTION.
   production:
     name: Deploy to production
     needs: test
+    if: vars.AZURE_CLIENT_ID_PRODUCTION != ''
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: production
