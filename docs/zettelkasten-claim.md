@@ -12,7 +12,7 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 | --- | --- | --- | --- |
 | 1 | Note file | Mapped | Item; title from the file name; a first H1 equal to the file name is dropped |
 | 2 | Folders | Mapped | Items; what builds the tree (folders, Folgezettel ids or a `parent`/`up` property) is decision 4 |
-| 3 | Headings in a note | Mapped | Items inside the note's item (ADR-072); the import asks once for the whole vault |
+| 3 | Headings in a note | Supported | Kept as headings when the tree feature "Headings become thoughts" is off (offered for an imported vault, ADR-079); otherwise items inside the note's item (ADR-072), asked once for the whole vault |
 | 4 | Body links `[[N]]`, `[[N\|text]]`, `[[N#heading]]`, `[text](N.md)` | Supported | Live `item:` links; display text becomes fixed link text; a heading link points to the item made from that heading |
 | 5 | Block links `#^id`, ` ^id` markers | Mapped, lossy | Link to the note; the marker stays as text |
 | 6 | Embeds of notes and headings | Mapped, lossy | Plain link, nothing embedded |
@@ -48,6 +48,10 @@ Decided by the owner, 2026-11-17 (decision 4b, ADR-078 Proposed): the export wri
 ## Import: properties and inline fields
 
 Decided by the owner, 2026-11-17 (decision 4c): properties other than tags, aliases and links are kept verbatim as a fenced `yaml` block at the top of the note and written back to the frontmatter on export (no new event). A Dataview inline field with a link on its own line (`supports:: [[X]] because …`) becomes a relation of that type, the rest of the line its note, and the line leaves the note (lossy: its position). An inline field with a link inside a sentence stays in the text and also creates the relation (adding it twice yields one). Inline fields without a link stay text.
+
+## Headings in notes
+
+Decided by the owner, 2026-11-17 (ADR-079 Proposed): "Headings become thoughts" is a tree feature, on by default, shared by all devices of the tree. Off, notes keep their headings when typed, pasted or imported; on, "Keep as one note" keeps real headings instead of bold lines. "Turn headings into thoughts" stays available per note. The Obsidian import offers to switch it off for a new tree.
 
 ## Not a live interface on a vault
 
