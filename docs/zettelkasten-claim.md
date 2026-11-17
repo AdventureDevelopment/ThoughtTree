@@ -45,6 +45,10 @@ Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vaul
 
 Decided by the owner, 2026-11-17 (decision 4b, ADR-078 Proposed): the export writes each thought's id (`thoughttree` property) and the export point; importing such files into the tree they came from offers "Update from these files". Known thoughts get ordinary change events, a change made in ThoughtTree since the export becomes a visible conflict, unknown files become new thoughts, missing files are listed and deleted only after the user confirms, and the whole update is one undo step. A first import of a foreign vault is a copy; after one export, round trips update.
 
+## Import: properties and inline fields
+
+Decided by the owner, 2026-11-17 (decision 4c): properties other than tags, aliases and links are kept verbatim as a fenced `yaml` block at the top of the note and written back to the frontmatter on export (no new event). A Dataview inline field with a link on its own line (`supports:: [[X]] because …`) becomes a relation of that type, the rest of the line its note, and the line leaves the note (lossy: its position). An inline field with a link inside a sentence stays in the text and also creates the relation (adding it twice yields one). Inline fields without a link stay text.
+
 ## Not a live interface on a vault
 
 Decided by the owner, 2026-11-17: ThoughtTree imports and exports a vault; it is not an interface working directly on the vault's files. A PWA cannot open a folder on iPad, the files would replace the event log as the truth (ADR-002), they are plaintext at rest (ADR-073), and Obsidian and file sync would write them outside the conflict model. A later linked vault (re-import and re-export on request, the encrypted log stays the truth) builds on the identity rules decided here; see the open decision "Obsidian vault bridge" in section 9 of [architecture.md](architecture.md).
