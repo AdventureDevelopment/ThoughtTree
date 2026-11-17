@@ -9,6 +9,9 @@
 /tests/secure/ThoughtTree.Domain.Model/      @ProductOwnerRole
 *.verified.*                                 @ProductOwnerRole
 
+# Approved places for analyzer and architecture rule suppressions (ADR-042, owner decision 2026-11-17)
+/eng/approved-suppressions.txt               @ProductOwnerRole
+
 # Documentation, including all ADRs and the invariant catalogue
 /docs/                                       @ProductOwnerRole
 
