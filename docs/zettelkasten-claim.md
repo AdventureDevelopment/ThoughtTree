@@ -53,6 +53,10 @@ Decided by the owner, 2026-11-17 (decision 4c): properties other than tags, alia
 
 Decided by the owner, 2026-11-17 (ADR-079 Proposed): "Headings become thoughts" is a tree feature, on by default, shared by all devices of the tree. Off, notes keep their headings when typed, pasted or imported; on, "Keep as one note" keeps real headings instead of bold lines. "Turn headings into thoughts" stays available per note. The Obsidian import offers to switch it off for a new tree.
 
+## Export and import where the user is
+
+Decided by the owner, 2026-11-17 (ADR-080 Proposed): a thought's ⋯ menu and Focus offer "Export…" of the thought with its branch (one `.md` file for a single thought, a zip for a branch) and "Import into this thought…"; files carrying ids update their thoughts (ADR-078). The ADR-019 warning stays.
+
 ## Not a live interface on a vault
 
 Decided by the owner, 2026-11-17: ThoughtTree imports and exports a vault; it is not an interface working directly on the vault's files. A PWA cannot open a folder on iPad, the files would replace the event log as the truth (ADR-002), they are plaintext at rest (ADR-073), and Obsidian and file sync would write them outside the conflict model. A later linked vault (re-import and re-export on request, the encrypted log stays the truth) builds on the identity rules decided here; see the open decision "Obsidian vault bridge" in section 9 of [architecture.md](architecture.md).

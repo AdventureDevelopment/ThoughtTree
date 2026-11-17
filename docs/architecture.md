@@ -171,7 +171,7 @@ docs/        architecture, ADRs
 | Conflict View | Client (UI) with use case in Client.App | Lists the conflicts the projection derives from the log and lets the user resolve them by writing the resolving event |
 | Update Control | Client.App; service worker in Client | Checks for and applies app updates only with the user's consent; triggers rebuilding snapshots and search index after an update |
 | Storage Guard | Client.App; browser checks in Client (adapters) | Requests persistent storage, warns when the app runs in a plain browser tab instead of being installed, reminds the user to export |
-| Readable Export/Import | Client.App; formats in Contracts | Exports the current tree unencrypted as Markdown, OPML or JSON; imports such files as a new tree or into an item |
+| Readable Export/Import | Client.App; formats in Contracts | Exports the current tree, or one branch from the thought's actions (ADR-080, Proposed), unencrypted as Markdown, OPML or JSON; imports such files as a new tree or into an item |
 | Auth Client | Client (adapters) | Attaches the tree's device token, held by the Tree Manager, to sync requests |
 | Service Worker | Client (static files) | Caches app shell and assets for offline start; applies app updates only when the user allows it |
 
@@ -591,7 +591,7 @@ Example of an event before encryption:
 
 - End-to-end encryption: event payloads are encrypted on the device with the key (Web Crypto API); the server stores and relays only ciphertext
 - The key never leaves the user's devices except through pairing, sharing (QR code or typed code) or an explicit key backup; the server holds no key material
-- Readable export is unencrypted by design: it is never the default, never automatic, always for one tree only, confirmed after a warning, and the file name marks it as unencrypted
+- Readable export is unencrypted by design: it is never the default, never automatic, always for one tree or one of its branches only (ADR-080, Proposed), confirmed after a warning, and the file name marks it as unencrypted
 - No AI on the user's thoughts: no AI model, on the device, on a server or at a third party, reads, summarises, classifies, places, links, completes or writes titles, notes, tags, views or structure; only deterministic helpers with visible rules (search, suggestions of known tags, templates, link suggestions by title match) (ADR-071)
 - No code plugins: the app runs only its own code, because code inside the app sees decrypted content and the key handle, also of other people in a shared tree; it is extended by data (templates, views, relation types, tags, import profiles), by working on the readable export with other tools, or by a fork that is self-hosted on its own origin with its own policy (ADR-076, Proposed)
 - Authorship is not proven: `DeviceId` and `userId` are not signed, so anyone holding a tree's key can write events that appear to come from another device or user; the server, or someone with a device token, can withhold events or send old ones again; the app's explanation of what it protects says so
@@ -958,6 +958,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-077](adr/ADR-077-relation-notes.md) | A note on a relation (Proposed; amends ADR-018) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-078](adr/ADR-078-update-import.md) | Re-importing a readable export updates the tree it came from (Proposed; amends ADR-019) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-079](adr/ADR-079-keep-headings-tree-feature.md) | Headings become thoughts is a tree feature (Proposed; amends ADR-072, ADR-029) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-080](adr/ADR-080-branch-export.md) | Readable export and import of a branch, where the user is (Proposed; amends ADR-019) | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
 
 **Open decisions**
 
