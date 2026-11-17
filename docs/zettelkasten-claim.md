@@ -27,7 +27,11 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 | 15 | Unlinked mentions | Not supported | Search covers it by hand |
 | 16 | Callouts, highlights, `%%comments%%`, footnotes, math, mermaid | Plain text | Kept verbatim, shown as ordinary Markdown |
 | 17 | Canvas, Bases, `.obsidian` settings, plugin caches | Out | Not imported; Canvas and Bases files listed in the report |
-| 18 | Backlinks; graph view | Supported | "Linked from"; the connection map (body links on the map: decision 2) |
+| 18 | Backlinks; graph view | Supported | "Linked from"; the connection map draws body links as untyped connections and typed links as relations (decision 2) |
+
+## Links and relations
+
+Decided by the owner, 2026-11-17 (decision 2, UX open question 19 partly): body links stay text (`item:` links, "Linked from"), never relations; typed links of a vault become relations on import (rows 8, decision 4). The connection map draws both: relations with their type, body links as untyped connections read from the backlink index, without events. No stored format changes; turning links into relations stays possible later.
 
 ## Not a live interface on a vault
 
