@@ -2,6 +2,10 @@
 
 Status: in progress (decisions worked through with the owner, started 2026-11-17). The claim, what is supported, the round-trip guarantee and the acceptance scenarios follow as the decisions are made; until then nothing here is a rule. Rules live in the ADRs, the open points in section 9 of [architecture.md](architecture.md).
 
+## Not a live interface on a vault
+
+Decided by the owner, 2026-11-17: ThoughtTree imports and exports a vault; it is not an interface working directly on the vault's files. A PWA cannot open a folder on iPad, the files would replace the event log as the truth (ADR-002), they are plaintext at rest (ADR-073), and Obsidian and file sync would write them outside the conflict model. A later linked vault (re-import and re-export on request, the encrypted log stays the truth) builds on the identity rules decided here; see the open decision "Obsidian vault bridge" in section 9 of [architecture.md](architecture.md).
+
 ## Survey: what Obsidian-style Zettelkasten users keep in their files
 
 Checked on 2026-11-17 against the Obsidian help and the plugin pages listed under Sources. Gaps are listed at the end; each becomes a check against a sample vault before the claim is made.
