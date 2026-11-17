@@ -33,6 +33,10 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 
 Decided by the owner, 2026-11-17 (decision 2, UX open question 19 partly): body links stay text (`item:` links, "Linked from"), never relations; typed links of a vault become relations on import (rows 8, decision 4). The connection map draws both: relations with their type, body links as untyped connections read from the backlink index, without events. No stored format changes; turning links into relations stays possible later. A relation made in ThoughtTree gets the default type `related` until the user changes it; "mentions" is only the interface name for the link connections, not a relation type.
 
+## Note on a relation
+
+Decided by the owner, 2026-11-17 (decision 3, ADR-077 Proposed): a relation can carry a note saying why the two thoughts are connected, stored in its own event `relation.note-changed` (built like `item.note-changed`: full text, `replaces`, visible conflicts, undo, history), keyed by the relation's three parts and hidden with the relation. Obsidian has no such field; its export form is decision 5. The interface needs a sketch (open decision "Relation note (UX)").
+
 ## Not a live interface on a vault
 
 Decided by the owner, 2026-11-17: ThoughtTree imports and exports a vault; it is not an interface working directly on the vault's files. A PWA cannot open a folder on iPad, the files would replace the event log as the truth (ADR-002), they are plaintext at rest (ADR-073), and Obsidian and file sync would write them outside the conflict model. A later linked vault (re-import and re-export on request, the encrypted log stays the truth) builds on the identity rules decided here; see the open decision "Obsidian vault bridge" in section 9 of [architecture.md](architecture.md).
