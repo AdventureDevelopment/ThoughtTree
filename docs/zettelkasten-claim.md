@@ -1,0 +1,49 @@
+# Zettelkasten claim
+
+Status: in progress (decisions worked through with the owner, started 2026-11-17). The claim, what is supported, the round-trip guarantee and the acceptance scenarios follow as the decisions are made; until then nothing here is a rule. Rules live in the ADRs, the open points in section 9 of [architecture.md](architecture.md).
+
+## Survey: what Obsidian-style Zettelkasten users keep in their files
+
+Checked on 2026-11-17 against the Obsidian help and the plugin pages listed under Sources. Gaps are listed at the end; each becomes a check against a sample vault before the claim is made.
+
+**Obsidian core**
+
+- Links: wikilinks `[[Note]]`, `[[Folder/Note]]`, `[[Note|text]]`, `[[Note#H1#H2]]`, `[[#Heading]]`, `[[Note#^blockid]]`; standard Markdown links `[text](Note%20name.md)` are equivalent, chosen by a setting
+- Block ids: ` ^abc-1` written into the text; block links work only inside Obsidian
+- Embeds: `!` before a link embeds a note, heading, block, image (`|100x145` size), PDF (`#page=3`), audio or canvas
+- Properties: YAML frontmatter, typed per name across the vault (text, list, number, checkbox, date, date and time, tags); links in properties are quoted (`source: "[[Book]]"`); defaults `tags`, `aliases`, `cssclasses`; singular `tag`, `alias`, `cssclass` deprecated since 1.9 but present in older vaults; no nested properties, no Markdown in properties
+- Tags: `#a/b`, nested with `/`, case-insensitive, no spaces, not purely numeric; inline or in frontmatter
+- Backlinks: linked mentions and unlinked mentions (the note's name appearing as plain text elsewhere)
+- Unique note creator: timestamp names (`202611031045`, optionally followed by a title); setups keep the timestamp in an `id` property so renaming does not lose it
+- Daily notes: files named `YYYY-MM-DD` in a chosen folder
+- Canvas (`.canvas`, JSON Canvas) and Bases (`.base`, database views over properties) are separate file types
+- Obsidian-only syntax: callouts `> [!info]`, `==highlight==`, `%%comment%%`, footnotes, `$math$`, mermaid
+- Characters not usable in file names for links: `# | ^ : %% [[ ]]`
+
+**Plugins that store something in the files**
+
+| Plugin family | What it writes | Meaning for ThoughtTree |
+| --- | --- | --- |
+| Breadcrumbs, Labelled Links, Zettelkasten Outliner | Typed links as properties (`up: "[[A]]"`, `parent:`, `child: [...]`) or Dataview inline fields (`parent:: [[A]]`) | Relations with a type; the community's answer to link types, which Obsidian core has never shipped |
+| Dataview | Inline fields `key:: value`, `[key:: value]`, `(key:: value)` | Typed links in the body, often on a line that also says why |
+| Wikilink Types | `[[A\|… @supports …]]`, synced to frontmatter `supports: ["[[A]]"]` | Typed links again (desktop and mobile) |
+| Luhman, Folgezettel, Zettelkasten Navigation, Note ID, Branch Tracker | Luhmann ids as file names (`1114a`, `21/3a1`) or `id` and `parent` properties | A Folgezettel is a tree with one parent per note: the ThoughtTree model |
+| Zettelkasten Core and plain setups | Folders `Inbox`, `Literature`, `Permanent`; a `type:` property; `source: "[[…]]"` | Folders often mean the stage of a note, not its topic |
+| Templater, QuickAdd, Note Refactor, Obsidian Git | Nothing special in the notes | None |
+| AI plugins (Smart Connections, Zettelkasten LLM Tools) | Caches in hidden folders | Ignored; ADR-071 |
+
+**Observations**
+
+- Obsidian has no core way to say why two notes are connected; users write a sentence around the link ("Builds on [[X]] because …") or put it on an inline-field line. A note on a relation adds what Obsidian lacks; its export form must be one Obsidian users already read
+- On iPad, Obsidian and most of these plugins run; forum reports describe slowness with very large vaults (20,000 to 40,000 notes), and many users capture on mobile and process on desktop
+
+**Gaps (to check against a sample vault in Obsidian)**
+
+- How Breadcrumbs derives implied reverse edges
+- The options of the "New link format" setting (shortest path, relative, absolute)
+- Whether links in properties count in Obsidian's backlinks and graph
+- How many Zettelkasten users use Folgezettel ids (no reliable numbers)
+
+**Sources**
+
+[Links](https://obsidian.md/help/links) · [Embeds](https://obsidian.md/help/embeds) · [Properties](https://obsidian.md/help/properties) · [Tags](https://obsidian.md/help/tags) · [Bases](https://obsidian.md/help/bases) · [Syntax](https://obsidian.md/help/syntax) · [Advanced syntax](https://obsidian.md/help/advanced-syntax) · [Breadcrumbs](https://publish.obsidian.md/breadcrumbs-docs/Home) · [Breadcrumbs typed links](https://publish.obsidian.md/breadcrumbs-docs/Explicit+Edge+Builders/Typed+Links) · [Dataview metadata](https://blacksmithgu.github.io/obsidian-dataview/annotation/add-metadata/) · [Wikilink Types](https://community.obsidian.md/plugins/wikilink-types) · [Labelled Links](https://community.obsidian.md/plugins/labelled-links) · [Zettelkasten Core](https://community.obsidian.md/plugins/zettelkasten-core) · [Zettelkasten plugins](https://www.obsidianstats.com/tags/zettelkasten) · [Link types request](https://forum.obsidian.md/t/add-support-for-link-types/6994) · [Large vault on iPhone](https://forum.obsidian.md/t/performance-issues-on-iphone-14-pro-with-large-vault-40-000-notes-using-obsidian-sync/98759)
