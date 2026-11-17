@@ -1,0 +1,24 @@
+# ADR-039: no uncontrolled concurrency or timers in Domain, Client.App and Server.Core; wait and time only through TimeProvider.
+T:System.Threading.Thread;ADR-039: no threads; the simulation decides the order of everything
+M:System.Threading.Tasks.Task.Run(System.Action);ADR-039: no Task.Run
+M:System.Threading.Tasks.Task.Run(System.Action,System.Threading.CancellationToken);ADR-039: no Task.Run
+M:System.Threading.Tasks.Task.Run(System.Func{System.Threading.Tasks.Task});ADR-039: no Task.Run
+M:System.Threading.Tasks.Task.Run(System.Func{System.Threading.Tasks.Task},System.Threading.CancellationToken);ADR-039: no Task.Run
+M:System.Threading.Tasks.Task.Run``1(System.Func{``0});ADR-039: no Task.Run
+M:System.Threading.Tasks.Task.Run``1(System.Func{``0},System.Threading.CancellationToken);ADR-039: no Task.Run
+M:System.Threading.Tasks.Task.Run``1(System.Func{System.Threading.Tasks.Task{``0}});ADR-039: no Task.Run
+M:System.Threading.Tasks.Task.Run``1(System.Func{System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken);ADR-039: no Task.Run
+P:System.Threading.Tasks.Task.Factory;ADR-039: no Task.Factory.StartNew, same as Task.Run
+T:System.Threading.Tasks.TaskFactory;ADR-039: no TaskFactory.StartNew, same as Task.Run
+T:System.Threading.Tasks.Parallel;ADR-039: no Parallel
+T:System.Threading.ThreadPool;ADR-039: no ThreadPool
+T:System.Threading.Timer;ADR-039: use TimeProvider.CreateTimer
+T:System.Timers.Timer;ADR-039: use TimeProvider.CreateTimer
+M:System.Threading.Tasks.Task.Delay(System.Int32);ADR-039: use Task.Delay(TimeSpan, TimeProvider)
+M:System.Threading.Tasks.Task.Delay(System.Int32,System.Threading.CancellationToken);ADR-039: use Task.Delay(TimeSpan, TimeProvider, CancellationToken)
+M:System.Threading.Tasks.Task.Delay(System.TimeSpan);ADR-039: use Task.Delay(TimeSpan, TimeProvider)
+M:System.Threading.Tasks.Task.Delay(System.TimeSpan,System.Threading.CancellationToken);ADR-039: use Task.Delay(TimeSpan, TimeProvider, CancellationToken)
+M:System.Threading.Tasks.Task.WaitAsync(System.TimeSpan);ADR-039: use WaitAsync(TimeSpan, TimeProvider)
+M:System.Threading.Tasks.Task.WaitAsync(System.TimeSpan,System.Threading.CancellationToken);ADR-039: use WaitAsync(TimeSpan, TimeProvider, CancellationToken)
+M:System.Threading.CancellationTokenSource.#ctor(System.TimeSpan);ADR-039: use CancellationTokenSource(TimeSpan, TimeProvider)
+M:System.Threading.CancellationTokenSource.#ctor(System.Int32);ADR-039: use CancellationTokenSource(TimeSpan, TimeProvider)

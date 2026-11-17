@@ -1,0 +1,12 @@
+# ADR-027, ADR-053: Domain is pure; no browser, JavaScript interop, storage, network or async I/O.
+N:System.IO;ADR-027: no storage or stream I/O in Domain
+N:System.Net;ADR-027: no network in Domain
+N:System.Runtime.InteropServices.JavaScript;ADR-027: no JavaScript interop in Domain
+N:Microsoft.JSInterop;ADR-027: no JavaScript interop in Domain
+T:System.Console;ADR-027: no I/O in Domain
+T:System.Environment;ADR-027: no process environment in Domain; values come from outside
+T:System.Threading.Tasks.Task;ADR-027: no async I/O in Domain; commands plus state give events
+T:System.Threading.Tasks.Task`1;ADR-027: no async I/O in Domain; commands plus state give events
+T:System.Threading.Tasks.ValueTask;ADR-027: no async I/O in Domain; commands plus state give events
+T:System.Threading.Tasks.ValueTask`1;ADR-027: no async I/O in Domain; commands plus state give events
+T:System.Collections.Generic.IAsyncEnumerable`1;ADR-027: no async I/O in Domain; commands plus state give events

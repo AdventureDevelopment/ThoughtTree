@@ -117,7 +117,7 @@ public class Device { /* AddItem, Delete, Undo, Tree, Log */ }
 
 ## 5. Project layout
 
-Code does not exist yet; only `docs/` and `.github/` are present. The target layout [ADR-054, architecture.md section 5]:
+The six projects exist as a skeleton without business code (foundation stage 1, architecture.md section 9); the solution is `ThoughtTree.slnx`. The layout [ADR-054, architecture.md section 5]:
 
 | Project | Role |
 | --- | --- |
@@ -133,21 +133,24 @@ Code does not exist yet; only `docs/` and `.github/` are present. The target lay
 - Inside each project, folders by feature, named after the glossary (`Outline`, `Relations`, `Conflicts`, `Trees`, `Sync`, `Sharing`, `Search`, `Export`, `Feedback`, `Settings`, and so on); same names in every project [ADR-054].
 - Dependencies point inwards only: UI to Application to Domain; adapters to Application; Domain depends on nothing. Architecture tests enforce this [ADR-053, ADR-027].
 - Create a new project only for a real boundary (deployment, sharing, reuse) and an ADR change [ADR-054].
+- Project references: Client.App to Domain and Contracts; Client to Client.App and Contracts; Server.Core to Contracts; Server to Server.Core and Contracts. Transitive project references are off in `src/`, so Client cannot reach Domain [ADR-027, ADR-053].
+- Layer namespaces, checked by `tests/secure/ThoughtTree.Architecture.Rules`: browser adapters in `ThoughtTree.Client.Adapters` (the only place for JavaScript interop), everything else in Client is UI; `ThoughtTree.Server.Endpoints` (endpoints and hub) and `ThoughtTree.Server.Stores`. Only the adapters and the endpoints may use threads, timers and delays without `TimeProvider` [ADR-039, ADR-042, ADR-054]. Composition roots are `Program`; the root component is `Root`, because `App` clashes with the namespace `ThoughtTree.Client.App`.
+- Build settings: `global.json` (SDK), `Directory.Build.props`, `Directory.Packages.props` (every package version), per-project `packages.lock.json` (restore with `--locked-mode` in CI). Banned APIs in `src/BannedSymbols.txt` (all projects), `src/BannedSymbols.Concurrency.txt` (Domain, Client.App, Server.Core), `src/BannedSymbols.Domain.txt`; every entry needs a snippet in `BannedApiRules`. The banned API analyzer reports uses of a symbol, not a bare declaration of a banned type. Suppressions only in files listed in `eng/approved-suppressions.txt` [ADR-034, ADR-039, ADR-027, ADR-042].
 
 ## 6. Commands
 
-No application code exists yet. Do not invent commands; fill these in when the project is set up.
+Run from the repository root; every command was run when it was written down. Do not invent commands.
 
 | Purpose | Command |
 | --- | --- |
-| Build (warnings as errors) | `TODO(step: project setup)` |
-| All tests | `TODO(step: project setup)` |
+| Build (warnings as errors) | `dotnet build ThoughtTree.slnx -warnaserror` |
+| All tests | `dotnet test ThoughtTree.slnx` |
 | Tests of one ADR | `dotnet test --filter "ADR=ADR-0xx"` [docs/adr/README.md] |
-| Inner loop (area being changed) | `TODO(step: project setup)` |
-| Branch check | `TODO(step: project setup)` |
-| Push gate | `TODO(step: project setup)` |
-| Mutation tests (changed Domain code) | `TODO(step: project setup)` |
-| UI specifications | `TODO(step: project setup)` |
+| Inner loop (area being changed) | `dotnet test tests/<intent>/<Project>` for the area (for example `tests/specify/ThoughtTree.Domain.Specs`), plus `dotnet test tests/secure/ThoughtTree.Architecture.Rules` (about 15 seconds) |
+| Branch check | `eng/branch-check.sh` (the steps of `.github/workflows/checks.yml`; writes the verify report to `tests/secure/ThoughtTree.Architecture.Rules/bin/Release/net10.0/verify-report.md`) |
+| Push gate | `eng/branch-check.sh`, then the protected-data diffs in `.github/workflows/push-gate.yml`; its other parts are not in place yet (listed in that file) |
+| Mutation tests (changed Domain code) | `TODO(step: Domain core, foundation step 2a)` |
+| UI specifications | `TODO(step: client shell, foundation step 4)` |
 
 ## 7. When unsure
 

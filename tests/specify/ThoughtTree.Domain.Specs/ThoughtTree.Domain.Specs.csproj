@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="bbv.LambdaTale" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Domain\ThoughtTree.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

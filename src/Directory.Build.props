@@ -1,0 +1,28 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- Only direct project references are visible to the compiler, so the UI cannot reach Domain through Client.App (ADR-053). -->
+    <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
+  </PropertyGroup>
+
+  <!-- Banned API analyzer (architecture.md section 8, Compiler and analyzers). -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- ADR-034: time and randomness, every source project. -->
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" />
+  </ItemGroup>
+
+  <!-- ADR-039: concurrency and timers in Domain, Client.App and Server.Core; Client and Server are checked per namespace by architecture tests. -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'ThoughtTree.Domain' or '$(MSBuildProjectName)' == 'ThoughtTree.Client.App' or '$(MSBuildProjectName)' == 'ThoughtTree.Server.Core'">
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.Concurrency.txt" />
+  </ItemGroup>
+
+  <!-- ADR-027: no browser, interop, storage, network or async I/O in Domain. -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'ThoughtTree.Domain'">
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.Domain.txt" />
+  </ItemGroup>
+</Project>

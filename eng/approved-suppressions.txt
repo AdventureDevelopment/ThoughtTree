@@ -1,0 +1,9 @@
+# Approved places for analyzer or architecture rule suppressions (ADR-042).
+# One repository-relative path per line, then "#" and the reason. Every other suppression fails
+# SuppressionRules in tests/secure/ThoughtTree.Architecture.Rules. Adding a line is a reviewed decision:
+# name the rule, the reason, and why no narrower place works.
+# Counted as suppressions: #pragma warning disable, [SuppressMessage], [UnconditionalSuppressMessage],
+# severity none/silent/suggestion in .editorconfig or .globalconfig, and NoWarn, WarningsNotAsErrors,
+# TreatWarningsAsErrors=false, RunAnalyzers=false or EnableNETAnalyzers=false in MSBuild files.
+
+tests/.editorconfig  # CA1707 off in tests only: test and scenario names are sentences with underscores (AGENTS.md section 4a)
