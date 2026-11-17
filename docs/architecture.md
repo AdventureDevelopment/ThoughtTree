@@ -236,6 +236,7 @@ docs/        architecture, ADRs
 5. As a new tree: the app creates a tree with its own key, writes the same starting events as for any new tree, then the imported content; into an existing item: the content is written under that item
 6. Every imported item gets a new id; `item:` links within the imported content are rewritten to the new ids; links to items outside the file are shown as not found
 7. A JSON import also restores relations, relation types and their display names (`relation.added`, `relation-type.defined`, `display-name.set`); types with a predefined fixed id are reused instead of duplicated
+8. Update instead of copy (ADR-078, Proposed): readable files carry each item's id and the export point; imported into the tree they came from, the app offers "Update from these files", writes ordinary change events for known items (a change made in the app since the export becomes a visible conflict), creates new items only for unknown content, lists items whose files are missing and deletes them only after the user confirms, all as one action
 
 **Scenario: Device with a clock far ahead**
 
@@ -955,6 +956,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-075](adr/ADR-075-xunit-v2-lambdatale.md) | xUnit v2 and LambdaTale 2.9.x for all test projects | `tests/**`, `Directory.Packages.props`, `**/*.csproj` |
 | [ADR-076](adr/ADR-076-no-code-plugins.md) | No code plugins; extend by data, readable files or a fork (Proposed) | `src/**` |
 | [ADR-077](adr/ADR-077-relation-notes.md) | A note on a relation (Proposed; amends ADR-018) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-078](adr/ADR-078-update-import.md) | Re-importing a readable export updates the tree it came from (Proposed; amends ADR-019) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 
