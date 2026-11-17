@@ -588,6 +588,7 @@ Example of an event before encryption:
 - The key never leaves the user's devices except through pairing, sharing (QR code or typed code) or an explicit key backup; the server holds no key material
 - Readable export is unencrypted by design: it is never the default, never automatic, always for one tree only, confirmed after a warning, and the file name marks it as unencrypted
 - No AI on the user's thoughts: no AI model, on the device, on a server or at a third party, reads, summarises, classifies, places, links, completes or writes titles, notes, tags, views or structure; only deterministic helpers with visible rules (search, suggestions of known tags, templates, link suggestions by title match) (ADR-071)
+- No code plugins: the app runs only its own code, because code inside the app sees decrypted content and the key handle, also of other people in a shared tree; it is extended by data (templates, views, relation types, tags, import profiles), by working on the readable export with other tools, or by a fork that is self-hosted on its own origin with its own policy (ADR-076, Proposed)
 - Authorship is not proven: `DeviceId` and `userId` are not signed, so anyone holding a tree's key can write events that appear to come from another device or user; the server, or someone with a device token, can withhold events or send old ones again; the app's explanation of what it protects says so
 - Each tree's key is random; daily use goes through a non-extractable key handle and the raw key is stored only wrapped by a non-extractable device key, unwrapped only for pairing, sharing or key backup, because those put it into a code (ADR-073); a script running in the page can still use the handle, which the strict CSP (ADR-045) guards against
 - Authentication only by device token; all sync endpoints require a valid token; there are no user accounts or logins on the server, because they would link all trees of a user to one identity
@@ -948,6 +949,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-073](adr/ADR-073-encryption-hardening.md) | Encryption hardening before release 1 | `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-074](adr/ADR-074-release-1-scope.md) | Release 1 scope: standalone, file exchange, final formats | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-075](adr/ADR-075-xunit-v2-lambdatale.md) | xUnit v2 and LambdaTale 2.9.x for all test projects | `tests/**`, `Directory.Packages.props`, `**/*.csproj` |
+| [ADR-076](adr/ADR-076-no-code-plugins.md) | No code plugins; extend by data, readable files or a fork (Proposed) | `src/**` |
 
 **Open decisions**
 
