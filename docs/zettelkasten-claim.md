@@ -31,7 +31,7 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 
 ## Links and relations
 
-Decided by the owner, 2026-11-17 (decision 2, UX open question 19 partly): body links stay text (`item:` links, "Linked from"), never relations; typed links of a vault become relations on import (rows 8, decision 4). The connection map draws both: relations with their type, body links as untyped connections read from the backlink index, without events. No stored format changes; turning links into relations stays possible later.
+Decided by the owner, 2026-11-17 (decision 2, UX open question 19 partly): body links stay text (`item:` links, "Linked from"), never relations; typed links of a vault become relations on import (rows 8, decision 4). The connection map draws both: relations with their type, body links as untyped connections read from the backlink index, without events. No stored format changes; turning links into relations stays possible later. A relation made in ThoughtTree gets the default type `related` until the user changes it; "mentions" is only the interface name for the link connections, not a relation type.
 
 ## Not a live interface on a vault
 
