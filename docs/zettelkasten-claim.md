@@ -1,6 +1,6 @@
 # Zettelkasten claim
 
-Status: decided by the owner on 2026-11-17 and 2026-11-18 (decisions 1 to 6); the effect on release 1 scope is decision 7. Rules for agents live in the ADRs (ADR-077 to ADR-081, Proposed), open points in section 9 of [architecture.md](architecture.md).
+Status: decided by the owner on 2026-11-17 and 2026-11-18 (decisions 1 to 7). Release 1 scope (decision 7): everything here is core in release 1, and the claim is made at release 1 when the acceptance scenarios pass; the owner and a person with an iPad test every merged pull request in the test environment. Rules for agents live in the ADRs (ADR-077 to ADR-081, Proposed), open points in section 9 of [architecture.md](architecture.md).
 
 ## The claim
 
