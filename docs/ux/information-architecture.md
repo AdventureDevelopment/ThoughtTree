@@ -12,7 +12,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | --- | --- | --- | --- | --- |
 | Outline of a tree | Main screen; on wide screens the middle column | Start: place last worked on (D-4, D-116) | D-4, D-52, D-71, D-91, D-95, D-150 | Decided |
 | Focus (the thought as a page) | Replaces the outline; wide: middle column, details column is its preview | Item ⋯ › Focus, swipe on a row, link preview "Focus", details column "Focus"; ← Back, breadcrumb | D-77, D-96, D-151, D-155, D-163 | Decided |
-| Item menu ⋯ | Popover at the selected row's ⋯ (hand side) | Select a row, tap ⋯ | D-53, D-58, D-59, D-151 | Partly (G5, G6) |
+| Item menu ⋯ | Popover at the selected row's ⋯ (hand side); in Focus at the end of the line under the heading | Select a row, tap ⋯; in Focus tap ⋯ in the 🕘 ↗ ↙ line | D-53, D-58, D-59, D-151, D-166 | Partly (G6) |
 | Capture sheet 📥 | Sheet over every screen, also in Focus and while typing | Floating 📥; wide: corner of the middle column | D-18, D-52, D-54, D-87, D-102 | Decided |
 | Inbox | Last item at the top level of every tree | Expand in the outline; More › Inbox (full item menu) | D-68, ADR-066, D-82 | Decided |
 | Search in the tree or branch | Field over the outline, filters in place | 🔍 in the bar; Ctrl/Cmd+F assumed (D-157) | D-12, D-97, D-98, D-101, D-103 to D-105 | Decided |
@@ -36,7 +36,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Exchange by file (round trip) | Flow from More | More › Exchange with another device | D-19 to D-21, D-126 | Partly (no sketch) |
 | Pairing a device | Only the "file from another tree" case | Inside the exchange flow; start of pairing not placed | D-81, D-84, D-163; architecture section 6 | Missing (G8) |
 | Import a tree into another (may slip) | Step after pairing | Not placed | D-84 | Partly |
-| Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; Focus (no ⋯ there, G5) | ADR-080 | Partly (G3) |
+| Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; in Focus the ⋯ of D-166 | ADR-080 | Partly (G3) |
 | Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078 | Partly (G3) |
 | Readable export of the tree, import as a new tree (vault) | D-53 put Export in More; D-122's More list drops it | Not decided | D-53, D-122, ADR-019 | Missing (G3, C1) |
 | Import report | An ordinary thought at the end of the imported branch | Outline | Zettelkasten decision 4d | Decided |
@@ -56,7 +56,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G2 Relation note and relation type:** no place to read or write the reason; no place to change a relation's type (D-13). Sketch in Task 2.
 - **G3 Readable import and export:** the branch entries exist (ADR-080), but the whole-tree export and the import of a vault as a new tree have no entry, and the flow (formats, Obsidian form, warning, progress, report) is not sketched.
 - **G4 Tree-level settings:** "Headings become thoughts" (ADR-079) and the tree's history (export events, ADR-078) have no place; More › Trees › ⋯ holds only Rename, Theme, Remove.
-- **G5 The focused thought's ⋯:** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
+- **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu:** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search:** scope choice, hits from other trees, going back. Sketch in Task 2.
 - **G8 Pairing:** nothing says where pairing starts (show or scan a code) or where the device label and name are asked (architecture: at the first pairing).
@@ -73,7 +73,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 
 ## Questions for the owner, in proposed order
 
-1. G5 and G6: where the focused thought's ⋯ sits, and how the item menu stays short.
+1. G6: how the item menu stays short (G5 closed by D-166).
 2. G1: where the connection map opens (part of its sketch).
 3. G3 and C1: where whole-tree export and the vault import as a new tree live.
 4. G4: one place for tree settings (features, history, theme, rename, remove).
