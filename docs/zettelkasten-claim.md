@@ -1,6 +1,6 @@
 # Zettelkasten claim
 
-Status: in progress (decisions worked through with the owner, started 2026-11-17). The claim, what is supported, the round-trip guarantee and the acceptance scenarios follow as the decisions are made; until then nothing here is a rule. Rules live in the ADRs, the open points in section 9 of [architecture.md](architecture.md).
+Status: decided by the owner on 2026-11-17 and 2026-11-18 (decisions 1 to 6); the effect on release 1 scope is decision 7. Rules for agents live in the ADRs (ADR-077 to ADR-081, Proposed), open points in section 9 of [architecture.md](architecture.md).
 
 ## The claim
 
@@ -11,18 +11,18 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 | # | Obsidian | Status | In ThoughtTree |
 | --- | --- | --- | --- |
 | 1 | Note file | Mapped | Item; title from the file name; a first H1 equal to the file name is dropped |
-| 2 | Folders | Mapped | Items; what builds the tree (folders, Folgezettel ids or a `parent`/`up` property) is decision 4 |
+| 2 | Folders | Mapped | Items, or the tree comes from a `parent`/`up` property or Luhmann ids (see Import) |
 | 3 | Headings in a note | Supported | Kept as headings when the tree feature "Headings become thoughts" is off (offered for an imported vault, ADR-079); otherwise items inside the note's item (ADR-072), asked once for the whole vault |
 | 4 | Body links `[[N]]`, `[[N\|text]]`, `[[N#heading]]`, `[text](N.md)` | Supported | Live `item:` links; display text becomes fixed link text; a heading link points to the item made from that heading |
 | 5 | Block links `#^id`, ` ^id` markers | Mapped, lossy | Link to the note; the marker stays as text |
 | 6 | Embeds of notes and headings | Mapped, lossy | Plain link, nothing embedded |
 | 7 | Attachments (images, PDFs, audio) | Out until binary data (ADR-022) | Text kept, listed in the import report |
-| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type (details: decisions 2 and 3) |
+| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type; an inline-field line also gives the relation its note |
 | 9 | Tags, inline and in frontmatter, nested `#a/b` | Mapped | Tags (ADR-058), `/` kept in the name (tag nesting parked, D-15); the place of an inline tag in the text is lost |
-| 10 | Other properties | Kept | Verbatim, written back on export; where they are kept is decision 4; `id` also identifies the note on re-import |
+| 10 | Other properties | Kept | A fenced `yaml` block at the top of the note, written back on export |
 | 11 | `aliases` | For links | Resolve links on import; kept with the other properties |
 | 12 | Unresolved `[[Ghost]]` | Plain text | Kept as written, listed in the import report, exported unchanged |
-| 13 | Luhmann or timestamp ids in file names | Kept | Part of the title, or the source of the tree (decision 4) |
+| 13 | Luhmann or timestamp ids in file names | Kept | Part of the title, or the source of the tree |
 | 14 | Daily notes | Plain notes | No daily-note feature; the inbox is the capture point |
 | 15 | Unlinked mentions | Not supported | Search covers it by hand |
 | 16 | Callouts, highlights, `%%comments%%`, footnotes, math, mermaid | Plain text | Kept verbatim, shown as ordinary Markdown |
@@ -96,27 +96,32 @@ Decided by the owner, 2026-11-18 (decision 5c); all in the gate except the manua
 | G6 | Obsidian opens it: every exported link resolves | Test oracle of Obsidian's link resolution (gate); manual check in Obsidian on desktop and iPad before the claim (Confirm) |
 | G7 | Nothing silently lost: every input file and link is in the tree or in the import report | Counting property over generated and sample vaults |
 
+## Acceptance scenarios
+
+Decided by the owner, 2026-11-18 (decision 6): the claim may be made only when all pass. Future LambdaTale specs; Given / When / Then in domain language.
+
+1. A captured thought becomes a note: given a thought "Permanent"; when the user captures "Links need a reason" into the inbox, moves it into "Permanent" and writes its note; then it sits in "Permanent" with its note and the inbox is empty
+2. A typed link with a reason: given thoughts A and B; when the user links A to B as "supports" with the reason "shows the same effect"; then A lists "supports B" with the reason and B lists "supported by A" with it under Linked from
+3. Backlinks from text are not relations: given A and B; when the user writes a `[[` link to B in A's note; then B's Linked from shows A as a mention and no relation was added
+4. Found by search: given a thought tagged "method" and a relation whose reason contains "Luhmann"; when the user searches "Luhmann"; then the thought the relation starts from is a hit; and searching the tag "method" finds the tagged thought
+5. The neighbourhood on the map: given A supports B and B's note links to C; when the user opens the map on A; then A, B and C are shown, A to B as "supports", B to C as an untyped connection
+6. Unchanged round trip: given a branch exported to Obsidian; when the unchanged files are imported into the same tree; then no change is written
+7. An edit in Obsidian updates the thought: given an exported branch; when a note's title is changed in the files and they are imported back; then the thought has the new title, its history shows the change, and nothing is duplicated
+8. Edits on both sides: given an exported branch; when the same note is changed in the files and in the app and the files are imported back; then the thought shows a conflict with both versions
+9. A sample vault comes in: given the sample vault "folders"; when it is imported as a new tree; then every note is a thought in its folder's place, wikilinks are links, typed links are relations, and the import report lists attachments and unresolved links
+10. A Breadcrumbs vault: given the sample vault "up property"; when it is imported with the property chosen; then each note sits under its first `up` and further `up` links are relations (folder names: open decision "Tags and relation types as items")
+11. Headings stay: given a tree with "Headings become thoughts" off; when a note with headings is imported; then it keeps its headings
+12. One undo: given a vault was just imported; when the user undoes the last action; then the imported branch and its report are gone
+
+Needed before the claim: relation notes (2, 4; ADR-077), the update import (6 to 8; ADR-078), branch export (6 to 8; ADR-080), the headings feature (11; ADR-079). Not needed: views, templates, copy and paste, so their slipping does not hold up the claim.
+
 ## Not a live interface on a vault
 
 Decided by the owner, 2026-11-17: ThoughtTree imports and exports a vault; it is not an interface working directly on the vault's files. A PWA cannot open a folder on iPad, the files would replace the event log as the truth (ADR-002), they are plaintext at rest (ADR-073), and Obsidian and file sync would write them outside the conflict model. A later linked vault (re-import and re-export on request, the encrypted log stays the truth) builds on the identity rules decided here; see the open decision "Obsidian vault bridge" in section 9 of [architecture.md](architecture.md).
 
 ## Survey: what Obsidian-style Zettelkasten users keep in their files
 
-Checked on 2026-11-17 against the Obsidian help and the plugin pages listed under Sources. Gaps are listed at the end; each becomes a check against a sample vault before the claim is made.
-
-**Obsidian core**
-
-- Links: wikilinks `[[Note]]`, `[[Folder/Note]]`, `[[Note|text]]`, `[[Note#H1#H2]]`, `[[#Heading]]`, `[[Note#^blockid]]`; standard Markdown links `[text](Note%20name.md)` are equivalent, chosen by a setting
-- Block ids: ` ^abc-1` written into the text; block links work only inside Obsidian
-- Embeds: `!` before a link embeds a note, heading, block, image (`|100x145` size), PDF (`#page=3`), audio or canvas
-- Properties: YAML frontmatter, typed per name across the vault (text, list, number, checkbox, date, date and time, tags); links in properties are quoted (`source: "[[Book]]"`); defaults `tags`, `aliases`, `cssclasses`; singular `tag`, `alias`, `cssclass` deprecated since 1.9 but present in older vaults; no nested properties, no Markdown in properties
-- Tags: `#a/b`, nested with `/`, case-insensitive, no spaces, not purely numeric; inline or in frontmatter
-- Backlinks: linked mentions and unlinked mentions (the note's name appearing as plain text elsewhere)
-- Unique note creator: timestamp names (`202611031045`, optionally followed by a title); setups keep the timestamp in an `id` property so renaming does not lose it
-- Daily notes: files named `YYYY-MM-DD` in a chosen folder
-- Canvas (`.canvas`, JSON Canvas) and Bases (`.base`, database views over properties) are separate file types
-- Obsidian-only syntax: callouts `> [!info]`, `==highlight==`, `%%comment%%`, footnotes, `$math$`, mermaid
-- Characters not usable in file names for links: `# | ^ : %% [[ ]]`
+Checked on 2026-11-17 against the Obsidian help and plugin pages under Sources; the core syntax is covered by the table under What is supported. Gaps are checked against the sample vaults before the claim is made.
 
 **Plugins that store something in the files**
 
