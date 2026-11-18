@@ -298,7 +298,7 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 1. Duplicates: two devices that define the same tag name offline create two tags; decided: the app offers to join them by a `tag.joined` event (ADR-058)
 2. Names with spaces: where `@@name` ends, and whether a tag name can contain spaces
 3. Managing tags: renaming is decided (D-64); deleting a tag everywhere and a list of all tags are still open
-4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`)
+4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`). Note 2026-11-17: whether tags become items (nested tags as items inside items, a tag list in the navigation column of D-150, answering 3 as well) is an open decision in the architecture ("Tags and relation types as items", before release 1)
 5. Look: colours for tags or not (touches the design tokens, topic 4)
 
 Bottom toolbar (D-17, revised by D-52):
@@ -343,7 +343,7 @@ Copy and paste (ADR-069, Accepted; the UI is ours to design):
 
 Links and relations (postponed 2026-11-14, D-154):
 
-19. Should a typed `[[` link also create a relation (for example of one built-in type "mentions"), so there is one kind of connection instead of two? Today the architecture keeps them apart on purpose (links are text, relations are deliberate). Postponing is safe: links keep the same form in the text either way, so a later version can read existing links as relations without rewriting content (cost then: a new ADR, a change in the projection, updated Links and Linked from; in shared trees older app versions show plain links until updated). The reverse would be hard, since relation events once written stay in every log. Belongs together with the open link part of templates (D-111) and with whether predefined relation types are still needed in new trees or can move to the tutorial like the templates (owner's thought; ADR-025)
+19. Should a typed `[[` link also create a relation (for example of one built-in type "mentions"), so there is one kind of connection instead of two? Today the architecture keeps them apart on purpose (links are text, relations are deliberate). Postponing is safe: links keep the same form in the text either way, so a later version can read existing links as relations without rewriting content (cost then: a new ADR, a change in the projection, updated Links and Linked from; in shared trees older app versions show plain links until updated). The reverse would be hard, since relation events once written stay in every log. Belongs together with the open link part of templates (D-111) and with whether predefined relation types are still needed in new trees or can move to the tutorial like the templates (owner's thought; ADR-025). Partly settled in the architecture (2026-11-17, Zettelkasten decision 2, [zettelkasten-claim.md](zettelkasten-claim.md)): links stay text and are not turned into relations; the connection map draws them as untyped connections next to the relations, without events; the sketch question is in the architecture's open decision "Connection map (follow-ups)"
 
 Store app (for the architecture):
 
