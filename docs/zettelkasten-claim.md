@@ -39,7 +39,7 @@ Decided by the owner, 2026-11-17 (decision 3, ADR-077 Proposed): a relation can 
 
 ## Import: what builds the tree
 
-Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. What happens to folder names when folders do not build the tree waits for the open decision "Tags as items" (architecture section 9); the proposal was to keep them as tags.
+Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. What happens to folder names when folders do not build the tree waits for the open decision "Tags and relation types as items" (architecture section 9); the proposal was to keep them as tags.
 
 ## Import: identity and re-import
 

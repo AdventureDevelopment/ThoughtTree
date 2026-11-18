@@ -298,7 +298,7 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 1. Duplicates: two devices that define the same tag name offline create two tags; decided: the app offers to join them by a `tag.joined` event (ADR-058)
 2. Names with spaces: where `@@name` ends, and whether a tag name can contain spaces
 3. Managing tags: renaming is decided (D-64); deleting a tag everywhere and a list of all tags are still open
-4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`). Note 2026-11-17: whether tags become items (nested tags as items inside items, a tag list in the navigation column of D-150, answering 3 as well) is an open decision in the architecture ("Tags as items", before release 1)
+4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`). Note 2026-11-17: whether tags become items (nested tags as items inside items, a tag list in the navigation column of D-150, answering 3 as well) is an open decision in the architecture ("Tags and relation types as items", before release 1)
 5. Look: colours for tags or not (touches the design tokens, topic 4)
 
 Bottom toolbar (D-17, revised by D-52):
