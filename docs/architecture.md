@@ -648,7 +648,7 @@ Example of an event before encryption:
 | Operations flag (kill switch) | Switch something off quickly if it causes trouble | Server configuration | Long-lived |
 | Permission flag | What an account may do (for example use the private feedback inbox) | Stored per account on the server, reported to the device during sync | Long-lived |
 | Tree feature | Features the user chooses for a tree (for example relations, tags, "Headings become thoughts" (ADR-079, Proposed); tags and headings becoming thoughts are on by default) | `tree.feature-changed` events, so all devices of a tree agree; older apps ignore unknown names | As long as the user wants |
-| Device setting | Language, sync mode, use of the server, showing experimental features, whether feedback is offered (ADR-070), the hand side (ADR-013) | Stored on the device, never synced | As long as the user wants |
+| Device setting | Language, sync mode, use of the server, showing experimental features, whether feedback is offered (ADR-070), the hand side (ADR-013), the last form of a readable export per branch (ADR-078) | Stored on the device, never synced | As long as the user wants |
 
 - Flags are never events; release flags come only from shipped configuration, so they need no server contact and work for file-only users; a self-hosted package brings its own configuration
 - Experiments respect privacy: there is no third-party flag service, no tracking and no telemetry; the server stores only the flag per account; users who get a feature still decide themselves whether to use it; results come only from the privacy-compatible signals of the experiment's bet card (feedback, server counters, voluntary signal answers)
