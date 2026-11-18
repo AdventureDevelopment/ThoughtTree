@@ -43,7 +43,7 @@ Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vaul
 
 ## Import: identity and re-import
 
-Decided by the owner, 2026-11-17 (decision 4b, ADR-078 Proposed): the export writes each thought's id (`thoughttree` property) and the export point; importing such files into the tree they came from offers "Update from these files". Known thoughts get ordinary change events, a change made in ThoughtTree since the export becomes a visible conflict, unknown files become new thoughts, missing files are listed and deleted only after the user confirms, and the whole update is one undo step. A first import of a foreign vault is a copy; after one export, round trips update.
+Decided by the owner, 2026-11-17 (decision 4b, ADR-078 Proposed): the export writes each thought's id (`thoughttree` property) and the id of its export event; importing such files into the tree they came from offers "Update from these files". Known thoughts get ordinary change events, a change made in ThoughtTree since the export becomes a visible conflict, unknown files become new thoughts, missing files are listed and deleted only after the user confirms, and the whole update is one undo step. A first import of a foreign vault is a copy; after one export, round trips update.
 
 ## Import: properties and inline fields
 
@@ -63,7 +63,7 @@ Decided by the owner, 2026-11-17 (decision 4d): the import reads a zip of the va
 
 ## Export: the shape of the vault
 
-Decided by the owner, 2026-11-18 (decision 5a): the user chooses at export between the two forms the import understands: folders (default; a thought with children becomes a folder with a folder note of the same name) or flat files with `up: "[[Parent]]"` (Breadcrumbs-compatible). Sibling order goes into `thoughttree-order`. File names are made safe (characters Obsidian cannot use replaced, a short suffix for equal sibling titles); the true title goes into a `title` property only when the file name differs. The form is written into the export point, so a re-import reads the files without asking; the device remembers it for the next export of that branch. An export writes no event: it changes nothing in the tree, and in a shared tree it would tell co-authors that someone exported unencrypted.
+Decided by the owner, 2026-11-18 (decision 5a): the user chooses at export between the two forms the import understands: folders (default; a thought with children becomes a folder with a folder note of the same name) or flat files with `up: "[[Parent]]"` (Breadcrumbs-compatible). Sibling order goes into `thoughttree-order`. File names are made safe (characters Obsidian cannot use replaced, a short suffix for equal sibling titles); the true title goes into a `title` property only when the file name differs. Revised by the owner, 2026-11-18: every readable export writes an export event, `item.exported` from a thought's actions or `tree.exported` for the whole tree, with the form, the format and the export point (the highest clock received per device). The files carry only that event's id, so no device information leaves the encrypted log (ADR-019). A re-import reads the form and the export point from the event without asking; the next export preselects the form on every device. The history shows exports; in a shared tree co-authors can see that and when someone exported, accepted on purpose. Undo does not take an export back.
 
 ## Export: links, relations, tags
 
