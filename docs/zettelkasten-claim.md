@@ -57,6 +57,10 @@ Decided by the owner, 2026-11-17 (ADR-079 Proposed): "Headings become thoughts" 
 
 Decided by the owner, 2026-11-17 (ADR-080 Proposed): a thought's ⋯ menu and Focus offer "Export…" of the thought with its branch (one `.md` file for a single thought, a zip for a branch) and "Import into this thought…"; files carrying ids update their thoughts (ADR-078). The ADR-019 warning stays.
 
+## Import: files, attachments, size and report
+
+Decided by the owner, 2026-11-17 (decision 4d): the import reads a zip of the vault or branch (made on iPad with "Compress" in Files), a single `.md` file, or a folder where the browser allows; the export writes the same. Attachments stay as text, ready for binary data later (ADR-022). Target: 5,000 notes within 60 s on an iPad, with progress and cancel, all or nothing as one action (to be measured, PF7); limits on unpacked size, file count and note length (open decision "Size limits"). The report is an ordinary thought "Import report" at the end of the imported branch: what was not imported, unresolved links, extra parents turned into relations, broken cycles, unreadable files. The flow needs a sketch (open decision "Readable import and export flow (UX)").
+
 ## Not a live interface on a vault
 
 Decided by the owner, 2026-11-17: ThoughtTree imports and exports a vault; it is not an interface working directly on the vault's files. A PWA cannot open a folder on iPad, the files would replace the event log as the truth (ADR-002), they are plaintext at rest (ADR-073), and Obsidian and file sync would write them outside the conflict model. A later linked vault (re-import and re-export on request, the encrypted log stays the truth) builds on the identity rules decided here; see the open decision "Obsidian vault bridge" in section 9 of [architecture.md](architecture.md).
