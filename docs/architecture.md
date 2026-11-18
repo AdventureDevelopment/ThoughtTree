@@ -675,6 +675,7 @@ Test goals, derived from the quality goals; a gate has zero tolerance (a single 
 | Portability | Browsers: core flows work in Chromium, WebKit and Firefox, including starting the installed PWA offline | Gate |
 | Portability | Self-hosting: the package runs without Azure, with its own store | Gate |
 | Portability | Data portability: export followed by import gives back the same structure, titles, notes and relations (JSON), within each format's limits | Gate |
+| Portability | Obsidian round trip: the guarantees G1 to G7 of [zettelkasten-claim.md](zettelkasten-claim.md) (round trips from either side, no events for unchanged files, exact updates with visible conflicts, links resolve in Obsidian, nothing silently lost); a manual check in Obsidian on desktop and iPad before the claim is made (owner decision 2026-11-18) | Gate |
 | Maintainability | Fast feedback: the branch check runs on every push within a few minutes and the push gate on every pull request within a set time budget (for example 10 minutes) | Watch |
 | Maintainability | Reproducibility: every failure can be repeated from its seed; unreliable tests are fixed, never ignored | Gate |
 | Maintainability | Architecture rules: automated checks that Domain does not depend on the browser, the server does not reference Domain, only Contracts are shared | Gate |
@@ -743,6 +744,7 @@ Domain tests:
 Format tests:
 
 - Stored test data per release: a generator in the harness writes, with a fixed seed and a test key, encrypted event logs (with every event type, including tags, themes and views), encrypted export files, readable export files (JSON, Markdown, OPML), view queries, pairing and sharing codes, recorded API requests and responses, and the expected tree as a text outline into `tests/data/formats/<version>/`; the folder is append-only; snapshots are not included (local caches, rebuilt after updates)
+- Sample Obsidian vaults under `tests/data/obsidian/` (append-only like all stored data): one per style (folders, `up` property, Luhmann ids, Dataview inline fields) and a mixed one with the edge cases; each import and export result secured by Verify snapshots the owner approves (Zettelkasten guarantee G5)
 - New reads old: the current version reads every stored version and gets exactly the expected tree
 - Old reads new: CI builds the previous release from its git tag and lets its Domain read data written by the current version; every item and every text must be there (INV-10)
 - Round trip: the current version writes and reads back without loss
