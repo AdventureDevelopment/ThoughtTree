@@ -65,6 +65,23 @@ Decided by the owner, 2026-11-17 (decision 4d): the import reads a zip of the va
 
 Decided by the owner, 2026-11-18 (decision 5a): the user chooses at export between the two forms the import understands: folders (default; a thought with children becomes a folder with a folder note of the same name) or flat files with `up: "[[Parent]]"` (Breadcrumbs-compatible). Sibling order goes into `thoughttree-order`. File names are made safe (characters Obsidian cannot use replaced, a short suffix for equal sibling titles); the true title goes into a `title` property only when the file name differs. The form is written into the export point, so a re-import reads the files without asking; the device remembers it for the next export of that branch. An export writes no event: it changes nothing in the tree, and in a shared tree it would tell co-authors that someone exported unencrypted.
 
+## Export: links, relations, tags
+
+Decided by the owner, 2026-11-18 (decision 5b), mirroring the import (4c):
+
+| What | Written as | Read back |
+| --- | --- | --- |
+| Live link `[](item:id)` | `[[Target]]` (shortest unique path) | target file in the import, else a thought of this tree with exactly that title, else plain text, reported |
+| Link with fixed text | `[[Target\|text]]` | as above |
+| Relation without a note | frontmatter list keyed by the type: `supports: ["[[X]]"]` | relation of that type |
+| Relation with a note | Dataview line at the end of the note: `supports:: [[X]] because …` | relation and its note |
+| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_` | by fixed id or name; unknown keys define a new type |
+| Tags | `tags:` list, spaces as `-` | tags |
+| Kept properties | merged back into the frontmatter | the kept block |
+| Unresolved `[[Ghost]]` | unchanged | unchanged |
+
+Relations are written on the "from" side, symmetric ones on the first item of their fixed order. Not in the Obsidian form (the JSON export keeps them): other-language and reverse names of types, themes, views, template markings, tree features, spaces in tag names. A re-imported note that resolves to the current text writes no event. To check in a sample vault: whether Breadcrumbs reads `supports:: [[X]] because …` with text after the link; if not, the reason goes on its own line below.
+
 ## Not a live interface on a vault
 
 Decided by the owner, 2026-11-17: ThoughtTree imports and exports a vault; it is not an interface working directly on the vault's files. A PWA cannot open a folder on iPad, the files would replace the event log as the truth (ADR-002), they are plaintext at rest (ADR-073), and Obsidian and file sync would write them outside the conflict model. A later linked vault (re-import and re-export on request, the encrypted log stays the truth) builds on the identity rules decided here; see the open decision "Obsidian vault bridge" in section 9 of [architecture.md](architecture.md).
