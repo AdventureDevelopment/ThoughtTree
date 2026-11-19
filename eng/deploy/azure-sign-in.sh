@@ -11,12 +11,19 @@ set -euo pipefail
 : "${AZURE_TENANT_ID:?repository variable missing, see infra/README.md}"
 : "${AZURE_SUBSCRIPTION_ID:?repository variable missing, see infra/README.md}"
 
-token=$(curl --silent --show-error --fail \
-  --header "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-  "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq --raw-output '.value')
-echo "::add-mask::${token}"
+# Neither the request token nor the OpenID Connect token goes on a command line, where every process of the job
+# could read it in /proc: both go through files only this user can read; curl reads its header with @file and
+# the Azure CLI loads an argument value from a file with @file. Shell builtins (printf, echo) start no process.
+umask 077
+secrets_dir=$(mktemp -d)
+trap 'rm -rf "$secrets_dir"' EXIT
+printf 'Authorization: bearer %s\n' "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" > "$secrets_dir/header"
+curl --silent --show-error --fail --header "@$secrets_dir/header" \
+  "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq --raw-output --exit-status '.value' > "$secrets_dir/token"
+echo "::add-mask::$(<"$secrets_dir/token")"
 
 az login --service-principal --username "$AZURE_CLIENT_ID" --tenant "$AZURE_TENANT_ID" \
-  --federated-token "$token" --allow-no-subscriptions --output none
+  --federated-token "@$secrets_dir/token" --allow-no-subscriptions --output none
+rm -rf "$secrets_dir"
 az account set --subscription "$AZURE_SUBSCRIPTION_ID"
 echo "Signed in to Azure as deployment identity ${AZURE_CLIENT_ID}"

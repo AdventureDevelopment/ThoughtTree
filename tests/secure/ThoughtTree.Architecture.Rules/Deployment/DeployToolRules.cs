@@ -94,6 +94,29 @@ public partial class DeployToolRules
     }
 
     [Fact]
+    public void The_sign_in_puts_no_token_on_a_command_line()
+    {
+        // First review L3, re-review: argv of every process is readable by the job's other processes in /proc.
+        var code = Code(Repository.PathOf("eng", "deploy", "azure-sign-in.sh"));
+
+        SecretOnCommandLine().Matches(code).Select(m => m.Value)
+            .ShouldBeEmpty("the request token goes to curl as --header @file, the OpenID Connect token to az as --federated-token @file");
+        code.ShouldContain("--federated-token \"@");
+        code.ShouldContain("--header \"@");
+        code.ShouldContain("umask 077");
+    }
+
+    [Theory]
+    [InlineData("az login --service-principal -u x --federated-token \"$token\"")]
+    [InlineData("az login --federated-token $(cat t)")]
+    [InlineData("curl --header \"Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}\" \"$URL\"")]
+    [InlineData("curl -H \"Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN\" x")]
+    public void A_token_on_a_command_line_is_found(string line)
+    {
+        SecretOnCommandLine().IsMatch(line).ShouldBeTrue();
+    }
+
+    [Fact]
     public void Deploy_tools_are_installed_before_the_azure_sign_in()
     {
         var jobs = Workflow.All().SelectMany(w => w.Jobs)
@@ -129,6 +152,9 @@ public partial class DeployToolRules
 
     [GeneratedRegex(@"\bnpx\b|\bnpm\s+(install|i|add|exec|x)\b|\b(pnpm|yarn)\s+dlx\b|\byarn\s+add\b", RegexOptions.CultureInvariant)]
     private static partial Regex UnlockedInstall();
+
+    [GeneratedRegex(@"--federated-token\s+(?!""@)\S+|(--header|-H)\s+""?Authorization:[^\n]*\$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
+    private static partial Regex SecretOnCommandLine();
 
     [GeneratedRegex(@"\bnpm\s+ci\b[^\n]*", RegexOptions.CultureInvariant)]
     private static partial Regex NpmCi();
