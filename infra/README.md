@@ -1,35 +1,50 @@
 # infra: hosting on Azure Static Web Apps (release 1)
 
-The test environment, the production environment and the pull request previews come only from the templates here (ADR-046). GitHub Actions signs in through OpenID Connect; no secret, password or deployment token is stored anywhere.
+The test environment, the production environment and the pull request previews come only from the templates here (ADR-046). GitHub Actions signs in through OpenID Connect; no secret, password or deployment token is stored anywhere. The design follows the security review of 2026-11-19 (`docs/review/security-review-azure-pipeline-2026-11-19.md` on the branch `claude/azure-pipeline-security-review`).
 
 | File | What it does | Who runs it |
 | --- | --- | --- |
 | `main.bicep` | One Static Web App (Free plan) for one environment | The deploy workflows, on every deployment |
-| `test.bicepparam`, `production.bicepparam` | The parameters of the two environments; they differ only in their values | The deploy workflows |
-| `bootstrap/bootstrap.bicep`, `bootstrap/deploy-identity.bicep` | The resource groups `rg-thoughttree-test` and `rg-thoughttree-prod`, and the three sign-in identities | The owner, once (below) |
+| `test.bicepparam`, `production.bicepparam`, `preview.bicepparam` | The parameters of the three sites; they differ only in their values | The deploy workflows |
+| `bootstrap/bootstrap.bicep`, `bootstrap/deploy-identity.bicep`, `bootstrap/site-access.bicep` | The resource groups, the three sign-in identities, their federated credentials and their access | The owner, once (below) |
 
-## Identities and what each may do
+## Resource groups, identities and what each may do
 
-| Identity | GitHub may use it for | Azure access |
+| Resource group | Holds |
+| --- | --- |
+| `rg-thoughttree-identity` | The three managed identities and their federated credentials. **No deployment identity has any role here**, so no pipeline run can add a federated credential or a role assignment |
+| `rg-thoughttree-test` | `stapp-thoughttree-test` |
+| `rg-thoughttree-prod` | `stapp-thoughttree-production` |
+| `rg-thoughttree-preview` | `stapp-thoughttree-preview`, which holds only the previews of open pull requests |
+
+| Identity | GitHub may use it for (subject claim) | Azure access |
 | --- | --- | --- |
-| `id-thoughttree-test` | Jobs in the GitHub environment `test` (only `main`) | Contributor on `rg-thoughttree-test` |
-| `id-thoughttree-production` | Jobs in the GitHub environment `production` (only after the owner's approval) | Contributor on `rg-thoughttree-prod` |
-| `id-thoughttree-preview` | `pull_request` runs of this repository (not forks) | Custom role "ThoughtTree preview deployer" on `rg-thoughttree-test`: read the site, read its deployment token, delete its staging environments. Because it reads the token, any pull request run of a branch in this repository (agents' branches included) can upload content to the test site, its main slot included; it cannot change any other resource |
+| `id-thoughttree-test` | Jobs in the GitHub environment `test` (`repo:<owner>/<repo>:environment:test`; the environment allows only `main`) | Custom role "ThoughtTree site deployer" on `rg-thoughttree-test` only |
+| `id-thoughttree-production` | Jobs in the GitHub environment `production` (`…:environment:production`; only `main`, only after the owner's approval) | The same role on `rg-thoughttree-prod` only |
+| `id-thoughttree-preview` | Jobs in the GitHub environment `preview` (`…:environment:preview`; only `main`: `preview-deploy.yml`, which never runs pull request code) | The same role on `rg-thoughttree-preview` only: no access to the test or production site |
+
+The custom role "ThoughtTree site deployer" (defined in `bootstrap.bicep`) allows exactly: `Microsoft.Resources/subscriptions/resourceGroups/read`, `Microsoft.Resources/deployments/*` (apply `main.bicep`), `Microsoft.Web/staticSites/read` and `write` (the site itself), `listSecrets/action` (read the deployment token), `builds/read` and `builds/delete` (list and remove staging environments). Why not a built-in role: there is none for Static Web Apps deployments, and Contributor also allows `Microsoft.ManagedIdentity/…/federatedIdentityCredentials/write`, with which a merged template change could let any branch or repository sign in as production without approval. The role has no `Microsoft.Authorization` and no `Microsoft.ManagedIdentity` action; rule tests keep it so (`DeploymentIdentityRules`).
 
 ## Workflows
 
-| Workflow | When | What |
-| --- | --- | --- |
-| `deploy-test.yml` | Every push to `main` | Branch checks, then apply `main.bicep` with `test.bicepparam`, publish, upload, check the headers of ADR-045 |
-| `preview.yml` | Pull request opened or updated; closed | Upload a preview named `pr<number>` to the test site (link in the run summary); remove it when the pull request closes |
-| `deploy-production.yml` | Started by hand on `main` (Actions › deploy-production › Run workflow) | Waits for the owner's approval, then the same steps with `production.bicepparam` |
+| Workflow | When | Credential | What |
+| --- | --- | --- | --- |
+| `deploy-test.yml` | Every push to `main` | Test identity, environment `test` | Branch checks; publish once; keep the site as artifact `site-sha256-<digest>` for 90 days (run id, commit and digest in the run summary); apply `main.bicep` with `test.bicepparam`; upload; check the headers of ADR-045 |
+| `deploy-production.yml` | By hand on `main` (Actions › deploy-production › Run workflow), with the **run id of a successful deploy-test run** (and optionally its digest) | Production identity, environment `production`, after approval | Builds nothing. Job `verify` (no credential) checks through the GitHub API that the run is a successful push run of `deploy-test.yml` on `main`, fetches its artifact as data and checks it and its SHA-256, and shows commit and digest in its summary. After the approval, job `deploy` fetches it again, requires the same digest, applies `production.bicepparam` and uploads exactly those files (`swa deploy --env production`) |
+| `preview-build.yml` | Pull request to `main` opened or updated (not from forks) | None: `contents: read`, no `id-token` | Runs the pull request's code; publishes and uploads the site as an artifact (kept 3 days) |
+| `preview-deploy.yml` | When `preview-build` completes; nightly; by hand | Preview identity, environment `preview` | Runs from `main` only. Finds the pull request through the GitHub API, fetches the artifact as data (size, paths, links, digest checked; nothing in it is executed), removes previews of closed pull requests, uploads preview `pr<number>`; nightly and by hand it only removes previews of closed pull requests |
 
-The scripts are in `eng/deploy/`. The Free plan allows only a few staging environments at a time (three at the time of writing); a preview fails when they are used up, until a pull request closes.
+Scripts are in `eng/deploy/`. Rollback: run `deploy-production` again with the run id of an earlier `deploy-test` run. Artifacts are kept 90 days (the maximum for a public repository; a lower retention set in the repository settings shortens it), so rollback reaches back 90 days.
 
-## One-time setup (owner, about 20 minutes, works from a tablet browser)
+Previews: the Free plan allows **3 staging environments per site** ([plans](https://learn.microsoft.com/azure/static-web-apps/plans)). A fourth open pull request gets no preview: `preview-deploy` fails with a message naming the three previews; close or merge one, or delete a preview by hand (portal: `stapp-thoughttree-preview` › Environments), then re-run the failed run. Previews of closed pull requests disappear at the next preview deployment or within a day. A preview shows the pull request's own content and `staticwebapp.config.json`: it may lack the policy of ADR-045 (the header check then fails the run), but it is a separate site on its own origin (`azurestaticapps.net` is on the Public Suffix List), so it reaches nothing of the test or production site. Anyone with its address can open it.
+
+Deploy tools: the Static Web Apps CLI comes from `eng/deploy/package-lock.json` (`npm ci --ignore-scripts`, registry signatures verified), its deploy client `StaticSitesClient` is pinned by SHA-256 in `eng/deploy/deploy-client.json`. Both are installed before the sign-in; the upload runs after the Azure CLI has signed out, with only the site's deployment token in its environment. When Microsoft stops listing the pinned client (its metadata keeps only the tags `latest`, `stable` and `backup`), deployments stop with a message until the pin is updated in a pull request (steps in `deploy-client.json`). `StaticSitesClient` is a closed-source Microsoft binary whose licence is not on the ADR-050 list: it needs the owner's approval.
+
+## One-time setup (owner, about 30 minutes, works from a tablet browser)
 
 Needs the role Owner (or Contributor plus User Access Administrator) on the Azure subscription, because the bootstrap creates role assignments and a custom role.
 
+0. **Only if an earlier version of the bootstrap was ever run:** delete the identities `id-thoughttree-test` and `id-thoughttree-preview` in `rg-thoughttree-test` and `id-thoughttree-production` in `rg-thoughttree-prod` (their role assignments go with them; check Access control (IAM) of both groups that no Contributor assignment for a deleted identity remains), then the custom role "ThoughtTree preview deployer" (Subscription › Access control › Roles).
 1. **Run the bootstrap in Azure Cloud Shell.** Azure portal, Cloud Shell icon in the top bar, choose Bash.
    - Get the files, either with the GitHub CLI in Cloud Shell:
 
@@ -39,8 +54,8 @@ Needs the role Owner (or Contributor plus User Access Administrator) on the Azur
      cd ThoughtTree
      ```
 
-     or by uploading `infra/bootstrap/bootstrap.bicep` and `infra/bootstrap/deploy-identity.bicep` (Cloud Shell, "Manage files", Upload) into one folder and using that folder below instead of `infra/bootstrap/`.
-   - Run it (the repository name must be written exactly as GitHub shows it):
+     or by uploading the three files of `infra/bootstrap/` (Cloud Shell, "Manage files", Upload) into one folder and using that folder below instead of `infra/bootstrap/`.
+   - Run it (the repository name must be written exactly as GitHub shows it; the subject claim is case-sensitive):
 
      ```bash
      az deployment sub create --name thoughttree-bootstrap --location westeurope \
@@ -50,12 +65,21 @@ Needs the role Owner (or Contributor plus User Access Administrator) on the Azur
      ```
 
    - The output lists five values: `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID_TEST`, `AZURE_CLIENT_ID_PRODUCTION`, `AZURE_CLIENT_ID_PREVIEW`. They are identifiers, not secrets. Running the bootstrap again changes nothing that already exists.
-2. **Create the GitHub environments.** Repository, Settings, Environments, New environment:
-   - `test`: Deployment branches and tags, Selected branches and tags, add `main`.
-   - `production`: Required reviewers, add yourself; Deployment branches and tags, Selected branches and tags, add `main`.
-3. **Add the five repository variables.** Settings, Secrets and variables, Actions, tab Variables (not Secrets), New repository variable, once for each value from step 1, with the same names.
-4. **First deployment.** The next merge to `main` creates the test site and prints its address in the run summary of `deploy-test`. Pull request previews work from then on.
+   - Check: `az identity federated-credential list --resource-group rg-thoughttree-identity --identity-name id-thoughttree-production --query "[].subject"` shows exactly one subject, `repo:AdventureDevelopment/ThoughtTree:environment:production`; the same for `test` and `preview`. Repeat this check now and then; any other entry is an incident.
+2. **Create the three GitHub environments.** Repository › Settings › Environments › New environment. For each: Deployment branches and tags › Selected branches and tags › add `main` only (no other branch or tag pattern).
+   - `production` in addition: Required reviewers › add **`ProductOwnerRole`** (not the account the agents use, `AdventureDevelopment`); tick **Prevent self-review**; untick **Allow administrators to bypass configured protection rules**.
+   - Environment variables (Settings › Environments › the environment › Add environment variable; not secrets): `AZURE_CLIENT_ID` = `AZURE_CLIENT_ID_TEST` in `test`, `AZURE_CLIENT_ID_PRODUCTION` in `production`, `AZURE_CLIENT_ID_PREVIEW` in `preview`.
+3. **Add two repository variables.** Settings › Secrets and variables › Actions › Variables › New repository variable: `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID`. Delete any older repository variables `AZURE_CLIENT_ID_TEST`, `AZURE_CLIENT_ID_PRODUCTION` and `AZURE_CLIENT_ID_PREVIEW`.
+4. **Check the GitHub settings** an agent cannot see:
+   - The agents' token (fine-grained token of `AdventureDevelopment`): no Actions write (cannot start `deploy-production` or re-run jobs), no Deployments write (cannot approve), no Administration, Environments, Variables or Secrets write.
+   - Settings › Actions › General: fork pull requests need approval for all outside collaborators; workflow permissions "Read repository contents"; "Allow GitHub Actions to create and approve pull requests" off.
+   - The OIDC subject claim template of the repository and the organisation is the default (`GET /repos/AdventureDevelopment/ThoughtTree/actions/oidc/customization/sub` returns `use_default: true`); a custom template changes the subjects above.
+   - Branch protection of `main` as decided on 2026-11-17, with no bypass for administrators (the agents' account is an administrator), and "Require review from Code Owners" (CODEOWNERS covers `infra/`, `eng/deploy/` and `.github/workflows/`).
+   - No repository or environment secret named `AZURE_STATIC_WEB_APPS_API_TOKEN_…` exists.
+5. **First deployment.** The next merge to `main` creates the test site and prints its address and the promotable run id in the run summary of `deploy-test`. The first pull request after that creates the preview site.
+6. **Test whether one deployment token reaches every environment of a site** (Microsoft's documentation does not say; the design assumes it does, which is why previews have their own site). After the first preview exists, in the portal: `stapp-thoughttree-preview` › Overview › Manage deployment token: note that there is one token for the site and none per environment. Then, in Cloud Shell, while fewer than three previews exist: `T=$(az staticwebapp secrets list --name stapp-thoughttree-preview --resource-group rg-thoughttree-preview --query properties.apiKey --output tsv)`, make a folder with an `index.html`, run `SWA_CLI_DEPLOYMENT_TOKEN="$T" npx --yes @azure/static-web-apps-cli@2.1.0 deploy <folder> --env pr999999`, and check under Environments that `pr999999` appeared (the token reached an environment it was not issued for); delete it again, `unset T`, and press Reset token on the Manage deployment token page. If a staging token could be limited to one environment, record it as an open decision in `docs/architecture.md`; until then the preview site's token reaches all previews and the preview site's own main slot, never the test or production site.
+7. **Check logging** (ADR-030, ADR-046): Static Web Apps on the Free plan offers no log or diagnostic setting; check in the portal (site › Monitoring, Diagnostic settings) that nothing stores visitor IP addresses in a resource you control.
 
 ## Removing
 
-Delete the resource groups `rg-thoughttree-test` and `rg-thoughttree-prod` (sites and identities go with them), then the custom role "ThoughtTree preview deployer" (Subscription, Access control, Roles), the two GitHub environments and the five variables.
+Delete the resource groups `rg-thoughttree-test`, `rg-thoughttree-prod`, `rg-thoughttree-preview` and `rg-thoughttree-identity` (sites and identities go with them), then the custom role "ThoughtTree site deployer" (Subscription › Access control › Roles), the three GitHub environments and the two repository variables.

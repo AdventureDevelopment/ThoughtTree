@@ -147,7 +147,7 @@ Run from the repository root; every command was run when it was written down. Do
 | All tests | `dotnet test ThoughtTree.slnx` |
 | Tests of one ADR | `dotnet test --filter "ADR=ADR-0xx"` [docs/adr/README.md] |
 | Inner loop (area being changed) | `dotnet test tests/<intent>/<Project>` for the area (for example `tests/specify/ThoughtTree.Domain.Specs`), plus `dotnet test tests/secure/ThoughtTree.Architecture.Rules` (about 15 seconds) |
-| Compile the Bicep templates [ADR-046] | `bicep build infra/main.bicep`, `bicep build infra/bootstrap/bootstrap.bicep`, `bicep build-params infra/test.bicepparam`, `bicep build-params infra/production.bicepparam` (standalone Bicep CLI; on GitHub the workflow `infra-check.yml` runs the same with `az bicep`, outside the gate because it downloads the Bicep CLI) |
+| Compile the Bicep templates [ADR-046] | `bicep build infra/main.bicep`, `bicep build infra/bootstrap/bootstrap.bicep`, `bicep build-params infra/test.bicepparam`, `bicep build-params infra/production.bicepparam`, `bicep build-params infra/preview.bicepparam` (standalone Bicep CLI; on GitHub the workflow `infra-check.yml` runs the same with `az bicep`, outside the gate because it downloads the Bicep CLI) |
 | Branch check | `eng/branch-check.sh` (the steps of `.github/workflows/checks.yml`; writes the verify report to `tests/secure/ThoughtTree.Architecture.Rules/bin/Release/net10.0/verify-report.md`) |
 | Push gate | `eng/branch-check.sh`, then the protected-data diffs in `.github/workflows/push-gate.yml`; its other parts are not in place yet (listed in that file) |
 | Mutation tests (changed Domain code) | `TODO(step: Domain core, foundation step 2a)` |
