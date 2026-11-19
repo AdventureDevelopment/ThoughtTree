@@ -88,14 +88,14 @@ kbd{font:12px var(--font);border:1px solid var(--t-edge);border-bottom-width:2px
 <p class="lead">The map shows the neighbourhood of one thought: its connections and theirs, at most 2 steps and 200 thoughts (proposed budget). Relations are solid lines with their type; links written in a note are dashed lines named "mentions" (Zettelkasten decision 2). Tapping a thought highlights its connections; tapping a highlighted thought moves the map there. The outline stays the main form; the map is a way to look across it. iPad first. Example content only.</p>
 
 <h2 class="v">Where the map lives on the iPad</h2>
-<p class="lead">On the phone the map is always its own place (frames 3 and 4). On the iPad the map is its own place with the selected thought at the side (D-168); on the phone a card stands in for the side (D-169). Frames 4 and 5 and the table at the end are proposals, not yet decided.</p>
+<p class="lead">On the phone the map is always its own place (frames 3 and 4). On the iPad the map is its own place with the selected thought at the side (D-168); on the phone a card stands in for the side (D-169). There is no visible list; screen readers get the map as a structured list (D-170). Frame 5 and the table at the end are proposals, not yet decided.</p>
 
 <h3>1 · Own place, with the selected thought at the side (owner's choice)</h3>
 <div class="wide"><div class="pad" aria-label="iPad, map as its own place with the selected thought in the details column">
   <div class="rail" aria-label="Navigation, collapsed"><span>»</span><span>🌳</span><span>🔖</span><span>⚙</span></div>
   <div class="main">
     <div class="top"><span class="back" aria-label="Back">←</span> Map of <b>Why we forget what we read</b></div>
-    <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip">1 step</span><span class="chip on">2 steps</span><span class="sp"></span><span>11 thoughts</span><span class="chip">▤ List</span></div>
+    <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip">1 step</span><span class="chip on">2 steps</span><span class="sp"></span><span>11 thoughts</span></div>
     <div class="mapbox" data-map data-center="c" data-sel="s2" data-w="470" data-h="400"></div>
     <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
     <div class="fab">📥</div>
@@ -122,33 +122,13 @@ kbd{font:12px var(--font);border:1px solid var(--t-edge);border-bottom-width:2px
     <h3>3 · Tap a thought: its connections light up</h3>
     <div class="ph" aria-label="Phone, map with Mira selected">
       <div class="top"><span class="back">←</span> Map of <b>Why we forget…</b><span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
-      <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip on">2 steps</span><span class="sp"></span><span class="chip">▤ List</span></div>
+      <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip on">2 steps</span><span class="sp"></span></div>
       <div class="mapbox" data-map data-center="c" data-sel="s2" data-w="330" data-h="520" data-compact="1">
         <div class="card"><b>👤 Mira</b><small>My thoughts › 👤 Persons · 2 connections</small><div class="acts"><span class="btn pri">Go to Mira on the map</span><span class="btn">Focus</span></div></div>
       </div>
       <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
     </div>
     <p class="d">Mira is connected to the middle thought, so one tap selects her and lights up her lines (to the middle and to "Talk at the reading club"); everything else fades. A second tap on Mira, or the card's first button, moves the map so Mira is in the middle. Focus opens her as a page. A tap on empty space clears the selection. The card covers 📥 while it is open (D-66).</p>
-  </div>
-  <div class="col">
-    <h3>4 · The same as a list</h3>
-    <div class="ph" aria-label="Phone, connections as a list">
-      <div class="top"><span class="back">←</span> Map of <b>Why we forget…</b></div>
-      <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip on">2 steps</span><span class="sp"></span><span class="chip on">▤ List</span></div>
-      <div class="cl" role="list">
-        <div class="g">Relations</div>
-        <div class="r"><span class="ty">supported by</span><span class="ti">Spaced repetition</span><span class="st">▸ 1</span></div>
-        <div class="r"><span class="ty">builds on</span><span class="ti">Forgetting curve</span><span class="st">▾ 1</span></div>
-        <div class="r sub"><span class="ty">cites</span><span class="ti">Ebbinghaus, 1885</span></div>
-        <div class="r"><span class="ty">related</span><span class="ti">Writing as thinking</span><span class="st">▸ 1</span></div>
-        <div class="g">Links</div>
-        <div class="r"><span class="ty">mentions</span><span class="ti">👤 Mira</span><span class="st">▸ 1</span></div>
-        <div class="r"><span class="ty">mentioned in</span><span class="ti">Night trains feel like time travel</span><span class="st">▸ 1</span></div>
-      </div>
-      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
-      <div class="fab">📥</div>
-    </div>
-    <p class="d">The list holds exactly what the map draws: the direct connections grouped as relations and links, each named from this thought's side ("supported by", "mentioned in"), and the second step folded under each (▸ n). Tapping a row moves the map there, as on the map. This is the path for screen readers, and a quick read on a small screen. Same switches as the map.</p>
   </div>
 </div>
 
@@ -162,7 +142,7 @@ kbd{font:12px var(--font);border:1px solid var(--t-edge);border-bottom-width:2px
   </div>
 </div></div>
 <div class="hear" role="note"><b>Screen reader hears:</b> "Spaced repetition. Supports Why we forget what we read. 1 step away. 2 connections. Enter to go there."</div>
-<div class="keys"><span><kbd>←</kbd> <kbd>→</kbd> next connection of the selected thought, in order around it</span><span><kbd>↓</kbd> into the next step</span><span><kbd>↑</kbd> back towards the middle</span><span><kbd>Enter</kbd> move the map there</span><span><kbd>F</kbd> Focus</span><span><kbd>L</kbd> list</span><span><kbd>Esc</kbd> or ← Back: leave the map</span></div>
+<div class="keys"><span><kbd>←</kbd> <kbd>→</kbd> next connection of the selected thought, in order around it</span><span><kbd>↓</kbd> into the next step</span><span><kbd>↑</kbd> back towards the middle</span><span><kbd>Enter</kbd> move the map there</span><span><kbd>F</kbd> Focus</span><span><kbd>Esc</kbd> or ← Back: leave the map</span></div>
 <p class="d">The focus ring (blue, so it is never mistaken for the selection) walks the lines of the thought in the middle; each step is announced with the type of the line seen from the middle. The keys are a proposal for the UI specification (D-157 keeps the full set for later).</p>
 
 <h2 class="v">Things the sketch assumes</h2>
