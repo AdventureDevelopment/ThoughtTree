@@ -1,6 +1,6 @@
 # Zettelkasten claim
 
-Status: decided by the owner on 2026-11-17 and 2026-11-18 (decisions 1 to 7). Release 1 scope (decision 7): everything here is core in release 1, and the claim is made at release 1 when the acceptance scenarios pass; the owner and a person with an iPad test every merged pull request in the test environment. Rules for agents live in the ADRs (ADR-077 to ADR-081, Proposed), open points in section 9 of [architecture.md](architecture.md).
+Status: decided by the owner on 2026-11-17 and 2026-11-18 (decisions 1 to 7). Release 1 scope (decision 7): everything here is core in release 1, and the claim is made at release 1 when the acceptance scenarios pass; the owner and a person with an iPad test every merged pull request in the test environment. Rules for agents live in the ADRs (ADR-077 to ADR-080, ADR-082 to ADR-084), open points in section 9 of [architecture.md](architecture.md).
 
 ## The claim
 
@@ -17,8 +17,8 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 | 5 | Block links `#^id`, ` ^id` markers | Mapped, lossy | Link to the note; the marker stays as text |
 | 6 | Embeds of notes and headings | Mapped, lossy | Plain link, nothing embedded |
 | 7 | Attachments (images, PDFs, audio) | Out until binary data (ADR-022) | Text kept, listed in the import report |
-| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type (a type item named by the key, ADR-084, Proposed); an inline-field line also gives the relation its note |
-| 9 | Tags, inline and in frontmatter, nested `#a/b` | Mapped | Tags (ADR-058), `/` kept in the name (tag nesting parked, D-15); the place of an inline tag in the text is lost. With ADR-082 (Proposed, 2026-11-19): tags are items in the Tags branch and `#a/b` becomes the tag `b` nested in `a` |
+| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type (a type item named by the key, ADR-084); an inline-field line also gives the relation its note |
+| 9 | Tags, inline and in frontmatter, nested `#a/b` | Mapped | Tags, items in the Tags branch (ADR-082): `#a/b` becomes the tag `b` nested in `a`; the place of an inline tag in the text is lost |
 | 10 | Other properties | Kept | A fenced `yaml` block at the top of the note, written back on export |
 | 11 | `aliases` | For links | Resolve links on import; kept with the other properties |
 | 12 | Unresolved `[[Ghost]]` | Plain text | Kept as written, listed in the import report, exported unchanged |
@@ -35,15 +35,15 @@ Decided by the owner, 2026-11-17 (decision 2, UX open question 19 partly): body 
 
 ## Note on a relation
 
-Decided by the owner, 2026-11-17 (decision 3, ADR-077 Proposed): a relation can carry a note saying why the two thoughts are connected, stored in its own event `relation.note-changed` (built like `item.note-changed`: full text, `replaces`, visible conflicts, undo, history), keyed by the relation's three parts and hidden with the relation. Obsidian has no such field; its export form is decision 5. The interface needs a sketch (open decision "Relation note (UX)").
+Decided by the owner, 2026-11-17 (decision 3, ADR-077): a relation can carry a note saying why the two thoughts are connected, stored in its own event `relation.note-changed` (built like `item.note-changed`: full text, `replaces`, visible conflicts, undo, history), keyed by the relation's id (ADR-083) and hidden with the relation. Obsidian has no such field; its export form is decision 5. The interface needs a sketch (open decision "Relation note (UX)").
 
 ## Import: what builds the tree
 
-Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. What happens to folder names when folders do not build the tree waits for the open decision "Tags and relation types as items" (architecture section 9); the proposal was to keep them as tags. Decided there on 2026-11-19 (ADR-082, Proposed): tags are items in the Tags branch, so folder names can become nested tag items; whether the import offers this is for the import flow sketch.
+Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. Folder names when folders do not build the tree: tags are items in the Tags branch (ADR-082), so folder names can become nested tag items; whether the import offers this is for the import flow sketch.
 
 ## Import: identity and re-import
 
-Decided by the owner, 2026-11-17 (decision 4b, ADR-078 Proposed): the export writes each thought's id (`thoughttree` property) and the id of its export event; importing such files into the tree they came from offers "Update from these files". Known thoughts get ordinary change events, a change made in ThoughtTree since the export becomes a visible conflict, unknown files become new thoughts, missing files are listed and deleted only after the user confirms, and the whole update is one undo step. A first import of a foreign vault is a copy; after one export, round trips update.
+Decided by the owner, 2026-11-17 (decision 4b, ADR-078): the export writes each thought's id (`thoughttree` property) and the id of its export event; importing such files into the tree they came from offers "Update from these files". Known thoughts get ordinary change events, a change made in ThoughtTree since the export becomes a visible conflict, unknown files become new thoughts, missing files are listed and deleted only after the user confirms, and the whole update is one undo step. A first import of a foreign vault is a copy; after one export, round trips update.
 
 ## Import: properties and inline fields
 
@@ -51,11 +51,11 @@ Decided by the owner, 2026-11-17 (decision 4c): properties other than tags, alia
 
 ## Headings in notes
 
-Decided by the owner, 2026-11-17 (ADR-079 Proposed): "Headings become thoughts" is a tree feature, on by default, shared by all devices of the tree. Off, notes keep their headings when typed, pasted or imported; on, "Keep as one note" keeps real headings instead of bold lines. "Turn headings into thoughts" stays available per note. The Obsidian import offers to switch it off for a new tree.
+Decided by the owner, 2026-11-17 (ADR-079): "Headings become thoughts" is a tree feature, on by default, shared by all devices of the tree. Off, notes keep their headings when typed, pasted or imported; on, "Keep as one note" keeps real headings instead of bold lines. "Turn headings into thoughts" stays available per note. The Obsidian import offers to switch it off for a new tree.
 
 ## Export and import where the user is
 
-Decided by the owner, 2026-11-17 (ADR-080 Proposed): a thought's ⋯ menu and Focus offer "Export…" of the thought with its branch (one `.md` file for a single thought, a zip for a branch) and "Import into this thought…"; files carrying ids update their thoughts (ADR-078). The ADR-019 warning stays.
+Decided by the owner, 2026-11-17 (ADR-080): a thought's ⋯ menu and Focus offer "Export…" of the thought with its branch (one `.md` file for a single thought, a zip for a branch) and "Import into this thought…"; files carrying ids update their thoughts (ADR-078). The ADR-019 warning stays.
 
 ## Import: files, attachments, size and report
 
@@ -75,14 +75,14 @@ Decided by the owner, 2026-11-18 (decision 5b), mirroring the import (4c):
 | Link with fixed text | `[[Target\|text]]` | as above |
 | Relation without a note | frontmatter list keyed by the type: `supports: ["[[X]]"]` | relation of that type |
 | Relation with a note | Dataview line at the end of the note: `supports:: [[X]] because …` | relation and its note |
-| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_`. Owner 2026-11-19 (ADR-084, Proposed): every type by its title, `related` included (no fixed ids, ADR-084), spaces as `_` | by fixed id or name; unknown keys define a new type (with ADR-084: by title, a new type item) |
-| Tags | `tags:` list, spaces as `-`; nested tags as paths `a/b` (ADR-082, Proposed) | tags; paths become nested tag items |
+| Type key | every type by its title, `related` included, spaces as `_` (owner 2026-11-19, ADR-084) | the type note by its id when the files carry one, else by title; unknown keys define a new type item (ADR-084) |
+| Tags | `tags:` list, spaces as `-`; nested tags as paths `a/b` (ADR-082) | tags; paths become nested tag items |
 | Kept properties | merged back into the frontmatter | the kept block |
 | Tags and relation types (owner 2026-11-19, ADR-082, ADR-084) | the Tags and Relation types branches as folders, one note per tag or type with its note as body; a type's `thoughttree-symmetric` and `thoughttree-reverse` | tag and type items, matched by the note's `thoughttree` id |
 | Template marking, theme, views, tree features (owner 2026-11-19, "everything is a zettel") | `thoughttree-template: true`, `thoughttree-theme`, `thoughttree-views` (name, layout, structured query with its format version) on the note; the tree's theme and `thoughttree-features` on the tree's top note | the same markings, themes, views and features |
 | Unresolved `[[Ghost]]` | unchanged | unchanged |
 
-Relations are written on the "from" side, symmetric ones on the first item of their fixed order. Not in the Obsidian form (the JSON export keeps them): other-language and reverse names of types (with ADR-084: reverse names, symmetry and the notes of types and tags), themes, views, template markings, tree features, spaces in tag names. Revised by the owner, 2026-11-19 ("everything is a zettel"): all of these go into the Obsidian form as notes and `thoughttree-*` properties (table above; spaces in tag names through the tag's note), so the Obsidian form loses only history, conflicts and devices, like the JSON export; other-language names no longer exist (ADR-084, Proposed). A re-imported note that resolves to the current text writes no event. To check in a sample vault: whether Breadcrumbs reads `supports:: [[X]] because …` with text after the link; if not, the reason goes on its own line below.
+Relations are written on the "from" side, symmetric ones on the first item of their fixed order. Everything else goes into the Obsidian form too (owner 2026-11-19, "everything is a zettel"): reverse names, symmetry and the notes of types and tags, themes, views, template markings, tree features and spaces in tag names, as notes and `thoughttree-*` properties (table above; spaces in tag names through the tag's note), so the Obsidian form loses only history, conflicts and devices, like the JSON export. A re-imported note that resolves to the current text writes no event. To check in a sample vault: whether Breadcrumbs reads `supports:: [[X]] because …` with text after the link; if not, the reason goes on its own line below.
 
 ## The round-trip guarantee
 
