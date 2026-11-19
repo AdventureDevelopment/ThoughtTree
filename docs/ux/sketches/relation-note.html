@@ -37,7 +37,7 @@ p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
 .ty{color:var(--t-muted);font-size:12px}
 .ti{font-size:14px}
 .why{font-size:12.5px;color:var(--t-muted);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.why.add{color:var(--t-acc-text)}
+.why.add{color:var(--t-acc-text);font-size:11.5px}
 .ed{color:var(--t-acc-text);font-weight:700;padding:2px 6px}
 .bub{font-size:12px;color:var(--t-acc-text);padding:2px 6px}
 .ctx{font-size:12.5px;color:var(--t-muted);margin-top:2px}
@@ -88,7 +88,7 @@ p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
 <p class="lead">The Links sheet of D-85, opened from ↗ or ↙ in Focus. Relations and links in the note stay apart.</p>
 <div class="row">
   <div class="col">
-    <h3>1 · The reason under each relation (chosen, D-175)</h3>
+    <h3>1 · The reason under each relation (chosen, D-175, D-176)</h3>
     <div class="ph">
       <div class="top">← My thoughts › 💡 Ideas</div>
       <div class="fhead"><h4>Why we forget what we read</h4><div class="fline"><span>🕘 5</span><span>↗ 2</span><span>↙ 3</span></div></div>
@@ -99,14 +99,14 @@ p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
         <div class="shead"><span class="stab">↗ Links 2</span><span class="stab on">↙ Linked from 3</span><span class="sp"></span><span class="x" aria-label="Close">✕</span></div>
         <div class="g">Relations</div>
         <div class="r"><div class="m"><div class="ty">supported by</div><div class="ti">Spaced repetition</div><div class="why">Shows the same effect: what is repeated at the right time stays.</div></div><span class="ed" aria-label="Type and reason">⋯</span></div>
-        <div class="r"><div class="m"><div class="ty">related</div><div class="ti">Writing as thinking</div></div><span class="ed" aria-label="Add a reason">＋</span><span class="ed">⋯</span></div>
+        <div class="r"><div class="m"><div class="ty">related</div><div class="ti">Writing as thinking</div><div class="why add">＋ Add a reason</div></div><span class="ed">⋯</span></div>
         <div class="g">Mentioned in</div>
         <div class="r"><div class="m"><div class="ti">Night trains feel like time travel</div><div class="ctx">“…like the books I read on the way, and forgot, see <u>Why we forget what we read</u>.”</div></div></div>
         <span class="addl">＋ Link to…</span>
         <div class="fbl">Something not right? Send feedback</div>
       </div>
     </div>
-    <p class="d">The reason sits under each relation in muted type, two lines at most, like the note preview in the outline (D-42). A relation without one shows only a small ＋ at the end of its row (spoken name "Add a reason"); one tap opens the relation sheet (frame 3) with the field ready. A reason is the exception, so nothing asks for it. Each relation's ⋯ opens the same sheet.</p>
+    <p class="d">The reason sits under each relation in muted type, two lines at most, like the note preview in the outline (D-42). A relation without one shows "＋ Add a reason" on its own line in the same place, smaller and in the accent text colour (D-176); one tap opens the relation sheet (frame 3) with the field ready. A reason is the exception, so nothing asks for it. Each relation's ⋯ opens the same sheet.</p>
   </div>
   <div class="col">
     <h3>3 · The relation sheet: type, reason, remove</h3>
@@ -143,7 +143,7 @@ p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
       <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
       <div class="fab">📥</div>
     </div>
-    <p class="d">Picking the target links at once, as D-13 says; the message offers only Undo. A reason is added when wanted, with the ＋ in the Links sheet (frame 1) or on the map (frames 6 and 7).</p>
+    <p class="d">Picking the target links at once, as D-13 says; the message offers only Undo. A reason is added when wanted, with "＋ Add a reason" in the Links sheet (frame 1) or on the map (frames 6 and 7).</p>
   </div>
   <div class="col">
     <h3>6 · On the map: the reason of the line</h3>
@@ -189,7 +189,7 @@ p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
       </div>
       <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span style="opacity:.4"><i>＋</i>Add here</span></div>
     </div>
-    <p class="d">Tapping a line or its type label selects the connection: the line is drawn thicker in the accent colour, and the card (phone) or side column (iPad) shows from → type → to and the reason, or ＋ when there is none; ⋯ opens the relation sheet (frame 3). A dashed link shows the sentence around it instead, with no type or reason. The tap area of a line is at least 24 px wide (ADR-033). Keyboard and screen readers reach the same through the thought at its end (D-172).</p>
+    <p class="d">Tapping a line or its type label selects the connection: the line is drawn thicker in the accent colour, and the card (phone) or side column (iPad) shows from → type → to and the reason, or "＋ Add a reason" when there is none; ⋯ opens the relation sheet (frame 3). A dashed link shows the sentence around it instead, with no type or reason. The tap area of a line is at least 24 px wide (ADR-033). Keyboard and screen readers reach the same through the thought at its end (D-172).</p>
   </div>
 </div>
 <div class="hear" role="note"><b>Screen reader hears</b> on a relation row: "Supported by Spaced repetition. Reason: Shows the same effect: what is repeated at the right time stays. Button: Type and reason." Without a reason: "Related to Writing as thinking. No reason. Button: Add a reason." On the map (D-172) the reason is read after the line's type.</div>

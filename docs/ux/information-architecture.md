@@ -27,7 +27,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | History of a tree (exports, ADR-078) | Not placed | Not decided | ADR-078 | Missing (G4) |
 | Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151 | Partly (G9, C3) |
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
-| Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175 | Decided |
+| Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175, D-176 | Decided |
 | Relation type: change, manage | Type chip in the relation sheet; managing types parked | Relation ⋯ › type chip | D-13, D-175; row "Tags and relation types as items" | Partly (managing parked) |
 | Connection map | Own place; wide: map in the middle, selected thought at the side | Item ⋯ › Map; ← Back | D-167 to D-174; row "Connection map (follow-ups)" | Decided |
 | Tags: add, remove, rename | Chips in Focus, tag picker, tag popover | `@@`; chip ＋; tap a chip | D-14, D-64, D-90 | Decided |
@@ -74,7 +74,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 ## Questions for the owner, in proposed order
 
 1. G6: deferred by D-167 until tried (G5 closed by D-166).
-2. G1 and G2: closed (D-168 to D-175).
+2. G1 and G2: closed (D-168 to D-176).
 3. G3 and C1: where whole-tree export and the vault import as a new tree live.
 4. G4: one place for tree settings (features, history, theme, rename, remove).
 5. G8, G10, G11: pairing entry, settings list, reset.
