@@ -91,7 +91,7 @@ Decided by the owner, 2026-11-18 (decision 5c); all in the gate except the manua
 | # | Guarantee | Secured by |
 | --- | --- | --- |
 | G1 | JSON: export, then import as a new tree, gives the same tree (structure, order, titles, notes, tags, relations, relation notes, types, themes, views, template markings), with new ids | CsCheck property over generated trees |
-| G2 | Obsidian form from ThoughtTree: export (either form), then import as a copy, gives the same tree except the listed lossy parts (owner 2026-11-19: none left for a tree exported from ThoughtTree, so the same tree as G1) | CsCheck property |
+| G2 | Obsidian form from ThoughtTree: export (either form), then import as a copy, gives the same tree except the listed lossy parts (owner 2026-11-19: for a tree exported from ThoughtTree only these are left, found by the independent review: two types with the same title share one key; `_` in a type title and `/` in a tag title are ambiguous with the spaces and path rules; each is resolved by the `thoughttree` id of the type or tag note where the files carry one) | CsCheck property |
 | G3 | No noise: export, then update from the unchanged files, writes no event | CsCheck property |
 | G4 | Exact updates: a generated edit of the files (title, note, move, tag, relation) arrives as exactly that edit; a change made in the app meanwhile becomes a visible conflict, no text is lost | CsCheck model-based test |
 | G5 | From Obsidian: a vault using only supported rows comes back as equal files, except normalisation (NFC, line endings, key order, `thoughttree*` keys, safe file names); lossy rows change only as documented | Sample vaults in `tests/data/obsidian/`, Verify snapshots approved by the owner |
