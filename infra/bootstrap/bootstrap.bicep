@@ -5,7 +5,8 @@
 //   test       Contributor on rg-thoughttree-test, only for jobs in the GitHub environment "test"
 //   production Contributor on rg-thoughttree-prod, only for jobs in the GitHub environment "production"
 //   preview    custom role on rg-thoughttree-test: read the site, read its deployment token, delete
-//              staging environments; only for pull_request runs. It cannot change any other resource.
+//              staging environments; only for pull_request runs. Reading the token lets a pull request run upload to
+//              the whole test site (main slot included); it cannot change any other resource.
 targetScope = 'subscription'
 
 @description('GitHub repository as owner/name, with the exact capitalisation GitHub uses.')

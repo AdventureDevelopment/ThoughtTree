@@ -14,7 +14,7 @@ The test environment, the production environment and the pull request previews c
 | --- | --- | --- |
 | `id-thoughttree-test` | Jobs in the GitHub environment `test` (only `main`) | Contributor on `rg-thoughttree-test` |
 | `id-thoughttree-production` | Jobs in the GitHub environment `production` (only after the owner's approval) | Contributor on `rg-thoughttree-prod` |
-| `id-thoughttree-preview` | `pull_request` runs of this repository (not forks) | Custom role "ThoughtTree preview deployer" on `rg-thoughttree-test`: read the site, read its deployment token, delete its staging environments; nothing else |
+| `id-thoughttree-preview` | `pull_request` runs of this repository (not forks) | Custom role "ThoughtTree preview deployer" on `rg-thoughttree-test`: read the site, read its deployment token, delete its staging environments. Because it reads the token, any pull request run of a branch in this repository (agents' branches included) can upload content to the test site, its main slot included; it cannot change any other resource |
 
 ## Workflows
 

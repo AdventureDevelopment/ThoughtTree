@@ -1,5 +1,6 @@
 # Reusable: the checks of the branch check (docs/architecture.md section 8, loops).
-# Called by branch-check.yml on every push to a branch and by push-gate.yml on pull requests.
+# Called by branch-check.yml on every push to a branch, by push-gate.yml on pull requests, and by
+# deploy-test.yml and deploy-production.yml before they deploy.
 # No secrets, no Azure, no network beyond package restore (ADR-035).
 name: checks
 
@@ -37,14 +38,6 @@ jobs:
 
       - name: Build with warnings as errors, analyzers and banned APIs (ADR-027, ADR-034, ADR-039)
         run: dotnet build ThoughtTree.slnx --no-restore --configuration Release -warnaserror
-
-      - name: Compile the Bicep templates (ADR-046; no Azure sign-in)
-        env:
-          AZURE_CORE_COLLECT_TELEMETRY: "false"
-        run: |
-          az bicep install --version v0.49.2
-          for template in infra/main.bicep infra/bootstrap/bootstrap.bicep; do az bicep build --file "$template" --stdout > /dev/null; done
-          for parameters in infra/test.bicepparam infra/production.bicepparam; do az bicep build-params --file "$parameters" --stdout > /dev/null; done
 
       - name: Check formatting
         run: dotnet format ThoughtTree.slnx --verify-no-changes --no-restore
