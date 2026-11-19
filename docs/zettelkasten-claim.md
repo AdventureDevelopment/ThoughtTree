@@ -17,8 +17,8 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 | 5 | Block links `#^id`, ` ^id` markers | Mapped, lossy | Link to the note; the marker stays as text |
 | 6 | Embeds of notes and headings | Mapped, lossy | Plain link, nothing embedded |
 | 7 | Attachments (images, PDFs, audio) | Out until binary data (ADR-022) | Text kept, listed in the import report |
-| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type; an inline-field line also gives the relation its note |
-| 9 | Tags, inline and in frontmatter, nested `#a/b` | Mapped | Tags (ADR-058), `/` kept in the name (tag nesting parked, D-15); the place of an inline tag in the text is lost |
+| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type (a type item named by the key, ADR-084, Proposed); an inline-field line also gives the relation its note |
+| 9 | Tags, inline and in frontmatter, nested `#a/b` | Mapped | Tags (ADR-058), `/` kept in the name (tag nesting parked, D-15); the place of an inline tag in the text is lost. With ADR-082 (Proposed, 2026-11-19): tags are items in the Tags branch and `#a/b` becomes the tag `b` nested in `a` |
 | 10 | Other properties | Kept | A fenced `yaml` block at the top of the note, written back on export |
 | 11 | `aliases` | For links | Resolve links on import; kept with the other properties |
 | 12 | Unresolved `[[Ghost]]` | Plain text | Kept as written, listed in the import report, exported unchanged |
@@ -39,7 +39,7 @@ Decided by the owner, 2026-11-17 (decision 3, ADR-077 Proposed): a relation can 
 
 ## Import: what builds the tree
 
-Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. What happens to folder names when folders do not build the tree waits for the open decision "Tags and relation types as items" (architecture section 9); the proposal was to keep them as tags.
+Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. What happens to folder names when folders do not build the tree waits for the open decision "Tags and relation types as items" (architecture section 9); the proposal was to keep them as tags. Decided there on 2026-11-19 (ADR-082, Proposed): tags are items in the Tags branch, so folder names can become nested tag items; whether the import offers this is for the import flow sketch.
 
 ## Import: identity and re-import
 
@@ -75,12 +75,12 @@ Decided by the owner, 2026-11-18 (decision 5b), mirroring the import (4c):
 | Link with fixed text | `[[Target\|text]]` | as above |
 | Relation without a note | frontmatter list keyed by the type: `supports: ["[[X]]"]` | relation of that type |
 | Relation with a note | Dataview line at the end of the note: `supports:: [[X]] because …` | relation and its note |
-| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_` | by fixed id or name; unknown keys define a new type |
-| Tags | `tags:` list, spaces as `-` | tags |
+| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_`. Owner 2026-11-19 (ADR-084, Proposed): every type by its title, `related` included, spaces as `_` | by fixed id or name; unknown keys define a new type (with ADR-084: by title, a new type item) |
+| Tags | `tags:` list, spaces as `-`; nested tags as paths `a/b` (ADR-082, Proposed) | tags; paths become nested tag items |
 | Kept properties | merged back into the frontmatter | the kept block |
 | Unresolved `[[Ghost]]` | unchanged | unchanged |
 
-Relations are written on the "from" side, symmetric ones on the first item of their fixed order. Not in the Obsidian form (the JSON export keeps them): other-language and reverse names of types, themes, views, template markings, tree features, spaces in tag names. A re-imported note that resolves to the current text writes no event. To check in a sample vault: whether Breadcrumbs reads `supports:: [[X]] because …` with text after the link; if not, the reason goes on its own line below.
+Relations are written on the "from" side, symmetric ones on the first item of their fixed order. Not in the Obsidian form (the JSON export keeps them): other-language and reverse names of types (with ADR-084: reverse names, symmetry and the notes of types and tags), themes, views, template markings, tree features, spaces in tag names. A re-imported note that resolves to the current text writes no event. To check in a sample vault: whether Breadcrumbs reads `supports:: [[X]] because …` with text after the link; if not, the reason goes on its own line below.
 
 ## The round-trip guarantee
 
