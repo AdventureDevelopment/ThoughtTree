@@ -35,7 +35,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Tags (manage: list, describe, nest, delete, join) | Items in the marked branch "Tags" (ADR-082); renaming a tag is a title change | More › Tags; tag chip › Open the tag; wide: navigation column | ADR-082, D-177, D-178 | Decided |
 | Conflicts | Mark on the thought; More › Conflicts while any exist; top of the history | Exchange summary "Show both versions"; More › Conflicts | D-22, D-23, D-127, D-165, D-163 | Decided |
 | Exchange by file (round trip) | Flow from More | More › Exchange with another device | D-19 to D-21, D-126 | Partly (no sketch) |
-| Pairing a device | Only the "file from another tree" case | Inside the exchange flow; start of pairing not placed | D-81, D-84, D-163; architecture section 6 | Missing (G8) |
+| Pairing a device | More › This tree… › Pair another device…; also prompted by a file from another tree | More › This tree… | D-81, D-84, D-163, D-187 | Partly (pairing screens need a sketch) |
 | Import a tree into another (may slip) | Step after pairing | Not placed | D-84 | Partly |
 | Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; in Focus the ⋯ of D-166 | ADR-080, D-180 | Decided |
 | Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078, D-180 | Decided |
@@ -61,7 +61,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search (closed by D-186):** not in release 1; search stays per tree.
-- **G8 Pairing:** nothing says where pairing starts (show or scan a code) or where the device label and name are asked (architecture: at the first pairing).
+- **G8 Pairing (placed by D-187):** the screens for showing and scanning the code still need a sketch.
 - **G9 Linked thought in the Links sheet:** where tapping leads is an [ASSUMPTION] in D-85; D-121 answers it only for links in text.
 - **G10 Settings list:** D-122 does not list update consent (ADR-036), the performance report (ADR-051), device label and name, or "Offer feedback" (ADR-070, named in D-123).
 - **G11 Reset:** whether release 1 offers "remove all data from this device" (beyond removing one tree) is not decided.
