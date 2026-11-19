@@ -24,6 +24,11 @@
 /infra/                                      @ProductOwnerRole
 /eng/deploy/                                 @ProductOwnerRole
 /.github/workflows/                          @ProductOwnerRole
+# The Content-Security-Policy (ADR-045) and the rules that guard the pipeline
+# (security re-review 2026-11-19, N-I5): owner review, so neither can be weakened
+# together with its rule in one change.
+/src/ThoughtTree.Client/wwwroot/staticwebapp.config.json        @ProductOwnerRole
+/tests/secure/ThoughtTree.Architecture.Rules/Deployment/        @ProductOwnerRole
 /.github/workflows/agent-review*             @ProductOwnerRole
 /.github/agent-review/                       @ProductOwnerRole
 
