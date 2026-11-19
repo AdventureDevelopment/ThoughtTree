@@ -1,0 +1,99 @@
+{
+  "$comment": "Licences of eng/deploy/package-lock.json outside the ADR-050 list (MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC), and of StaticSitesClient (eng/deploy/deploy-client.json). Each entry waits for the owner's approval (ADR-050: 'similar permissive licences approved by a human'; unknown licences only with human approval). The owner records a decision by setting status to approved or rejected in a pull request. DeployToolRules fails when a locked package has a licence that is neither on the list nor recorded here with the same licence. These tools run in CI only and are not distributed with the app.",
+  "approvedByAdr050": [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC"
+  ],
+  "packages": {
+    "expand-template@2.0.3": {
+      "license": "(MIT OR WTFPL)",
+      "note": "dual; MIT is on the ADR-050 list and is the licence used",
+      "status": "awaiting owner approval"
+    },
+    "graceful-fs@4.2.12": {
+      "license": "BlueOak-1.0.0",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "jackspeak@3.4.3": {
+      "license": "BlueOak-1.0.0",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "minipass@7.1.3": {
+      "license": "BlueOak-1.0.0",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "node-forge@1.4.3": {
+      "license": "(BSD-3-Clause OR GPL-2.0)",
+      "note": "dual; BSD-3-Clause is on the ADR-050 list and is the licence used",
+      "status": "awaiting owner approval"
+    },
+    "package-json-from-dist@1.0.1": {
+      "license": "BlueOak-1.0.0",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "password-prompt@1.1.3": {
+      "license": "0BSD",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "path-scurry@1.11.1": {
+      "license": "BlueOak-1.0.0",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "railroad-diagrams@1.0.0": {
+      "license": "CC0-1.0",
+      "note": "public domain dedication, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "rc@1.2.8": {
+      "license": "(BSD-2-Clause OR MIT OR Apache-2.0)",
+      "note": "triple; each choice is on the ADR-050 list",
+      "status": "awaiting owner approval"
+    },
+    "spawn-command@0.0.2": {
+      "license": null,
+      "note": "no licence field in package.json; the package ships an MIT licence text (LICENSE, copyright Maciej Małecki 2011); repository not checked",
+      "status": "awaiting owner approval"
+    },
+    "tslib@1.14.1": {
+      "license": "0BSD",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "tslib@2.9.1": {
+      "license": "0BSD",
+      "note": "permissive, not named in ADR-050",
+      "status": "awaiting owner approval"
+    },
+    "type-fest@0.21.3": {
+      "license": "(MIT OR CC0-1.0)",
+      "note": "dual; MIT is on the ADR-050 list and is the licence used",
+      "status": "awaiting owner approval"
+    },
+    "type-fest@4.41.0": {
+      "license": "(MIT OR CC0-1.0)",
+      "note": "dual; MIT is on the ADR-050 list and is the licence used",
+      "status": "awaiting owner approval"
+    },
+    "valid-url@1.0.9": {
+      "license": null,
+      "note": "no licence field in package.json; the package ships an MIT licence text (LICENSE, copyright Odysseas Tsatalos and oDesk 2013); repository not checked",
+      "status": "awaiting owner approval"
+    }
+  },
+  "binaries": {
+    "StaticSitesClient@a58ffd5ddfced557500b295844f2490acc313951": {
+      "license": null,
+      "note": "closed-source Microsoft binary, no licence text found; Microsoft terms; its telemetry was not examined",
+      "status": "awaiting owner approval"
+    }
+  }
+}

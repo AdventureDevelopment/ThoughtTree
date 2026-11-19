@@ -64,6 +64,38 @@ public partial class DeployToolRules
     }
 
     [Fact]
+    public void Every_locked_licence_is_on_the_adr_050_list_or_recorded_for_the_owner()
+    {
+        // Re-review N-L2: ADR-050 needs a human decision for any licence not on its list, and for none at all.
+        using var locked = JsonDocument.Parse(File.ReadAllText(Repository.PathOf("eng", "deploy", "package-lock.json")));
+        using var record = JsonDocument.Parse(File.ReadAllText(Repository.PathOf("eng", "deploy", "licences.json")));
+        var approved = record.RootElement.GetProperty("approvedByAdr050").EnumerateArray().Select(e => e.GetString()).ToHashSet(StringComparer.Ordinal);
+        approved.SetEquals(["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC"]).ShouldBeTrue("the list of ADR-050, unchanged");
+        var recorded = record.RootElement.GetProperty("packages").EnumerateObject()
+            .ToDictionary(p => p.Name, p => p.Value.GetProperty("license").ValueKind == JsonValueKind.Null ? null : p.Value.GetProperty("license").GetString(), StringComparer.Ordinal);
+
+        var offenders = new List<string>();
+        foreach (var package in locked.RootElement.GetProperty("packages").EnumerateObject().Where(p => p.Name.Length > 0))
+        {
+            var licence = package.Value.TryGetProperty("license", out var l) ? l.GetString() : null;
+            var name = package.Name[(package.Name.LastIndexOf("node_modules/", StringComparison.Ordinal) + "node_modules/".Length)..] + "@" + package.Value.GetProperty("version").GetString();
+            if (licence is not null && approved.Contains(licence))
+            {
+                continue;
+            }
+
+            if (!recorded.TryGetValue(name, out var noted) || noted != licence)
+            {
+                offenders.Add($"{name}: {licence ?? "no licence"}");
+            }
+        }
+
+        offenders.ShouldBeEmpty("record the package in eng/deploy/licences.json for the owner's decision (ADR-050)");
+        record.RootElement.GetProperty("binaries").EnumerateObject().Select(b => b.Name)
+            .ShouldContain(n => n.StartsWith("StaticSitesClient@", StringComparison.Ordinal), "the pinned deploy client's licence is recorded too");
+    }
+
+    [Fact]
     public void The_deploy_client_is_pinned_by_sha256()
     {
         using var pin = JsonDocument.Parse(File.ReadAllText(Repository.PathOf("eng", "deploy", "deploy-client.json")));
