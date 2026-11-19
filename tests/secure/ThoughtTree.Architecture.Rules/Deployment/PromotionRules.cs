@@ -35,6 +35,12 @@ public class PromotionRules
         fetch.ShouldContain("--event push");
         fetch.ShouldContain("--branch main");
         fetch.ShouldContain("--expect-sha256 \"$VERIFIED_SHA256\"", customMessage: "the job the owner approves checks the digest shown before the approval");
+
+        // --branch makes site_artifact.py prove the run's commit is on main (not a tag named main; re-review N-H1,
+        // tested in site_artifact_tests.py); every fetch in production must use it.
+        var fetches = production.Jobs.SelectMany(j => j.Steps).Select(s => s.Run ?? string.Empty).Where(r => r.Contains("site_artifact.py fetch", StringComparison.Ordinal)).ToList();
+        fetches.Count.ShouldBe(2, "verify and deploy both fetch the tested artifact");
+        fetches.ShouldAllBe(r => r.Contains("--branch main", StringComparison.Ordinal));
     }
 
     [Fact]

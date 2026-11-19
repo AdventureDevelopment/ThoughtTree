@@ -109,7 +109,7 @@ class Base(unittest.TestCase):
             "/actions/runs/7": run or good_run(),
             "": {"default_branch": "main"},
             "/branches/main": {"name": "main", "commit": {"sha": "b" * 40}},
-            f"/compare/{SHA}...main": {"status": compare},
+            f"/compare/{SHA}...{'b' * 40}": {"status": compare},
             "/git/matching-refs/tags/main": tags or [],
         }
 
@@ -265,6 +265,45 @@ class RunChecks(Base):
                        {"head_repository": None}):
             with self.subTest(change=change), self.assertRaises(SystemExit):
                 self.check(good_run(**change))
+
+
+class RunOnMain(Base):
+    """N-H1 of the re-review: a run whose label is "main" is promotable only if its commit is on the branch main."""
+
+    def check(self, run=None, compare="identical", tags=None, default="main"):
+        answers = self.main_answers(run=run or good_run(), compare=compare, tags=tags)
+        answers[""] = {"default_branch": default}
+        self.install(FakeGitHub(answers))
+        return site_artifact._check_run("7", ".github/workflows/deploy-test.yml", "push", "main")
+
+    def test_a_commit_that_main_contains_passes(self):
+        for status in ("identical", "ahead"):
+            with self.subTest(status=status):
+                self.assertEqual(self.check(compare=status)["head_sha"], SHA)
+
+    def test_a_run_of_a_tag_named_main_on_a_commit_off_main_is_rejected(self):
+        # A tag push reports the tag's name in head_branch and event "push"; its commit is not on main.
+        for status in ("diverged", "behind"):
+            with self.subTest(status=status), self.assertRaises(SystemExit):
+                self.check(compare=status)
+
+    def test_any_tag_named_like_the_branch_is_rejected(self):
+        with self.assertRaises(SystemExit):
+            self.check(tags=[{"ref": "refs/tags/main", "object": {"sha": SHA}}])
+
+    def test_a_tag_that_only_starts_with_the_branch_name_does_not_block(self):
+        self.assertEqual(self.check(tags=[{"ref": "refs/tags/main-1.0", "object": {"sha": SHA}}])["head_sha"], SHA)
+
+    def test_a_branch_that_is_not_the_default_branch_is_rejected(self):
+        with self.assertRaises(SystemExit):
+            self.check(default="develop")
+
+    def test_the_comparison_uses_the_branch_head_commit_not_the_ambiguous_name(self):
+        fake = FakeGitHub(self.main_answers())
+        self.install(fake)
+        site_artifact._check_run("7", ".github/workflows/deploy-test.yml", "push", "main")
+        self.assertIn(f"/compare/{SHA}...{'b' * 40}", fake.calls)
+        self.assertNotIn(f"/compare/{SHA}...main", fake.calls)
 
 
 class PreviewTarget(Base):

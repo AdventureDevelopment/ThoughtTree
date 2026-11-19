@@ -7,8 +7,10 @@ Run with `python3 -I` (isolated: no current directory or environment on the modu
       Independent of zip packing, so the same files give the same digest in every run.
 
   fetch --run-id N --workflow PATH --event EVENT [--branch BRANCH] --dest FOLDER [--expect-sha256 HEX]
-      Checks with the GitHub API that run N is a successful run of workflow PATH, started by EVENT (and on BRANCH),
-      in this repository, not from a fork; finds its one artifact named site-sha256-<hex>; downloads the zip
+      Checks with the GitHub API that run N is a successful run of workflow PATH, started by EVENT, in this
+      repository, not from a fork; with --branch also that BRANCH is the default branch, no tag has its name, and
+      the run's commit is in BRANCH (compared with the branch's head commit), so a run of a tag named like the
+      branch is refused; finds its one artifact named site-sha256-<hex>; downloads the zip
       without handing the GitHub token to the storage host; checks the size, every entry name (no absolute path,
       no "..", no backslash, no link, no duplicate) and the unpacked total; unpacks into FOLDER (must not exist);
       and checks that the digest of the unpacked files equals the one in the artifact name (and --expect-sha256).
@@ -103,7 +105,29 @@ def _check_run(run_id, workflow, event, branch):
     wrong = [f"{name} is {actual!r}, expected {expected!r}" for name, (actual, expected) in checks.items() if actual != expected]
     if wrong:
         fail(f"run {run_id} cannot be deployed: " + "; ".join(wrong))
+    if branch is not None:
+        _check_on_branch(run_id, run, branch)
     return run
+
+
+def _check_on_branch(run_id, run, branch):
+    """head_branch is only a name: a run started by pushing a TAG reports the tag's name there, with event "push".
+    So the run's commit must be in the branch (compared with the branch's head commit, never with the name, which
+    a tag of the same name would make ambiguous), the branch must be the default branch, and no tag may carry
+    the branch's name."""
+    if _api("").get("default_branch") != branch:
+        fail(f"run {run_id}: {branch!r} is not the repository's default branch")
+    tags = [t.get("ref") for t in _api(f"/git/matching-refs/tags/{branch}") or []]
+    if f"refs/tags/{branch}" in tags:
+        fail(f"a tag named {branch!r} exists; it makes runs look as if they ran on the branch. Delete the tag "
+             "(and restrict tag creation, infra/README.md) before promoting")
+    head = ((_api(f"/branches/{branch}").get("commit") or {}).get("sha") or "")
+    if not re.fullmatch(r"[0-9a-f]{40}", head) or not re.fullmatch(r"[0-9a-f]{40}", run.get("head_sha") or ""):
+        fail(f"run {run_id}: commit of the run or head of {branch!r} not readable")
+    status = _api(f"/compare/{run['head_sha']}...{head}").get("status")
+    if status not in ("identical", "ahead"):
+        fail(f"run {run_id}: its commit {run['head_sha']} is not on {branch!r} (comparison: {status!r}); "
+             "it may have run from a tag or another branch")
 
 
 def _run_id(text):
@@ -199,6 +223,8 @@ def fetch(args):
     print(f"sha256={actual}")
     print(f"commit={run['head_sha']}")
     print(f"run={run_id}")
+    if args.branch is not None:
+        print(f"on_branch={args.branch}")
 
 
 def preview_target(args):

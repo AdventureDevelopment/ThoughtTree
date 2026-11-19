@@ -68,6 +68,7 @@ jobs:
             echo "- Test run: \`$TEST_RUN_ID\`"
             echo "- Commit: \`$SITE_COMMIT\`"
             echo "- Site SHA-256: \`$SITE_SHA256\`"
+            echo "- Commit is on main: yes (checked against the head of the branch main; no tag named main exists)"
           } >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
