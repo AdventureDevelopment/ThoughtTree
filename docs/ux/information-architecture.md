@@ -29,10 +29,10 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
 | Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175, D-176 | Decided |
 | Relation type of one relation | Type chip in the relation sheet (`relation.type-changed`, ADR-083) | Relation ⋯ › type chip | D-13, D-175, ADR-083 | Decided |
-| Relation types (manage) | Items in the marked branch "Relation types"; a new tree has only `related` (ADR-084) | More › Relation types; wide: navigation column (D-177); reverse name and symmetry not decided | ADR-084, D-177; row "Tags and relation types branches (UX)" | Partly (G12) |
+| Relation types (manage) | Items in the marked branch "Relation types"; a new tree has only `related` (ADR-084) | More › Relation types; wide: navigation column; a type's page sets reverse name and symmetry | ADR-084, D-177, D-178 | Decided |
 | Connection map | Own place; wide: map in the middle, selected thought at the side | Item ⋯ › Map; ← Back | D-167 to D-174; row "Connection map (follow-ups)" | Decided |
 | Tags: add, remove, rename | Chips in Focus, tag picker, tag popover | `@@`; chip ＋; tap a chip | D-14, D-64, D-90 | Decided |
-| Tags (manage: list, describe, nest, delete, join) | Items in the marked branch "Tags" (ADR-082); renaming a tag is a title change | More › Tags; tag chip; wide: navigation column (D-177) | ADR-082, D-177; row "Tags and relation types branches (UX)" | Partly (G12) |
+| Tags (manage: list, describe, nest, delete, join) | Items in the marked branch "Tags" (ADR-082); renaming a tag is a title change | More › Tags; tag chip › Open the tag; wide: navigation column | ADR-082, D-177, D-178 | Decided |
 | Conflicts | Mark on the thought; More › Conflicts while any exist; top of the history | Exchange summary "Show both versions"; More › Conflicts | D-22, D-23, D-127, D-165, D-163 | Decided |
 | Exchange by file (round trip) | Flow from More | More › Exchange with another device | D-19 to D-21, D-126 | Partly (no sketch) |
 | Pairing a device | Only the "file from another tree" case | Inside the exchange flow; start of pairing not placed | D-81, D-84, D-163; architecture section 6 | Missing (G8) |
@@ -65,7 +65,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G9 Linked thought in the Links sheet:** where tapping leads is an [ASSUMPTION] in D-85; D-121 answers it only for links in text.
 - **G10 Settings list:** D-122 does not list update consent (ADR-036), the performance report (ADR-051), device label and name, or "Offer feedback" (ADR-070, named in D-123).
 - **G11 Reset:** whether release 1 offers "remove all data from this device" (beyond removing one tree) is not decided.
-- **G12 Tags and relation types branches (ADR-082, ADR-084; place decided by D-177):** how a tag or type item looks, how reverse name and symmetry are set, joining tags, copying types from the tutorial; D-14 and D-64 to be read again with tags as items. Sketch needed (architecture row "Tags and relation types branches (UX)").
+- **G12 Tags and relation types branches (closed by D-177, D-178).**
 - **G13 Beta format change (ADR-085):** the prompt before an update that changes the stored format, the Obsidian export of every tree, old trees shown as not readable, the import as new trees after it. Sketch needed before the first beta format change.
 - **C1 Export in More:** D-53 lists Export in More; D-122, which revises More, does not. One of them must be confirmed.
 - **C2 Tree theme in two places:** More › Theme of this tree (D-122) and More › Trees › ⋯ › Theme (D-119). Probably intended (open tree versus any tree), but not stated.
@@ -82,4 +82,4 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 3. G3 and C1: where whole-tree export and the vault import as a new tree live.
 4. G4: one place for tree settings (features, history, theme, rename, remove).
 5. G8, G10, G11: pairing entry, settings list, reset.
-6. G12 and G13: two further sketches, order to be agreed with the owner.
+6. G12 closed (D-177, D-178); G13 sketch after the import and export flow.
