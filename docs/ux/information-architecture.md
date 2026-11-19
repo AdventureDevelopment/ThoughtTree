@@ -37,9 +37,9 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Exchange by file (round trip) | Flow from More | More › Exchange with another device | D-19 to D-21, D-126 | Partly (no sketch) |
 | Pairing a device | Only the "file from another tree" case | Inside the exchange flow; start of pairing not placed | D-81, D-84, D-163; architecture section 6 | Missing (G8) |
 | Import a tree into another (may slip) | Step after pairing | Not placed | D-84 | Partly |
-| Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; in Focus the ⋯ of D-166 | ADR-080 | Partly (G3) |
-| Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078 | Partly (G3) |
-| Readable export of the tree, import as a new tree (vault) | More › Trees › ⋯ › Export…; tree list › ＋ Import a tree… | More › Trees; the tree's name at the top | D-179, ADR-019, ADR-078 | Partly (flow, G3) |
+| Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; in Focus the ⋯ of D-166 | ADR-080, D-180 | Decided |
+| Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078, D-180 | Decided |
+| Readable export of the tree, import as a new tree (vault) | More › Trees › ⋯ › Export…; tree list › ＋ Import a tree… | More › Trees; the tree's name at the top | D-179, ADR-019, ADR-078, D-180 | Decided |
 | Import report | An ordinary thought at the end of the imported branch | Outline | Zettelkasten decision 4d | Decided |
 | Settings (device) | More › Settings: hand, language (also Easy), light or dark, export reminder, offer feedback, device label and name | More › Settings; wide: navigation column | D-122, D-126, D-146, ADR-070, architecture section 6 | Partly (G10) |
 | App update consent, performance report | Not placed | Not decided | ADR-036, ADR-051 | Missing (G10) |
@@ -56,7 +56,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 
 - **G1 Connection map (closed by D-168 to D-174).**
 - **G2 Relation note and relation type (closed by D-175):** a relation's type is changed with the type chip (ADR-083); managing the types themselves is G12.
-- **G3 Readable import and export:** the branch entries exist (ADR-080), but the whole-tree export and the import of a vault as a new tree have no entry, and the flow (formats, Obsidian form, warning, progress, report) is not sketched.
+- **G3 Readable import and export (closed by D-179, D-180).**
 - **G4 Tree-level settings:** the tree features "Headings become thoughts" (ADR-079), tags (ADR-082) and relations (ADR-084), and the tree's history (export events, ADR-078) have no place; More › Trees › ⋯ holds only Rename, Theme, Remove.
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
@@ -79,7 +79,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 
 1. G6: deferred by D-167 until tried (G5 closed by D-166).
 2. G1 and G2: closed (D-168 to D-176).
-3. G3 and C1: where whole-tree export and the vault import as a new tree live.
+3. G3 and C1: closed (D-179, D-180).
 4. G4: one place for tree settings (features, history, theme, rename, remove).
 5. G8, G10, G11: pairing entry, settings list, reset.
 6. G12 closed (D-177, D-178); G13 sketch after the import and export flow.

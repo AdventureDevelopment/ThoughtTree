@@ -39,7 +39,7 @@ Decided by the owner, 2026-11-17 (decision 3, ADR-077): a relation can carry a n
 
 ## Import: what builds the tree
 
-Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. Folder names when folders do not build the tree: tags are items in the Tags branch (ADR-082), so folder names can become nested tag items; whether the import offers this is for the import flow sketch.
+Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. Folder names when folders do not build the tree: tags are items in the Tags branch (ADR-082), so folder names can become nested tag items; the import offers this as "Folder names as tags", on by default when folders do not build the tree (D-180).
 
 ## Import: identity and re-import
 
@@ -59,7 +59,7 @@ Decided by the owner, 2026-11-17 (ADR-080): a thought's ⋯ menu and Focus offer
 
 ## Import: files, attachments, size and report
 
-Decided by the owner, 2026-11-17 (decision 4d): the import reads a zip of the vault or branch (made on iPad with "Compress" in Files), a single `.md` file, or a folder where the browser allows; the export writes the same. Attachments stay as text, ready for binary data later (ADR-022). Target: 5,000 notes within 60 s on an iPad, with progress and cancel, all or nothing as one action (to be measured, PF7); limits on unpacked size, file count and note length (open decision "Size limits"). The report is an ordinary thought "Import report" at the end of the imported branch: what was not imported, unresolved links, extra parents turned into relations, broken cycles, unreadable files. The flow needs a sketch (open decision "Readable import and export flow (UX)").
+Decided by the owner, 2026-11-17 (decision 4d): the import reads a zip of the vault or branch (made on iPad with "Compress" in Files), a single `.md` file, or a folder where the browser allows; the export writes the same. Attachments stay as text, ready for binary data later (ADR-022). Target: 5,000 notes within 60 s on an iPad, with progress and cancel, all or nothing as one action (to be measured, PF7); limits on unpacked size, file count and note length (open decision "Size limits"). The report is an ordinary thought "Import report" at the end of the imported branch: what was not imported, unresolved links, extra parents turned into relations, broken cycles, unreadable files. The flow is decided in UX decisions D-179 and D-180 ([ux-concept.md](ux-concept.md)).
 
 ## Export: the shape of the vault
 
@@ -111,7 +111,7 @@ Decided by the owner, 2026-11-18 (decision 6): the claim may be made only when a
 7. An edit in Obsidian updates the thought: given an exported branch; when a note's title is changed in the files and they are imported back; then the thought has the new title, its history shows the change, and nothing is duplicated
 8. Edits on both sides: given an exported branch; when the same note is changed in the files and in the app and the files are imported back; then the thought shows a conflict with both versions
 9. A sample vault comes in: given the sample vault "folders"; when it is imported as a new tree; then every note is a thought in its folder's place, wikilinks are links, typed links are relations, and the import report lists attachments and unresolved links
-10. A Breadcrumbs vault: given the sample vault "up property"; when it is imported with the property chosen; then each note sits under its first `up` and further `up` links are relations (folder names as tags: the import flow sketch decides whether the import offers them, ADR-082)
+10. A Breadcrumbs vault: given the sample vault "up property"; when it is imported with the property chosen; then each note sits under its first `up` and further `up` links are relations (folder names become nested tags when "Folder names as tags" is on, its default when folders do not build the tree, D-180)
 11. Headings stay: given a tree with "Headings become thoughts" off; when a note with headings is imported; then it keeps its headings
 12. One undo: given a vault was just imported; when the user undoes the last action; then the imported branch and its report are gone
 
