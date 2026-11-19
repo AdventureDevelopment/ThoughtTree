@@ -35,7 +35,7 @@ Decided by the owner, 2026-11-17 (decision 2, UX open question 19 partly): body 
 
 ## Note on a relation
 
-Decided by the owner, 2026-11-17 (decision 3, ADR-077 Proposed): a relation can carry a note saying why the two thoughts are connected, stored in its own event `relation.note-changed` (built like `item.note-changed`: full text, `replaces`, visible conflicts, undo, history), keyed by the relation's three parts and hidden with the relation. Obsidian has no such field; its export form is decision 5. The interface needs a sketch (open decision "Relation note (UX)").
+Decided by the owner, 2026-11-17 (decision 3, ADR-077 Proposed): a relation can carry a note saying why the two thoughts are connected, stored in its own event `relation.note-changed` (built like `item.note-changed`: full text, `replaces`, visible conflicts, undo, history), keyed by the relation's three parts and hidden with the relation. Obsidian has no such field; its export form is decision 5. The interface is decided in UX decisions D-175 and D-176 ([ux-concept.md](ux-concept.md)): the reason shows under the relation wherever relations are listed, "＋ Add a reason" when there is none, and a relation sheet holds type, reason and remove.
 
 ## Import: what builds the tree
 
