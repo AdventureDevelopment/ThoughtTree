@@ -106,7 +106,9 @@ jobs:
         run: eng/deploy/azure-sign-in.sh
 
       - name: Apply infra/main.bicep with infra/production.bicepparam
-        run: echo "SITE_NAME=$(eng/deploy/apply-infra.sh production)" >> "$GITHUB_ENV"
+        run: |
+          site=$(eng/deploy/apply-infra.sh production)
+          echo "SITE_NAME=$site" >> "$GITHUB_ENV"
 
       - name: Upload exactly the tested site (swa deploy --env production) and check its headers
         run: eng/deploy/upload-site.sh rg-thoughttree-prod "$SITE_NAME" "$RUNNER_TEMP/site" production

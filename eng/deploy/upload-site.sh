@@ -52,7 +52,7 @@ rm -rf "$HOME/.azure"
 workdir=$(mktemp -d)
 (
   cd "$workdir"
-  unset ACTIONS_ID_TOKEN_REQUEST_URL ACTIONS_ID_TOKEN_REQUEST_TOKEN
+  unset ACTIONS_ID_TOKEN_REQUEST_URL ACTIONS_ID_TOKEN_REQUEST_TOKEN GH_TOKEN GITHUB_TOKEN
   export SWA_CLI_DEPLOYMENT_TOKEN="$token" SWA_CLI_DEPLOY_BINARY_VERSION="$tag" NO_UPDATE_NOTIFIER=1
   "$deploy/node_modules/.bin/swa" deploy "$folder" --env "$environment" --no-use-keychain 2>&1 | tee deploy.log
 )

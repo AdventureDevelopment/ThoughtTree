@@ -17,8 +17,9 @@ site=stapp-thoughttree-preview
 limit=3
 
 previews() {
-  az staticwebapp environment list --name "$site" --resource-group "$group" --query "[].name" --output tsv \
-    | grep -E '^pr[0-9]+$' || true
+  local names
+  names=$(az staticwebapp environment list --name "$site" --resource-group "$group" --query "[].name" --output tsv)
+  grep -E '^pr[0-9]+$' <<<"$names" || true
 }
 
 prune() {
@@ -42,6 +43,8 @@ case "${1:-}" in
     [[ "$number" =~ ^[1-9][0-9]{0,9}$ ]] || { echo "not a pull request number: $number" >&2; exit 2; }
     prune
     existing=$(previews)
+    # Runs for different pull requests may overlap (one concurrency group per branch); if two pass this check
+    # together, the fourth preview fails in Azure instead of here.
     if ! grep -qx "pr$number" <<<"$existing"; then
       count=$(grep -c . <<<"$existing" || true)
       if [ "$count" -ge "$limit" ]; then

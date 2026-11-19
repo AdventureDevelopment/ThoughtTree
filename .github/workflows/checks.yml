@@ -1,6 +1,6 @@
 # Reusable: the checks of the branch check (docs/architecture.md section 8, loops).
 # Called by branch-check.yml on every push to a branch, by push-gate.yml on pull requests, and by
-# deploy-test.yml and deploy-production.yml before they deploy.
+# deploy-test.yml before it publishes (deploy-production.yml builds nothing; it promotes a tested run).
 # No secrets, no Azure, no network beyond package restore (ADR-035).
 name: checks
 
