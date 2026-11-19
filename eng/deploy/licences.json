@@ -93,7 +93,13 @@
     "StaticSitesClient@a58ffd5ddfced557500b295844f2490acc313951": {
       "license": null,
       "note": "closed-source Microsoft binary, no licence text found; Microsoft terms; its telemetry was not examined",
-      "status": "awaiting owner approval"
+      "status": "approved by the owner",
+      "approved": "2026-11-19",
+      "conditions": [
+        "pinned by SHA-256 (eng/deploy/deploy-client.json); the approval covers this build only, a new pin needs a new decision",
+        "runs with only the site's deployment token in its environment, after az logout",
+        "the run fails when the pinned build disappears from Microsoft's metadata"
+      ]
     }
   }
 }
