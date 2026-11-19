@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using ThoughtTree.Architecture.Rules.Support;
 
@@ -64,35 +65,121 @@ public partial class DeployToolRules
     }
 
     [Fact]
-    public void Every_locked_licence_is_on_the_adr_050_list_or_recorded_for_the_owner()
+    public void Every_locked_licence_is_on_the_adr_050_list_or_approved_by_the_owner()
     {
-        // Re-review N-L2: ADR-050 needs a human decision for any licence not on its list, and for none at all.
-        using var locked = JsonDocument.Parse(File.ReadAllText(Repository.PathOf("eng", "deploy", "package-lock.json")));
-        using var record = JsonDocument.Parse(File.ReadAllText(Repository.PathOf("eng", "deploy", "licences.json")));
-        var approved = record.RootElement.GetProperty("approvedByAdr050").EnumerateArray().Select(e => e.GetString()).ToHashSet(StringComparer.Ordinal);
-        approved.SetEquals(["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC"]).ShouldBeTrue("the list of ADR-050, unchanged");
-        var recorded = record.RootElement.GetProperty("packages").EnumerateObject()
-            .ToDictionary(p => p.Name, p => p.Value.GetProperty("license").ValueKind == JsonValueKind.Null ? null : p.Value.GetProperty("license").GetString(), StringComparer.Ordinal);
+        // ADR-050: a licence outside the list, or none at all, needs a human decision. Re-review N-L2 recorded them;
+        // third review N3-L1: the rule requires the decision itself, ties the deploy client's approval to its pin,
+        // and catches a recorded licence that differs from the lock file.
+        LicenceProblems(LockText, RecordText, PinText).ShouldBeEmpty("ADR-050: every licence outside the list needs the owner's dated approval in eng/deploy/licences.json");
+    }
 
-        var offenders = new List<string>();
+    [Theory]
+    [InlineData("pending package", "awaiting owner approval")]
+    [InlineData("rejected package", "status rejected")]
+    [InlineData("undated package", "no approval date")]
+    [InlineData("licence differs", "differs from the lock file")]
+    [InlineData("unrecorded package", "not recorded")]
+    [InlineData("new pin", "StaticSitesClient@")]
+    [InlineData("pending client", "awaiting owner approval")]
+    [InlineData("undated client", "no approval date")]
+    [InlineData("list widened", "ADR-050 list")]
+    public void A_missing_or_stale_licence_decision_is_found(string variant, string expected)
+    {
+        var record = JsonNode.Parse(RecordText)!.AsObject();
+        var lockFile = JsonNode.Parse(LockText)!.AsObject();
+        var pin = JsonNode.Parse(PinText)!.AsObject();
+        var packages = record["packages"]!.AsObject();
+        var first = packages.First().Key;
+        var client = record["binaries"]!.AsObject().First().Value!.AsObject();
+        switch (variant)
+        {
+            case "pending package": packages[first]!["status"] = "awaiting owner approval"; break;
+            case "rejected package": packages[first]!["status"] = "rejected"; break;
+            case "undated package": packages[first]!.AsObject().Remove("approved"); break;
+            case "licence differs": packages[first]!["license"] = "MIT OR GPL-3.0"; break;
+            case "unrecorded package": packages.Remove(first); break;
+            case "new pin": pin["buildId"] = new string('c', 40); break;
+            case "pending client": client["status"] = "awaiting owner approval"; break;
+            case "undated client": client.Remove("approved"); break;
+            case "list widened": record["approvedByAdr050"]!.AsArray().Add("GPL-3.0"); break;
+            default: throw new ArgumentOutOfRangeException(nameof(variant));
+        }
+
+        var problems = LicenceProblems(lockFile.ToJsonString(), record.ToJsonString(), pin.ToJsonString());
+        problems.ShouldNotBeEmpty(variant);
+        problems.ShouldContain(p => p.Contains(expected, StringComparison.Ordinal), variant);
+    }
+
+    private static string LockText => File.ReadAllText(Repository.PathOf("eng", "deploy", "package-lock.json"));
+
+    private static string RecordText => File.ReadAllText(Repository.PathOf("eng", "deploy", "licences.json"));
+
+    private static string PinText => File.ReadAllText(Repository.PathOf("eng", "deploy", "deploy-client.json"));
+
+    private const string Approved = "approved by the owner";
+
+    internal static List<string> LicenceProblems(string lockJson, string recordJson, string pinJson)
+    {
+        using var locked = JsonDocument.Parse(lockJson);
+        using var record = JsonDocument.Parse(recordJson);
+        using var pin = JsonDocument.Parse(pinJson);
+        var problems = new List<string>();
+
+        var approvedList = record.RootElement.GetProperty("approvedByAdr050").EnumerateArray().Select(e => e.GetString()).ToHashSet(StringComparer.Ordinal);
+        if (!approvedList.SetEquals(["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC"]))
+        {
+            problems.Add("approvedByAdr050 differs from the ADR-050 list (MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC)");
+        }
+
+        var recorded = record.RootElement.GetProperty("packages").EnumerateObject().ToDictionary(p => p.Name, p => p.Value.Clone(), StringComparer.Ordinal);
         foreach (var package in locked.RootElement.GetProperty("packages").EnumerateObject().Where(p => p.Name.Length > 0))
         {
             var licence = package.Value.TryGetProperty("license", out var l) ? l.GetString() : null;
             var name = package.Name[(package.Name.LastIndexOf("node_modules/", StringComparison.Ordinal) + "node_modules/".Length)..] + "@" + package.Value.GetProperty("version").GetString();
-            if (licence is not null && approved.Contains(licence))
+            if (licence is not null && approvedList.Contains(licence))
             {
                 continue;
             }
 
-            if (!recorded.TryGetValue(name, out var noted) || noted != licence)
+            if (!recorded.TryGetValue(name, out var entry))
             {
-                offenders.Add($"{name}: {licence ?? "no licence"}");
+                problems.Add($"{name} ({licence ?? "no licence"}): not recorded in eng/deploy/licences.json");
+                continue;
             }
+
+            var noted = entry.GetProperty("license").ValueKind == JsonValueKind.Null ? null : entry.GetProperty("license").GetString();
+            if (noted != licence)
+            {
+                problems.Add($"{name}: recorded licence {noted ?? "none"} differs from the lock file's {licence ?? "none"}");
+            }
+
+            problems.AddRange(DecisionProblems(name, entry));
         }
 
-        offenders.ShouldBeEmpty("record the package in eng/deploy/licences.json for the owner's decision (ADR-050)");
-        record.RootElement.GetProperty("binaries").EnumerateObject().Select(b => b.Name)
-            .ShouldContain(n => n.StartsWith("StaticSitesClient@", StringComparison.Ordinal), "the pinned deploy client's licence is recorded too");
+        // The deploy client's approval covers the pinned build only: a new pin needs a new decision.
+        var client = "StaticSitesClient@" + pin.RootElement.GetProperty("buildId").GetString();
+        var binaries = record.RootElement.GetProperty("binaries").EnumerateObject().ToList();
+        if (binaries.Count != 1 || binaries[0].Name != client)
+        {
+            problems.Add($"binaries must record exactly {client}, the build pinned in eng/deploy/deploy-client.json; found {string.Join(", ", binaries.Select(b => b.Name))}");
+        }
+
+        problems.AddRange(binaries.SelectMany(b => DecisionProblems(b.Name, b.Value)));
+        return problems;
+    }
+
+    private static IEnumerable<string> DecisionProblems(string name, JsonElement entry)
+    {
+        var status = entry.TryGetProperty("status", out var s) ? s.GetString() : null;
+        if (status != Approved)
+        {
+            yield return $"{name}: status {status ?? "missing"}; only \"{Approved}\" lets it into the lock file";
+        }
+
+        if (!entry.TryGetProperty("approved", out var date) || !DateOnly.TryParseExact(date.GetString(), "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out _))
+        {
+            yield return $"{name}: no approval date (yyyy-MM-dd)";
+        }
     }
 
     [Fact]
