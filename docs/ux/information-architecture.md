@@ -39,7 +39,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Import a tree into another (may slip) | Step after pairing | Not placed | D-84 | Partly |
 | Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; in Focus the ⋯ of D-166 | ADR-080 | Partly (G3) |
 | Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078 | Partly (G3) |
-| Readable export of the tree, import as a new tree (vault) | D-53 put Export in More; D-122's More list drops it | Not decided | D-53, D-122, ADR-019 | Missing (G3, C1) |
+| Readable export of the tree, import as a new tree (vault) | More › Trees › ⋯ › Export…; tree list › ＋ Import a tree… | More › Trees; the tree's name at the top | D-179, ADR-019, ADR-078 | Partly (flow, G3) |
 | Import report | An ordinary thought at the end of the imported branch | Outline | Zettelkasten decision 4d | Decided |
 | Settings (device) | More › Settings: hand, language (also Easy), light or dark, export reminder, offer feedback, device label and name | More › Settings; wide: navigation column | D-122, D-126, D-146, ADR-070, architecture section 6 | Partly (G10) |
 | App update consent, performance report | Not placed | Not decided | ADR-036, ADR-051 | Missing (G10) |
@@ -67,7 +67,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G11 Reset:** whether release 1 offers "remove all data from this device" (beyond removing one tree) is not decided.
 - **G12 Tags and relation types branches (closed by D-177, D-178).**
 - **G13 Beta format change (ADR-085):** the prompt before an update that changes the stored format, the Obsidian export of every tree, old trees shown as not readable, the import as new trees after it. Sketch needed before the first beta format change.
-- **C1 Export in More:** D-53 lists Export in More; D-122, which revises More, does not. One of them must be confirmed.
+- **C1 Export in More (resolved by D-179):** no Export entry in More; whole-tree export is in More › Trees.
 - **C2 Tree theme in two places:** More › Theme of this tree (D-122) and More › Trees › ⋯ › Theme (D-119). Probably intended (open tree versus any tree), but not stated.
 - **C3 Name of backlinks from text:** "Mentioned in" (D-85, D-111) or "Linked from" (architecture section 8); open in the architecture row "Predefined relation types in new trees".
 - **C4 Tutorial wording:** the architecture says "Show the tutorial again"; D-163 chose "Bring the tutorial back". Non-log text in the architecture should follow D-163.
