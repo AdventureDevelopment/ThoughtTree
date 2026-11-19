@@ -451,7 +451,7 @@ docs/        architecture, ADRs
 | `tree.exported` | `form`, `format`, `seen`; a readable export of the whole tree (ADR-078) |
 
 - `afterItemId` names the sibling the item is placed directly after; empty means first child of the parent, or first top-level item when the parent is empty
-- `reverts` (optional, on events written by undo) names the event this event reverts, like git's "This reverts commit …"; the history shows it, and quick undo skips reverted events (ADR-059)
+- `reverts` (optional, on events written by undo) names the event this event reverts, like git's "This reverts commit …"; the history shows it, and quick undo skips reverted events (ADR-059); export events (`item.exported`, `tree.exported`) record a fact and are never undone: quick undo skips them, and the history of their item or tree shows them without offering to revert them (ADR-078)
 - `replaces` lists the event ids of the changes this change replaces; `seen` holds, for every device of the tree, the highest clock received from it (see Conflict resolution)
 - `format` names the text format of title and note; initially always `markdown`; it keeps a later change of format possible without guessing what older texts meant
 - Title and note changes carry the full text; one event is written per editing session (when the user leaves the field or after a short pause), not per keystroke, so the log does not grow with every edit
