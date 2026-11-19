@@ -12,7 +12,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 [Trait("ADR", "ADR-046")]
 public partial class InfrastructureRules
 {
-    private static IReadOnlyList<string> Workflows => Repository.Files(Path.Combine(".github", "workflows"), "*.yml");
+    private static IReadOnlyList<string> Workflows => Workflow.Files();
 
     private static IReadOnlyList<string> DeployScripts => Repository.Files(Path.Combine("eng", "deploy"), "*.sh");
 
@@ -39,6 +39,16 @@ public partial class InfrastructureRules
             JobLevelIdToken().IsMatch(text).ShouldBeTrue($"{Repository.Relative(workflow)}: the signing-in job needs id-token: write");
             TopLevelIdToken().IsMatch(text).ShouldBeFalse($"{Repository.Relative(workflow)}: grant id-token: write per job, not to the whole workflow");
         }
+
+        foreach (var workflow in Workflow.All())
+        {
+            Workflow.GrantsWrite(workflow.Permissions, "id-token").ShouldBeFalse($"{workflow.Name}: grant id-token: write per job, not to the whole workflow");
+            foreach (var job in workflow.Jobs.Where(j => j.Steps.Any(s => s.Run?.Contains("azure-sign-in.sh", StringComparison.Ordinal) == true)))
+            {
+                job.CanRequestIdToken.ShouldBeTrue($"{job}: the signing-in job needs id-token: write");
+                job.Environment.ShouldNotBeNull($"{job}: signs in only inside a GitHub environment, whose branch rules and reviewers guard the identity");
+            }
+        }
     }
 
     [Fact]
@@ -50,6 +60,28 @@ public partial class InfrastructureRules
             TopLevelPermissions().IsMatch(text).ShouldBeTrue($"{Repository.Relative(workflow)}: declare top-level permissions");
             PullRequestTargetTrigger().IsMatch(text).ShouldBeFalse($"{Repository.Relative(workflow)}: pull_request_target would hand secrets and tokens to pull request code");
         }
+
+        foreach (var workflow in Workflow.All())
+        {
+            workflow.Permissions.ShouldNotBeNull($"{workflow.Name}: declare top-level permissions");
+            workflow.Triggers.ShouldNotContain("pull_request_target", $"{workflow.Name}: pull_request_target would hand secrets and tokens to pull request code");
+            Workflow.Scalar(workflow.Permissions).ShouldNotBe("write-all", $"{workflow.Name}: no write-all");
+            workflow.Jobs.Where(j => Workflow.Scalar(Workflow.Child(j.Node, "permissions")) == "write-all").Select(j => j.ToString())
+                .ShouldBeEmpty("no job gets write-all");
+        }
+    }
+
+    [Fact]
+    public void No_expression_is_expanded_inside_a_shell_script()
+    {
+        // ${{ }} in run: is pasted into the script before the shell sees it, so text from a branch name, title,
+        // input or event becomes code. Values go through env: and are read as shell variables.
+        var offenders = Workflow.All()
+            .SelectMany(w => w.Jobs)
+            .SelectMany(j => j.Steps.Where(s => s.Run?.Contains("${{", StringComparison.Ordinal) == true).Select(_ => j.ToString()))
+            .ToList();
+
+        offenders.ShouldBeEmpty("pass expressions through env:, never ${{ }} inside run:");
     }
 
     [Fact]
@@ -70,6 +102,13 @@ public partial class InfrastructureRules
         AutomaticTrigger().IsMatch(production).ShouldBeFalse("production starts only by hand");
         production.ShouldContain("environment: production", customMessage: "the GitHub environment 'production' holds the owner's approval");
 
+        var parsed = Workflow.Load(Repository.PathOf(".github", "workflows", "deploy-production.yml"));
+        parsed.Triggers.SetEquals(["workflow_dispatch"]).ShouldBeTrue("production starts only by hand: workflow_dispatch and nothing else");
+        parsed.Jobs.Where(j => j.CanRequestIdToken).ShouldAllBe(j => j.Environment == "production", "the job that signs in waits for the approval in the environment 'production'");
+        Workflow.All().Where(w => w.Name != ".github/workflows/deploy-production.yml").SelectMany(w => w.Jobs)
+            .Where(j => j.Environment == "production").Select(j => j.ToString())
+            .ShouldBeEmpty("only deploy-production.yml uses the environment 'production'");
+
         var others = Workflows.Where(f => !f.EndsWith("deploy-production.yml", StringComparison.Ordinal));
         foreach (var workflow in others)
         {
@@ -84,11 +123,19 @@ public partial class InfrastructureRules
     {
         var test = File.ReadAllText(Repository.PathOf("infra", "test.bicepparam"));
         var production = File.ReadAllText(Repository.PathOf("infra", "production.bicepparam"));
+        var preview = File.ReadAllText(Repository.PathOf("infra", "preview.bicepparam"));
 
         test.ShouldContain("using 'main.bicep'");
         production.ShouldContain("using 'main.bicep'");
+        preview.ShouldContain("using 'main.bicep'");
         ParameterNames(production).ShouldBe(ParameterNames(test), "ADR-046: both environments set the same parameters of the same template");
-        File.ReadAllText(Repository.PathOf("infra", "main.bicep")).ShouldNotContain("environmentName ==", customMessage: "behaviour differs through parameters, not through the environment's name");
+        ParameterNames(preview).ShouldBe(ParameterNames(test), "ADR-046: previews use the same template and parameters");
+        Repository.Files("infra", "*.bicepparam").Select(f => Path.GetFileName(f)).Order(StringComparer.Ordinal)
+            .ShouldBe(["preview.bicepparam", "production.bicepparam", "test.bicepparam"]);
+
+        var main = File.ReadAllText(Repository.PathOf("infra", "main.bicep"));
+        main.ShouldNotContain("environmentName ==", customMessage: "behaviour differs through parameters, not through the environment's name");
+        EnvironmentNameUses(main).ShouldBeEmpty("environmentName only names and tags the resource; behaviour differs through other parameters");
     }
 
     [Fact]
@@ -116,6 +163,9 @@ public partial class InfrastructureRules
     [Theory]
     [InlineData("token: ${{ " + "secrets.AZURE_TOKEN }}")]
     [InlineData("  " + "secrets: inherit")]
+    [InlineData("token: ${{ " + "secrets['AZURE_TOKEN'] }}")]
+    [InlineData("all: ${{ toJSON(" + "secrets) }}")]
+    [InlineData("token: ${{ " + "secrets . AZURE_TOKEN }}")]
     public void A_stored_secret_is_found(string text)
     {
         StoredSecrets(text).ShouldNotBeEmpty();
@@ -134,6 +184,58 @@ public partial class InfrastructureRules
     public void The_job_token_is_not_a_stored_secret()
     {
         StoredSecrets("repo_token: ${{ " + "secrets.GITHUB_TOKEN }}").ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData("on: pull_request" + "_target\n")]
+    [InlineData("on: [push, pull_request" + "_target]\n")]
+    [InlineData("on:\n  pull_request" + "_target:\n    types: [opened]\n")]
+    [InlineData("\"on\": {pull_request" + "_target: {}}\n")]
+    public void A_pull_request_target_trigger_is_parsed_in_every_style(string yaml)
+    {
+        Workflow.Parse(yaml + "jobs: {}\n").Triggers.ShouldContain("pull_request" + "_target");
+    }
+
+    [Theory]
+    [InlineData("on: push\n", "push")]
+    [InlineData("on: [push, workflow_dispatch]\n", "push")]
+    [InlineData("on:\n  workflow_run:\n    workflows: [x]\n", "workflow_run")]
+    [InlineData("on: {repository_dispatch: {}}\n", "repository_dispatch")]
+    [InlineData("# workflow_dispatch only\non: [deployment]\n", "deployment")]
+    public void An_automatic_trigger_is_parsed_in_every_style(string yaml, string trigger)
+    {
+        var triggers = Workflow.Parse(yaml + "jobs: {}\n").Triggers;
+        triggers.ShouldContain(trigger);
+        triggers.SetEquals(["workflow_dispatch"]).ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("param environmentName string\nvar x = environmentName == 'production' ? 1 : 2\n", 1)]
+    [InlineData("var x = 'production' == environmentName\n", 1)]
+    [InlineData("var x = environmentName=='production'\n", 1)]
+    [InlineData("var x = contains(environmentName, 'prod')\n", 1)]
+    [InlineData("@allowed([\n  'test'\n])\nparam environmentName string\nresource s 'x' = {\n  name: 'stapp-thoughttree-${environmentName}'\n  tags: {\n    environment: environmentName\n  }\n}\n", 0)]
+    public void Uses_of_the_environment_name_are_found(string bicep, int count)
+    {
+        EnvironmentNameUses(bicep).Count().ShouldBe(count);
+    }
+
+    [Theory]
+    [InlineData("az resource create --id x")]
+    [InlineData("az rest --method put --url x")]
+    [InlineData("az deployment group create -g x --template-file other.bicep")]
+    [InlineData("az deployment sub create --location x")]
+    [InlineData("az staticwebapp create -n x")]
+    [InlineData("az staticwebapp appsettings set -n x")]
+    public void An_imperative_resource_change_is_found(string command)
+    {
+        ImperativeResource().IsMatch(command).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Applying_the_main_template_is_not_imperative()
+    {
+        ImperativeResource().IsMatch("az deployment group create \\\n  --template-file infra/main.bicep").ShouldBeFalse();
     }
 
     [Theory]
@@ -163,10 +265,18 @@ public partial class InfrastructureRules
         UsesLine().Matches(text).Select(m => m.Groups[1].Value)
             .Where(a => !a.StartsWith("./", StringComparison.Ordinal) && !PinnedRef().IsMatch(a));
 
+    /// <summary>Lines of a template that use environmentName for anything but its declaration, the resource name
+    /// and the environment tag.</summary>
+    internal static IEnumerable<string> EnvironmentNameUses(string bicep) =>
+        bicep.Split('\n')
+            .Where(l => l.Contains("environmentName", StringComparison.Ordinal))
+            .Where(l => !AllowedEnvironmentNameUse().IsMatch(l))
+            .Select(l => l.Trim());
+
     private static List<string> ParameterNames(string text) =>
         ParameterLine().Matches(text).Select(m => m.Groups[1].Value).Order(StringComparer.Ordinal).ToList();
 
-    [GeneratedRegex(@"secrets\.[A-Za-z0-9_]+|secrets:\s*inherit", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"secrets[ \t]*\.[ \t]*[A-Za-z_][A-Za-z0-9_]*|secrets[ \t]*\[|toJSON\([ \t]*secrets[ \t]*\)|secrets:\s*inherit", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
     private static partial Regex SecretReference();
 
     [GeneratedRegex(@"--password\b|client-secret|^\s*creds:|azure_static_web_apps_api_token", RegexOptions.CultureInvariant | RegexOptions.Multiline | RegexOptions.IgnoreCase)]
@@ -196,9 +306,12 @@ public partial class InfrastructureRules
     [GeneratedRegex(@"^param\s+(\w+)\s*=", RegexOptions.CultureInvariant | RegexOptions.Multiline)]
     private static partial Regex ParameterLine();
 
-    [GeneratedRegex(@"Microsoft\.Insights|Microsoft\.OperationalInsights|diagnosticSettings|applicationInsights", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"Microsoft\.Insights|Microsoft\.OperationalInsights|Microsoft\.Monitor|diagnosticSettings|applicationInsights|logAnalytics", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
     private static partial Regex TelemetryResource();
 
-    [GeneratedRegex(@"az\s+(group|staticwebapp|identity|role\s+assignment|role\s+definition)\s+create\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"^\s*(param\s+environmentName\s+string\s*|name:\s*'[a-z-]+\$\{environmentName\}'\s*|environment:\s*environmentName\s*)$", RegexOptions.CultureInvariant)]
+    private static partial Regex AllowedEnvironmentNameUse();
+
+    [GeneratedRegex(@"az\s+(group|staticwebapp|identity|role\s+assignment|role\s+definition|resource)\s+create\b|az\s+rest\b|az\s+resource\s+(update|patch|tag)\b|az\s+deployment\s+(sub|mg|tenant)\b|--template-file\s+(?!infra/main\.bicep\b)\S+|--template-uri\b|az\s+staticwebapp\s+(update|appsettings|hostname|users|identity|backends|functions|enterprise-edge)\b", RegexOptions.CultureInvariant)]
     private static partial Regex ImperativeResource();
 }

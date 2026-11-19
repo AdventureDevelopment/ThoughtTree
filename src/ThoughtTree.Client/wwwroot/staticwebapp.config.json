@@ -1,10 +1,14 @@
 {
-  "$comment": "Azure Static Web Apps configuration (ADR-045, ADR-046). The importmap-hash placeholder in script-src is replaced at publish time by eng/deploy/publish-client.sh with the hash of the inline import map that the .NET build writes into index.html.",
+  "$comment": "Azure Static Web Apps configuration (ADR-045, ADR-046). The importmap-hash placeholder in script-src is replaced at publish time by eng/deploy/publish-client.sh with the hash of the inline import map that the .NET build writes into index.html. The routes switch off the sign-in providers Static Web Apps enables on every site (GitHub, Microsoft Entra ID); the app has no accounts there. Routes must not set headers: every header comes from globalHeaders (rule tests, ADR-045).",
   "globalHeaders": {
     "Content-Security-Policy": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' '{importmap-hash}'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
     "Referrer-Policy": "no-referrer",
     "X-Content-Type-Options": "nosniff"
   },
+  "routes": [
+    { "route": "/.auth/login/github", "statusCode": 404 },
+    { "route": "/.auth/login/aad", "statusCode": 404 }
+  ],
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": ["/_framework/*", "/css/*", "*.{css,js,mjs,wasm,dat,json,png,svg,ico,webmanifest}"]

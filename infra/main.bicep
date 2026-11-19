@@ -1,7 +1,11 @@
 // ThoughtTree hosting for one environment (ADR-046): the static client app on Azure Static Web Apps.
 // Deployed by the deploy workflows with test.bicepparam, production.bicepparam or preview.bicepparam; they
-// differ only in their parameter values. No telemetry or logging resource is deployed (ADR-046); the security headers
-// come from staticwebapp.config.json in the client app (ADR-045).
+// differ only in their parameter values. The security headers come from staticwebapp.config.json in the client
+// app (ADR-045).
+// Logging (ADR-046: no IP addresses, no telemetry service): the Free plan offers no log sink or diagnostic
+// setting a template could configure, so there is nothing to switch off here; this template deploys no
+// Application Insights, Log Analytics workspace or diagnostic setting, and the rule tests keep it that way.
+// Whether the platform itself keeps visitor IP addresses is for the owner to check (infra/README.md).
 targetScope = 'resourceGroup'
 
 @description('Name of the environment; part of the resource name.')
