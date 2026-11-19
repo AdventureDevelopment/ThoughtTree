@@ -70,7 +70,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **C1 Export in More (resolved by D-179):** no Export entry in More; whole-tree export is in More › Trees.
 - **C2 Tree theme in two places (settled by D-183):** the open tree's theme on More › This tree…, any tree's in More › Trees › ⋯; intended.
 - **C3 Name of backlinks from text:** "Mentioned in" (D-85, D-111) or "Linked from" (architecture section 8); open in the architecture row "Predefined relation types in new trees".
-- **C4 Tutorial wording:** the architecture says "Show the tutorial again"; D-163 chose "Bring the tutorial back". Non-log text in the architecture should follow D-163.
+- **C4 Tutorial wording (resolved):** architecture.md now uses "Bring the tutorial back" (D-163).
 - **C5 Wide screens:** the navigation column (D-150) repeats parts of More (trees, views, settings); no rule says which More entries it shows, or where the map and conflicts appear there.
 - **Depth:** every path above is at most two taps from the outline (More › X, ⋯ › X); D-80 holds except where G6 forces a submenu.
 - **New Zettelkasten features against the principles:** the map and the relation note fit principle 6 (several dimensions); the item-menu entries for export and import fit "actions where their subject is" (D-53). Readable export must keep the ADR-019 warning in every path, including the quick branch export.
