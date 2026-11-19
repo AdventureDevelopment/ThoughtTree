@@ -2,6 +2,28 @@
 
 Plan: [spike-1-storage-and-aot.md](../spike-1-storage-and-aot.md). Report: [spike-1-report.md](../spike-1-report.md). Code: `spikes/spike-1/` (disposable, not part of `src/` or the gate). Results: `data/results/`, one JSON file per question, device, browser and build, with raw samples, median, p95, browser version, OS, device, build mode, git commit and seed.
 
+## Status (updated after each stage)
+
+Last update: 2026-11-19 12:28 UTC, branch `claude/spike-1`. Use it to resume if the agent session ends; each series writes its own result file, so a missing file means the series has not run.
+
+| Stage | State | Result files |
+| --- | --- | --- |
+| S1 dataset generator, manifest, determinism | done | `data/manifest.json` |
+| S2 storage interface, contract tests (Chromium, Firefox) | done | `s2-contract-desktop.json` |
+| S3 tuning of chunk and batch sizes (chosen: chunk 10,000, batch 1,000, parallel) | done | `s3-tuning-desktop-chromium-interpreted.json` |
+| Q5 bucket lists and pairing code sizes (computed) | done | `q5-sizes-computed.json` |
+| Q1/Q2 Chromium interpreted, 1x, 4x, 6x | 1x and 4x done; 6x running (import left) | `q1-…-chromium-interpreted.json`, `q2-…` |
+| Q1/Q2 Chromium AOT, 1x, 4x, 6x | not started | `q1-…-chromium-aot.json`, `q2-…` |
+| Q1/Q2 Firefox, both builds, 1x | not started | `q1-desktop-firefox-*.json` |
+| Q4 search A, B, C (Chromium 1x, 4x, 6x; Firefox 1x) | not started | `q4-*.json` |
+| Q5 long notes (Chromium 1x, both builds) | not started | `q5-desktop-chromium-*.json` |
+| Q3 kill tests (11 variants, Chromium and Firefox) | not started | `q3-desktop-*.json` |
+| Q2 file sizes with the measured first-load file list | rerun after the AOT series | `q2-sizes-desktop.json` |
+| Report `spike-1-report.md` | not written | – |
+| S8 phone run (owner) | waiting for the owner | `*-phone-*.json` |
+
+To resume in a new session: install the toolchain, generate the datasets (their SHA-256 must match the manifest), run `harness/publish.sh`, then run only the lines of `harness/run-all.sh` whose result files are missing, then `node harness/sizes.mjs` and `node harness/summarise.mjs`, and write the report.
+
 ## Toolchain
 
 - .NET SDK 10.0.404 (`global.json`) and the WebAssembly workload: `dotnet workload install wasm-tools` (needed for the AOT build).
