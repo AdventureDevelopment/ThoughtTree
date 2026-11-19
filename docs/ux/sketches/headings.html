@@ -1,0 +1,255 @@
+<title>Headings in notes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: phone frames in three groups: how a reason shows in the Links sheet (two variants), the relation sheet where type and reason are edited, and when the reason is written while linking (two variants); then the map. Paper tokens as in the other sketches. */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-faint:#9a9084;--t-line:#e9e1d4;--t-edge:#cbbfae;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--t-shade:rgba(42,37,32,.18);--t-pop:#fffdf8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-edge:#5a5046;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-edge:#5a5046;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+h2.v{font-size:17px;margin:28px 0 4px}
+.lead{margin:0 0 6px;color:var(--muted);max-width:76ch}
+.row{display:flex;flex-wrap:wrap;gap:22px;margin-top:10px}
+.col{flex:1 1 290px;max-width:330px;min-width:0}
+h3{font-size:14.5px;margin:0 0 8px}
+p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
+.ph{position:relative;height:640px;border-radius:20px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:14px}
+.top{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--t-line);font-size:12.5px;color:var(--t-muted);min-height:40px}
+.top b{color:var(--t-text)}
+.sp{flex:1}
+.fhead{background:var(--t-card);padding:14px 14px 6px}
+.fhead h4{font-size:19px;font-weight:400;margin:0 0 6px;line-height:1.25}
+.fline{display:flex;gap:14px;font-size:12.5px;color:var(--t-acc-text);padding:6px 0 8px}
+.page{flex:1;background:var(--t-card)}
+.shade{position:absolute;inset:0;background:var(--t-shade)}
+.sheet{position:absolute;inset:auto 0 0 0;background:var(--t-pop);border-top:1px solid var(--t-line);border-radius:16px 16px 0 0;padding:6px 0 14px;box-shadow:0 -8px 28px rgba(0,0,0,.15);font-size:13.5px}
+.grab{width:36px;height:4px;border-radius:2px;background:var(--t-line);margin:0 auto 8px}
+.shead{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--t-line);padding:0 14px 6px}
+.stab{font-size:13px;padding:5px 10px;border-radius:999px;color:var(--t-muted)}
+.stab.on{background:var(--t-sel);color:var(--t-acc-text);font-weight:600}
+.x{color:var(--t-acc-text);font-weight:700;padding:4px 8px}
+.g{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t-muted);padding:10px 14px 4px}
+.r{display:flex;gap:8px;padding:9px 14px;border-bottom:1px solid var(--t-line);align-items:flex-start}
+.r .m{flex:1;min-width:0}
+.ty{color:var(--t-muted);font-size:12px}
+.ti{font-size:14px}
+.why{font-size:12.5px;color:var(--t-muted);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.why.add{color:var(--t-acc-text);font-size:11.5px}
+.ed{color:var(--t-acc-text);font-weight:700;padding:2px 6px}
+.bub{font-size:12px;color:var(--t-acc-text);padding:2px 6px}
+.ctx{font-size:12.5px;color:var(--t-muted);margin-top:2px}
+.addl{display:inline-block;font-size:14px;color:var(--t-acc-text);border:1.5px solid var(--t-line);border-radius:10px;padding:7px 13px;margin:10px 14px 0}
+.fbl{font-size:11.5px;color:var(--t-faint);padding:10px 14px 0;border-top:1px solid var(--t-line);margin-top:10px}
+.rel{display:flex;flex-direction:column;gap:4px;padding:10px 14px;border-bottom:1px solid var(--t-line)}
+.rel .ends{font-size:14px}
+.typ{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:13.5px;border:1.5px solid var(--t-line);border-radius:10px;padding:5px 10px;color:var(--t-text);background:var(--t-card)}
+.typ b{color:var(--t-acc-text);font-weight:600}
+.lab{font-size:12px;color:var(--t-muted);padding:10px 14px 4px}
+.field{margin:0 14px;border:1.5px solid var(--t-accent);border-radius:10px;padding:9px 11px;min-height:84px;background:var(--t-card);font-size:14px;color:var(--t-text)}
+.field.ph0{color:var(--t-faint);border-color:var(--t-line)}
+.caret{display:inline-block;width:1.5px;height:16px;background:var(--t-accent);vertical-align:-3px}
+.meta{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-size:12.5px;color:var(--t-acc-text)}
+.rm{margin:6px 14px 0;font-size:13.5px;color:var(--t-text);padding:9px 0;border-top:1px solid var(--t-line)}
+.kb{height:190px;background:var(--t-line);opacity:.7;display:grid;place-items:center;font-size:12px;color:var(--t-muted);margin-top:auto}
+.tb{display:flex;gap:14px;align-items:center;padding:6px 12px;border-top:1px solid var(--t-line);background:var(--t-bg);font-size:14px;color:var(--t-acc-text)}
+.tb .sp{flex:1}
+.pick .item{padding:10px 14px;border-bottom:1px solid var(--t-line)}
+.pick .item small{display:block;color:var(--t-muted);font-size:12px}
+.pick .item.sel{background:var(--t-sel)}
+.btnrow{display:flex;gap:8px;padding:12px 14px 0}
+.btn{font-size:13px;color:var(--t-acc-text);border:1.5px solid var(--t-line);border-radius:10px;padding:7px 13px}
+.btn.pri{background:var(--t-accent);border-color:var(--t-accent);color:var(--t-ink)}
+.msg{position:absolute;inset-inline:12px;bottom:76px;background:var(--t-text);color:var(--t-bg);border-radius:12px;padding:10px 12px;font-size:13px;display:flex;gap:10px;align-items:center}
+.msg b{color:var(--t-bg)}
+.msg .a{color:var(--t-sel);font-weight:600;white-space:nowrap}
+.bar{display:flex;justify-content:space-around;border-top:1px solid var(--t-line);background:var(--t-bg);padding:6px 4px 10px;font-size:11px;color:var(--t-muted)}
+.bar span{display:flex;flex-direction:column;align-items:center;gap:1px}
+.bar i{font-style:normal;font-size:16px;color:var(--t-acc-text)}
+.fab{position:absolute;inset-inline-end:14px;bottom:66px;width:50px;height:50px;border-radius:16px;background:var(--t-accent);color:var(--t-ink);display:grid;place-items:center;font-size:22px}
+.mapbox{flex:1;background:var(--t-card);position:relative}
+.mapbox svg{position:absolute;inset:0;width:100%;height:100%}
+.card{position:absolute;inset-inline:10px;bottom:10px;background:var(--t-pop);border:1px solid var(--t-line);border-radius:14px;box-shadow:0 6px 22px rgba(0,0,0,.14);padding:10px 12px;font-size:13px}
+.card b{font-size:14px}
+.card small{display:block;color:var(--t-muted);font-size:12px;margin:1px 0 6px}
+.card .reason{border-inline-start:3px solid var(--t-edge);padding-inline-start:8px;margin:4px 0 8px;color:var(--t-text)}
+.card .reason span{display:block;color:var(--t-muted);font-size:11.5px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.hear{margin-top:10px;border:1px dashed var(--t-edge);border-radius:12px;padding:10px 12px;font-size:13px;background:var(--t-card);color:var(--t-text);max-width:820px}
+.hear b{color:var(--t-acc-text)}
+.list{flex:1;background:var(--t-card);overflow:hidden}
+.n{display:flex;align-items:center;gap:6px;padding:10px 10px;border-bottom:1px solid var(--t-line);white-space:nowrap;overflow:hidden}
+.n .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.n small{color:var(--t-muted);font-size:12px;margin-inline-start:auto}
+.n small.from{margin-inline-start:6px;font-style:italic}
+.n.sys{opacity:.62}
+.c1{padding-inline-start:30px}
+.tw{width:16px;color:var(--t-acc-text);font-weight:700;text-align:center}
+.dot{width:16px;color:var(--t-muted);font-size:9px;text-align:center}
+.back{color:var(--t-acc-text);font-weight:700;background:var(--t-sel);border-radius:8px;padding:2px 9px}
+.pop{position:absolute;width:230px;background:var(--t-pop);border:1px solid var(--t-line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);font-size:13.5px;overflow:hidden}
+.pop .it{display:flex;align-items:center;padding:0 12px;height:38px}
+.pop .it.on{color:var(--t-acc-text);font-weight:600}
+.pop .grp{border-top:1px solid var(--t-line)}
+.pop .fbl{margin-top:0}
+.navc{display:flex;flex-direction:column;gap:5px;padding:12px 14px;font-size:13px;background:var(--t-bg)}
+.navc .h{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t-muted);margin-top:8px}
+.navc small{color:var(--t-muted);font-size:11.5px;margin-inline-start:4px}
+.navc .sub{padding-inline-start:14px}
+.navc .more{color:var(--t-acc-text)}
+.hint{display:flex;align-items:center;gap:8px;margin:8px 12px;padding:8px 10px;border-radius:10px;background:var(--t-sel);font-size:12.5px}
+.hint .a,.tagged .a{margin-inline-start:auto;color:var(--t-acc-text);font-weight:600;white-space:nowrap}
+.chipt{font-size:13px;border-radius:999px;padding:2px 10px;background:var(--t-sel);color:var(--t-acc-text)}
+.chipt.big{font-size:18px;padding:3px 14px}
+.note{font-size:13.5px;color:var(--t-text);padding:10px 14px;background:var(--t-card)}
+.sec{padding:5px 14px;background:var(--t-card);font-size:14.5px}
+.sec small{display:block;color:var(--t-muted);font-size:12.5px}
+.tagged{display:flex;align-items:center;padding:12px 14px 6px;background:var(--t-card);font-size:12.5px;border-top:1px solid var(--t-line)}
+.g2{color:var(--t-muted);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.tyblock{background:var(--t-card);padding:6px 14px 10px;border-bottom:1px solid var(--t-line)}
+.tyrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;font-size:13.5px}
+.tyrow .lbl{color:var(--t-muted)}
+.fld{border:1.5px solid var(--t-line);border-radius:8px;padding:4px 10px;background:var(--t-bg)}
+.sw{width:40px;height:24px;border-radius:12px;background:var(--t-line);position:relative;flex:none}
+.sw span{position:absolute;inset-block:3px;inset-inline-start:3px;width:18px;border-radius:50%;background:var(--t-card)}
+.ex{font-size:12.5px;color:var(--t-muted);background:var(--t-bg);border-radius:8px;padding:7px 9px;margin-top:4px}
+.ex b{color:var(--t-acc-text);font-weight:600}
+.tags{display:flex;gap:6px;margin-bottom:8px}
+.tag{font-size:11px;border-radius:999px;padding:1px 8px;background:var(--t-sel);color:var(--t-acc-text)}
+.tag.on{outline:2px solid var(--t-accent)}
+.hint2{font-size:12px;color:var(--t-muted);padding:8px 14px 0}
+.opt{padding:8px 14px;font-size:13.5px;border-bottom:1px solid var(--t-line)}
+.opt small{color:var(--t-muted);font-size:11.5px;margin-inline-start:6px}
+.opt.on{color:var(--t-acc-text);font-weight:600}
+.opt.off{color:var(--t-faint)}
+.opt.more{color:var(--t-acc-text)}
+.warn{margin:10px 14px 0;padding:10px 12px;border-radius:10px;background:var(--t-sel);font-size:12.5px;line-height:1.45}
+.warn1{margin:10px 14px 0;font-size:12.5px;color:var(--t-text)}
+.warn1 u{color:var(--t-acc-text)}
+.check{margin:10px 14px 0;font-size:13px}
+.btn.dim{opacity:.45}
+.p{font-size:13px;margin:10px 14px 0;color:var(--t-text)}
+.p.small{font-size:12px;color:var(--t-muted)}
+.fld2{margin:0 14px;border:1.5px solid var(--t-line);border-radius:8px;padding:6px 10px;font-size:14px;background:var(--t-card)}
+.swrow{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;font-size:13.5px;border-bottom:1px solid var(--t-line)}
+.sw.on{background:var(--t-accent)}
+.sw.on span{inset-inline-start:19px}
+.foot{font-size:12px;color:var(--t-muted);padding:10px 14px 0}
+.prog{padding:10px 14px;background:var(--t-sel);display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;font-size:13px}
+.prog .pb{grid-column:1;height:6px;border-radius:3px;background:var(--t-line);overflow:hidden}
+.prog .pb span{display:block;height:100%;background:var(--t-accent)}
+.prog .btn{grid-row:1 / span 2;grid-column:2}
+.prog .ps{grid-column:1 / -1;font-size:11.5px;color:var(--t-muted)}
+.n.rep .t{font-weight:600}
+
+.srow{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;font-size:14px;border-bottom:1px solid var(--t-line);background:var(--t-card)}
+.srow .a{color:var(--t-acc-text);font-size:12.5px}
+.swrow{background:var(--t-card)}
+.swrow .sub{display:block;color:var(--t-muted);font-size:11.5px}
+.notebox{background:var(--t-card);margin:0;padding:6px 14px 8px 12px;border-inline-start:3px solid var(--t-line);margin-inline-start:14px;font-size:13.5px}
+.notebox p,.note p{margin:4px 0}
+.nh{font-weight:600;font-size:13.5px;margin-top:8px;color:var(--t-text)}
+.nh2{font-weight:600;font-size:14px;margin-top:8px;position:relative}
+.hm{position:absolute;inset-inline-start:-11px;color:var(--t-faint);font-weight:400}
+.sec.mv{position:relative;padding-inline-end:40px}
+.sec.mv::after{content:"✣";position:absolute;inset-inline-end:14px;top:6px;color:var(--t-muted)}
+.md{margin:0;padding:12px 14px;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;background:var(--t-card);color:var(--t-text)}
+</style>
+
+<h1>Headings in notes, and the page “This tree”</h1>
+<p class="lead">"Headings become thoughts" is a tree feature, on by default (ADR-079). On, a heading typed in a note becomes a thought inside (D-155). Off, notes keep their headings, as Zettelkasten notes from Obsidian do. This sketch shows where the switch lives (More › This tree…, D-183), how Focus tells a heading in a note from a thought shown as a heading when the feature is off, and what the one-document Markdown export does with them. Phone, Paper theme, example content only.</p>
+
+<div class="row">
+  <div class="col">
+    <h3>1 · More › This tree…</h3>
+    <div class="ph"><div class="top"><span class="back">←</span> <b>This tree</b></div>
+      <div class="page" style="padding:6px 0">
+        <div class="lab">Name</div>
+        <div class="srow">Zettelkasten <span class="a">Change it in “Zettelkasten” ›</span></div>
+        <div class="lab">Theme</div>
+        <div class="srow">Paper <span class="a">Change ›</span></div>
+        <div class="lab">What this tree uses</div>
+        <div class="swrow"><span>Tags</span><span class="sw on"><span></span></span></div>
+        <div class="swrow"><span>Relations</span><span class="sw on"><span></span></span></div>
+        <div class="swrow"><span>Headings become thoughts<small class="sub">Off: notes keep their headings, as in Obsidian</small></span><span class="sw"><span></span></span></div>
+        <p class="p small">These apply on every device that holds this tree.</p>
+        <div class="lab">This tree</div>
+        <div class="srow">🕘 History <span class="a">12 ›</span></div>
+        <div class="srow">Export… <span class="a">›</span></div>
+      </div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div></div>
+    <p class="d">One page for the open tree (D-183). The name is the title of the tree's first thought, so it links there. The switches are tree features, shared by all devices (a short line says so); turning one off hides, never deletes. History lists the tree's own events, such as exports (ADR-078). Export… opens D-182's sheet.</p>
+  </div>
+  <div class="col">
+    <h3>3 · Headings in a note marked with a faint # (D-184)</h3>
+    <div class="ph"><div class="top">← Zettelkasten › <b>Spaced repetition</b></div>
+      <div class="fhead"><h4>Spaced repetition</h4><div class="fline"><span>🕘 4</span><span>↗ 2</span><span>↙ 3</span></div></div>
+      <div class="note">
+        <p>Review at growing intervals: a day, three days, a week.</p>
+        <div class="nh2"><span class="hm">#</span>Why it works</div>
+        <p>Each review comes just before forgetting, so recall is effortful.</p>
+        <div class="nh2"><span class="hm">#</span>Where it fails</div>
+        <p>Facts without connections fade anyway.</p>
+      </div>
+      <div class="sec mv">● Leitner boxes<small>Cards move up a box when remembered.</small></div>
+      <div class="sec mv">● Interleaving<small>Mixing topics in one session.</small></div>
+      <div class="page"></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div><div class="fab">📥</div></div>
+    <p class="d">No line around the note; each heading in it carries a faint # in the margin, as Markdown writes it. Closer to how Obsidian users see their notes, but one more symbol on the page, and the difference to a thought rests on two small marks.</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <h3>4 · One note's headings into thoughts</h3>
+    <div class="ph"><div class="top">← Zettelkasten › <b>Spaced repetition</b></div>
+      <div class="fhead"><h4>Spaced repetition</h4><div class="fline"><span>🕘 4</span><span>↗ 2</span><span>↙ 3</span></div></div>
+      <div class="notebox">
+        <p>Review at growing intervals: a day, three days, a week.</p>
+        <div class="nh">Why it works</div>
+        <p>Each review comes just before forgetting…</p>
+        <div class="nh">Where it fails</div>
+        <p>Facts without connections fade anyway.</p>
+      </div>
+      <div class="hint">This note has 2 headings <span class="a">Turn them into thoughts</span></div>
+      <div class="page"></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div></div>
+    <p class="d">With the feature off, "Turn headings into thoughts" (D-153) stays available for one note (ADR-079): a quiet line under a note that has headings, shown while not writing. One action, one Undo. With the feature on, this line appears only for old notes that still hold headings (ADR-072).</p>
+  </div>
+  <div class="col">
+    <h3>5 · Switching it off</h3>
+    <div class="ph"><div class="top"><span class="back">←</span> <b>This tree</b></div>
+      <div class="page" style="padding:6px 0">
+        <div class="swrow"><span>Tags</span><span class="sw on"><span></span></span></div>
+        <div class="swrow"><span>Relations</span><span class="sw on"><span></span></span></div>
+        <div class="swrow"><span>Headings become thoughts<small class="sub">Off: notes keep their headings, as in Obsidian</small></span><span class="sw"><span></span></span></div>
+      </div>
+      <div class="msg" role="status">Headings now stay in notes. Thoughts made from headings stay thoughts. <span class="sp"></span><span class="a">Undo</span></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div></div>
+    <p class="d">Nothing that exists changes (ADR-079): only what typing, pasting and importing do from now on. The message says so in two sentences, with Undo. Switching it on again shows the mirror message.</p>
+  </div>
+  <div class="col">
+    <h3>6 · One Markdown document: what headings in notes become (open)</h3>
+    <div class="ph" style="height:auto">
+      <pre class="md"># Spaced repetition
+
+Review at growing intervals: a day, three days, a week.
+
+**Why it works**
+
+Each review comes just before forgetting, so recall is effortful.
+
+**Where it fails**
+
+Facts without connections fade anyway.
+
+## Leitner boxes
+
+Cards move up a box when remembered.
+
+## Interleaving</pre>
+    </div>
+    <p class="d">The one-document Markdown export writes thoughts as headings (ADR-072). Headings inside notes would look the same and come back as thoughts, so this sketch writes them as bold lines: the document reads well and a re-import keeps them in the note. The Obsidian form (one file per thought) keeps note headings exactly as they are. Alternative: write them one level deeper as real headings, which reads more like a document but turns them into thoughts on re-import.</p>
+  </div>
+</div>

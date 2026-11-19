@@ -21,10 +21,10 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | All-trees search | Not placed | Not decided | Architecture row "All-trees search (UX)" | Missing (G7) |
 | Trees: switch, new | List under the tree's name at the top | Tap "My thoughts ▾"; wide: navigation column | D-115 to D-118, D-164 | Decided |
 | Trees: manage | More › Trees, ⋯ per tree: Rename, Theme, Remove from this device | More › Trees | D-119, D-163 | Decided |
-| Tree settings (tree features: headings ADR-079, tags ADR-082, relations ADR-084) | More › This tree… (replaces "Theme of this tree") | More › This tree… | D-183 | Partly (page to be sketched) |
+| Tree settings (tree features: headings ADR-079, tags ADR-082, relations ADR-084) | More › This tree… (replaces "Theme of this tree") | More › This tree… | D-183, D-184 | Decided |
 | Themes | Theme picker with live preview | Item ⋯ › Theme; More › Theme of this tree; More › Trees › ⋯ › Theme | D-34, D-35, D-65, D-92, D-163 | Decided (one double path, C2) |
 | History of a thought | Sheet | Item ⋯ › History; 🕘 in the Focus line; wide: details column | D-85, D-151 | Decided |
-| History of a tree (exports, ADR-078) | On More › This tree… | More › This tree… | D-183 | Partly (page to be sketched) |
+| History of a tree (exports, ADR-078) | On More › This tree… | More › This tree… | D-183, D-184 | Decided |
 | Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151 | Partly (G9, C3) |
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
 | Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175, D-176 | Decided |
@@ -57,7 +57,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G1 Connection map (closed by D-168 to D-174).**
 - **G2 Relation note and relation type (closed by D-175):** a relation's type is changed with the type chip (ADR-083); managing the types themselves is G12.
 - **G3 Readable import and export (closed by D-179, D-180).**
-- **G4 Tree-level settings (placed by D-183):** the page More › This tree… still needs its sketch, together with headings in notes.
+- **G4 Tree-level settings (closed by D-183, D-184):** open only what the one-document Markdown export writes for headings inside notes.
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search:** scope choice, hits from other trees, going back. Sketch in Task 2.
@@ -80,6 +80,6 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 1. G6: deferred by D-167 until tried (G5 closed by D-166).
 2. G1 and G2: closed (D-168 to D-176).
 3. G3 and C1: closed (D-179, D-180).
-4. G4: one place for tree settings (features, history, theme, rename, remove).
+4. G4: closed except the one-document export of note headings (D-184).
 5. G8, G10, G11: pairing entry, settings list, reset.
 6. G12 and G13 closed (D-177, D-178, D-181).
