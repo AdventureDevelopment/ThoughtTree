@@ -18,7 +18,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Search in the tree or branch | Field over the outline, filters in place | 🔍 in the bar; Ctrl/Cmd+F assumed (D-157) | D-12, D-97, D-98, D-101, D-103 to D-105 | Decided |
 | Tag filter | Filter row like search | Tap a tag chip; tag popover "Show all with …" | D-14, D-64 | Decided |
 | Views (may slip) | Line under the search options | 🔍 › "View: Outline ▾"; tree level "All views"; wide: navigation column | D-39, D-125, D-150 | Decided |
-| All-trees search | Not placed | Not decided | Architecture row "All-trees search (UX)" | Missing (G7) |
+| All-trees search | Not in release 1; idea for later | None | D-186 | Later (out of release 1) |
 | Trees: switch, new | List under the tree's name at the top | Tap "My thoughts ▾"; wide: navigation column | D-115 to D-118, D-164 | Decided |
 | Trees: manage | More › Trees, ⋯ per tree: Rename, Theme, Remove from this device | More › Trees | D-119, D-163 | Decided |
 | Tree settings (tree features: headings ADR-079, tags ADR-082, relations ADR-084) | More › This tree… (replaces "Theme of this tree") | More › This tree… | D-183, D-184 | Decided |
@@ -60,7 +60,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G4 Tree-level settings (closed by D-183 to D-185).**
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
-- **G7 All-trees search:** scope choice, hits from other trees, going back. Sketch in Task 2.
+- **G7 All-trees search (closed by D-186):** not in release 1; search stays per tree.
 - **G8 Pairing:** nothing says where pairing starts (show or scan a code) or where the device label and name are asked (architecture: at the first pairing).
 - **G9 Linked thought in the Links sheet:** where tapping leads is an [ASSUMPTION] in D-85; D-121 answers it only for links in text.
 - **G10 Settings list:** D-122 does not list update consent (ADR-036), the performance report (ADR-051), device label and name, or "Offer feedback" (ADR-070, named in D-123).
