@@ -21,10 +21,10 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | All-trees search | Not placed | Not decided | Architecture row "All-trees search (UX)" | Missing (G7) |
 | Trees: switch, new | List under the tree's name at the top | Tap "My thoughts ▾"; wide: navigation column | D-115 to D-118, D-164 | Decided |
 | Trees: manage | More › Trees, ⋯ per tree: Rename, Theme, Remove from this device | More › Trees | D-119, D-163 | Decided |
-| Tree settings (tree features: headings ADR-079, tags ADR-082, relations ADR-084) | Not placed | Not decided | ADR-079, ADR-082, ADR-084; row "Headings in notes (UX)" | Missing (G4) |
+| Tree settings (tree features: headings ADR-079, tags ADR-082, relations ADR-084) | More › This tree… (replaces "Theme of this tree") | More › This tree… | D-183 | Partly (page to be sketched) |
 | Themes | Theme picker with live preview | Item ⋯ › Theme; More › Theme of this tree; More › Trees › ⋯ › Theme | D-34, D-35, D-65, D-92, D-163 | Decided (one double path, C2) |
 | History of a thought | Sheet | Item ⋯ › History; 🕘 in the Focus line; wide: details column | D-85, D-151 | Decided |
-| History of a tree (exports, ADR-078) | Not placed | Not decided | ADR-078 | Missing (G4) |
+| History of a tree (exports, ADR-078) | On More › This tree… | More › This tree… | D-183 | Partly (page to be sketched) |
 | Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151 | Partly (G9, C3) |
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
 | Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175, D-176 | Decided |
@@ -57,7 +57,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G1 Connection map (closed by D-168 to D-174).**
 - **G2 Relation note and relation type (closed by D-175):** a relation's type is changed with the type chip (ADR-083); managing the types themselves is G12.
 - **G3 Readable import and export (closed by D-179, D-180).**
-- **G4 Tree-level settings:** the tree features "Headings become thoughts" (ADR-079), tags (ADR-082) and relations (ADR-084), and the tree's history (export events, ADR-078) have no place; More › Trees › ⋯ holds only Rename, Theme, Remove.
+- **G4 Tree-level settings (placed by D-183):** the page More › This tree… still needs its sketch, together with headings in notes.
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search:** scope choice, hits from other trees, going back. Sketch in Task 2.
@@ -68,7 +68,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G12 Tags and relation types branches (closed by D-177, D-178).**
 - **G13 Beta format change (closed by D-181).** The ordinary update banner ("A new version is ready · Update") is named there too; the rest of update consent (G10) stays open.
 - **C1 Export in More (resolved by D-179):** no Export entry in More; whole-tree export is in More › Trees.
-- **C2 Tree theme in two places:** More › Theme of this tree (D-122) and More › Trees › ⋯ › Theme (D-119). Probably intended (open tree versus any tree), but not stated.
+- **C2 Tree theme in two places (settled by D-183):** the open tree's theme on More › This tree…, any tree's in More › Trees › ⋯; intended.
 - **C3 Name of backlinks from text:** "Mentioned in" (D-85, D-111) or "Linked from" (architecture section 8); open in the architecture row "Predefined relation types in new trees".
 - **C4 Tutorial wording:** the architecture says "Show the tutorial again"; D-163 chose "Bring the tutorial back". Non-log text in the architecture should follow D-163.
 - **C5 Wide screens:** the navigation column (D-150) repeats parts of More (trees, views, settings); no rule says which More entries it shows, or where the map and conflicts appear there.
