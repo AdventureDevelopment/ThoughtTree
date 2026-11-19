@@ -2,7 +2,7 @@
 
 Status: check of topic 7 of [ux-concept.md](../ux-concept.md) on 2026-11-18, against D-1 to D-165, ADR-060 to ADR-072, ADR-074, ADR-077 to ADR-081, [zettelkasten-claim.md](../zettelkasten-claim.md) and the open decisions in section 9 of [architecture.md](../architecture.md). This file decides nothing; it lists where every place lives and what is missing. Decisions are recorded in the log of ux-concept.md.
 
-**Verdict on 2026-11-18: not done.** Missing were the places of the release 1 features added since 2026-11-16 and several smaller places. **Update 2026-11-19, after D-166 to D-192: done for release 1, with three things still open:** the exchange flow and the pairing screens are placed but not sketched (ADR-064 needs sketches before building), and the item menu (G6) is built in its simplest form and decided after the owner has tried it (D-167). Places for features that may slip to 1.x (importing a tree into another, template link slots, the diagnostics view) wait until those features are built.
+**Verdict on 2026-11-18: not done.** Missing were the places of the release 1 features added since 2026-11-16 and several smaller places. **Update 2026-11-19, after D-166 to D-193: done for release 1.** One thing stays open on purpose: the item menu (G6) is built in its simplest form and decided after the owner has tried it (D-167). Places for features that may slip to 1.x (importing a tree into another, template link slots, the diagnostics view) wait until those features are built.
 
 Status: **Decided** = place and path decided; **Partly** = place decided, flow or detail open; **Missing** = no place decided. Phone paths; tablet and desktop use the same paths unless noted (D-157: same bar and 📥 everywhere; D-150 and D-156: three columns on wide screens).
 
@@ -34,8 +34,8 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Tags: add, remove, rename | Chips in Focus, tag picker, tag popover | `@@`; chip ＋; tap a chip | D-14, D-64, D-90 | Decided |
 | Tags (manage: list, describe, nest, delete, join) | Items in the marked branch "Tags" (ADR-082); renaming a tag is a title change | More › Tags; tag chip › Open the tag; wide: navigation column | ADR-082, D-177, D-178 | Decided |
 | Conflicts | Mark on the thought; More › Conflicts while any exist; top of the history | Exchange summary "Show both versions"; More › Conflicts | D-22, D-23, D-127, D-165, D-163 | Decided |
-| Exchange by file (round trip) | Flow from More | More › Exchange with another device | D-19 to D-21, D-126 | Partly (no sketch) |
-| Pairing a device | More › This tree… › Pair another device…; also prompted by a file from another tree | More › This tree… | D-81, D-84, D-163, D-187 | Partly (pairing screens need a sketch) |
+| Exchange by file (round trip) | Flow from More | More › Exchange with another device | D-19 to D-21, D-126, D-193 | Decided |
+| Pairing a device | More › This tree… › Pair another device… (shows the code); tree list › ＋ Pair with a device… (scans); also prompted by a file from another tree | More › This tree…; tree list | D-81, D-84, D-187, D-193 | Decided |
 | Import a tree into another (may slip) | Step after pairing | Not placed | D-84 | Partly |
 | Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; in Focus the ⋯ of D-166 | ADR-080, D-180 | Decided |
 | Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078, D-180 | Decided |
@@ -61,7 +61,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search (closed by D-186):** not in release 1; search stays per tree.
-- **G8 Pairing (placed by D-187):** the screens for showing and scanning the code still need a sketch.
+- **G8 Pairing (closed by D-187, D-193).**
 - **G9 Linked thought in the Links sheet (closed by D-190).**
 - **G10 Settings list (closed by D-188).**
 - **G11 Reset (closed by D-189).**
@@ -81,5 +81,5 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 2. G1 and G2: closed (D-168 to D-176).
 3. G3 and C1: closed (D-179, D-180).
 4. G4: closed (D-183 to D-185).
-5. G8, G9, G10, G11, C3, C4, C5: settled (D-187 to D-192); the pairing screens still need a sketch.
+5. G8, G9, G10, G11, C3, C4, C5: settled (D-187 to D-193).
 6. G12 and G13 closed (D-177, D-178, D-181).
