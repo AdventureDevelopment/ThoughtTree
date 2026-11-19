@@ -1,10 +1,10 @@
 # ADR-078: Re-importing a readable export updates the tree it came from
 
-id: ADR-078 · status: Proposed · kind: constraint
+id: ADR-078 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`
 
-Amends ADR-019 (new ids only for items the tree does not know) and ADR-059 (quick undo and the history skip export events, which record a fact, not a change); owner decisions 2026-11-17 (Zettelkasten decision 4b) and 2026-11-18 (export events), proposed for acceptance in a pull request review.
+Amends ADR-019 (new ids only for items the tree does not know) and ADR-059 (quick undo and the history skip export events, which record a fact, not a change); owner decisions 2026-11-17 (Zettelkasten decision 4b) and 2026-11-18 (export events), accepted by the owner 2026-11-19.
 
 - **MUST** write into every readable export the id of each item (Obsidian form: a `thoughttree` property in each file's frontmatter; JSON: the item id; the one-document Markdown and OPML forms carry no ids and always import as a copy) and once per export the id of its export event
 - **MUST** write, for every readable export, an export event into the log: `item.exported` (`itemId`, `form`, `format`, `seen`) when exported from an item's actions, `tree.exported` (`form`, `format`, `seen`) for the whole tree; `seen` is the export point (the highest clock received per device, as on `item.deleted`), `form` is folders or flat files with an `up` property

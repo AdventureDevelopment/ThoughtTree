@@ -58,6 +58,7 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** The starting set (related, supports, contradicts, example_of, cites, depends_on) fits how most people think; users rename, remove or add types when it doesn't fit, rather than giving up on relations.
 - **Signal:** Feedback about relation types; answers to "Do the predefined relation types fit how you think?" (yes / partly / no); in the usage summary, without names: uses per predefined type, number of own types, number of renamed or removed predefined types.
 - **Review when:** one predefined type is almost never used, or removed by most who answer · most users create own types that mean the same thing · relations are hardly used at all.
+- **Superseded** by ADR-084 (owner decision 2026-11-19): relation types are items and a new tree starts with only `related`; this card is kept as history and its signals are no longer collected.
 
 <a id="adr-029"></a>
 

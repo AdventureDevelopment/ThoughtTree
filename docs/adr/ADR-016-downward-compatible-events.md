@@ -4,6 +4,8 @@ id: ADR-016 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`
 
+Amended by ADR-085 (formats may change before release 1; the rules bind stored data from release 1 on); owner decision 2026-11-19.
+
 - **MUST NOT** change or rewrite a stored event; only its envelope may be re-encrypted
 - **MUST** only add fields to existing events; MUST NOT remove a field or change its meaning
 - **MUST** express structure only through the basic events (`item.created`, `item.moved`, `item.deleted`, `item.restored`, `item.title-changed`, `item.note-changed`)

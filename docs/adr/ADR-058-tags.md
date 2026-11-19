@@ -1,6 +1,6 @@
 # ADR-058: Tags as tree elements, typed with `@@`
 
-id: ADR-058 · status: Accepted · kind: constraint
+id: ADR-058 · status: Superseded by ADR-082 · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 

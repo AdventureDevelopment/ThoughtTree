@@ -1,10 +1,10 @@
 # ADR-079: Headings become thoughts is a tree feature
 
-id: ADR-079 · status: Proposed · kind: constraint
+id: ADR-079 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
-Amends ADR-072 (headings in notes), ADR-029 (notes without headings) and ADR-019 (reading headings as items on import); owner decision 2026-11-17 (Zettelkasten session), proposed for acceptance in a pull request review.
+Amends ADR-072 (headings in notes), ADR-029 (notes without headings) and ADR-019 (reading headings as items on import); owner decision 2026-11-17 (Zettelkasten session), accepted by the owner 2026-11-19.
 
 - **MUST** make "Headings become thoughts" a tree feature (`tree.feature-changed`), switched on by default, so all devices and users of a tree write the same way
 - **MUST**, while it is on, behave as ADR-072 says, except that "Keep as one note" when pasting or importing keeps the headings as headings instead of bold lines

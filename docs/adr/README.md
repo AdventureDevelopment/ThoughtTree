@@ -28,6 +28,7 @@ why: <one line>
 ## Conventions
 
 - An ADR that changes another has a line under its header: `Amends ADR-0xx (what); owner decision <date>` (as ADR-073)
+- An amended ADR has a back-pointer line under its header: `Amended by ADR-0yy (what); owner decision <date>`, and marks the replaced sentence inline with `(amended by ADR-0yy: …)`; the amended text stays readable as history until the owner rewrites it
 - `kind: constraint`: required by logic, security or earlier decisions; firm; no outcome block
 - `kind: bet`: rests on an assumption that may turn out wrong; its bet card in [bets.md](bets.md) holds a one-line TL;DR, outcome, assumption, signal and review trigger, kept out of the ADR so the ADR stays short; agents treat its rules as firm until a review changes them, but may point out when a signal or review trigger has occurred
 - Signals must respect privacy: no telemetry; signals come only from the owner's own use, feedback issues and their categories, performance reports, voluntary signal answers and usage summaries in the feedback form (ADR-051), server counters (counts only, no IP addresses or account ids, kept in memory or as daily totals at most, visible only to the operator), and CI numbers (gate time, size budget, mutation score, unreliable tests)

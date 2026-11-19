@@ -4,6 +4,8 @@ id: ADR-059 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
+Amended by ADR-078 (quick undo and the history skip export events, which record a fact, not a change); owner decisions 2026-11-17 and 2026-11-18.
+
 - **MUST** undo a change by writing ordinary new events that restore the previous state (for a delete: the restore of ADR-005); **MUST NOT** remove or alter events in the log
 - **MUST** let every change be reverted from the item's history, whichever device or user made it
 - **MUST** let quick undo (undo button, Ctrl+Z) step back only through the actions of the user on this device, in one sequence across all views, never through changes that arrived from other devices or users

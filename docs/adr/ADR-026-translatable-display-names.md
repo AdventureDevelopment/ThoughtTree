@@ -1,6 +1,6 @@
 # ADR-026: Translatable display names for structural elements
 
-id: ADR-026 · status: Accepted · kind: constraint
+id: ADR-026 · status: Superseded by ADR-084 · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 
