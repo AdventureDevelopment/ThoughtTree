@@ -2,7 +2,7 @@
 
 Status: check of topic 7 of [ux-concept.md](../ux-concept.md) on 2026-11-18, against D-1 to D-165, ADR-060 to ADR-072, ADR-074, ADR-077 to ADR-081, [zettelkasten-claim.md](../zettelkasten-claim.md) and the open decisions in section 9 of [architecture.md](../architecture.md). This file decides nothing; it lists where every place lives and what is missing. Decisions are recorded in the log of ux-concept.md.
 
-**Verdict on 2026-11-18: not done.** Missing were the places of the release 1 features added since 2026-11-16 and several smaller places. **Update 2026-11-19, after D-166 to D-193: done for release 1.** One thing stays open on purpose: the item menu (G6) is built in its simplest form and decided after the owner has tried it (D-167). Places for features that may slip to 1.x (importing a tree into another, template link slots, the diagnostics view) wait until those features are built.
+**Verdict on 2026-11-18: not done.** Missing were the places of the release 1 features added since 2026-11-16 and several smaller places. **Update 2026-11-19, after D-166 to D-193: done for release 1.** One thing stays open on purpose: the item menu (G6) is built in its simplest form and decided after the owner has tried it (D-167). Provisional as well: the map's keyboard keys (D-172) and note headings as bold lines in the one-document export (D-185). Places for features that may slip to 1.x (importing a tree into another, template link slots, the diagnostics view) wait until those features are built.
 
 Status: **Decided** = place and path decided; **Partly** = place decided, flow or detail open; **Missing** = no place decided. Phone paths; tablet and desktop use the same paths unless noted (D-157: same bar and 📥 everywhere; D-150 and D-156: three columns on wide screens).
 
@@ -54,10 +54,10 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 
 ## Gaps (G) and conflicts (C)
 
-- **G1 Connection map (closed by D-168 to D-174).**
+- **G1 Connection map (closed by D-168 to D-174; the keyboard path D-172 provisional until UI testing).**
 - **G2 Relation note and relation type (closed by D-175):** a relation's type is changed with the type chip (ADR-083); managing the types themselves is G12.
 - **G3 Readable import and export (closed by D-179, D-180).**
-- **G4 Tree-level settings (closed by D-183 to D-185).**
+- **G4 Tree-level settings (closed by D-183 to D-185; D-185 provisional until the owner has tried an export).**
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search (closed by D-186):** not in release 1; search stays per tree.
