@@ -1,6 +1,6 @@
 # ThoughtTree – UX Concept
 
-Status: complete for release 1 (2026-11-15): all eleven topics are worked out, see the decision log (D-1 to D-193). Postponed and listed under Open questions: links as relations (19) with the link part of templates (D-111), the dream features (15, 16) and the review of dormant thoughts (comparison idea 39, not yet an open question). Sketches are in [ux/sketches](ux/sketches/); the prototype in [ux/prototype](ux/prototype/) reflects the decisions up to D-113 only, and the concept wins where they differ. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
+Status: complete for release 1 (2026-11-15): all eleven topics are worked out, see the decision log (D-1 to D-193). Postponed and listed under Open questions: links as relations (19) with the link part of templates (D-111), the dream features (15, 16), the shape of the item menu (20, built in its simplest form first, D-167) and the review of dormant thoughts (comparison idea 39, not yet an open question). Sketches are in [ux/sketches](ux/sketches/); the prototype in [ux/prototype](ux/prototype/) reflects the decisions up to D-113 only, and the concept wins where they differ. Linked from section 8 of [architecture.md](architecture.md); UI specifications refer to this document.
 
 ## Approach
 
@@ -306,7 +306,7 @@ Tags (core decided in D-14; details parked for feature work, none is a foundatio
 1. Duplicates: two devices that create a tag with the same title offline create two tags; decided: the app offers to join them as one action (`tag.joined`: the joined tag's children move under the target, its note is appended, the joined tag item is deleted; ADR-082)
 2. Names with spaces: where `@@name` ends, and whether a tag name can contain spaces
 3. Managing tags: renaming is decided (D-64; a rename is a title change of the tag item); the Tags branch is the list of all tags, and deleting the tag item removes it everywhere, undoable (ADR-082)
-4. Structure: decided (ADR-082): tags are items in the tree's Tags branch, nested tags are child items, and a parent tag includes its nested tags when filtering, searching and counting. Needs sketch, owner to brief the UX session: the open decision "Tags and relation types branches (UX)" in the architecture
+4. Structure: decided (ADR-082): tags are items in the tree's Tags branch, nested tags are child items, and a parent tag includes its nested tags when filtering, searching and counting. Its interface is decided in D-177 and D-178 (the architecture row "Tags and relation types branches (UX)")
 5. Look: colours for tags or not (touches the design tokens, topic 4)
 
 Bottom toolbar (D-17, revised by D-52):

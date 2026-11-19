@@ -1,6 +1,6 @@
 # Information architecture: check for release 1
 
-Status: check of topic 7 of [ux-concept.md](../ux-concept.md) on 2026-11-18, against D-1 to D-165, ADR-060 to ADR-072, ADR-074, ADR-077 to ADR-081, [zettelkasten-claim.md](../zettelkasten-claim.md) and the open decisions in section 9 of [architecture.md](../architecture.md). This file decides nothing; it lists where every place lives and what is missing. Decisions are recorded in the log of ux-concept.md.
+Status: check of topic 7 of [ux-concept.md](../ux-concept.md) on 2026-11-18, against D-1 to D-165, ADR-060 to ADR-072, ADR-074, ADR-077 to ADR-081 (ADR-081 since superseded by ADR-084; ADR-082 to ADR-085 added after merging main on 2026-11-19), [zettelkasten-claim.md](../zettelkasten-claim.md) and the open decisions in section 9 of [architecture.md](../architecture.md). This file decides nothing; it lists where every place lives and what is missing. Decisions are recorded in the log of ux-concept.md.
 
 **Verdict on 2026-11-18: not done.** Missing were the places of the release 1 features added since 2026-11-16 and several smaller places. **Update 2026-11-19, after D-166 to D-193: done for release 1.** One thing stays open on purpose: the item menu (G6) is built in its simplest form and decided after the owner has tried it (D-167). Provisional as well: the map's keyboard keys (D-172) and note headings as bold lines in the one-document export (D-185). Places for features that may slip to 1.x (importing a tree into another, template link slots, the diagnostics view) wait until those features are built.
 
@@ -20,9 +20,9 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Views (may slip) | Line under the search options | 🔍 › "View: Outline ▾"; tree level "All views"; wide: navigation column | D-39, D-125, D-150 | Decided |
 | All-trees search | Not in release 1; idea for later | None | D-186 | Later (out of release 1) |
 | Trees: switch, new | List under the tree's name at the top | Tap "My thoughts ▾"; wide: navigation column | D-115 to D-118, D-164 | Decided |
-| Trees: manage | More › Trees, ⋯ per tree: Rename, Theme, Remove from this device | More › Trees | D-119, D-163 | Decided |
+| Trees: manage | More › Trees, ⋯ per tree: Rename, Theme, Export…, Remove from this device | More › Trees | D-119, D-163, D-179 | Decided |
 | Tree settings (tree features: headings ADR-079, tags ADR-082, relations ADR-084) | More › This tree… (replaces "Theme of this tree") | More › This tree… | D-183, D-184 | Decided |
-| Themes | Theme picker with live preview | Item ⋯ › Theme; More › Theme of this tree; More › Trees › ⋯ › Theme | D-34, D-35, D-65, D-92, D-163 | Decided (one double path, C2) |
+| Themes | Theme picker with live preview | Item ⋯ › Theme; More › This tree… › Theme; More › Trees › ⋯ › Theme | D-34, D-35, D-65, D-92, D-163, D-183 | Decided (C2 intended) |
 | History of a thought | Sheet | Item ⋯ › History; 🕘 in the Focus line; wide: details column | D-85, D-151 | Decided |
 | History of a tree (exports, ADR-078) | On More › This tree… | More › This tree… | D-183, D-184 | Decided |
 | Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151, D-190, D-191 | Decided |
@@ -66,14 +66,14 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G10 Settings list (closed by D-188).**
 - **G11 Reset (closed by D-189).**
 - **G12 Tags and relation types branches (closed by D-177, D-178).**
-- **G13 Beta format change (closed by D-181).** The ordinary update banner ("A new version is ready · Update") is named there too; the rest of update consent (G10) stays open.
+- **G13 Beta format change (closed by D-181).** The ordinary update banner ("A new version is ready · Update") is named there too; "Check for updates" is in More › Settings › App (D-188, G10).
 - **C1 Export in More (resolved by D-179):** no Export entry in More; whole-tree export is in More › Trees.
 - **C2 Tree theme in two places (settled by D-183):** the open tree's theme on More › This tree…, any tree's in More › Trees › ⋯; intended.
 - **C3 Name of backlinks from text (resolved by D-191):** "Linked from" for all, "Mentioned in" for links in notes, "mentions" on the map.
 - **C4 Tutorial wording (resolved):** architecture.md now uses "Bring the tutorial back" (D-163).
 - **C5 Wide screens (resolved by D-192):** places in the navigation column, actions in More, More complete everywhere.
-- **Depth:** every path above is at most two taps from the outline (More › X, ⋯ › X); D-80 holds except where G6 forces a submenu.
-- **New Zettelkasten features against the principles:** the map and the relation note fit principle 6 (several dimensions); the item-menu entries for export and import fit "actions where their subject is" (D-53). Readable export must keep the ADR-019 warning in every path, including the quick branch export.
+- **Depth:** every path above is at most two taps from the outline (More › X, ⋯ › X); D-80 holds; the item menu is one flat list for now (D-167), so no submenu.
+- **New Zettelkasten features against the principles:** the map and the relation note fit principle 6 (several dimensions); the item-menu entries for export and import fit "actions where their subject is" (D-53). Every readable export path keeps the ADR-019 confirmed warning: the full warning with a box on a device's first readable export, after that one line and the button "Export unencrypted" as the confirmation (D-180).
 
 ## Questions for the owner, in proposed order
 
