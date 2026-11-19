@@ -10,8 +10,8 @@ namespace SpikeCore;
 /// </summary>
 public static class Normaliser
 {
-    private const string From = "àáâãåāăąçćĉċčďđèéêëēĕėęěĝğġģĥħìíîïĩīĭįıĵķĺļľŀłñńņňòóôõøōŏőŕŗřśŝşšţťŧùúûũůūŭűųŵýÿŷźżžæœ";
-    private const string To   = "aaaaaaaacccccddeeeeeeeeegggghhiiiiiiiiijklllllnnnnoooooooorrrssssttttuuuuuuuuuwyyyzzzææ";
+    private const string From = "äöüàáâãåāăąçćĉċčďđèéêëēĕėęěĝğġģĥħìíîïĩīĭįıĵķĺļľŀłñńņňòóôõøōŏőŕŗřśŝşšţťŧùúûũůūŭűųŵýÿŷźżžæœ";
+    private const string To   = "aouaaaaaaaacccccddeeeeeeeeegggghhiiiiiiiiijklllllnnnnoooooooorrrssssttttuuuuuuuuuwyyyzzzææ";
 
     private static char Fold(char c)
     {

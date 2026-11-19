@@ -1,0 +1,268 @@
+{
+ "question": "S2 storage contract",
+ "device": "desktop",
+ "machine": {
+  "os": "Linux 6.18.44-fc-v653 x64",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "cpuCount": 4,
+  "memoryGB": 16,
+  "kind": "cloud container (agent environment)"
+ },
+ "gitCommit": "2be29febcdee1a6595765bf2aa505d809d06969b+dirty",
+ "browsers": [
+  {
+   "browser": "chromium",
+   "version": "157.0.8103.78",
+   "passed": true,
+   "results": [
+    {
+     "name": "default: append then read gives the same order and bytes",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: sequence numbers increase by one",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: reading chunks equals reading all",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: a batch with an uncloneable record is rejected and nothing of it is stored",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: a batch with a duplicate key aborts as a whole",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: snapshot round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: index chunks round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: draft round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: append then read gives the same order and bytes",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: sequence numbers increase by one",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: reading chunks equals reading all",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: a batch with an uncloneable record is rejected and nothing of it is stored",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: a batch with a duplicate key aborts as a whole",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: snapshot round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: index chunks round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: draft round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: append then read gives the same order and bytes",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: sequence numbers increase by one",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: reading chunks equals reading all",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: a batch with an uncloneable record is rejected and nothing of it is stored",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: a batch with a duplicate key aborts as a whole",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: snapshot round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: index chunks round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: draft round trip",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "browser": "firefox",
+   "version": "155.0",
+   "passed": true,
+   "results": [
+    {
+     "name": "default: append then read gives the same order and bytes",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: sequence numbers increase by one",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: reading chunks equals reading all",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: a batch with an uncloneable record is rejected and nothing of it is stored",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: a batch with a duplicate key aborts as a whole",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: snapshot round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: index chunks round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "default: draft round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: append then read gives the same order and bytes",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: sequence numbers increase by one",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: reading chunks equals reading all",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: a batch with an uncloneable record is rejected and nothing of it is stored",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: a batch with a duplicate key aborts as a whole",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: snapshot round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: index chunks round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "relaxed: draft round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: append then read gives the same order and bytes",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: sequence numbers increase by one",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: reading chunks equals reading all",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: a batch with an uncloneable record is rejected and nothing of it is stored",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: a batch with a duplicate key aborts as a whole",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: snapshot round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: index chunks round trip",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "name": "strict: draft round trip",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  }
+ ]
+}

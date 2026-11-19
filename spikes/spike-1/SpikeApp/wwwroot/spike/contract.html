@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Spike 1 storage contract</title></head>
+<body><pre id="out">running</pre>
+<script type="module">
+// Contract tests of the spike storage interface (plan section 2), run in each browser by harness/contract.mjs.
+import { IdbStore } from './storage.js';
+const results = [];
+const check = (name, ok, detail) => results.push({ name, ok: !!ok, detail: detail ?? null });
+const rec = (i) => ({ v: 1, eventId: 'e' + i, keyId: 'k', nonce: new Uint8Array([i & 255, 1, 2]), payload: new Uint8Array(Array.from({ length: 50 + (i % 7) }, (_, j) => (i * 31 + j) & 255)) });
+const same = (a, b) => a.eventId === b.eventId && a.payload.length === b.payload.length && a.payload.every((x, j) => x === b.payload[j]) && a.nonce.every((x, j) => x === b.nonce[j]);
+try {
+  for (const durability of ['default', 'relaxed', 'strict']) {
+    const name = 'contract-' + durability;
+    await IdbStore.delete(name);
+    const s = await IdbStore.open(name, durability);
+    const all = Array.from({ length: 2500 }, (_, i) => rec(i));
+    for (let i = 0; i < all.length; i += 100) await s.appendBatch(all.slice(i, i + 100));
+    const back = await s.readAfter(0, 1e9);
+    check(durability + ': append then read gives the same order and bytes', back.length === all.length && back.every((r, i) => same(r, all[i])));
+    check(durability + ': sequence numbers increase by one', back.every((r, i) => i === 0 || r.seq === back[i - 1].seq + 1));
+    let chunked = [], after = 0;
+    for (;;) { const c = await s.readAfter(after, 333); if (!c.length) break; chunked.push(...c); after = c[c.length - 1].seq; }
+    check(durability + ': reading chunks equals reading all', chunked.length === back.length && chunked.every((r, i) => r.seq === back[i].seq && same(r, back[i])));
+    const before = await s.countEvents();
+    let failed = false;
+    try { await s.appendBatch([rec(9001), rec(9002), { ...rec(9003), bad: () => 1 }, rec(9004)]); } catch { failed = true; }
+    check(durability + ': a batch with an uncloneable record is rejected and nothing of it is stored', failed && (await s.countEvents()) === before);
+    failed = false;
+    try { await s.appendBatch([rec(9101), { ...rec(9102), seq: back[5].seq }, rec(9103)]); } catch { failed = true; }
+    const after2 = await s.readAfter(0, 1e9);
+    check(durability + ': a batch with a duplicate key aborts as a whole', failed && after2.length === before && !after2.some(r => r.eventId === 'e9101' || r.eventId === 'e9103'));
+    const snap = { seq: 42, iv: new Uint8Array([1, 2, 3]), ct: new Uint8Array(1 << 20).fill(7) };
+    await s.putSnapshot(snap);
+    const snapBack = await s.getSnapshot();
+    check(durability + ': snapshot round trip', snapBack.seq === 42 && snapBack.ct.length === snap.ct.length && snapBack.ct[12345] === 7);
+    await s.putIndexChunks([new Uint8Array([1]), new Uint8Array([2, 3])]);
+    const ix = await s.getIndexChunks();
+    check(durability + ': index chunks round trip', ix.length === 2 && ix[1][1] === 3);
+    await s.putDraft('item-1', { text: 'Grüße 🌳', version: 3 });
+    const d = await s.getDraft('item-1');
+    check(durability + ': draft round trip', d.text === 'Grüße 🌳' && d.version === 3);
+    s.close();
+    await IdbStore.delete(name);
+  }
+} catch (e) { check('no exception', false, String(e)); }
+window.contractResults = results;
+document.getElementById('out').textContent = JSON.stringify(results, null, 1);
+</script></body></html>
