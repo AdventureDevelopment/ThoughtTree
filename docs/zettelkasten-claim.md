@@ -75,7 +75,7 @@ Decided by the owner, 2026-11-18 (decision 5b), mirroring the import (4c):
 | Link with fixed text | `[[Target\|text]]` | as above |
 | Relation without a note | frontmatter list keyed by the type: `supports: ["[[X]]"]` | relation of that type |
 | Relation with a note | Dataview line at the end of the note: `supports:: [[X]] because …` | relation and its note |
-| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_`. Owner 2026-11-19 (ADR-084, Proposed): every type by its title, `related` included, spaces as `_` | by fixed id or name; unknown keys define a new type (with ADR-084: by title, a new type item) |
+| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_`. Owner 2026-11-19 (ADR-084, Proposed): every type by its title, `related` included (no fixed ids, ADR-084), spaces as `_` | by fixed id or name; unknown keys define a new type (with ADR-084: by title, a new type item) |
 | Tags | `tags:` list, spaces as `-`; nested tags as paths `a/b` (ADR-082, Proposed) | tags; paths become nested tag items |
 | Kept properties | merged back into the frontmatter | the kept block |
 | Tags and relation types (owner 2026-11-19, ADR-082, ADR-084) | the Tags and Relation types branches as folders, one note per tag or type with its note as body; a type's `thoughttree-symmetric` and `thoughttree-reverse` | tag and type items, matched by the note's `thoughttree` id |
