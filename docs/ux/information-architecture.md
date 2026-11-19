@@ -41,8 +41,8 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078, D-180 | Decided |
 | Readable export of the tree, import as a new tree (vault) | More › Trees › ⋯ › Export… (encrypted copy first, D-182); tree list › ＋ Import a tree… | More › Trees; the tree's name at the top | D-179, ADR-019, ADR-078, D-180 | Decided |
 | Import report | An ordinary thought at the end of the imported branch | Outline | Zettelkasten decision 4d | Decided |
-| Settings (device) | More › Settings: hand, language (also Easy), light or dark, export reminder, offer feedback, device label and name | More › Settings; wide: navigation column | D-122, D-126, D-146, ADR-070, architecture section 6 | Partly (G10) |
-| App update consent, performance report | Not placed | Not decided | ADR-036, ADR-051 | Missing (G10) |
+| Settings (device) | More › Settings: you and this device, look and language, reminders, feedback, app (version, updates, performance report) | More › Settings; wide: navigation column | D-122, D-126, D-146, D-188, ADR-036, ADR-051, ADR-070 | Decided |
+| App update consent, performance report | More › Settings › App; format-changing updates by banner (D-181) | More › Settings | D-181, D-188, ADR-036, ADR-051 | Decided |
 | Beta: format-change prompt, export of every tree, import after the update | Banner, then "Before you update" sheet; after the update the tree list | Banner › Before you update; tree list › ＋ Import your exported trees… | ADR-085, D-181 | Decided |
 | Reset or remove all data from this device | Not placed (the prototype had one, D-80) | Not decided | D-80 | Missing (G11) |
 | Feedback | Line at the end of menus and sheets, button at the top, More › Send feedback | As described | D-123, D-124, D-159, ADR-070 | Decided |
@@ -63,7 +63,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G7 All-trees search (closed by D-186):** not in release 1; search stays per tree.
 - **G8 Pairing (placed by D-187):** the screens for showing and scanning the code still need a sketch.
 - **G9 Linked thought in the Links sheet:** where tapping leads is an [ASSUMPTION] in D-85; D-121 answers it only for links in text.
-- **G10 Settings list:** D-122 does not list update consent (ADR-036), the performance report (ADR-051), device label and name, or "Offer feedback" (ADR-070, named in D-123).
+- **G10 Settings list (closed by D-188).**
 - **G11 Reset:** whether release 1 offers "remove all data from this device" (beyond removing one tree) is not decided.
 - **G12 Tags and relation types branches (closed by D-177, D-178).**
 - **G13 Beta format change (closed by D-181).** The ordinary update banner ("A new version is ready · Update") is named there too; the rest of update consent (G10) stays open.
