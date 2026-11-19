@@ -25,7 +25,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Themes | Theme picker with live preview | Item ⋯ › Theme; More › Theme of this tree; More › Trees › ⋯ › Theme | D-34, D-35, D-65, D-92, D-163 | Decided (one double path, C2) |
 | History of a thought | Sheet | Item ⋯ › History; 🕘 in the Focus line; wide: details column | D-85, D-151 | Decided |
 | History of a tree (exports, ADR-078) | On More › This tree… | More › This tree… | D-183, D-184 | Decided |
-| Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151, D-190 | Partly (C3) |
+| Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151, D-190, D-191 | Decided |
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
 | Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175, D-176 | Decided |
 | Relation type of one relation | Type chip in the relation sheet (`relation.type-changed`, ADR-083) | Relation ⋯ › type chip | D-13, D-175, ADR-083 | Decided |
@@ -69,7 +69,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G13 Beta format change (closed by D-181).** The ordinary update banner ("A new version is ready · Update") is named there too; the rest of update consent (G10) stays open.
 - **C1 Export in More (resolved by D-179):** no Export entry in More; whole-tree export is in More › Trees.
 - **C2 Tree theme in two places (settled by D-183):** the open tree's theme on More › This tree…, any tree's in More › Trees › ⋯; intended.
-- **C3 Name of backlinks from text:** "Mentioned in" (D-85, D-111) or "Linked from" (architecture section 8); open in the architecture row "Predefined relation types in new trees".
+- **C3 Name of backlinks from text (resolved by D-191):** "Linked from" for all, "Mentioned in" for links in notes, "mentions" on the map.
 - **C4 Tutorial wording (resolved):** architecture.md now uses "Bring the tutorial back" (D-163).
 - **C5 Wide screens:** the navigation column (D-150) repeats parts of More (trees, views, settings); no rule says which More entries it shows, or where the map and conflicts appear there.
 - **Depth:** every path above is at most two taps from the outline (More › X, ⋯ › X); D-80 holds except where G6 forces a submenu.
