@@ -52,6 +52,9 @@ jobs:
       - name: Publish the client app (policy hash filled in, ADR-045)
         run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
 
+      - name: Install the deploy tools, locked and pinned, before any sign-in (eng/deploy/install-tools.sh)
+        run: eng/deploy/install-tools.sh
+
       - name: Sign in to Azure through OpenID Connect (ADR-046)
         run: eng/deploy/azure-sign-in.sh
 

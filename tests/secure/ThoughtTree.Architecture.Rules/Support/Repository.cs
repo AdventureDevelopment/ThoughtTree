@@ -9,7 +9,7 @@ internal static class Repository
 
     public static string Relative(string path) => Path.GetRelativePath(Root, path).Replace('\\', '/');
 
-    /// <summary>Files below <paramref name="directory"/> matching the pattern, without bin/ and obj/ folders.</summary>
+    /// <summary>Files below <paramref name="directory"/> matching the pattern, without bin/, obj/, TestResults/ and node_modules/ folders.</summary>
     public static IReadOnlyList<string> Files(string directory, string searchPattern)
     {
         var start = PathOf(directory);
@@ -27,7 +27,7 @@ internal static class Repository
     private static bool IsBuildOutput(string path)
     {
         var parts = Relative(path).Split('/');
-        return parts.Contains("bin") || parts.Contains("obj") || parts.Contains("TestResults");
+        return parts.Contains("bin") || parts.Contains("obj") || parts.Contains("TestResults") || parts.Contains("node_modules");
     }
 
     private static string FindRoot()

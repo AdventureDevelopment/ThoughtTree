@@ -64,6 +64,10 @@ jobs:
           python3 -I eng/deploy/site_artifact.py fetch --run-id "$RUN_ID"
           --workflow .github/workflows/preview-build.yml --event pull_request --dest "$RUNNER_TEMP/site"
 
+      - name: Install the deploy tools, locked and pinned, before any sign-in (eng/deploy/install-tools.sh)
+        if: steps.target.outputs.skip == 'false'
+        run: eng/deploy/install-tools.sh
+
       - name: Sign in to Azure through OpenID Connect (ADR-046)
         if: steps.target.outputs.skip == 'false'
         run: eng/deploy/azure-sign-in.sh
