@@ -39,7 +39,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Import a tree into another (may slip) | Step after pairing | Not placed | D-84 | Partly |
 | Readable export of a branch | Item menu and Focus | Item ⋯ › Export…; in Focus the ⋯ of D-166 | ADR-080, D-180 | Decided |
 | Readable import into a thought | Item menu and Focus | Item ⋯ › Import into this thought… | ADR-080, ADR-078, D-180 | Decided |
-| Readable export of the tree, import as a new tree (vault) | More › Trees › ⋯ › Export…; tree list › ＋ Import a tree… | More › Trees; the tree's name at the top | D-179, ADR-019, ADR-078, D-180 | Decided |
+| Readable export of the tree, import as a new tree (vault) | More › Trees › ⋯ › Export… (encrypted copy first, D-182); tree list › ＋ Import a tree… | More › Trees; the tree's name at the top | D-179, ADR-019, ADR-078, D-180 | Decided |
 | Import report | An ordinary thought at the end of the imported branch | Outline | Zettelkasten decision 4d | Decided |
 | Settings (device) | More › Settings: hand, language (also Easy), light or dark, export reminder, offer feedback, device label and name | More › Settings; wide: navigation column | D-122, D-126, D-146, ADR-070, architecture section 6 | Partly (G10) |
 | App update consent, performance report | Not placed | Not decided | ADR-036, ADR-051 | Missing (G10) |
