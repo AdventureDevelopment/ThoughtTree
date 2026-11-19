@@ -1,10 +1,10 @@
 # Spike 1: how to reproduce and how to run the phone part
 
-Plan: [spike-1-storage-and-aot.md](../spike-1-storage-and-aot.md). Report: [spike-1-report.md](../spike-1-report.md). Code: `spikes/spike-1/` (disposable, not part of `src/` or the gate). Results: `data/results/`, one JSON file per question, device, browser and build, with raw samples, median, p95, browser version, OS, device, build mode, git commit and seed.
+Plan: [spike-1-storage-and-aot.md](../spike-1-storage-and-aot.md). Report: [spike-1-report.md](../spike-1-report.md). Tables: [tables.md](tables.md) (generated). Code: `spikes/spike-1/` (disposable, not part of `src/` or the gate). Results: `data/results/`, one JSON file per question, device, browser and build, with raw samples, median, p95, browser version, OS, device, build mode, git commit and seed.
 
 ## Status (updated after each stage)
 
-Last update: 2026-11-19 13:52 UTC, branch `claude/spike-1`. Use it to resume if the agent session ends; each series writes its own result file, so a missing file means the series has not run.
+Last update: 2026-11-19 16:10 UTC, branch `claude/spike-1`. Use it to resume if the agent session ends; each series writes its own result file, so a missing file means the series has not run.
 
 | Stage | State | Result files |
 | --- | --- | --- |
@@ -14,12 +14,12 @@ Last update: 2026-11-19 13:52 UTC, branch `claude/spike-1`. Use it to resume if 
 | Q5 bucket lists and pairing code sizes (computed) | done | `q5-sizes-computed.json` |
 | Q1/Q2 Chromium interpreted, 1x, 4x, 6x | done | `q1-…-chromium-interpreted.json`, `q2-…` |
 | Q1/Q2 Chromium AOT, 1x, 4x, 6x | done | `q1-…-chromium-aot.json`, `q2-…` |
-| Q1/Q2 Firefox, both builds, 1x | running (interpreted) | `q1-desktop-firefox-*.json` |
-| Q4 search A, B, C (Chromium 1x, 4x, 6x; Firefox 1x) | not started | `q4-*.json` |
-| Q5 long notes (Chromium 1x, both builds) | not started | `q5-desktop-chromium-*.json` |
-| Q3 kill tests (11 variants, Chromium and Firefox) | not started | `q3-desktop-*.json` |
-| Q2 file sizes with the measured first-load file list | rerun after the AOT series | `q2-sizes-desktop.json` |
-| Report `spike-1-report.md` | not written | – |
+| Q1/Q2 Firefox, both builds, 1x | done | `q1-desktop-firefox-*.json` |
+| Q4 search A, B, C (Chromium 1x, 4x, 6x; Firefox 1x) | done | `q4-*.json` |
+| Q5 long notes (Chromium 1x, both builds) | done | `q5-desktop-chromium-*.json` |
+| Q3 kill tests (11 variants, Chromium and Firefox) | done, 940 kills or closes, 0 findings | `q3-desktop-*.json` |
+| Q2 file sizes with the measured first-load file list | done | `q2-sizes-desktop.json` |
+| Report `spike-1-report.md` and generated tables `tables.md` | written | – |
 | S8 phone run (owner) | waiting for the owner | `*-phone-*.json` |
 
 To resume in a new session: install the toolchain, generate the datasets (their SHA-256 must match the manifest), run `harness/publish.sh`, then run only the lines of `harness/run-all.sh` whose result files are missing, then `node harness/sizes.mjs` and `node harness/summarise.mjs`, and write the report.
@@ -45,7 +45,7 @@ Run from `spikes/spike-1`:
 | Batch size tuning (S3) | `node harness/run-series.mjs --plan tuning --builds interpreted` |
 | All timing and durability series (several hours) | `harness/run-all.sh` (log in `out/run-all.log`) |
 | Q2 file sizes (after the empty-app series exist) | `node harness/sizes.mjs` |
-| Regenerate the tables of the report | `node harness/summarise.mjs` (replaces the generated parts of `spike-1-report.md`; `--print` only prints) |
+| Regenerate the tables of the report | `node harness/summarise.mjs` (replaces the answers table in `spike-1-report.md` and rewrites `tables.md`; `--print` only prints) |
 
 One page load runs one scenario: `http://localhost:5000/?scenario=snapshot&...` (5000: interpreted, 5001: AOT). The harness builds the query from the manifest (`harness/common.mjs`, `datasetQuery`). A setup run (`scenario=setup`) loads a dataset into IndexedDB and writes the snapshot at event 99,000 and the search indexes, encrypted with the test key.
 
