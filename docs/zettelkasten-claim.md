@@ -111,7 +111,7 @@ Decided by the owner, 2026-11-18 (decision 6): the claim may be made only when a
 7. An edit in Obsidian updates the thought: given an exported branch; when a note's title is changed in the files and they are imported back; then the thought has the new title, its history shows the change, and nothing is duplicated
 8. Edits on both sides: given an exported branch; when the same note is changed in the files and in the app and the files are imported back; then the thought shows a conflict with both versions
 9. A sample vault comes in: given the sample vault "folders"; when it is imported as a new tree; then every note is a thought in its folder's place, wikilinks are links, typed links are relations, and the import report lists attachments and unresolved links
-10. A Breadcrumbs vault: given the sample vault "up property"; when it is imported with the property chosen; then each note sits under its first `up` and further `up` links are relations (folder names: open decision "Tags and relation types as items")
+10. A Breadcrumbs vault: given the sample vault "up property"; when it is imported with the property chosen; then each note sits under its first `up` and further `up` links are relations (folder names as tags: the import flow sketch decides whether the import offers them, ADR-082)
 11. Headings stay: given a tree with "Headings become thoughts" off; when a note with headings is imported; then it keeps its headings
 12. One undo: given a vault was just imported; when the user undoes the last action; then the imported branch and its report are gone
 

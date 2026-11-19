@@ -8,7 +8,7 @@ Amends ADR-024 (identity by from item, type and to item), ADR-077 (the note is k
 
 - **MUST** give every relation an id from the replaceable id generator (ADR-034): `relation.added` (`relationId`, `fromItemId`, `typeId`, `toItemId`)
 - **MUST** change a relation's type only by `relation.type-changed` (`relationId`, `typeId`, `replaces`); concurrent changes of the type are a visible conflict (ADR-018)
-- **MUST** remove and restore a relation by `relation.removed` / `relation.restored` (`relationId`); undo restores the same relation (ADR-059); removing a relation shown as one (see below) removes every relation id it stands for, in one action (ADR-067)
+- **MUST** remove and restore a relation by `relation.removed` / `relation.restored` (`relationId`); undo restores the same relation (ADR-059); concurrent removing and restoring of the same relation is decided by the agreed event order, without conflict marking (owner decision 2026-11-19); removing a relation shown as one (see below) removes every relation id it stands for, in one action (ADR-067)
 - **MUST** key the note of a relation by its id: `relation.note-changed` (`relationId`, `note`, `format`, `replaces`), so the note and its history stay when the type changes
 - **MUST** show relations with equal from item, type and to item (for symmetric types in either order) as one; if more than one of them carries a note, the notes are shown as a visible conflict
 - **MUST NOT** make relations items: a relation has no place in the tree (ADR-023, ADR-024)
