@@ -4,7 +4,7 @@ id: ADR-082 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`
 
-Supersedes ADR-058 (keeps its `@@` shortcut, picker, tree feature, one-tree and join rules) and amends ADR-066 (the tree name also skips the Tags branch), ADR-069 (tags matched by title) and ADR-019 (tags imported as items); owner decisions 2026-11-19 (session "Tags and relation types as items", decisions 2 and 5), accepted by the owner 2026-11-19. Settles the format before release 1, while stored formats are still free to change (ADR-085, Proposed).
+Supersedes ADR-058 (keeps its `@@` shortcut, picker, tree feature, one-tree and join rules) and amends ADR-066 (the tree name also skips the Tags branch), ADR-069 (tags matched by title) and ADR-019 (tags imported as items); owner decisions 2026-11-19 (session "Tags and relation types as items", decisions 2 and 5), accepted by the owner 2026-11-19. Settles the format before release 1, while stored formats are still free to change (ADR-085).
 
 - **MUST** create a branch "Tags" as an ordinary item when a tree is created and mark it with `tree.tags-set` (`itemId`); its title is written in the app language chosen on the creating device; the latest `tree.tags-set` in the agreed order wins, as for the inbox (ADR-066); **MUST NOT** let the Tags branch be moved or deleted; **MUST** skip it when taking the tree name (ADR-066)
 - **MUST** treat every item inside the Tags branch as a tag, by its place, with no mark event: its title is the tag's name, its note the tag's description, its child items its nested tags
