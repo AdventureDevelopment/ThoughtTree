@@ -25,7 +25,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Themes | Theme picker with live preview | Item ⋯ › Theme; More › Theme of this tree; More › Trees › ⋯ › Theme | D-34, D-35, D-65, D-92, D-163 | Decided (one double path, C2) |
 | History of a thought | Sheet | Item ⋯ › History; 🕘 in the Focus line; wide: details column | D-85, D-151 | Decided |
 | History of a tree (exports, ADR-078) | On More › This tree… | More › This tree… | D-183, D-184 | Decided |
-| Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151 | Partly (G9, C3) |
+| Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151, D-190 | Partly (C3) |
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
 | Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175, D-176 | Decided |
 | Relation type of one relation | Type chip in the relation sheet (`relation.type-changed`, ADR-083) | Relation ⋯ › type chip | D-13, D-175, ADR-083 | Decided |
@@ -62,7 +62,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search (closed by D-186):** not in release 1; search stays per tree.
 - **G8 Pairing (placed by D-187):** the screens for showing and scanning the code still need a sketch.
-- **G9 Linked thought in the Links sheet:** where tapping leads is an [ASSUMPTION] in D-85; D-121 answers it only for links in text.
+- **G9 Linked thought in the Links sheet (closed by D-190).**
 - **G10 Settings list (closed by D-188).**
 - **G11 Reset (closed by D-189).**
 - **G12 Tags and relation types branches (closed by D-177, D-178).**
