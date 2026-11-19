@@ -27,8 +27,8 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | History of a tree (exports, ADR-078) | Not placed | Not decided | ADR-078 | Missing (G4) |
 | Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151 | Partly (G9, C3) |
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
-| Relation note | Not placed | Not decided | ADR-077, row "Relation note (UX)" | Missing (G2) |
-| Relation type: change, manage | Not placed ("can be changed afterwards", D-13) | Not decided | D-13; row "Tags and relation types as items" | Missing (G2, parked part) |
+| Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175 | Decided |
+| Relation type: change, manage | Type chip in the relation sheet; managing types parked | Relation ⋯ › type chip | D-13, D-175; row "Tags and relation types as items" | Partly (managing parked) |
 | Connection map | Own place; wide: map in the middle, selected thought at the side | Item ⋯ › Map; ← Back | D-167 to D-174; row "Connection map (follow-ups)" | Decided |
 | Tags: add, remove, rename | Chips in Focus, tag picker, tag popover | `@@`; chip ＋; tap a chip | D-14, D-64, D-90 | Decided |
 | Tags: list of all, delete everywhere | Parked | Parked | Tags open question 3; row "Tags and relation types as items" | Parked |
@@ -53,7 +53,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 ## Gaps (G) and conflicts (C)
 
 - **G1 Connection map (closed by D-168 to D-174).**
-- **G2 Relation note and relation type:** no place to read or write the reason; no place to change a relation's type (D-13). Sketch in Task 2.
+- **G2 Relation note and relation type (closed by D-175):** managing relation types (rename, reverse name, delete) stays with the open decision "Tags and relation types as items".
 - **G3 Readable import and export:** the branch entries exist (ADR-080), but the whole-tree export and the import of a vault as a new tree have no entry, and the flow (formats, Obsidian form, warning, progress, report) is not sketched.
 - **G4 Tree-level settings:** "Headings become thoughts" (ADR-079) and the tree's history (export events, ADR-078) have no place; More › Trees › ⋯ holds only Rename, Theme, Remove.
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
@@ -75,6 +75,6 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 
 1. G6: deferred by D-167 until tried (G5 closed by D-166).
 2. G1: closed (D-168 to D-174).
-3. G3 and C1: where whole-tree export and the vault import as a new tree live.
+2. G3 and C1: where whole-tree export and the vault import as a new tree live.
 4. G4: one place for tree settings (features, history, theme, rename, remove).
 5. G8, G10, G11: pairing entry, settings list, reset.
