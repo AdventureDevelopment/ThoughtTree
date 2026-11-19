@@ -1,0 +1,315 @@
+<title>Item menu length</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: two variants (A flat list, C tiles plus list), each as two phone frames: the menu of a row in the outline, and the ⋯ of the focused thought (D-166). Paper theme tokens as in the other sketches. */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-faint:#9a9084;--t-line:#e9e1d4;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--t-shade:rgba(42,37,32,.18);--t-pop:#fffdf8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+h2.v{font-size:17px;margin:26px 0 4px}
+.lead{margin:0 0 6px;color:var(--muted);max-width:72ch}
+.row{display:flex;flex-wrap:wrap;gap:22px;margin-top:10px}
+.col{flex:1 1 280px;max-width:330px;min-width:0}
+.col h3{font-size:14.5px;margin:0 0 8px}
+.col p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
+.ph{position:relative;height:640px;border-radius:20px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:14px}
+.top{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--t-line);font-size:12.5px;color:var(--t-muted);min-height:40px}
+.top b{color:var(--t-text)}
+.sp{flex:1}
+.fb svg{width:16px;height:16px;fill:none;stroke:var(--t-faint);stroke-width:1.4;stroke-linejoin:round}
+.list{flex:1;background:var(--t-card);overflow:hidden}
+.n{display:flex;align-items:center;gap:6px;padding:10px 10px;border-bottom:1px solid var(--t-line);white-space:nowrap;overflow:hidden}
+.n .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.n.sel{background:var(--t-sel)}
+.c1{padding-inline-start:30px}
+.tw{width:16px;color:var(--t-acc-text);font-weight:700;text-align:center}
+.dot{width:16px;color:var(--t-muted);font-size:9px;text-align:center}
+.more{color:var(--t-acc-text);font-weight:700;padding:0 4px}
+.bar{display:flex;justify-content:space-around;border-top:1px solid var(--t-line);background:var(--t-bg);padding:6px 4px 10px;font-size:11px;color:var(--t-muted)}
+.bar span{display:flex;flex-direction:column;align-items:center;gap:1px}
+.bar i{font-style:normal;font-size:16px;color:var(--t-acc-text)}
+.fab{position:absolute;inset-inline-end:14px;bottom:66px;width:50px;height:50px;border-radius:16px;background:var(--t-accent);color:var(--t-ink);display:grid;place-items:center;font-size:22px}
+.shade{position:absolute;inset:0;background:var(--t-shade)}
+.pop{position:absolute;inset-inline-end:8px;width:226px;background:var(--t-pop);border:1px solid var(--t-line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);font-size:13.5px;overflow:hidden}
+.pop .it{display:flex;align-items:center;gap:9px;padding:0 12px;height:38px}
+.pop .it .ic{width:18px;text-align:center;color:var(--t-acc-text)}
+.pop .grp{border-top:1px solid var(--t-line)}
+.pop .del{color:var(--t-text)}
+.pop .ctx{color:var(--t-muted);font-size:11px;margin-inline-start:auto}
+.pop .fbl{font-size:11.5px;color:var(--t-faint);padding:8px 12px;border-top:1px solid var(--t-line)}
+.pop.scroll{max-height:470px}
+.pop.scroll::after{content:"";position:absolute;inset:auto 0 0 0;height:56px;background:linear-gradient(transparent,var(--t-pop))}
+.scrollhint{position:absolute;inset-inline-end:14px;font-size:11px;color:var(--t-acc-text);background:var(--t-pop);border:1px solid var(--t-line);border-radius:999px;padding:2px 8px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:58px;border-radius:10px;background:var(--t-sel);color:var(--t-text);font-size:11.5px}
+.tile svg{width:20px;height:20px;fill:none;stroke:var(--t-acc-text);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.fhead{background:var(--t-card);padding:14px 14px 6px}
+.fhead h4{font-size:19px;font-weight:400;margin:0 0 6px;line-height:1.25}
+.tags{display:flex;gap:6px;margin-bottom:8px}
+.tag{font-size:11px;border-radius:999px;padding:1px 8px;background:var(--t-sel);color:var(--t-acc-text)}
+.fline{display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--t-acc-text);padding:6px 0 8px;border-bottom:1px solid var(--t-line)}
+.fline .dots{margin-inline-start:auto;font-weight:700;background:var(--t-sel);border-radius:8px;padding:2px 9px}
+.note{font-size:13.5px;color:var(--t-text);padding:10px 14px;background:var(--t-card)}
+.sec{padding:6px 14px;background:var(--t-card);font-size:14.5px}
+.sec small{display:block;color:var(--t-muted);font-size:12.5px}
+.sec{position:relative;padding-inline-end:46px}
+.sec::after{content:"";position:absolute;inset-inline-end:12px;top:6px;width:24px;height:24px;background:var(--t-muted);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v16M4 12h16M9.5 6.5 12 4l2.5 2.5M9.5 17.5 12 20l2.5-2.5M6.5 9.5 4 12l2.5 2.5M17.5 9.5 20 12l-2.5 2.5'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v16M4 12h16M9.5 6.5 12 4l2.5 2.5M9.5 17.5 12 20l2.5-2.5M6.5 9.5 4 12l2.5 2.5M17.5 9.5 20 12l-2.5 2.5'/%3E%3C/svg%3E") center/contain no-repeat}
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+.cmp th,.cmp td{text-align:start;padding:7px 8px;border-bottom:1px solid var(--t-line);vertical-align:top}
+.cmp th{color:var(--muted);font-weight:600}
+.tw-wrap{overflow-x:auto;max-width:860px}
+.panel{display:flex;justify-content:space-between;gap:2px;padding:6px 0 8px;border-bottom:1px solid var(--t-line)}
+.pb{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;font-size:10.5px;color:var(--t-acc-text);padding:3px 2px;border-radius:8px;white-space:nowrap}
+.pb i{font-style:normal;font-size:15px;line-height:20px}
+.pb svg{width:20px;height:20px;fill:none;stroke:var(--t-acc-text);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pb.on{background:var(--t-sel)}
+.sheet{position:absolute;inset:auto 0 0 0;background:var(--t-pop);border-top:1px solid var(--t-line);border-radius:16px 16px 0 0;padding:6px 14px 18px;box-shadow:0 -8px 28px rgba(0,0,0,.15)}
+.grab{width:36px;height:4px;border-radius:2px;background:var(--t-line);margin:0 auto 8px}
+.shead{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--t-line);padding-bottom:6px}
+.stab{font-size:13px;padding:5px 10px;border-radius:999px;color:var(--t-muted)}
+.stab.on{background:var(--t-sel);color:var(--t-acc-text);font-weight:600}
+.x{color:var(--t-acc-text);font-weight:700;padding:4px 8px}
+.empty{font-size:13.5px;color:var(--t-muted);margin:14px 0 10px}
+.addl{display:inline-block;font-size:14px;color:var(--t-acc-text);border:1.5px solid var(--t-line);border-radius:10px;padding:8px 14px;margin-bottom:6px}
+.sheet .fbl{font-size:11.5px;color:var(--t-faint);padding:10px 0 0;border-top:1px solid var(--t-line);margin-top:10px}
+</style>
+
+<h1>Item menu: how it stays short</h1>
+<p class="lead">Gap G6 of the information architecture check. The item menu grew from 9 entries (D-59) to 14 with Copy, Paste below, Sort, Export…, Import into this thought… and the connection map. Two variants, each shown in the outline and on the ⋯ of the focused thought (D-166). Right hand, Paper theme, something is copied (so Paste below shows), "Offer feedback" is on (so the quiet last line shows). Example content only.</p>
+
+<h2 class="v">Variant A · one flat list in groups</h2>
+<p class="lead">Thin lines separate the groups; Paste below shows only while something is copied. Everything is one level deep, but on a phone the list scrolls.</p>
+<div class="row">
+  <div class="col">
+    <h3>A1 · In the outline</h3>
+    <div class="ph" aria-label="Variant A in the outline">
+      <div class="top"><b>My thoughts ▾</b> › 💡 Ideas<span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="list">
+        <div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div>
+        <div class="n c1 sel"><span class="dot">●</span><span class="t">Why we forget what we read</span><span class="more">⋯</span></div>
+        <div class="n c1"><span class="dot">●</span><span class="t">Night trains feel like time travel</span></div>
+        <div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span></div>
+        <div class="n"><span class="tw">▾</span><span class="t">🌿 Slow mornings</span></div>
+        <div class="n c1"><span class="dot">●</span><span class="t">Silence as a material</span></div>
+        <div class="n"><span class="tw">▸</span><span class="t">📥 Inbox</span></div>
+      </div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+      <div class="shade"></div>
+      <div class="pop scroll" style="top:118px" role="menu" aria-label="Thought: Why we forget what we read">
+        <div class="it"><span class="ic">◎</span>Focus</div>
+        <div class="it"><span class="ic">⁂</span>Map</div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">✣</span>Move to…</div>
+        <div class="it"><span class="ic">↗</span>Link to…</div>
+        <div class="it"><span class="ic">⧉</span>Copy</div>
+        <div class="it"><span class="ic">⤓</span>Paste below<span class="ctx">copied</span></div>
+        <div class="it"><span class="ic">☐</span>Sort</div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">#</span>Tags</div>
+        <div class="it"><span class="ic">◐</span>Theme</div>
+        <div class="it"><span class="ic">▤</span>Views</div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">🕘</span>History</div>
+        <div class="it"><span class="ic">⇪</span>Export…</div>
+        <div class="it"><span class="ic">⇩</span>Import into this thought…</div>
+        <div class="grp"></div>
+        <div class="it del"><span class="ic">✕</span>Delete</div>
+        <div class="fbl">Something not right? Send feedback</div>
+      </div>
+      <span class="scrollhint" style="top:574px">scroll for 6 more ▾</span>
+    </div>
+    <p class="d">Opened from the selected row's ⋯, it reaches to the bottom of the screen and covers 📥 (D-66). History, Export…, Import…, Delete and the feedback line are below the fold.</p>
+  </div>
+  <div class="col">
+    <h3>A2 · On the focused thought (D-166)</h3>
+    <div class="ph" aria-label="Variant A in Focus">
+      <div class="top">← My thoughts › 💡 Ideas<span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="fhead"><h4>Why we forget what we read</h4><div class="tags"><span class="tag">reading</span><span class="tag">memory</span></div>
+        <div class="fline"><span>🕘 5</span><span>↗ 1</span><span>↙ 2</span><span class="dots">⋯</span></div></div>
+      <div class="note">We keep what we connect to something we know. Maybe writing a line about it is already a connection.</div>
+      <div class="sec">● What Mira said<small>Reading without a question is like walking without a direction.</small></div>
+      <div class="list"></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+      <div class="shade"></div>
+      <div class="pop scroll" style="top:150px;max-height:440px" role="menu" aria-label="Thought: Why we forget what we read">
+        <div class="it"><span class="ic">⁂</span>Map</div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">✣</span>Move to…</div>
+        <div class="it"><span class="ic">↗</span>Link to…</div>
+        <div class="it"><span class="ic">⧉</span>Copy</div>
+        <div class="it"><span class="ic">⤓</span>Paste below<span class="ctx">copied</span></div>
+        <div class="it"><span class="ic">☐</span>Sort</div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">#</span>Tags</div>
+        <div class="it"><span class="ic">◐</span>Theme</div>
+        <div class="it"><span class="ic">▤</span>Views</div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">🕘</span>History</div>
+        <div class="it"><span class="ic">⇪</span>Export…</div>
+        <div class="it"><span class="ic">⇩</span>Import into this thought…</div>
+        <div class="grp"></div>
+        <div class="it del"><span class="ic">✕</span>Delete</div>
+      </div>
+      <span class="scrollhint" style="top:548px">scroll for 5 more ▾</span>
+    </div>
+    <p class="d">The same list without Focus, opening down from the ⋯ in the line under the heading. It still scrolls.</p>
+  </div>
+</div>
+
+<h2 class="v">Variant C · tiles for the six most used, a short list for the rest</h2>
+<p class="lead">Six labelled tiles on top (two rows of three), then a short list, then Delete set apart. One level deep, and it fits the phone screen with room to spare.</p>
+<div class="row">
+  <div class="col">
+    <h3>C1 · In the outline</h3>
+    <div class="ph" aria-label="Variant C in the outline">
+      <div class="top"><b>My thoughts ▾</b> › 💡 Ideas<span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="list">
+        <div class="n"><span class="tw">▾</span><span class="t">💡 Ideas</span></div>
+        <div class="n c1 sel"><span class="dot">●</span><span class="t">Why we forget what we read</span><span class="more">⋯</span></div>
+        <div class="n c1"><span class="dot">●</span><span class="t">Night trains feel like time travel</span></div>
+        <div class="n c1"><span class="tw">▸</span><span class="t">👤 Mira</span></div>
+        <div class="n"><span class="tw">▾</span><span class="t">🌿 Slow mornings</span></div>
+        <div class="n c1"><span class="dot">●</span><span class="t">Silence as a material</span></div>
+        <div class="n"><span class="tw">▸</span><span class="t">📥 Inbox</span></div>
+      </div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+      <div class="shade"></div>
+      <div class="pop" style="top:118px" role="menu" aria-label="Thought: Why we forget what we read">
+        <div class="tiles">
+          <div class="tile"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="2.5"/></svg>Focus</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><circle cx="4" cy="15" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="16" cy="14" r="2"/><path d="M5.2 13.4 8.9 6.7M11.2 6.6l3.7 5.8M6 15h8"/></svg>Map</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><path d="M10 2v16M2 10h16M7 5l3-3 3 3M7 15l3 3 3-3M5 7l-3 3 3 3M15 7l3 3-3 3"/></svg>Move to…</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><path d="M6 14 15 5M8 5h7v7"/></svg>Link to…</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><path d="M3 3h7l7 7-7 7-7-7z"/><circle cx="7" cy="7" r="1.2"/></svg>Tags</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 3a7 7 0 0 1 0 14z" fill="currentColor" stroke="none" style="fill:var(--t-acc-text)"/></svg>Theme</div>
+        </div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">🕘</span>History</div>
+        <div class="it"><span class="ic">▤</span>Views</div>
+        <div class="it"><span class="ic">⧉</span>Copy</div>
+        <div class="it"><span class="ic">⤓</span>Paste below<span class="ctx">copied</span></div>
+        <div class="it"><span class="ic">☐</span>Sort</div>
+        <div class="it"><span class="ic">⇪</span>Export…</div>
+        <div class="it"><span class="ic">⇩</span>Import into this thought…</div>
+        <div class="grp"></div>
+        <div class="it del"><span class="ic">✕</span>Delete</div>
+        <div class="fbl">Something not right? Send feedback</div>
+      </div>
+    </div>
+    <p class="d">Everything is visible without scrolling, the feedback line included. The tiles are the actions used most when placing and connecting thoughts; the list keeps the order of D-59 for the rest.</p>
+  </div>
+  <div class="col">
+    <h3>C2 · On the focused thought (D-166)</h3>
+    <div class="ph" aria-label="Variant C in Focus">
+      <div class="top">← My thoughts › 💡 Ideas<span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="fhead"><h4>Why we forget what we read</h4><div class="tags"><span class="tag">reading</span><span class="tag">memory</span></div>
+        <div class="fline"><span>🕘 5</span><span>↗ 1</span><span>↙ 2</span><span class="dots">⋯</span></div></div>
+      <div class="note">We keep what we connect to something we know. Maybe writing a line about it is already a connection.</div>
+      <div class="sec">● What Mira said<small>Reading without a question is like walking without a direction.</small></div>
+      <div class="list"></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+      <div class="shade"></div>
+      <div class="pop" style="top:150px" role="menu" aria-label="Thought: Why we forget what we read">
+        <div class="tiles">
+          <div class="tile" style="opacity:.45"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="2.5"/></svg>Focused</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><circle cx="4" cy="15" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="16" cy="14" r="2"/><path d="M5.2 13.4 8.9 6.7M11.2 6.6l3.7 5.8M6 15h8"/></svg>Map</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><path d="M10 2v16M2 10h16M7 5l3-3 3 3M7 15l3 3 3-3M5 7l-3 3 3 3M15 7l3 3-3 3"/></svg>Move to…</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><path d="M6 14 15 5M8 5h7v7"/></svg>Link to…</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><path d="M3 3h7l7 7-7 7-7-7z"/><circle cx="7" cy="7" r="1.2"/></svg>Tags</div>
+          <div class="tile"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 3a7 7 0 0 1 0 14z" style="fill:var(--t-acc-text);stroke:none"/></svg>Theme</div>
+        </div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">🕘</span>History</div>
+        <div class="it"><span class="ic">▤</span>Views</div>
+        <div class="it"><span class="ic">⧉</span>Copy</div>
+        <div class="it"><span class="ic">⤓</span>Paste below<span class="ctx">copied</span></div>
+        <div class="it"><span class="ic">☐</span>Sort</div>
+        <div class="it"><span class="ic">⇪</span>Export…</div>
+        <div class="it"><span class="ic">⇩</span>Import into this thought…</div>
+        <div class="grp"></div>
+        <div class="it del"><span class="ic">✕</span>Delete</div>
+      </div>
+    </div>
+    <p class="d">The tiles keep their places: Focus stays as a dimmed "Focused" tile instead of disappearing, so Map, Move to… and the others are where the thumb expects them (muscle memory, D-59). Alternative: drop the tile and let the others close up.</p>
+  </div>
+</div>
+
+<h2 class="v">Variant D · in Focus, a button panel and More (owner's idea)</h2>
+<p class="lead">In Focus the thought's most used actions are always visible as a panel under the heading, and ▾ Actions opens the rest. It is not called More and has no ⋯, so it cannot be mixed up with ⋯ More in the bar, which holds the tree's actions (D-53). The panel grows out of the existing line (🕘 ↗ ↙, D-151), so Focus gets one row, not two. Tags need no button: the chips with ＋ are already there (D-64); Link to… sits in the Links sheet (＋ Link to…, D-85), shown even at 0 links. The outline keeps its popover (A or C).</p>
+<div class="row">
+  <div class="col">
+    <h3>D1 · Focus at rest</h3>
+    <div class="ph" aria-label="Variant D, panel in Focus">
+      <div class="top">← My thoughts › 💡 Ideas<span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="fhead"><h4>Why we forget what we read</h4><div class="tags"><span class="tag">reading</span><span class="tag">memory</span><span class="tag">＋</span></div>
+        <div class="panel" role="toolbar" aria-label="Actions for this thought">
+          <span class="pb"><i>🕘</i>History 5</span><span class="pb"><i>↗</i>Links 1</span><span class="pb"><i>↙</i>Linked 2</span><span class="pb"><svg viewBox="0 0 20 20"><circle cx="4" cy="15" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="16" cy="14" r="2"/><path d="M5.2 13.4 8.9 6.7M11.2 6.6l3.7 5.8M6 15h8"/></svg>Map</span><span class="pb" aria-label="Actions for this thought"><i>▾</i>Actions</span>
+        </div></div>
+      <div class="note">We keep what we connect to something we know. Maybe writing a line about it is already a connection.</div>
+      <div class="sec">● What Mira said<small>Reading without a question is like walking without a direction.</small></div>
+      <div class="sec">▾ What helps me remember<small>Small things, done right after reading.</small></div>
+      <div class="list"></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+      <div class="fab">📥</div>
+    </div>
+    <p class="d">Five labelled buttons in one row, in the accent text colour, no frames, so the page stays calm. Every thought inside shows the light four-arrow move icon on the hand side (D-155): tapping it opens sort mode with that thought picked. The focused thought itself has no move icon; it moves with Move to…, the first entry of ▾ Actions. "Linked" is short for Linked from; its accessible name is the full "Linked from, 2". While writing (keyboard up) the panel stays where it is and scrolls away with the page; the editing toolbar takes over (D-54).</p>
+  </div>
+  <div class="col">
+    <h3>D2 · Actions opened from the panel</h3>
+    <div class="ph" aria-label="Variant D, More open">
+      <div class="top">← My thoughts › 💡 Ideas<span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="fhead"><h4>Why we forget what we read</h4><div class="tags"><span class="tag">reading</span><span class="tag">memory</span><span class="tag">＋</span></div>
+        <div class="panel"><span class="pb"><i>🕘</i>History 5</span><span class="pb"><i>↗</i>Links 1</span><span class="pb"><i>↙</i>Linked 2</span><span class="pb"><svg viewBox="0 0 20 20"><circle cx="4" cy="15" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="16" cy="14" r="2"/><path d="M5.2 13.4 8.9 6.7M11.2 6.6l3.7 5.8M6 15h8"/></svg>Map</span><span class="pb on"><i>▾</i>Actions</span></div></div>
+      <div class="note">We keep what we connect to something we know.</div>
+      <div class="list"></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+      <div class="shade"></div>
+      <div class="pop" style="top:178px" role="menu" aria-label="Actions for: Why we forget what we read">
+        <div class="it"><span class="ic">✣</span>Move to…</div>
+        <div class="it"><span class="ic">◐</span>Theme</div>
+        <div class="it"><span class="ic">⧉</span>Copy</div>
+        <div class="grp"></div>
+        <div class="it"><span class="ic">⇪</span>Export…</div>
+        <div class="it"><span class="ic">⇩</span>Import into this thought…</div>
+        <div class="grp"></div>
+        <div class="it del"><span class="ic">✕</span>Delete</div>
+        <div class="fbl">Something not right? Send feedback</div>
+      </div>
+    </div>
+    <p class="d">Six entries and the feedback line; Move to… comes first, since moving the page you are on is rare and needs no button of its own. Not here, because the page already has them: Tags (chips), History and Link to… (panel and Links sheet), Sort (move icon on every heading, D-155), Views (🔍 Search, D-125), Paste (the bar's More › Paste at the top level puts it inside the focused thought). One ⋯ on the screen: More in the bar, for the tree.</p>
+  </div>
+  <div class="col">
+    <h3>D3 · Links 0: the Links sheet with ＋ Link to…</h3>
+    <div class="ph" aria-label="Variant D, Links sheet">
+      <div class="top">← My thoughts › 💡 Ideas<span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="fhead"><h4>Night trains feel like time travel</h4><div class="tags"><span class="tag">travel</span><span class="tag">＋</span></div>
+        <div class="panel"><span class="pb"><i>🕘</i>History 2</span><span class="pb on"><i>↗</i>Links 0</span><span class="pb"><i>↙</i>Linked 1</span><span class="pb"><svg viewBox="0 0 20 20"><circle cx="4" cy="15" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="16" cy="14" r="2"/><path d="M5.2 13.4 8.9 6.7M11.2 6.6l3.7 5.8M6 15h8"/></svg>Map</span><span class="pb"><i>▾</i>Actions</span></div></div>
+      <div class="note">You fall asleep in one country and wake up in another.</div>
+      <div class="list"></div>
+      <div class="shade"></div>
+      <div class="sheet" role="dialog" aria-label="Links of: Night trains feel like time travel">
+        <div class="grab"></div>
+        <div class="shead"><span class="stab on">↗ Links 0</span><span class="stab">↙ Linked from 1</span><span class="sp"></span><span class="x" aria-label="Close">✕</span></div>
+        <p class="empty">No links from this thought yet.</p>
+        <div class="addl">＋ Link to…</div>
+        <div class="fbl">Something not right? Send feedback</div>
+      </div>
+    </div>
+    <p class="d">Links shows even at 0, so the way to link is always one tap away. The sheet is the one of D-85 (Links and Linked from as tabs); ＋ Link to… opens the target picker (D-9). The reason for a relation (gap G2) will probably live here too.</p>
+  </div>
+</div>
+
+<h2 class="v">Side by side</h2>
+<div class="tw-wrap"><table class="cmp">
+<tr><th></th><th>A · flat list</th><th>C · tiles and list</th></tr>
+<tr><td>Fits a phone screen</td><td>No, about 6 entries below the fold</td><td>Yes</td></tr>
+<tr><td>Levels (D-80)</td><td>One</td><td>One</td></tr>
+<tr><td>Most used actions</td><td>First rows</td><td>Large tiles, quickest to hit</td></tr>
+<tr><td>New UI part</td><td>No, the popover of D-58</td><td>Yes, tiles (needs this sketch, ADR-064)</td></tr>
+<tr><td>Keyboard and screen reader</td><td>Arrow keys down the list; role menu, items menuitem</td><td>Arrow keys through the tiles in reading order, then down the list; same roles, each tile has its visible label as accessible name</td></tr>
+<tr><td>Wide screens</td><td>Fits as is</td><td>Same popover; the tiles look the same with a mouse</td></tr>
+</table></div>
