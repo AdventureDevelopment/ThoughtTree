@@ -17,6 +17,13 @@
 
 # Owner-only for good: this file, the reviewer agent's workflow and prompt
 /.github/CODEOWNERS                          @ProductOwnerRole
+
+# Deployment: templates, deploy scripts and workflows decide what runs with the
+# Azure identities (ADR-046; security review 2026-11-19, H2). Owner review for
+# good, also after the interim /.github/ entry below is removed.
+/infra/                                      @ProductOwnerRole
+/eng/deploy/                                 @ProductOwnerRole
+/.github/workflows/                          @ProductOwnerRole
 /.github/workflows/agent-review*             @ProductOwnerRole
 /.github/agent-review/                       @ProductOwnerRole
 
