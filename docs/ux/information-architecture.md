@@ -74,7 +74,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 ## Questions for the owner, in proposed order
 
 1. G6: deferred by D-167 until tried (G5 closed by D-166).
-2. G1: closed (D-168 to D-174).
-2. G3 and C1: where whole-tree export and the vault import as a new tree live.
+2. G1 and G2: closed (D-168 to D-175).
+3. G3 and C1: where whole-tree export and the vault import as a new tree live.
 4. G4: one place for tree settings (features, history, theme, rename, remove).
 5. G8, G10, G11: pairing entry, settings list, reset.
