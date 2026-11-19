@@ -139,6 +139,27 @@ public partial class InfrastructureRules
     }
 
     [Fact]
+    public void Every_site_stays_on_the_free_plan()
+    {
+        // Re-review N-L4: staticSites/write would allow another plan; every deployment re-applies main.bicep, which
+        // fixes the plan to Free in the template itself, not through a parameter.
+        var main = File.ReadAllText(Repository.PathOf("infra", "main.bicep"));
+        FreeSku().IsMatch(main).ShouldBeTrue("main.bicep sets sku name and tier to the literal 'Free'");
+        SkuLine().Count(main).ShouldBe(1, "one sku block");
+        Repository.Files("infra", "*.bicepparam").Where(f => File.ReadAllText(f).Contains("sku", StringComparison.OrdinalIgnoreCase)).Select(Repository.Relative)
+            .ShouldBeEmpty("the plan is not a parameter");
+    }
+
+    [Theory]
+    [InlineData("  sku: {\n    name: skuName\n    tier: skuName\n  }\n", false)]
+    [InlineData("  sku: {\n    name: 'Standard'\n    tier: 'Standard'\n  }\n", false)]
+    [InlineData("  sku: {\n    name: 'Free'\n    tier: 'Free'\n  }\n", true)]
+    public void The_free_plan_is_recognised(string bicep, bool free)
+    {
+        FreeSku().IsMatch(bicep).ShouldBe(free);
+    }
+
+    [Fact]
     public void No_telemetry_or_logging_service_is_deployed()
     {
         var offenders = Repository.Files("infra", "*.bicep")
@@ -302,6 +323,12 @@ public partial class InfrastructureRules
 
     [GeneratedRegex(@"^\s{2}(push|pull_request|schedule|workflow_run|release):", RegexOptions.CultureInvariant | RegexOptions.Multiline)]
     private static partial Regex AutomaticTrigger();
+
+    [GeneratedRegex(@"sku:\s*\{\s*name:\s*'Free'\s*tier:\s*'Free'\s*\}", RegexOptions.CultureInvariant)]
+    private static partial Regex FreeSku();
+
+    [GeneratedRegex(@"\bsku\s*:", RegexOptions.CultureInvariant)]
+    private static partial Regex SkuLine();
 
     [GeneratedRegex(@"^param\s+(\w+)\s*=", RegexOptions.CultureInvariant | RegexOptions.Multiline)]
     private static partial Regex ParameterLine();
