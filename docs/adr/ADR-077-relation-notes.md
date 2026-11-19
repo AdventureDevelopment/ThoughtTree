@@ -1,10 +1,10 @@
 # ADR-077: A note on a relation
 
-id: ADR-077 · status: Proposed · kind: constraint
+id: ADR-077 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`
 
-Amends ADR-018 (adds `relation.note-changed` to the events that carry `replaces`, and relation notes to the kinds of conflicts in the Conflict View); owner decision 2026-11-17 (Zettelkasten decision 3), proposed for acceptance in a pull request review.
+Amends ADR-018 (adds `relation.note-changed` to the events that carry `replaces`, and relation notes to the kinds of conflicts in the Conflict View); owner decision 2026-11-17 (Zettelkasten decision 3), accepted by the owner 2026-11-19.
 
 - **MUST** store the note of a relation (why two items are connected) only in `relation.note-changed` with `fromItemId`, `typeId`, `toItemId`, `note`, `format`, `replaces`; the full text in each event, one event per editing session
 - **MUST NOT** put a note on `relation.added`, and **MUST NOT** use `item.note-changed` for it

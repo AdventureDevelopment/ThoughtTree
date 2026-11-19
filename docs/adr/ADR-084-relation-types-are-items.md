@@ -1,10 +1,10 @@
 # ADR-084: Relation types are items; a new tree has only `related`
 
-id: ADR-084 · status: Proposed · kind: constraint
+id: ADR-084 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`
 
-Supersedes ADR-025 (with its bet card), ADR-026 and ADR-081 once accepted, and amends ADR-018 (`relation-type.set` replaces `relation-type.defined` and `display-name.set` among the events that carry `replaces`; display names leave the conflict kinds), ADR-019 (no type is reused by a fixed id; no display names), ADR-066 (the tree name also skips the Relation types branch) and ADR-069 (types matched by title); the ADR-025 bet card is retired on acceptance; owner decisions 2026-11-19 (session "Tags and relation types as items", decisions 3, 4 and 5), proposed for acceptance in a pull request review. Settles the format before release 1, while stored formats are still free to change (ADR-085, Proposed).
+Supersedes ADR-025 (with its bet card), ADR-026 and ADR-081, and amends ADR-018 (`relation-type.set` replaces `relation-type.defined` and `display-name.set` among the events that carry `replaces`; display names leave the conflict kinds), ADR-019 (no type is reused by a fixed id; no display names), ADR-066 (the tree name also skips the Relation types branch) and ADR-069 (types matched by title); the ADR-025 bet card is retired on acceptance; owner decisions 2026-11-19 (session "Tags and relation types as items", decisions 3, 4 and 5), accepted by the owner 2026-11-19. Settles the format before release 1, while stored formats are still free to change (ADR-085, Proposed).
 
 - **MUST** create a branch "Relation types" as an ordinary item when a tree is created and mark it with `tree.relation-types-set` (`itemId`); the latest marking in the agreed order wins; **MUST NOT** let the branch be moved or deleted; **MUST** skip it when taking the tree name (ADR-066)
 - **MUST** treat every item inside that branch as a relation type, by its place: its title is the type's name, its note says what the type means; `relation-type.set` (`itemId`, `symmetric`, `reverseName`, `replaces`) keeps whether the type is symmetric and its reverse name; a type item without it is directed and has no reverse name

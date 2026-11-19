@@ -917,8 +917,8 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-022](adr/ADR-022-binary-blobs.md) | Binary data as separate blobs | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
 | [ADR-023](adr/ADR-023-one-parent.md) | One parent per item | `src/ThoughtTree.Domain/**` |
 | [ADR-024](adr/ADR-024-relations.md) | Relations separate from the tree | `src/ThoughtTree.Domain/**` |
-| [ADR-025](adr/ADR-025-predefined-relation-types.md) | Relation types defined per tree, predefined set | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-026](adr/ADR-026-translatable-display-names.md) | Translatable display names for structural elements | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-025](adr/ADR-025-predefined-relation-types.md) | Relation types defined per tree, predefined set (superseded by ADR-084) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-026](adr/ADR-026-translatable-display-names.md) | Translatable display names for structural elements (superseded by ADR-084) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-027](adr/ADR-027-project-dependencies.md) | Domain and Contracts projects | `src/**` |
 | [ADR-028](adr/ADR-028-tree-access.md) | Tree access | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-029](adr/ADR-029-text-normalisation.md) | Text normalisation before writing | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
@@ -950,7 +950,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-055](adr/ADR-055-private-feedback-inbox.md) | Private feedback inbox | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Server*/**` |
 | [ADR-056](adr/ADR-056-server-store-migrations.md) | Server store migrations | `src/ThoughtTree.Server*/**`, `infra/**` |
 | [ADR-057](adr/ADR-057-sync-modes.md) | Sync modes, live preselected | `src/ThoughtTree.Client*/**` |
-| [ADR-058](adr/ADR-058-tags.md) | Tags as tree elements, typed with `@@` | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-058](adr/ADR-058-tags.md) | Tags as tree elements, typed with `@@` (superseded by ADR-082) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-059](adr/ADR-059-undo.md) | Undo writes new events; quick undo covers the user's own actions on this device | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-060](adr/ADR-060-shared-themes.md) | Themes of trees and branches are shared through events | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-061](adr/ADR-061-shipped-fonts.md) | System font first, shipped fonts under the SIL Open Font License | `src/ThoughtTree.Client*/**`, `**/*.csproj`, `**/package.json` |
@@ -968,16 +968,16 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-073](adr/ADR-073-encryption-hardening.md) | Encryption hardening before release 1 | `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-074](adr/ADR-074-release-1-scope.md) | Release 1 scope: standalone, file exchange, final formats | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-075](adr/ADR-075-xunit-v2-lambdatale.md) | xUnit v2 and LambdaTale 2.9.x for all test projects | `tests/**`, `Directory.Packages.props`, `**/*.csproj` |
-| [ADR-076](adr/ADR-076-no-code-plugins.md) | No code plugins; extend by data, readable files or a fork (Proposed) | `src/**` |
-| [ADR-077](adr/ADR-077-relation-notes.md) | A note on a relation (Proposed; amends ADR-018) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-078](adr/ADR-078-update-import.md) | Re-importing a readable export updates the tree it came from (Proposed; amends ADR-019) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-079](adr/ADR-079-keep-headings-tree-feature.md) | Headings become thoughts is a tree feature (Proposed; amends ADR-072, ADR-029) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-080](adr/ADR-080-branch-export.md) | Readable export and import of a branch, where the user is (Proposed; amends ADR-019) | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
-| [ADR-081](adr/ADR-081-one-name-no-translation.md) | One name per structural element, no translation inside the tree (Proposed; amends ADR-026) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-082](adr/ADR-082-tags-are-items.md) | Tags are items in the tree's Tags branch (Proposed; supersedes ADR-058; amends ADR-019, ADR-066, ADR-069) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-083](adr/ADR-083-relation-ids.md) | Relations have an id (Proposed; amends ADR-018, ADR-024, ADR-077) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-084](adr/ADR-084-relation-types-are-items.md) | Relation types are items; a new tree has only `related` (Proposed; supersedes ADR-025, ADR-026, ADR-081; amends ADR-018, ADR-019, ADR-066, ADR-069) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-085](adr/ADR-085-beta-data-before-release-1.md) | Beta data before release 1: formats free until v1, bridged by the Obsidian export (Proposed; amends ADR-016, ADR-038) | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-076](adr/ADR-076-no-code-plugins.md) | No code plugins; extend by data, readable files or a fork | `src/**` |
+| [ADR-077](adr/ADR-077-relation-notes.md) | A note on a relation (amends ADR-018) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-078](adr/ADR-078-update-import.md) | Re-importing a readable export updates the tree it came from (amends ADR-019) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-079](adr/ADR-079-keep-headings-tree-feature.md) | Headings become thoughts is a tree feature (amends ADR-072, ADR-029) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-080](adr/ADR-080-branch-export.md) | Readable export and import of a branch, where the user is (amends ADR-019) | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**` |
+| [ADR-081](adr/ADR-081-one-name-no-translation.md) | One name per structural element, no translation inside the tree (superseded by ADR-084; amends ADR-026) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-082](adr/ADR-082-tags-are-items.md) | Tags are items in the tree's Tags branch (supersedes ADR-058; amends ADR-019, ADR-066, ADR-069) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-083](adr/ADR-083-relation-ids.md) | Relations have an id (amends ADR-018, ADR-024, ADR-077) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-084](adr/ADR-084-relation-types-are-items.md) | Relation types are items; a new tree has only `related` (supersedes ADR-025, ADR-026, ADR-081; amends ADR-018, ADR-019, ADR-066, ADR-069) | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
+| [ADR-085](adr/ADR-085-beta-data-before-release-1.md) | Beta data before release 1: formats free until v1, bridged by the Obsidian export (amends ADR-016, ADR-038) | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
 
 **Open decisions**
 

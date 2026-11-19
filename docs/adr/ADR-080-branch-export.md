@@ -1,10 +1,10 @@
 # ADR-080: Readable export and import of a branch, where the user is
 
-id: ADR-080 · status: Proposed · kind: constraint
+id: ADR-080 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Contracts/**`
 
-Amends ADR-019 (a branch, not only the whole tree); owner decision 2026-11-17 (Zettelkasten session), proposed for acceptance in a pull request review.
+Amends ADR-019 (a branch, not only the whole tree); owner decision 2026-11-17 (Zettelkasten session), accepted by the owner 2026-11-19.
 
 - **MUST** offer readable export of an item with its whole branch from the item's actions (its ⋯ menu and Focus), in every readable format, the Obsidian form included
 - **MUST** write a single item without children as one `.md` file, and a branch as a zip of files

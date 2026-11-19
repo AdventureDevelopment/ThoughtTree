@@ -1,10 +1,10 @@
 # ADR-083: Relations have an id
 
-id: ADR-083 · status: Proposed · kind: constraint
+id: ADR-083 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`
 
-Amends ADR-024 (identity by from item, type and to item), ADR-077 (the note is keyed by the relation's id) and ADR-018 (adds `relation.type-changed` to the events that carry `replaces`); owner decision 2026-11-19 (session "Tags and relation types as items", decision 3a), proposed for acceptance in a pull request review. Settles the format before release 1, while stored formats are still free to change (ADR-085, Proposed): an id cannot be added cleanly to relations stored by release 1.
+Amends ADR-024 (identity by from item, type and to item), ADR-077 (the note is keyed by the relation's id) and ADR-018 (adds `relation.type-changed` to the events that carry `replaces`); owner decision 2026-11-19 (session "Tags and relation types as items", decision 3a), accepted by the owner 2026-11-19. Settles the format before release 1, while stored formats are still free to change (ADR-085, Proposed): an id cannot be added cleanly to relations stored by release 1.
 
 - **MUST** give every relation an id from the replaceable id generator (ADR-034): `relation.added` (`relationId`, `fromItemId`, `typeId`, `toItemId`)
 - **MUST** change a relation's type only by `relation.type-changed` (`relationId`, `typeId`, `replaces`); concurrent changes of the type are a visible conflict (ADR-018)
