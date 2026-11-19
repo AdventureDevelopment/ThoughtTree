@@ -1,0 +1,89 @@
+# A preview of every pull request on the test site, removed when the pull request closes (docs/architecture.md
+# section 7, D-51). Signs in through OpenID Connect as the preview identity: it can only read the test site,
+# read its deployment token and delete its staging environments (infra/bootstrap/bootstrap.bicep). Runs on
+# pull_request only (never pull_request_target) and skips pull requests from forks, which get no token.
+name: preview
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  AZURE_CORE_COLLECT_TELEMETRY: "false"
+  PREVIEW_NAME: pr${{ github.event.pull_request.number }}
+
+jobs:
+  deploy:
+    name: Deploy the preview
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PREVIEW }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the .NET SDK from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Publish the client app (policy hash filled in, ADR-045)
+        run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+
+      - name: Sign in to Azure through OpenID Connect (ADR-046)
+        run: eng/deploy/azure-sign-in.sh
+
+      - name: Upload the preview and check its headers
+        run: |
+          if ! az staticwebapp show --name stapp-thoughttree-test --resource-group rg-thoughttree-test --output none 2>/dev/null; then
+            echo "::notice::The test site does not exist yet (it is created by the first deployment of main); no preview."
+            exit 0
+          fi
+          eng/deploy/upload-site.sh rg-thoughttree-test stapp-thoughttree-test "$RUNNER_TEMP/site/wwwroot" "$PREVIEW_NAME"
+
+  remove:
+    name: Remove the preview
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PREVIEW }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Sign in to Azure through OpenID Connect (ADR-046)
+        run: eng/deploy/azure-sign-in.sh
+
+      - name: Delete the staging environment
+        run: |
+          az staticwebapp environment delete --name stapp-thoughttree-test --resource-group rg-thoughttree-test \
+            --environment-name "$PREVIEW_NAME" --yes || echo "::notice::No preview $PREVIEW_NAME to remove."

@@ -1,0 +1,62 @@
+# Promotes main to production: started by hand and held until the owner approves it in the GitHub environment
+# "production" (manual approval, ADR-046). Signs in through OpenID Connect as the production identity, which
+# only jobs in that environment can use. No secret is stored; see infra/README.md.
+name: deploy-production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  AZURE_CORE_COLLECT_TELEMETRY: "false"
+
+jobs:
+  checks:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/checks.yml
+
+  deploy:
+    name: Deploy to production
+    needs: checks
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PRODUCTION }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the .NET SDK from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Publish the client app (policy hash filled in, ADR-045)
+        run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+
+      - name: Sign in to Azure through OpenID Connect (ADR-046)
+        run: eng/deploy/azure-sign-in.sh
+
+      - name: Apply infra/main.bicep with infra/production.bicepparam
+        run: echo "SITE_NAME=$(eng/deploy/apply-infra.sh production)" >> "$GITHUB_ENV"
+
+      - name: Upload the site and check its headers
+        run: eng/deploy/upload-site.sh rg-thoughttree-prod "$SITE_NAME" "$RUNNER_TEMP/site/wwwroot" production

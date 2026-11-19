@@ -1,0 +1,62 @@
+# Deploys main to the test environment after the branch checks pass (docs/architecture.md section 7, ADR-046).
+# Signs in to Azure through OpenID Connect as the test identity, which only jobs in the GitHub environment
+# "test" can use; the environment allows only main. No secret is stored; see infra/README.md.
+name: deploy-test
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  AZURE_CORE_COLLECT_TELEMETRY: "false"
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  deploy:
+    name: Deploy to test
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: test
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_TEST }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the .NET SDK from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Publish the client app (policy hash filled in, ADR-045)
+        run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+
+      - name: Sign in to Azure through OpenID Connect (ADR-046)
+        run: eng/deploy/azure-sign-in.sh
+
+      - name: Apply infra/main.bicep with infra/test.bicepparam
+        run: echo "SITE_NAME=$(eng/deploy/apply-infra.sh test)" >> "$GITHUB_ENV"
+
+      - name: Upload the site and check its headers
+        run: eng/deploy/upload-site.sh rg-thoughttree-test "$SITE_NAME" "$RUNNER_TEMP/site/wwwroot" production
