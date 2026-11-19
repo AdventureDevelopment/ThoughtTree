@@ -44,7 +44,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Settings (device) | More › Settings: you and this device, look and language, reminders, feedback, app (version, updates, performance report) | More › Settings; wide: navigation column | D-122, D-126, D-146, D-188, ADR-036, ADR-051, ADR-070 | Decided |
 | App update consent, performance report | More › Settings › App; format-changing updates by banner (D-181) | More › Settings | D-181, D-188, ADR-036, ADR-051 | Decided |
 | Beta: format-change prompt, export of every tree, import after the update | Banner, then "Before you update" sheet; after the update the tree list | Banner › Before you update; tree list › ＋ Import your exported trees… | ADR-085, D-181 | Decided |
-| Reset or remove all data from this device | Not placed (the prototype had one, D-80) | Not decided | D-80 | Missing (G11) |
+| Reset or remove all data from this device | More › Settings › App › Remove everything from this device… | More › Settings | D-80, D-189 | Decided |
 | Feedback | Line at the end of menus and sheets, button at the top, More › Send feedback | As described | D-123, D-124, D-159, ADR-070 | Decided |
 | Tutorial | A tree, opened first; back by More › Trees | First start; More › Trees › "Bring the tutorial back" | D-69, D-134 to D-147, D-163 | Decided (C4) |
 | Templates (may slip) | "Templates · n" row in a branch | `::`; hold ＋ › From template… | D-108 to D-113 | Partly (link slots, D-111) |
@@ -64,7 +64,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G8 Pairing (placed by D-187):** the screens for showing and scanning the code still need a sketch.
 - **G9 Linked thought in the Links sheet:** where tapping leads is an [ASSUMPTION] in D-85; D-121 answers it only for links in text.
 - **G10 Settings list (closed by D-188).**
-- **G11 Reset:** whether release 1 offers "remove all data from this device" (beyond removing one tree) is not decided.
+- **G11 Reset (closed by D-189).**
 - **G12 Tags and relation types branches (closed by D-177, D-178).**
 - **G13 Beta format change (closed by D-181).** The ordinary update banner ("A new version is ready · Update") is named there too; the rest of update consent (G10) stays open.
 - **C1 Export in More (resolved by D-179):** no Export entry in More; whole-tree export is in More › Trees.
