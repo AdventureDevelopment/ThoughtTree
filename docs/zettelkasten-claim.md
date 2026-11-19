@@ -17,8 +17,8 @@ Decided by the owner, 2026-11-17 (decision 1): "Bring your Obsidian Zettelkasten
 | 5 | Block links `#^id`, ` ^id` markers | Mapped, lossy | Link to the note; the marker stays as text |
 | 6 | Embeds of notes and headings | Mapped, lossy | Plain link, nothing embedded |
 | 7 | Attachments (images, PDFs, audio) | Out until binary data (ADR-022) | Text kept, listed in the import report |
-| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type; an inline-field line also gives the relation its note |
-| 9 | Tags, inline and in frontmatter, nested `#a/b` | Mapped | Tags (ADR-058), `/` kept in the name (tag nesting parked, D-15); the place of an inline tag in the text is lost |
+| 8 | Typed links: link properties (`source:`, `up:`, `parent:`, Wikilink Types) and inline fields (`supports:: [[X]]`) | Mapped | Relations, the key as relation type (a type item named by the key, ADR-084, Proposed); an inline-field line also gives the relation its note |
+| 9 | Tags, inline and in frontmatter, nested `#a/b` | Mapped | Tags (ADR-058), `/` kept in the name (tag nesting parked, D-15); the place of an inline tag in the text is lost. With ADR-082 (Proposed, 2026-11-19): tags are items in the Tags branch and `#a/b` becomes the tag `b` nested in `a` |
 | 10 | Other properties | Kept | A fenced `yaml` block at the top of the note, written back on export |
 | 11 | `aliases` | For links | Resolve links on import; kept with the other properties |
 | 12 | Unresolved `[[Ghost]]` | Plain text | Kept as written, listed in the import report, exported unchanged |
@@ -39,7 +39,7 @@ Decided by the owner, 2026-11-17 (decision 3, ADR-077 Proposed): a relation can 
 
 ## Import: what builds the tree
 
-Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. What happens to folder names when folders do not build the tree waits for the open decision "Tags and relation types as items" (architecture section 9); the proposal was to keep them as tags.
+Decided by the owner, 2026-11-17 (decision 4a): the import detects what the vault holds and proposes how the tree is built: from folders (default), from a `parent`/`up` property, or from Luhmann ids in file names, with counts. With a property or Luhmann ids, folders do not become items; a note with several parents goes under the first, the others become relations typed by the property name; a note without a parent goes to the top of the imported branch; cycles are broken where found and reported. A folder note (a note named like its folder) becomes the note of the folder's item. What happens to folder names when folders do not build the tree waits for the open decision "Tags and relation types as items" (architecture section 9); the proposal was to keep them as tags. Decided there on 2026-11-19 (ADR-082, Proposed): tags are items in the Tags branch, so folder names can become nested tag items; whether the import offers this is for the import flow sketch.
 
 ## Import: identity and re-import
 
@@ -75,12 +75,14 @@ Decided by the owner, 2026-11-18 (decision 5b), mirroring the import (4c):
 | Link with fixed text | `[[Target\|text]]` | as above |
 | Relation without a note | frontmatter list keyed by the type: `supports: ["[[X]]"]` | relation of that type |
 | Relation with a note | Dataview line at the end of the note: `supports:: [[X]] because …` | relation and its note |
-| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_` | by fixed id or name; unknown keys define a new type |
-| Tags | `tags:` list, spaces as `-` | tags |
+| Type key | fixed id of a predefined type (`related`, `cites`, …); own types by name, spaces as `_`. Owner 2026-11-19 (ADR-084, Proposed): every type by its title, `related` included (no fixed ids, ADR-084), spaces as `_` | by fixed id or name; unknown keys define a new type (with ADR-084: by title, a new type item) |
+| Tags | `tags:` list, spaces as `-`; nested tags as paths `a/b` (ADR-082, Proposed) | tags; paths become nested tag items |
 | Kept properties | merged back into the frontmatter | the kept block |
+| Tags and relation types (owner 2026-11-19, ADR-082, ADR-084) | the Tags and Relation types branches as folders, one note per tag or type with its note as body; a type's `thoughttree-symmetric` and `thoughttree-reverse` | tag and type items, matched by the note's `thoughttree` id |
+| Template marking, theme, views, tree features (owner 2026-11-19, "everything is a zettel") | `thoughttree-template: true`, `thoughttree-theme`, `thoughttree-views` (name, layout, structured query with its format version) on the note; the tree's theme and `thoughttree-features` on the tree's top note | the same markings, themes, views and features |
 | Unresolved `[[Ghost]]` | unchanged | unchanged |
 
-Relations are written on the "from" side, symmetric ones on the first item of their fixed order. Not in the Obsidian form (the JSON export keeps them): other-language and reverse names of types, themes, views, template markings, tree features, spaces in tag names. A re-imported note that resolves to the current text writes no event. To check in a sample vault: whether Breadcrumbs reads `supports:: [[X]] because …` with text after the link; if not, the reason goes on its own line below.
+Relations are written on the "from" side, symmetric ones on the first item of their fixed order. Not in the Obsidian form (the JSON export keeps them): other-language and reverse names of types (with ADR-084: reverse names, symmetry and the notes of types and tags), themes, views, template markings, tree features, spaces in tag names. Revised by the owner, 2026-11-19 ("everything is a zettel"): all of these go into the Obsidian form as notes and `thoughttree-*` properties (table above; spaces in tag names through the tag's note), so the Obsidian form loses only history, conflicts and devices, like the JSON export; other-language names no longer exist (ADR-084, Proposed). A re-imported note that resolves to the current text writes no event. To check in a sample vault: whether Breadcrumbs reads `supports:: [[X]] because …` with text after the link; if not, the reason goes on its own line below.
 
 ## The round-trip guarantee
 
@@ -89,7 +91,7 @@ Decided by the owner, 2026-11-18 (decision 5c); all in the gate except the manua
 | # | Guarantee | Secured by |
 | --- | --- | --- |
 | G1 | JSON: export, then import as a new tree, gives the same tree (structure, order, titles, notes, tags, relations, relation notes, types, themes, views, template markings), with new ids | CsCheck property over generated trees |
-| G2 | Obsidian form from ThoughtTree: export (either form), then import as a copy, gives the same tree except the listed lossy parts | CsCheck property |
+| G2 | Obsidian form from ThoughtTree: export (either form), then import as a copy, gives the same tree except the listed lossy parts (after the owner's decision of 2026-11-19, the only parts left for a tree exported from ThoughtTree, as found by the independent review of that session: two types with the same title share one key; `_` in a type title and `/` in a tag title are ambiguous with the spaces and path rules; each is resolved by the `thoughttree` id of the type or tag note where the files carry one, and stays lossy where they do not) | CsCheck property |
 | G3 | No noise: export, then update from the unchanged files, writes no event | CsCheck property |
 | G4 | Exact updates: a generated edit of the files (title, note, move, tag, relation) arrives as exactly that edit; a change made in the app meanwhile becomes a visible conflict, no text is lost | CsCheck model-based test |
 | G5 | From Obsidian: a vault using only supported rows comes back as equal files, except normalisation (NFC, line endings, key order, `thoughttree*` keys, safe file names); lossy rows change only as documented | Sample vaults in `tests/data/obsidian/`, Verify snapshots approved by the owner |
