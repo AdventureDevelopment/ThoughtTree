@@ -6,7 +6,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/Th
 
 Supersedes ADR-025 (with its bet card), ADR-026 and ADR-081 once accepted, and amends ADR-018 (`relation-type.set` replaces `relation-type.defined` and `display-name.set` among the events that carry `replaces`); owner decisions 2026-11-19 (session "Tags and relation types as items", decisions 3, 4 and 5), proposed for acceptance in a pull request review. Settles the format before release 1, while nothing is stored.
 
-- **MUST** create a branch "Relation types" as an ordinary item when a tree is created and mark it with `tree.relation-types-set` (`itemId`); the latest marking in the agreed order wins
+- **MUST** create a branch "Relation types" as an ordinary item when a tree is created and mark it with `tree.relation-types-set` (`itemId`); the latest marking in the agreed order wins; **MUST NOT** let the branch be moved or deleted
 - **MUST** treat every item inside that branch as a relation type, by its place: its title is the type's name, its note says what the type means; `relation-type.set` (`itemId`, `symmetric`, `reverseName`, `replaces`) keeps whether the type is symmetric and its reverse name; a type item without it is directed and has no reverse name
 - **MUST** reference a type by its item id, never by its name; **MUST** hide the relations of a type while its item is deleted or outside the branch, and show them again when it comes back
 - **MUST** create in a new tree exactly one type, `related` (symmetric), as an item with a fixed id that is the same in every tree; it is the type of a new relation (D-13); an import or paste maps it onto the target's `related` instead of creating another

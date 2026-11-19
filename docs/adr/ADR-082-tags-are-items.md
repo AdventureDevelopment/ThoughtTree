@@ -6,7 +6,7 @@ applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/Th
 
 Supersedes ADR-058 once accepted (keeps its `@@` shortcut, picker, tree feature, one-tree and join rules); owner decisions 2026-11-19 (session "Tags and relation types as items", decisions 2 and 5), proposed for acceptance in a pull request review. Settles the format before release 1, while nothing is stored.
 
-- **MUST** create a branch "Tags" as an ordinary item when a tree is created and mark it with `tree.tags-set` (`itemId`); its title is written in the app language chosen on the creating device; the latest `tree.tags-set` in the agreed order wins, as for the inbox (ADR-066)
+- **MUST** create a branch "Tags" as an ordinary item when a tree is created and mark it with `tree.tags-set` (`itemId`); its title is written in the app language chosen on the creating device; the latest `tree.tags-set` in the agreed order wins, as for the inbox (ADR-066); **MUST NOT** let the Tags branch be moved or deleted
 - **MUST** treat every item inside the Tags branch as a tag, by its place, with no mark event: its title is the tag's name, its note the tag's description, its child items its nested tags
 - **MUST** assign tags with `item.tagged` / `item.untagged` (`itemId`, `tagId`), where `tagId` is the tag item's id; adding the same tag twice yields one assignment; concurrent adding and removing is decided by the agreed event order, without conflict marking
 - **MUST** hide the assignments of a tag while its item is deleted or outside the Tags branch, and show them again when it is restored or moved back; **MUST** hide the tags of deleted items and show them again on restore
