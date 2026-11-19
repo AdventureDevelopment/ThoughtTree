@@ -16,6 +16,7 @@ Supersedes ADR-058 once accepted (keeps its `@@` shortcut, picker, tree feature,
 - **MUST** offer to join tags with the same title (for example made offline on two devices) as one action (ADR-067): `tag.joined` (`fromTagId`, `intoTagId`), the joined tag's children moved under the target, its note appended to the target's note below a separator line, the joined tag item deleted; assignments of the joined tag then count for the target; the app never joins tags without asking
 - **MUST** make tags a tree feature (`tree.feature-changed`), switched on by default; off hides chips, `@@`, the picker and the Tags branch (outline, navigation, search) and keeps all assignments
 - **MUST NOT** connect trees: a tag belongs to one tree; copy and paste matches tags by title (ADR-069)
+- **MUST**, when importing a tree or a JSON export, move its tag items into the target's Tags branch in the same action as the imported content, without matching, and then offer to join tags with equal titles
 - **MUST** export tags to Obsidian as `tags:` with nested tags as paths (`a/b`), and import folder names and nested tags `#a/b` as nested tag items ([zettelkasten-claim.md](../zettelkasten-claim.md))
 
 verify:
