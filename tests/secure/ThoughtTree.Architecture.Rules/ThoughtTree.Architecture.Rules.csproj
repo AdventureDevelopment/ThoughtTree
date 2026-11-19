@@ -3,6 +3,7 @@
   <ItemGroup>
     <PackageReference Include="TngTech.ArchUnitNET" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="YamlDotNet" />
     <!-- Not an analyzer of this project: only its DLLs are copied to the output, so the tests can run it on code snippets. -->
     <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
   </ItemGroup>

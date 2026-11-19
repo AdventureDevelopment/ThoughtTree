@@ -1,12 +1,12 @@
-// One-time setup, run by the owner (infra/README.md): the two resource groups and the three deployment
+// One-time setup, run by the owner (infra/README.md): the three resource groups and the three deployment
 // identities that GitHub Actions signs in as through OpenID Connect. No secret is created or stored
 // (ADR-046). The Static Web Apps themselves are created by the deploy workflows from main.bicep.
 //
 //   test       Contributor on rg-thoughttree-test, only for jobs in the GitHub environment "test"
 //   production Contributor on rg-thoughttree-prod, only for jobs in the GitHub environment "production"
-//   preview    custom role on rg-thoughttree-test: read the site, read its deployment token, delete
-//              staging environments; only for pull_request runs. Reading the token lets a pull request run upload to
-//              the whole test site (main slot included); it cannot change any other resource.
+//   preview    custom role on rg-thoughttree-preview only (its own site, nothing of test or production); only
+//              for jobs in the GitHub environment "preview", which runs from main (preview-deploy.yml), never
+//              with pull request code.
 targetScope = 'subscription'
 
 @description('GitHub repository as owner/name, with the exact capitalisation GitHub uses.')
@@ -35,16 +35,28 @@ resource productionGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   }
 }
 
+resource previewGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
+  name: 'rg-thoughttree-preview'
+  location: location
+  tags: {
+    app: 'thoughttree'
+    environment: 'preview'
+  }
+}
+
 resource previewRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
   name: guid(subscription().id, 'thoughttree-preview-deployer')
   properties: {
     roleName: 'ThoughtTree preview deployer'
-    description: 'Deploys and removes pull request previews of the ThoughtTree test site; nothing else.'
+    description: 'Deploys and removes pull request previews on the ThoughtTree preview site; nothing else.'
     type: 'CustomRole'
     permissions: [
       {
         actions: [
+          'Microsoft.Resources/subscriptions/resourceGroups/read'
+          'Microsoft.Resources/deployments/*'
           'Microsoft.Web/staticSites/read'
+          'Microsoft.Web/staticSites/write'
           'Microsoft.Web/staticSites/listSecrets/action'
           'Microsoft.Web/staticSites/builds/read'
           'Microsoft.Web/staticSites/builds/delete'
@@ -53,7 +65,7 @@ resource previewRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
       }
     ]
     assignableScopes: [
-      testGroup.id
+      previewGroup.id
     ]
   }
 }
@@ -82,10 +94,10 @@ module productionIdentity 'deploy-identity.bicep' = {
 
 module previewIdentity 'deploy-identity.bicep' = {
   name: 'thoughttree-identity-preview'
-  scope: testGroup
+  scope: previewGroup
   params: {
     name: 'id-thoughttree-preview'
-    subject: 'repo:${repository}:pull_request'
+    subject: 'repo:${repository}:environment:preview'
     roleDefinitionId: previewRole.id
     location: location
   }

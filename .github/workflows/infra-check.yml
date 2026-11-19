@@ -34,4 +34,4 @@ jobs:
         run: |
           az bicep install --version v0.49.2
           for template in infra/main.bicep infra/bootstrap/bootstrap.bicep; do az bicep build --file "$template" --stdout > /dev/null; done
-          for parameters in infra/test.bicepparam infra/production.bicepparam; do az bicep build-params --file "$parameters" --stdout > /dev/null; done
+          for parameters in infra/*.bicepparam; do az bicep build-params --file "$parameters" --stdout > /dev/null; done
