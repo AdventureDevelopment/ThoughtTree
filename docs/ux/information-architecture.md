@@ -2,7 +2,7 @@
 
 Status: check of topic 7 of [ux-concept.md](../ux-concept.md) on 2026-11-18, against D-1 to D-165, ADR-060 to ADR-072, ADR-074, ADR-077 to ADR-081, [zettelkasten-claim.md](../zettelkasten-claim.md) and the open decisions in section 9 of [architecture.md](../architecture.md). This file decides nothing; it lists where every place lives and what is missing. Decisions are recorded in the log of ux-concept.md.
 
-**Verdict: not done.** The phone core (outline, Focus, capture, inbox, search in one tree, trees, history, conflicts, settings, feedback, tutorial) is decided and consistent. Missing are the places of the release 1 features added since 2026-11-16 (connection map, relation notes, readable import and export, all-trees search, tree-level settings, and since 2026-11-19 the Tags and Relation types branches and the beta format-change prompt), the entry to pairing, and how the item menu holds its new entries. Progress since the check: see D-166 to D-176.
+**Verdict on 2026-11-18: not done.** Missing were the places of the release 1 features added since 2026-11-16 and several smaller places. **Update 2026-11-19, after D-166 to D-192: done for release 1, with three things still open:** the exchange flow and the pairing screens are placed but not sketched (ADR-064 needs sketches before building), and the item menu (G6) is built in its simplest form and decided after the owner has tried it (D-167). Places for features that may slip to 1.x (importing a tree into another, template link slots, the diagnostics view) wait until those features are built.
 
 Status: **Decided** = place and path decided; **Partly** = place decided, flow or detail open; **Missing** = no place decided. Phone paths; tablet and desktop use the same paths unless noted (D-157: same bar and 📥 everywhere; D-150 and D-156: three columns on wide screens).
 
@@ -71,7 +71,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **C2 Tree theme in two places (settled by D-183):** the open tree's theme on More › This tree…, any tree's in More › Trees › ⋯; intended.
 - **C3 Name of backlinks from text (resolved by D-191):** "Linked from" for all, "Mentioned in" for links in notes, "mentions" on the map.
 - **C4 Tutorial wording (resolved):** architecture.md now uses "Bring the tutorial back" (D-163).
-- **C5 Wide screens:** the navigation column (D-150) repeats parts of More (trees, views, settings); no rule says which More entries it shows, or where the map and conflicts appear there.
+- **C5 Wide screens (resolved by D-192):** places in the navigation column, actions in More, More complete everywhere.
 - **Depth:** every path above is at most two taps from the outline (More › X, ⋯ › X); D-80 holds except where G6 forces a submenu.
 - **New Zettelkasten features against the principles:** the map and the relation note fit principle 6 (several dimensions); the item-menu entries for export and import fit "actions where their subject is" (D-53). Readable export must keep the ADR-019 warning in every path, including the quick branch export.
 
@@ -81,5 +81,5 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 2. G1 and G2: closed (D-168 to D-176).
 3. G3 and C1: closed (D-179, D-180).
 4. G4: closed (D-183 to D-185).
-5. G8, G10, G11: pairing entry, settings list, reset.
+5. G8, G9, G10, G11, C3, C4, C5: settled (D-187 to D-192); the pairing screens still need a sketch.
 6. G12 and G13 closed (D-177, D-178, D-181).
