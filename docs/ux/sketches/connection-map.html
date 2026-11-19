@@ -1,0 +1,215 @@
+<title>Connection map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: iPad frames for the two placements (own place, details column), then phone frames (tap highlights, list alternative), then the keyboard path. Paper tokens as in the other sketches. The map is drawn by a small script from one data set, so every frame shows the same thoughts. */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-faint:#9a9084;--t-line:#e9e1d4;--t-edge:#cbbfae;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--t-shade:rgba(42,37,32,.18);--t-pop:#fffdf8;--t-focus:#2f6fb0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-edge:#5a5046;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;--t-focus:#7fb2ea;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-edge:#5a5046;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;--t-focus:#7fb2ea;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+h2.v{font-size:17px;margin:28px 0 4px}
+.lead{margin:0 0 6px;color:var(--muted);max-width:76ch}
+.wide{overflow-x:auto;padding-bottom:6px}
+.row{display:flex;flex-wrap:wrap;gap:22px;margin-top:10px}
+.col{flex:1 1 300px;max-width:340px;min-width:0}
+h3{font-size:14.5px;margin:10px 0 8px}
+p.d{font-size:13px;color:var(--muted);margin:8px 0 0;max-width:76ch}
+.pad{position:relative;width:820px;height:560px;border-radius:22px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;font-size:14px}
+.ph{position:relative;height:660px;border-radius:20px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:14px}
+.top{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--t-line);font-size:12.5px;color:var(--t-muted);min-height:40px}
+.top b{color:var(--t-text)}
+.sp{flex:1}
+.back{color:var(--t-acc-text);font-weight:700;background:var(--t-sel);border-radius:8px;padding:2px 9px}
+.fb svg{width:16px;height:16px;fill:none;stroke:var(--t-faint);stroke-width:1.4;stroke-linejoin:round}
+.mh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:7px 12px;border-bottom:1px solid var(--t-line);font-size:12.5px;color:var(--t-muted)}
+.chip{font-size:12px;border:1.5px solid var(--t-line);border-radius:999px;padding:3px 10px;color:var(--t-text);background:var(--t-card);white-space:nowrap}
+.chip.on{background:var(--t-accent);border-color:var(--t-accent);color:var(--t-ink)}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+.mapbox{flex:1;background:var(--t-card);position:relative;overflow:hidden}
+.mapbox svg{position:absolute;inset:0;width:100%;height:100%}
+.bar{display:flex;justify-content:space-around;border-top:1px solid var(--t-line);background:var(--t-bg);padding:6px 4px 10px;font-size:11px;color:var(--t-muted)}
+.bar span{display:flex;flex-direction:column;align-items:center;gap:1px}
+.bar i{font-style:normal;font-size:16px;color:var(--t-acc-text)}
+.fab{position:absolute;inset-inline-end:14px;bottom:66px;width:50px;height:50px;border-radius:16px;background:var(--t-accent);color:var(--t-ink);display:grid;place-items:center;font-size:22px}
+.rail{width:44px;border-inline-end:1px solid var(--t-line);display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:12px;color:var(--t-acc-text);font-size:15px}
+.nav{width:170px;border-inline-end:1px solid var(--t-line);padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:5px}
+.nav .h{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t-muted);margin-top:6px}
+.outl{width:300px;border-inline-end:1px solid var(--t-line);display:flex;flex-direction:column;min-width:0}
+.list{flex:1;background:var(--t-card);overflow:hidden}
+.n{display:flex;align-items:center;gap:6px;padding:9px 10px;border-bottom:1px solid var(--t-line);white-space:nowrap;overflow:hidden}
+.n .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.n.sel{background:var(--t-sel)}
+.c1{padding-inline-start:30px}
+.tw{width:16px;color:var(--t-acc-text);font-weight:700;text-align:center}
+.dot{width:16px;color:var(--t-muted);font-size:9px;text-align:center}
+.more{color:var(--t-acc-text);font-weight:700;padding:0 4px}
+.det{flex:1;display:flex;flex-direction:column;min-width:0}
+.tabs{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid var(--t-line)}
+.tab{font-size:12.5px;padding:3px 10px;border-radius:999px;color:var(--t-muted)}
+.tab.on{background:var(--t-sel);color:var(--t-acc-text);font-weight:600}
+.open{position:absolute;inset-inline-end:10px;bottom:10px;font-size:12.5px;color:var(--t-acc-text);background:var(--t-pop);border:1.5px solid var(--t-line);border-radius:10px;padding:5px 10px}
+.card{position:absolute;inset-inline:10px;bottom:10px;background:var(--t-pop);border:1px solid var(--t-line);border-radius:14px;box-shadow:0 6px 22px rgba(0,0,0,.14);padding:10px 12px;font-size:13px}
+.card b{font-size:14px}
+.card small{display:block;color:var(--t-muted);font-size:12px;margin:1px 0 8px}
+.card .acts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-size:12.5px;color:var(--t-acc-text);border:1.5px solid var(--t-line);border-radius:10px;padding:5px 11px}
+.btn.pri{background:var(--t-accent);border-color:var(--t-accent);color:var(--t-ink)}
+.cl{background:var(--t-card);flex:1;overflow:hidden;font-size:13.5px}
+.cl .g{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t-muted);padding:10px 12px 4px}
+.cl .r{display:flex;align-items:baseline;gap:8px;padding:9px 12px;border-bottom:1px solid var(--t-line)}
+.cl .r .ty{color:var(--t-muted);font-size:12px;min-width:84px}
+.cl .r .ti{flex:1;min-width:0}
+.cl .r .st{color:var(--t-faint);font-size:11.5px}
+.cl .r.sub{padding-inline-start:30px;color:var(--t-muted)}
+.hear{margin-top:10px;border:1px dashed var(--t-edge);border-radius:12px;padding:10px 12px;font-size:13px;background:var(--t-card);color:var(--t-text);max-width:820px}
+.hear b{color:var(--t-acc-text)}
+.keys{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-top:8px}
+kbd{font:12px var(--font);border:1px solid var(--t-edge);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--t-card);color:var(--t-text)}
+.side{width:290px;border-inline-start:1px solid var(--t-line);display:flex;flex-direction:column;min-width:0;background:var(--t-card)}
+.sbody{flex:1;padding:12px 16px;overflow:hidden;font-size:13.5px}
+.sbody .path{color:var(--t-muted);font-size:11.5px}
+.sbody h4{font-size:19px;font-weight:400;margin:2px 0 6px}
+.stags{display:flex;gap:6px;margin-bottom:8px}
+.tag{font-size:11px;border-radius:999px;padding:1px 8px;background:var(--t-sel);color:var(--t-acc-text)}
+.sline{display:flex;gap:14px;font-size:12.5px;color:var(--t-acc-text);padding-bottom:8px;border-bottom:1px solid var(--t-line)}
+.sbody p{margin:10px 0}
+.ssec{padding:5px 0;font-size:14px}
+.ssec small{display:block;color:var(--t-muted);font-size:12.5px}
+.sacts{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px 14px;border-top:1px solid var(--t-line)}
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px;min-width:560px}
+.cmp th,.cmp td{text-align:start;padding:7px 8px;border-bottom:1px solid var(--t-line);vertical-align:top}
+.cmp th{color:var(--muted);font-weight:600}
+</style>
+
+<h1>Connection map</h1>
+<p class="lead">The map shows the neighbourhood of one thought: its connections and theirs, at most 2 steps and 200 thoughts (proposed budget). Relations are solid lines with their type; links written in a note are dashed lines named "mentions" (Zettelkasten decision 2). Tapping a thought highlights its connections; tapping a highlighted thought moves the map there. The outline stays the main form; the map is a way to look across it. iPad first. Example content only.</p>
+
+<h2 class="v">Where the map lives on the iPad</h2>
+<p class="lead">On the phone the map is always its own place (frames 3 and 4). On the iPad the map is its own place with the selected thought at the side (D-168). Frames 3 to 5 and the table at the end are proposals, not yet decided.</p>
+
+<h3>1 · Own place, with the selected thought at the side (owner's choice)</h3>
+<div class="wide"><div class="pad" aria-label="iPad, map as its own place with the selected thought in the details column">
+  <div class="rail" aria-label="Navigation, collapsed"><span>»</span><span>🌳</span><span>🔖</span><span>⚙</span></div>
+  <div class="main">
+    <div class="top"><span class="back" aria-label="Back">←</span> Map of <b>Why we forget what we read</b></div>
+    <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip">1 step</span><span class="chip on">2 steps</span><span class="sp"></span><span>11 thoughts</span><span class="chip">▤ List</span></div>
+    <div class="mapbox" data-map data-center="c" data-sel="s2" data-w="470" data-h="400"></div>
+    <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+    <div class="fab">📥</div>
+  </div>
+  <aside class="side" aria-label="Selected thought: Mira">
+    <div class="tabs"><span class="tab on">👤 Mira</span><span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+    <div class="sbody">
+      <small class="path">My thoughts › 👤 Persons</small>
+      <h4>👤 Mira</h4>
+      <div class="stags"><span class="tag">person</span></div>
+      <div class="sline"><span>🕘 3</span><span>↗ 0</span><span>↙ 2</span></div>
+      <p>Leads the reading club. Asks the question nobody else asks, and then waits.</p>
+      <div class="ssec">● Shared interests<small>Reading slowly, night trains.</small></div>
+      <div class="ssec">● How we met<small>At the library, over the same book.</small></div>
+    </div>
+    <div class="sacts"><span class="btn pri">Go to Mira on the map</span><span class="btn">Focus</span></div>
+  </aside>
+</div></div>
+<p class="d">Opened from the thought's ⋯ › Map (D-167). The map sits in the middle column; the column at the side shows the selected thought as Focus shows it (path, title, tags, the 🕘 ↗ ↙ line, note, the thoughts inside), the preview of D-151. Tapping Mira selects her: her lines light up on the map and her page appears at the side. "Go to Mira on the map" (or a second tap on her) moves the map so she is in the middle; Focus opens her as a full page, and ← Back returns to the map (D-131). With nothing selected, the side shows the thought in the middle. The note can be written in the side column as in the details column (D-152). Narrower windows drop the side column first and fall back to the phone's card (frame 3), as D-150 drops columns.</p>
+
+<h2 class="v">On the phone</h2>
+<div class="row">
+  <div class="col">
+    <h3>3 · Tap a thought: its connections light up</h3>
+    <div class="ph" aria-label="Phone, map with Mira selected">
+      <div class="top"><span class="back">←</span> Map of <b>Why we forget…</b><span class="sp"></span><span class="fb"><svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2z"/></svg></span></div>
+      <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip on">2 steps</span><span class="sp"></span><span class="chip">▤ List</span></div>
+      <div class="mapbox" data-map data-center="c" data-sel="s2" data-w="330" data-h="520" data-compact="1">
+        <div class="card"><b>👤 Mira</b><small>My thoughts › 👤 Persons · 2 connections</small><div class="acts"><span class="btn pri">Go to Mira on the map</span><span class="btn">Focus</span></div></div>
+      </div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+    </div>
+    <p class="d">Mira is connected to the middle thought, so one tap selects her and lights up her lines (to the middle and to "Talk at the reading club"); everything else fades. A second tap on Mira, or the card's first button, moves the map so Mira is in the middle. Focus opens her as a page. A tap on empty space clears the selection. The card covers 📥 while it is open (D-66).</p>
+  </div>
+  <div class="col">
+    <h3>4 · The same as a list</h3>
+    <div class="ph" aria-label="Phone, connections as a list">
+      <div class="top"><span class="back">←</span> Map of <b>Why we forget…</b></div>
+      <div class="mh"><span class="chip on">━ Relations</span><span class="chip on">┄ Links</span><span class="chip on">2 steps</span><span class="sp"></span><span class="chip on">▤ List</span></div>
+      <div class="cl" role="list">
+        <div class="g">Relations</div>
+        <div class="r"><span class="ty">supported by</span><span class="ti">Spaced repetition</span><span class="st">▸ 1</span></div>
+        <div class="r"><span class="ty">builds on</span><span class="ti">Forgetting curve</span><span class="st">▾ 1</span></div>
+        <div class="r sub"><span class="ty">cites</span><span class="ti">Ebbinghaus, 1885</span></div>
+        <div class="r"><span class="ty">related</span><span class="ti">Writing as thinking</span><span class="st">▸ 1</span></div>
+        <div class="g">Links</div>
+        <div class="r"><span class="ty">mentions</span><span class="ti">👤 Mira</span><span class="st">▸ 1</span></div>
+        <div class="r"><span class="ty">mentioned in</span><span class="ti">Night trains feel like time travel</span><span class="st">▸ 1</span></div>
+      </div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div>
+      <div class="fab">📥</div>
+    </div>
+    <p class="d">The list holds exactly what the map draws: the direct connections grouped as relations and links, each named from this thought's side ("supported by", "mentioned in"), and the second step folded under each (▸ n). Tapping a row moves the map there, as on the map. This is the path for screen readers, and a quick read on a small screen. Same switches as the map.</p>
+  </div>
+</div>
+
+<h2 class="v">With the keyboard</h2>
+<h3>5 · Arrow keys move along the lines</h3>
+<div class="wide"><div class="pad" aria-label="Keyboard path on the map" style="height:480px">
+  <div class="rail"><span>»</span><span>🌳</span><span>🔖</span><span>⚙</span></div>
+  <div class="main">
+    <div class="top"><span class="back">←</span> Map of <b>Why we forget what we read</b></div>
+    <div class="mapbox" data-map data-center="c" data-sel="c" data-focus="s1" data-w="776" data-h="380"></div>
+  </div>
+</div></div>
+<div class="hear" role="note"><b>Screen reader hears:</b> "Spaced repetition. Supports Why we forget what we read. 1 step away. 2 connections. Enter to go there."</div>
+<div class="keys"><span><kbd>←</kbd> <kbd>→</kbd> next connection of the selected thought, in order around it</span><span><kbd>↓</kbd> into the next step</span><span><kbd>↑</kbd> back towards the middle</span><span><kbd>Enter</kbd> move the map there</span><span><kbd>F</kbd> Focus</span><span><kbd>L</kbd> list</span><span><kbd>Esc</kbd> or ← Back: leave the map</span></div>
+<p class="d">The focus ring (blue, so it is never mistaken for the selection) walks the lines of the thought in the middle; each step is announced with the type of the line seen from the middle. The keys are a proposal for the UI specification (D-157 keeps the full set for later).</p>
+
+<h2 class="v">Things the sketch assumes</h2>
+<div class="wide"><table class="cmp">
+<tr><th>Point</th><th>Shown here</th><th>Why</th></tr>
+<tr><td>Layout</td><td>Rings: the thought in the middle, step 1 around it, step 2 outside, each placed near what it connects to</td><td>The same map looks the same every time it opens; nothing floats or settles (calm, principle 5; reduced motion)</td></tr>
+<tr><td>Tree structure</td><td>Not drawn; the card names the path</td><td>The outline shows the tree; the map shows what crosses it (principle 6)</td></tr>
+<tr><td>Budget</td><td>"11 thoughts" in the header; above 200 the outer step is cut at the 200 nearest and the header says "Showing 200 of 340 · 1 step shows all direct ones"</td><td>Proposed budget, to be measured on the iPad</td></tr>
+<tr><td>＋ Add here and 📥</td><td>The bar and 📥 stay (D-157); ＋ adds a thought after the selected one in the outline, without leaving the map</td><td>Open: whether ＋ on the map should create a connected thought instead</td></tr>
+<tr><td>Deleted or not-found link targets</td><td>Not drawn</td><td>The note shows them (architecture section 8)</td></tr>
+</table></div>
+
+<script>
+(function(){
+var N={c:{t:"Why we forget what we read",s:0,a:0},
+s1:{t:"Spaced repetition",s:1,a:-90},s2:{t:"👤 Mira",s:1,a:-28},s3:{t:"Writing as thinking",s:1,a:38},s4:{t:"Night trains feel like time travel",s:1,a:142},s5:{t:"Forgetting curve",s:1,a:208},
+t3:{t:"Memory palace",s:2,a:-112},t1:{t:"Talk at the reading club",s:2,a:-50},t2:{t:"Luhmann's slip box",s:2,a:58},t5:{t:"Slow travel",s:2,a:122},t4:{t:"Ebbinghaus, 1885",s:2,a:186}};
+var E=[["s1","c","rel","supports"],["c","s2","link",""],["c","s3","rel","related"],["s4","c","link",""],["c","s5","rel","builds on"],
+["s1","t3","rel","related"],["t1","s2","link",""],["t2","s3","rel","supports"],["s4","t5","rel","related"],["s5","t4","rel","cites"]];
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function cut(s,n){return s.length>n?s.slice(0,n-1)+"…":s}
+document.querySelectorAll("[data-map]").forEach(function(box){
+ var W=+box.dataset.w,H=+box.dataset.h,sel=box.dataset.sel,foc=box.dataset.focus,steps=+(box.dataset.steps||2),compact=!!box.dataset.compact;
+ var wide=W>500,cx=W/2,cy=compact?H*0.37:H/2;
+ var mid=W>440&&W<600;if(mid)wide=false;
+ var R=wide?[0,W*0.22,H*0.27,W*0.40,H*0.44]:mid?[0,W*0.21,H*0.26,W*0.34,H*0.43]:(compact?[0,W*0.24,H*0.20,W*0.33,H*0.33]:[0,W*0.22,H*0.26,0,0]);
+ var maxc=compact?12:(wide?22:(mid?15:13));
+ var P={};Object.keys(N).forEach(function(k){var n=N[k];if(n.s>steps)return;var a=n.a*Math.PI/180,ix=n.s==0?0:(n.s==1?1:3);P[k]={x:cx+(ix?Math.cos(a)*R[ix]:0),y:cy+(ix?Math.sin(a)*R[ix+1]:0)}});
+ var lit={};lit[sel]=1;E.forEach(function(e){if(e[0]==sel)lit[e[1]]=1;if(e[1]==sel)lit[e[0]]=1});
+ var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Map of the connections of Why we forget what we read"><defs><marker id="ar'+box.dataset.w+sel+'" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" style="fill:var(--t-acc-text)"/></marker></defs>';
+ var mk='ar'+box.dataset.w+sel;
+ E.forEach(function(e){var a=P[e[0]],b=P[e[1]];if(!a||!b)return;var on=(e[0]==sel||e[1]==sel);
+  var col=on?'var(--t-acc-text)':'var(--t-edge)',op=on?1:.45;
+  var dx=b.x-a.x,dy=b.y-a.y,L=Math.sqrt(dx*dx+dy*dy),sh=compact?30:40;var bx=b.x-dx/L*sh,by=b.y-dy/L*(sh*.55);
+  s+='<line x1="'+a.x+'" y1="'+a.y+'" x2="'+bx+'" y2="'+by+'" style="stroke:'+col+';stroke-width:'+(on?2.2:1.4)+';opacity:'+op+(e[2]=='link'?';stroke-dasharray:5 4':'')+'"'+(e[2]=='rel'&&e[3]!='related'&&on?' marker-end="url(#'+mk+')"':'')+'/>';
+  if(e[2]=='rel'&&!compact||(compact&&on)){var lab=e[2]=='rel'?e[3]:'mentions';var mx=(a.x+b.x)/2,my=(a.y+b.y)/2;var lw=lab.length*6+10;
+   s+='<rect x="'+(mx-lw/2)+'" y="'+(my-9)+'" width="'+lw+'" height="17" rx="8" style="fill:var(--t-card);opacity:'+op+'"/><text x="'+mx+'" y="'+(my+4)+'" text-anchor="middle" style="font:11px system-ui,sans-serif;fill:'+(on?'var(--t-acc-text)':'var(--t-muted)')+';opacity:'+op+'">'+lab+'</text>'}
+  else if(e[2]=='link'&&!compact){var mx=(a.x+b.x)/2,my=(a.y+b.y)/2;s+='<rect x="'+(mx-31)+'" y="'+(my-9)+'" width="62" height="17" rx="8" style="fill:var(--t-card);opacity:'+op+'"/><text x="'+mx+'" y="'+(my+4)+'" text-anchor="middle" style="font:italic 11px system-ui,sans-serif;fill:var(--t-muted);opacity:'+op+'">mentions</text>'}
+ });
+ Object.keys(P).forEach(function(k){var p=P[k],n=N[k],t=cut(n.t,k=='c'?(compact?18:(wide?30:(mid?24:20))):maxc),fs=k=='c'?13.5:12.5,w=t.length*(fs*.56)+20,h=k=='c'?34:28;
+  var isC=k=='c',isSel=k==sel,on=!!lit[k];
+  var fill=isC?'var(--t-accent)':(isSel?'var(--t-sel)':'var(--t-card)'),tc=isC?'var(--t-ink)':'var(--t-text)',st=isSel?'var(--t-accent)':'var(--t-edge)',op=on||isC?1:.4;
+  s+='<g style="opacity:'+op+'"><rect x="'+(p.x-w/2)+'" y="'+(p.y-h/2)+'" width="'+w+'" height="'+h+'" rx="'+(h/2)+'" style="fill:'+fill+';stroke:'+st+';stroke-width:'+(isSel&&!isC?2:1)+'"/><text x="'+p.x+'" y="'+(p.y+fs*.36)+'" text-anchor="middle" style="font:'+(isC?600:400)+' '+fs+'px system-ui,sans-serif;fill:'+tc+'">'+esc(t)+'</text>';
+  if(k==foc)s+='<rect x="'+(p.x-w/2-4)+'" y="'+(p.y-h/2-4)+'" width="'+(w+8)+'" height="'+(h+8)+'" rx="'+(h/2+4)+'" style="fill:none;stroke:var(--t-focus);stroke-width:2.5"/>';
+  if(isSel&&isC&&sel==box.dataset.center&&!foc){}
+  s+='</g>'});
+ s+='</svg>';box.insertAdjacentHTML('afterbegin',s);
+});
+})();
+</script>
