@@ -228,6 +228,8 @@ public partial class DeployToolRules
     [Theory]
     [InlineData("az login --service-principal -u x --federated-token \"$token\"")]
     [InlineData("az login --federated-token $(cat t)")]
+    [InlineData("az login --federated-token=$token")]
+    [InlineData("az login --federated-token=\"$(cat t)\"")]
     [InlineData("curl --header \"Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}\" \"$URL\"")]
     [InlineData("curl -H \"Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN\" x")]
     public void A_token_on_a_command_line_is_found(string line)
@@ -272,7 +274,7 @@ public partial class DeployToolRules
     [GeneratedRegex(@"\bnpx\b|\bnpm\s+(install|i|add|exec|x)\b|\b(pnpm|yarn)\s+dlx\b|\byarn\s+add\b", RegexOptions.CultureInvariant)]
     private static partial Regex UnlockedInstall();
 
-    [GeneratedRegex(@"--federated-token\s+(?!""@)\S+|(--header|-H)\s+""?Authorization:[^\n]*\$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"--federated-token(\s+|=)(?!""?@)\S+|(--header|-H)\s+""?Authorization:[^\n]*\$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
     private static partial Regex SecretOnCommandLine();
 
     [GeneratedRegex(@"\bnpm\s+ci\b[^\n]*", RegexOptions.CultureInvariant)]

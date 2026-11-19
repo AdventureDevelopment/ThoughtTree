@@ -63,6 +63,10 @@ public class PromotionRules
         var fetched = runs.FindIndex(r => r.Contains("site_artifact.py fetch --same-run", StringComparison.Ordinal) && r.Contains("--expect-sha256 \"$BUILT_SHA256\"", StringComparison.Ordinal));
         var uploaded = runs.FindIndex(r => r.Contains("upload-site.sh", StringComparison.Ordinal));
         fetched.ShouldBeGreaterThanOrEqualTo(0, "the test deploy job fetches the build job's artifact and checks its digest");
+        var fetch = runs[fetched];
+        fetch.ShouldContain("--workflow .github/workflows/deploy-test.yml", customMessage: "third review N3-I3: the fetch names its own workflow file");
+        fetch.ShouldContain("--event push");
+        fetch.ShouldContain("--branch main", customMessage: "the test deploy, too, takes only a run whose commit is on main");
         uploaded.ShouldBeGreaterThan(fetched);
     }
 
