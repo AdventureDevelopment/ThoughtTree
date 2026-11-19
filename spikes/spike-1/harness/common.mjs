@@ -13,7 +13,7 @@ export const firefoxPath = process.env.SPIKE_FIREFOX || '/root/pw-firefox/firefo
 
 export function datasetInfo(name) {
   const m = manifest();
-  const d = m.datasets.find(x => x.name === name);
+  const d = [...m.datasets, ...(m.longNoteDatasets ?? [])].find(x => x.name === name);
   if (!d) throw new Error('dataset not in manifest: ' + name);
   return { m, d };
 }

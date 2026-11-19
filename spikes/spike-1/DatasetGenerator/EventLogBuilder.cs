@@ -92,6 +92,18 @@ public sealed class EventLogBuilder
         return list == null || list.Count == 0 ? null : list[_rng.Below(list.Count)];
     }
 
+    /// <summary>Q5: 1,000 events; 100 items, each given one note of <paramref name="noteChars"/> characters; the rest title edits.</summary>
+    public Dictionary<string, int> BuildLongNotes(int noteChars)
+    {
+        BeginAction(DeviceIds[0]);
+        var inbox = CreateItem(null, null, "Inbox", "");
+        Emit("tree.inbox-set", new EventData { ItemId = inbox });
+        for (int i = 0; i < 100; i++) { BeginAction(); _content.Add(CreateItem(null, i == 0 ? inbox : _content[^1], _text.Title(), "")); }
+        foreach (var id in _content) { BeginAction(); _lastNote[id] = Emit("item.note-changed", new EventData { ItemId = id, Note = _text.Text(noteChars), Format = "markdown", Replaces = [_lastNote[id]] }); }
+        while (Events.Count < 1000) { BeginAction(); var id = _rng.Pick(_content); _lastTitle[id] = Emit("item.title-changed", new EventData { ItemId = id, Title = _text.Title(), Format = "markdown", Replaces = [_lastTitle[id]] }); }
+        return Events.GroupBy(e => e.Event.Type).OrderBy(g => g.Key, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count());
+    }
+
     public Dictionary<string, int> Build(int totalEvents)
     {
         int items = totalEvents / 10;

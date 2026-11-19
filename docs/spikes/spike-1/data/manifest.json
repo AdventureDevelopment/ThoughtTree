@@ -223,5 +223,151 @@
       "checksumFinal": "effc144400289563f807cb9d3afcbeba574fca375a4a4eb7a4cd0063c0f57a37",
       "visibleItemsFinal": 10000
     }
+  ],
+  "longNoteDatasets": [
+    {
+      "name": "longnote-10k",
+      "file": "longnote-10k.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 3552000,
+      "sha256": "25d807862a2167268c46aaab4e5462574c43c4fad5b582d18b603fdc278bc0cc",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 416,
+        "p95": 11107,
+        "max": 11201,
+        "total": 1483056
+      },
+      "paddedBytesTotal": 2560000,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "16384": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "043d7fc80d348248add35952c0c240fb2018064736c44ef57cc53226e348d074",
+      "checksumFinal": "40cedee8335da96e08c6559c33d5335e5ec50fb7139896a9e9523d4220642c40",
+      "visibleItemsFinal": 101
+    },
+    {
+      "name": "longnote-50k",
+      "file": "longnote-50k.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 10105600,
+      "sha256": "39cd7bd0d8c0b60ec07b5179a07fb5cf29b9d29bd5d9d877cdc40c9ae94cbec4",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 417,
+        "p95": 54033,
+        "max": 54234,
+        "total": 5775648
+      },
+      "paddedBytesTotal": 7475200,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "65536": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "9135645ad727d60082a38f7dc448a24cbfd4bace2a0a1efa380b6b323ff91cad",
+      "checksumFinal": "8909cd28bcbcce79d8316eb8acd36cdab51cffff6d42b3a53fe5732d68909d7c",
+      "visibleItemsFinal": 101
+    },
+    {
+      "name": "longnote-200k",
+      "file": "longnote-200k.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 31950800,
+      "sha256": "df213650bb682e51a311bf3bb2abe0545707e1b4e2e35a32612122c0d3b8f463",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 415,
+        "p95": 214968,
+        "max": 215381,
+        "total": 21869451
+      },
+      "paddedBytesTotal": 23859200,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "229376": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "f71f6908f3af2f402cc7105ef412f2d3a191d796373220c78285dd1587a6fe38",
+      "checksumFinal": "dcf4ece0116dde7997bfc9b6b580944dfc385f02b1ab25c2b8c195da30951b5f",
+      "visibleItemsFinal": 101
+    },
+    {
+      "name": "longnote-1m",
+      "file": "longnote-1m.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 145546800,
+      "sha256": "95d44a3e73c5ddda50a7ec16e3193b3d4ccff39fcb826c1d3ca926189742aac3",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 417,
+        "p95": 1073403,
+        "max": 1074221,
+        "total": 107712281
+      },
+      "paddedBytesTotal": 109056000,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "1081344": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "ea11349d5b1654aaedb79244ac9686d73a24c45c5b2d670b436fafdeee0e7f8f",
+      "checksumFinal": "c3245431c8a77c873868b436ac2835e7dfaa043220dfc59c4d803a1bed0ad212",
+      "visibleItemsFinal": 101
+    }
   ]
 }

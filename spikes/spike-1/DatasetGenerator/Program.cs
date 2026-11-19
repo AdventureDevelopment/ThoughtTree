@@ -29,7 +29,10 @@ switch (command)
         var sizes = Opt("--sizes", "1000,10000,100000").Split(',').Select(int.Parse).ToArray();
         var manifestPath = Opt("--manifest", "");
         var datasets = new JsonArray();
-        foreach (var n in sizes) datasets.Add(Generate(n));
+        foreach (var n in sizes) datasets.Add(Generate(n, $"events-{n}", b => b.Build(n)));
+        var longNotes = new JsonArray();
+        foreach (var (label, chars) in new[] { ("10k", 10_000), ("50k", 50_000), ("200k", 200_000), ("1m", 1_000_000) })
+            if (!argsList.Contains("--no-longnotes")) longNotes.Add(Generate(1000, $"longnote-{label}", b => b.BuildLongNotes(chars)));
         var manifest = new JsonObject
         {
             ["generatorVersion"] = GeneratorVersion,
@@ -51,6 +54,7 @@ switch (command)
                 ["eventTypes"] = "current format: relation ids (ADR-083), tag items in the Tags branch (ADR-082), relation type items (ADR-084), inbox (ADR-066)",
             },
             ["datasets"] = datasets,
+            ["longNoteDatasets"] = longNotes,
         };
         var json = manifest.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
         File.WriteAllText(Path.Combine(outDir, "manifest.json"), json + "\n");
@@ -58,6 +62,9 @@ switch (command)
         Console.WriteLine(json);
         break;
     }
+    case "sizes":
+        File.WriteAllText(Opt("--result", Path.Combine(outDir, "q5-sizes.json")), SizeAnalysis.Run(seed, idPrefix, Opt("--commit", "unknown")));
+        break;
     case "verify":
     {
         var file = Opt("--file", Path.Combine(outDir, "events-100000.jsonl"));
@@ -71,13 +78,13 @@ switch (command)
 }
 return 0;
 
-JsonObject Generate(int n)
+JsonObject Generate(int n, string name, Func<EventLogBuilder, Dictionary<string, int>> build)
 {
     var rng = new SplitMix64(seed);
     var b = new EventLogBuilder(rng, idPrefix);
-    var counts = b.Build(n);
+    var counts = build(b);
     var snapshotAt = n - n / 100;
-    var file = Path.Combine(outDir, $"events-{n}.jsonl");
+    var file = Path.Combine(outDir, $"{name}.jsonl");
     var plainLengths = new List<int>(n);
     var bucketHist = new SortedDictionary<int, int>();
     long paddedTotal = 0;
@@ -114,7 +121,7 @@ JsonObject Generate(int n)
     Console.Error.WriteLine($"generated {file}: {n} events, {nItems} items, sha256 {fileSha}");
     return new JsonObject
     {
-        ["name"] = $"events-{n}",
+        ["name"] = name,
         ["file"] = Path.GetFileName(file),
         ["events"] = n,
         ["items"] = nItems,
