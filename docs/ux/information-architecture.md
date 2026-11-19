@@ -43,7 +43,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Import report | An ordinary thought at the end of the imported branch | Outline | Zettelkasten decision 4d | Decided |
 | Settings (device) | More › Settings: hand, language (also Easy), light or dark, export reminder, offer feedback, device label and name | More › Settings; wide: navigation column | D-122, D-126, D-146, ADR-070, architecture section 6 | Partly (G10) |
 | App update consent, performance report | Not placed | Not decided | ADR-036, ADR-051 | Missing (G10) |
-| Beta: format-change prompt, export of every tree, import after the update | Not placed | Not decided | ADR-085; row "Beta users' data before release 1" | Missing (G13) |
+| Beta: format-change prompt, export of every tree, import after the update | Banner, then "Before you update" sheet; after the update the tree list | Banner › Before you update; tree list › ＋ Import your exported trees… | ADR-085, D-181 | Decided |
 | Reset or remove all data from this device | Not placed (the prototype had one, D-80) | Not decided | D-80 | Missing (G11) |
 | Feedback | Line at the end of menus and sheets, button at the top, More › Send feedback | As described | D-123, D-124, D-159, ADR-070 | Decided |
 | Tutorial | A tree, opened first; back by More › Trees | First start; More › Trees › "Bring the tutorial back" | D-69, D-134 to D-147, D-163 | Decided (C4) |
@@ -66,7 +66,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G10 Settings list:** D-122 does not list update consent (ADR-036), the performance report (ADR-051), device label and name, or "Offer feedback" (ADR-070, named in D-123).
 - **G11 Reset:** whether release 1 offers "remove all data from this device" (beyond removing one tree) is not decided.
 - **G12 Tags and relation types branches (closed by D-177, D-178).**
-- **G13 Beta format change (ADR-085):** the prompt before an update that changes the stored format, the Obsidian export of every tree, old trees shown as not readable, the import as new trees after it. Sketch needed before the first beta format change.
+- **G13 Beta format change (closed by D-181).** The ordinary update banner ("A new version is ready · Update") is named there too; the rest of update consent (G10) stays open.
 - **C1 Export in More (resolved by D-179):** no Export entry in More; whole-tree export is in More › Trees.
 - **C2 Tree theme in two places:** More › Theme of this tree (D-122) and More › Trees › ⋯ › Theme (D-119). Probably intended (open tree versus any tree), but not stated.
 - **C3 Name of backlinks from text:** "Mentioned in" (D-85, D-111) or "Linked from" (architecture section 8); open in the architecture row "Predefined relation types in new trees".
@@ -82,4 +82,4 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 3. G3 and C1: closed (D-179, D-180).
 4. G4: one place for tree settings (features, history, theme, rename, remove).
 5. G8, G10, G11: pairing entry, settings list, reset.
-6. G12 closed (D-177, D-178); G13 sketch after the import and export flow.
+6. G12 and G13 closed (D-177, D-178, D-181).
