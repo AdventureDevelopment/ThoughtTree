@@ -1,5 +1,6 @@
-// One deployment identity: a user-assigned managed identity that GitHub Actions signs in as through
-// OpenID Connect (ADR-046), restricted to one subject claim and one role in this resource group.
+// One deployment identity: a user-assigned managed identity that GitHub Actions signs in as through OpenID
+// Connect (ADR-046), restricted to one subject claim. Deployed into rg-thoughttree-identity, where no
+// deployment identity has a role; its access to a site is granted by site-access.bicep.
 targetScope = 'resourceGroup'
 
 @description('Name of the managed identity.')
@@ -7,9 +8,6 @@ param name string
 
 @description('Subject claim of the GitHub token, for example repo:Owner/Repo:environment:test.')
 param subject string
-
-@description('Full resource id of the role definition assigned at this resource group.')
-param roleDefinitionId string
 
 param location string = resourceGroup().location
 
@@ -33,13 +31,5 @@ resource githubCredential 'Microsoft.ManagedIdentity/userAssignedIdentities/fede
   }
 }
 
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, identity.id, roleDefinitionId)
-  properties: {
-    principalId: identity.properties.principalId
-    principalType: 'ServicePrincipal'
-    roleDefinitionId: roleDefinitionId
-  }
-}
-
 output clientId string = identity.properties.clientId
+output principalId string = identity.properties.principalId
