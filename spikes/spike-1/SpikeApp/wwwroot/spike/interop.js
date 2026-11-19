@@ -183,7 +183,9 @@ export function takeIndexChunk(i, span) { span.set(loadedChunks[i]); }
 
 export async function storageEstimate() {
   const e = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : {};
-  return JSON.stringify({ usage: e.usage ?? null, quota: e.quota ?? null, usageDetails: e.usageDetails ?? null });
+  let battery = null;
+  try { if (navigator.getBattery) { const b = await navigator.getBattery(); battery = { charging: b.charging, level: b.level }; } } catch { }
+  return JSON.stringify({ usage: e.usage ?? null, quota: e.quota ?? null, usageDetails: e.usageDetails ?? null, battery });
 }
 
 export function memory() {

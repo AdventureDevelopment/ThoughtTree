@@ -1,8 +1,10 @@
 // Q3 durability supervisor (plan section 3): starts a browser on the writer page with a persistent profile, kills its
 // whole process tree with SIGKILL (or closes it with SIGTERM) at seeded random moments, restarts it on the same
 // profile and checks what the restarted page finds against every acknowledged write.
-// Usage: node kill.mjs --browser chromium|firefox --variant name --durability relaxed|strict|default
-//        --workload mixed|snapshot|draft --kills 200 [--mode kill|open|close]
+// Phone: --browser android-chrome starts Chrome on the phone through adb (adb reverse tcp:5090 tcp:5090 first) and
+// kills it with `am force-stop`; swipe-away from recents is done by hand (README).
+// Usage: node kill.mjs --browser chromium|firefox|android-chrome --variant name --durability relaxed|strict|default
+//        --workload mixed|snapshot|draft --kills 200 [--mode kill|open|close|manual]
 import { spawn, execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,6 +21,7 @@ const seed = 'thoughttree-spike-1-q3|' + browser + '|' + variant;
 const profile = path.join(spikeDir, 'profiles', `q3-${browser}-${variant}`);
 fs.rmSync(profile, { recursive: true, force: true });
 fs.mkdirSync(profile, { recursive: true });
+const deviceArg = opt('--device', browser === 'android-chrome' ? 'phone' : 'desktop (agent cloud container)');
 const rawLog = path.join(spikeDir, 'out', `q3-${browser}-${variant}.jsonl`);
 fs.writeFileSync(rawLog, '');
 
@@ -36,6 +39,11 @@ const waitFor = (pred, ms) => new Promise(resolve => { const timer = setTimeout(
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 function start(run) {
+  if (browser === 'android-chrome') {
+    const url = `http://localhost:${port}/spike/durability.html?run=${run}&durability=${durability}&workload=${workload}&variant=${variant}&seed=7`;
+    execSync(`adb shell am start -a android.intent.action.VIEW -d '${url.replace(/&/g, '\\&')}' com.android.chrome`);
+    return { pid: null, exitCode: 0, android: true, once() {} };
+  }
   const url = `http://localhost:${port}/spike/durability.html?run=${run}&durability=${durability}&workload=${workload}&variant=${variant}&seed=7`;
   const exe = browser === 'chromium' ? chromium.executablePath() : firefoxPath;
   const a = browser === 'chromium'
@@ -43,8 +51,11 @@ function start(run) {
     : ['-headless', '-no-remote', '-profile', profile, url];
   return spawn(exe, a, { detached: true, stdio: 'ignore' });
 }
-function killTree(child, signal) { try { process.kill(-child.pid, signal); } catch { } }
-const exited = (child, ms) => new Promise(r => { if (child.exitCode !== null || child.signalCode) return r(true); const t = setTimeout(() => r(false), ms); child.once('exit', () => { clearTimeout(t); r(true); }); });
+function killTree(child, signal) {
+  if (child.android) { execSync('adb shell am force-stop com.android.chrome'); return; }
+  try { process.kill(-child.pid, signal); } catch { }
+}
+const exited = (child, ms) => new Promise(r => { if (child.android) return setTimeout(() => r(true), 1000); if (child.exitCode !== null || child.signalCode) return r(true); const t = setTimeout(() => r(false), ms); child.once('exit', () => { clearTimeout(t); r(true); }); });
 
 if (browser === 'firefox') fs.writeFileSync(path.join(profile, 'user.js'), [
   'user_pref("browser.shell.checkDefaultBrowser", false);', 'user_pref("datareporting.policy.dataSubmissionEnabled", false);',
@@ -55,7 +66,7 @@ if (browser === 'firefox') fs.writeFileSync(path.join(profile, 'user.js'), [
 const acked = { batches: new Map(), snapshot: 0, draft: 0 };  // batchId -> size
 const kills_ = [];
 let browserVersion = null;
-try { browserVersion = browser === 'chromium' ? execSync(`${chromium.executablePath()} --version`).toString().trim() : execSync(`${firefoxPath} --version`).toString().trim(); } catch { }
+try { browserVersion = browser === 'android-chrome' ? execSync('adb shell dumpsys package com.android.chrome | grep versionName | head -1').toString().trim() : browser === 'chromium' ? execSync(`${chromium.executablePath()} --version`).toString().trim() : execSync(`${firefoxPath} --version`).toString().trim(); } catch { }
 
 for (let run = 1; run <= kills + 1; run++) {
   const child = start(run);
@@ -88,6 +99,12 @@ for (let run = 1; run <= kills + 1; run++) {
   if (mode === 'open') await sleep(delay);
   else { await waitFor(m => m.run === run && m.type === 'ack', 30000); await sleep(delay); }
   const before = events.filter(m => m.run === run && m.type === 'ack').length;
+  if (mode === 'manual') {
+    // Phone swipe-away by hand: wait until acknowledgements stop for 5 s (the app was swiped away).
+    console.log(`run ${run}: swipe Chrome away from the recent apps now`);
+    let last = -1;
+    for (;;) { const n = events.filter(m => m.run === run).length; if (n === last) break; last = n; await sleep(5000); }
+  } else
   killTree(child, mode === 'close' ? 'SIGTERM' : 'SIGKILL');
   const gone = await exited(child, 15000);
   if (!gone) { killTree(child, 'SIGKILL'); await exited(child, 5000); }
@@ -104,7 +121,7 @@ srv.close();
 // fix the acked map: batches recorded as null are those found beyond the log; sizes are not needed further.
 const done = kills_.filter(k => k.openOk !== undefined);
 const result = {
-  question: 'q3', device: 'desktop (agent cloud container)', browser, browserVersion, build: 'n/a (storage is JavaScript)', os: machine().os, machine: machine(),
+  question: 'q3', device: deviceArg, browser, browserVersion, build: 'n/a (storage is JavaScript)', os: machine().os, machine: machine(),
   gitCommit: gitCommit(), seed, variant, durability, workload, mode, kills: done.length,
   method: 'browser process group started on durability.html with a persistent profile; ' + (mode === 'close' ? 'SIGTERM (orderly browser close)' : 'SIGKILL') + (mode === 'open' ? ' 0 to 600 ms after start (during database open)' : ' 100 to 1,500 ms after the first acknowledged write') + '; the next start checks the store against all acknowledged writes',
   summary: {
@@ -116,5 +133,5 @@ const result = {
   },
   samples: done,
 };
-writeResult(`q3-desktop-${browser}-${variant}.json`, result);
+writeResult(`q3-${browser === 'android-chrome' ? 'phone' : 'desktop'}-${browser}-${variant}.json`, result);
 console.log(JSON.stringify(result.summary));

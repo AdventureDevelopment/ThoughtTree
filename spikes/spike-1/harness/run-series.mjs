@@ -2,7 +2,10 @@
 // JSON file per question, device, browser and build to docs/spikes/spike-1/data/results.
 // Usage: node run-series.mjs --plan main|tuning|search|longnotes [--browsers chromium,firefox] [--builds interpreted,aot]
 //        [--throttles 1,4,6] [--runs 10] [--chunk 5000 --batch 1000]
+//        [--target android --device "Pixel 6a"]: drives Chrome on an Android phone over USB (adb, Chrome remote
+//        debugging); a cold run force-stops and restarts Chrome. See docs/spikes/spike-1/README.md.
 import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { chromium, firefox } from './pw.mjs';
 import { createServer } from './server.mjs';
@@ -17,6 +20,9 @@ const throttles = opt('--throttles', '1').split(',').map(Number);
 const RUNS = Number(opt('--runs', '10'));
 const tuning = { chunk: opt('--chunk', '5000'), batch: opt('--batch', '1000'), parallel: opt('--parallel', '1') };
 const SEED = 'thoughttree-spike-1-reference-v1';
+const target = opt('--target', 'local');
+const phoneName = opt('--device', 'phone');
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const ports = { interpreted: 5000, aot: 5001 };
 const profiles = path.join(spikeDir, 'profiles');
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
@@ -24,10 +30,22 @@ const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
 const servers = {};
 for (const b of builds) servers[b] = await createServer({ port: ports[b], root: path.join(spikeDir, 'publish', b, 'wwwroot'), data: path.join(spikeDir, 'out') });
 
-const deviceName = (t) => t === 1 ? 'desktop' : `throttled${t}x`;
-const deviceLabel = (t) => t === 1 ? 'desktop (agent cloud container)' : `desktop Chromium with CPU throttling ${t}x as phone fallback (phone unverified, error about a factor of two)`;
+const deviceName = (t) => target === 'android' ? 'phone' : t === 1 ? 'desktop' : `throttled${t}x`;
+const deviceLabel = (t) => target === 'android' ? `phone: ${phoneName} (Chrome on Android, USB)` : t === 1 ? 'desktop (agent cloud container)' : `desktop Chromium with CPU throttling ${t}x as phone fallback (phone unverified, error about a factor of two)`;
+
+/** Android: restart Chrome on the phone (a new browser process) and connect to it over the DevTools protocol. */
+async function launchAndroid() {
+  execSync('adb shell am force-stop com.android.chrome');
+  execSync('adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d about:blank');
+  await sleep(3000);
+  execSync('adb forward tcp:9222 localabstract:chrome_devtools_remote');
+  const b = await chromium.connectOverCDP('http://localhost:9222');
+  const page = await b.contexts()[0].newPage();
+  return { ctx: { close: async () => { await page.close().catch(() => {}); await b.close().catch(() => {}); } }, page, version: b.version() };
+}
 
 async function launch(browser, profile) {
+  if (target === 'android') return launchAndroid();
   const type = browser === 'chromium' ? chromium : firefox;
   const options = browser === 'chromium' ? { args: ['--enable-precise-memory-info'] } : { executablePath: firefoxPath };
   const ctx = await type.launchPersistentContext(profile, options);
@@ -36,6 +54,11 @@ async function launch(browser, profile) {
 }
 
 async function prepare(browser, page, throttle, cold, port) {
+  if (target === 'android') {
+    const cdp = await page.context().newCDPSession(page);
+    if (cold) { await cdp.send('Network.clearBrowserCache'); await cdp.send('Storage.clearDataForOrigin', { origin: `http://localhost:${port}`, storageTypes: 'cache_storage,service_workers' }); }
+    return;
+  }
   if (browser === 'chromium') {
     const cdp = await page.context().newCDPSession(page);
     if (cold) {
@@ -126,7 +149,7 @@ function save(question, browser, build, throttle, seriesList, setup) {
 const t0 = Date.now();
 for (const browser of browsers) {
   for (const build of builds) {
-    const profile = path.join(profiles, `${browser}-${build}`);
+    const profile = path.join(profiles, `${target === 'android' ? 'android' : browser}-${build}`);
     if (plan === 'tuning') {
       const setup = await ensureSetup(browser, build, profile, ['events-100000']);
       const combos = [];
