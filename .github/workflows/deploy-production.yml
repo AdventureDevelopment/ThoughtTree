@@ -1,10 +1,23 @@
-# Promotes main to production: started by hand and held until the owner approves it in the GitHub environment
-# "production" (manual approval, ADR-046). Signs in through OpenID Connect as the production identity, which
-# only jobs in that environment can use. No secret is stored; see infra/README.md.
+# Promotes a tested build to production (ADR-046, docs/architecture.md section 7): started by hand with the run
+# id of a successful deploy-test run on main, held until the owner approves it in the GitHub environment
+# "production". Builds nothing: it fetches that run's artifact as data (eng/deploy/site_artifact.py checks the
+# run, the archive and the SHA-256) and uploads exactly those files, the Content-Security-Policy hash included.
+# Rollback: run this workflow again with the id of an earlier deploy-test run (artifacts are kept 90 days).
+# Signs in through OpenID Connect as the production identity, which only jobs in that environment can use.
 name: deploy-production
+run-name: deploy-production of test run ${{ inputs.test_run_id }}
 
 on:
   workflow_dispatch:
+    inputs:
+      test_run_id:
+        description: Run id of a successful deploy-test run on main (shown in its summary)
+        required: true
+        type: string
+      sha256:
+        description: Site SHA-256 from that run's summary (optional; checked when given)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -14,43 +27,77 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DOTNET_NOLOGO: "1"
-  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
   AZURE_CORE_COLLECT_TELEMETRY: "false"
 
 jobs:
-  checks:
+  verify:
+    name: Check the test run and its artifact (no credentials)
     if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/checks.yml
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      sha256: ${{ steps.site.outputs.sha256 }}
+      commit: ${{ steps.site.outputs.commit }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TEST_RUN_ID: ${{ inputs.test_run_id }}
+      EXPECTED_SHA256: ${{ inputs.sha256 }}
+    steps:
+      - name: Check out main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Fetch and check the tested site
+        id: site
+        run: >-
+          python3 -I eng/deploy/site_artifact.py fetch --run-id "$TEST_RUN_ID"
+          --workflow .github/workflows/deploy-test.yml --event push --branch main
+          --expect-sha256 "$EXPECTED_SHA256" --dest "$RUNNER_TEMP/site" >> "$GITHUB_OUTPUT"
+
+      - name: Show the approver what will go to production
+        env:
+          SITE_SHA256: ${{ steps.site.outputs.sha256 }}
+          SITE_COMMIT: ${{ steps.site.outputs.commit }}
+        run: |
+          {
+            echo "## Promotion to production"
+            echo "- Test run: \`$TEST_RUN_ID\`"
+            echo "- Commit: \`$SITE_COMMIT\`"
+            echo "- Site SHA-256: \`$SITE_SHA256\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
-    name: Deploy to production
-    needs: checks
-    if: github.ref == 'refs/heads/main'
+    name: Deploy the tested site to production
+    needs: verify
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment: production
     permissions:
       contents: read
+      actions: read
       id-token: write
     env:
-      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_PRODUCTION }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      GH_TOKEN: ${{ github.token }}
+      TEST_RUN_ID: ${{ inputs.test_run_id }}
+      VERIFIED_SHA256: ${{ needs.verify.outputs.sha256 }}
     steps:
-      - name: Check out
+      - name: Check out main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Set up the .NET SDK from global.json
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with:
-          global-json-file: global.json
-
-      - name: Publish the client app (policy hash filled in, ADR-045)
-        run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+      - name: Fetch the tested site again and check it against the approved digest
+        run: >-
+          python3 -I eng/deploy/site_artifact.py fetch --run-id "$TEST_RUN_ID"
+          --workflow .github/workflows/deploy-test.yml --event push --branch main
+          --expect-sha256 "$VERIFIED_SHA256" --dest "$RUNNER_TEMP/site"
 
       - name: Install the deploy tools, locked and pinned, before any sign-in (eng/deploy/install-tools.sh)
         run: eng/deploy/install-tools.sh
@@ -61,5 +108,5 @@ jobs:
       - name: Apply infra/main.bicep with infra/production.bicepparam
         run: echo "SITE_NAME=$(eng/deploy/apply-infra.sh production)" >> "$GITHUB_ENV"
 
-      - name: Upload the site and check its headers
-        run: eng/deploy/upload-site.sh rg-thoughttree-prod "$SITE_NAME" "$RUNNER_TEMP/site/wwwroot" production
+      - name: Upload exactly the tested site (swa deploy --env production) and check its headers
+        run: eng/deploy/upload-site.sh rg-thoughttree-prod "$SITE_NAME" "$RUNNER_TEMP/site" production

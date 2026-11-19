@@ -1,6 +1,8 @@
-# Deploys main to the test environment after the branch checks pass (docs/architecture.md section 7, ADR-046).
-# Signs in to Azure through OpenID Connect as the test identity, which only jobs in the GitHub environment
-# "test" can use; the environment allows only main. No secret is stored; see infra/README.md.
+# Deploys main to the test environment after the branch checks pass (docs/architecture.md section 7, ADR-046)
+# and keeps the published site as the artifact that production promotes (deploy-production.yml): the site is
+# published once here, stored as artifact site-sha256-<digest> for 90 days, and its digest and commit go to the
+# run summary. Signs in to Azure through OpenID Connect as the test identity, which only jobs in the GitHub
+# environment "test" can use; the environment allows only main. No secret is stored; see infra/README.md.
 name: deploy-test
 
 on:
@@ -26,7 +28,7 @@ jobs:
     uses: ./.github/workflows/checks.yml
 
   deploy:
-    name: Deploy to test
+    name: Publish once, keep the artifact, deploy to test
     needs: checks
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -35,7 +37,7 @@ jobs:
       contents: read
       id-token: write
     env:
-      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_TEST }}
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
     steps:
@@ -51,6 +53,30 @@ jobs:
 
       - name: Publish the client app (policy hash filled in, ADR-045)
         run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+
+      - name: Digest of the published site
+        id: site
+        run: echo "sha256=$(python3 -I eng/deploy/site_artifact.py digest "$RUNNER_TEMP/site/wwwroot")" >> "$GITHUB_OUTPUT"
+
+      - name: Keep the published site for promotion to production
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-sha256-${{ steps.site.outputs.sha256 }}
+          path: ${{ runner.temp }}/site/wwwroot
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Record what can be promoted
+        env:
+          SITE_SHA256: ${{ steps.site.outputs.sha256 }}
+        run: |
+          {
+            echo "## Promotable build"
+            echo "- Test run id: \`$GITHUB_RUN_ID\` (input of deploy-production)"
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Site SHA-256: \`$SITE_SHA256\`"
+            echo "- Kept for 90 days; promotable only if this run succeeds."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Install the deploy tools, locked and pinned, before any sign-in (eng/deploy/install-tools.sh)
         run: eng/deploy/install-tools.sh
