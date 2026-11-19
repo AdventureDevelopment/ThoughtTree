@@ -6,7 +6,7 @@ Run with `python3 -I` (isolated: no current directory or environment on the modu
       Prints the SHA-256 digest of a published site: the SHA-256 of the sorted lines "<sha256 of file>  <path>\n".
       Independent of zip packing, so the same files give the same digest in every run.
 
-  fetch --run-id N --workflow PATH --event EVENT [--branch BRANCH] --dest FOLDER [--expect-sha256 HEX]
+  fetch --run-id N --workflow PATH --event EVENT [--branch BRANCH] --dest FOLDER [--expect-sha256 HEX] [--same-run]
       Checks with the GitHub API that run N is a successful run of workflow PATH, started by EVENT, in this
       repository, not from a fork; with --branch also that BRANCH is the default branch, no tag has its name, and
       the run's commit is in BRANCH (compared with the branch's head commit), so a run of a tag named like the
@@ -15,6 +15,8 @@ Run with `python3 -I` (isolated: no current directory or environment on the modu
       no "..", no backslash, no link, no duplicate) and the unpacked total; unpacks into FOLDER (must not exist);
       and checks that the digest of the unpacked files equals the one in the artifact name (and --expect-sha256).
       Prints sha256=<hex>, commit=<sha> and run=<id> for $GITHUB_OUTPUT.
+      --same-run: the artifact of an earlier job of the running workflow (run N must be GITHUB_RUN_ID, which is
+      not completed yet, so status and conclusion are not checked; --expect-sha256 from that job is required).
 
   preview-target --run-id N
       For a successful preview-build run of this repository: the one open pull request it built, if the run built
@@ -89,17 +91,18 @@ def _api(path, raw=False):
     return body if raw else json.loads(body)
 
 
-def _check_run(run_id, workflow, event, branch):
+def _check_run(run_id, workflow, event, branch, same_run=False):
     repository = os.environ["GITHUB_REPOSITORY"]
     run = _api(f"/actions/runs/{run_id}")
     checks = {
         "workflow file": (run.get("path"), workflow),
         "event": (run.get("event"), event),
-        "status": (run.get("status"), "completed"),
-        "conclusion": (run.get("conclusion"), "success"),
         "repository": ((run.get("repository") or {}).get("full_name"), repository),
         "head repository": ((run.get("head_repository") or {}).get("full_name"), repository),
     }
+    if not same_run:
+        checks["status"] = (run.get("status"), "completed")
+        checks["conclusion"] = (run.get("conclusion"), "success")
     if branch is not None:
         checks["branch"] = (run.get("head_branch"), branch)
     wrong = [f"{name} is {actual!r}, expected {expected!r}" for name, (actual, expected) in checks.items() if actual != expected]
@@ -163,7 +166,9 @@ def _safe_entries(archive):
 
 def fetch(args):
     run_id = _run_id(args.run_id)
-    run = _check_run(run_id, args.workflow, args.event, args.branch)
+    if args.same_run and (run_id != os.environ.get("GITHUB_RUN_ID") or not args.expect_sha256):
+        fail("--same-run needs --run-id equal to GITHUB_RUN_ID and --expect-sha256 from the job that built the site")
+    run = _check_run(run_id, args.workflow, args.event, args.branch, same_run=args.same_run)
     artifacts = _api(f"/actions/runs/{run_id}/artifacts?per_page=100").get("artifacts", [])
     sites = [a for a in artifacts if ARTIFACT_NAME.match(a.get("name", "")) and not a.get("expired")]
     if len(sites) != 1:
@@ -263,6 +268,7 @@ def main():
     f.add_argument("--branch")
     f.add_argument("--dest", required=True)
     f.add_argument("--expect-sha256")
+    f.add_argument("--same-run", action="store_true")
     commands.add_parser("preview-target").add_argument("--run-id", required=True)
     commands.add_parser("pull-request-state").add_argument("number")
     args = parser.parse_args()

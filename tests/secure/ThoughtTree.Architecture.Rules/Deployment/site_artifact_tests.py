@@ -113,10 +113,11 @@ class Base(unittest.TestCase):
             "/git/matching-refs/tags/main": tags or [],
         }
 
-    def fetch(self, fake, expect=None, branch="main", workflow=".github/workflows/deploy-test.yml", event="push"):
+    def fetch(self, fake, expect=None, branch="main", workflow=".github/workflows/deploy-test.yml", event="push",
+              same_run=False):
         self.install(fake)
         args = type("Args", (), dict(run_id="7", workflow=workflow, event=event, branch=branch,
-                                     dest=str(self.dir / "site"), expect_sha256=expect))
+                                     dest=str(self.dir / "site"), expect_sha256=expect, same_run=same_run))
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             site_artifact.fetch(args)
@@ -243,6 +244,35 @@ class Fetch(Base):
         for text in ("", "0", "12a", "1 2", "-1", "1;id"):
             with self.subTest(text=text), self.assertRaises(SystemExit):
                 site_artifact._run_id(text)
+
+
+class SameRun(Base):
+    """N-L1 of the re-review: deploy-test's deploy job takes the site from its own build job, in the same run."""
+
+    def setUp(self):
+        super().setUp()
+        os.environ["GITHUB_RUN_ID"] = "7"
+
+    def test_the_running_run_s_artifact_is_fetched_with_the_build_job_s_digest(self):
+        entries = site_files()
+        answers = self.artifact_answers(entries, status="in_progress", conclusion=None)
+        out = self.fetch(FakeGitHub(answers, zip_bytes(entries)), expect=digest_of(entries), same_run=True)
+        self.assertEqual(out["sha256"], digest_of(entries))
+
+    def test_same_run_needs_the_digest_and_the_own_run_id(self):
+        entries = site_files()
+        answers = self.artifact_answers(entries, status="in_progress", conclusion=None)
+        with self.assertRaises(SystemExit):
+            self.fetch(FakeGitHub(answers, zip_bytes(entries)), same_run=True)
+        os.environ["GITHUB_RUN_ID"] = "8"
+        with self.assertRaises(SystemExit):
+            self.fetch(FakeGitHub(answers, zip_bytes(entries)), expect=digest_of(entries), same_run=True)
+
+    def test_without_same_run_an_unfinished_run_is_rejected(self):
+        entries = site_files()
+        answers = self.artifact_answers(entries, status="in_progress", conclusion=None)
+        with self.assertRaises(SystemExit):
+            self.fetch(FakeGitHub(answers, zip_bytes(entries)), expect=digest_of(entries))
 
 
 class RunChecks(Base):
