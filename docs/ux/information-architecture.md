@@ -57,7 +57,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G1 Connection map (closed by D-168 to D-174).**
 - **G2 Relation note and relation type (closed by D-175):** a relation's type is changed with the type chip (ADR-083); managing the types themselves is G12.
 - **G3 Readable import and export (closed by D-179, D-180).**
-- **G4 Tree-level settings (closed by D-183, D-184):** open only what the one-document Markdown export writes for headings inside notes.
+- **G4 Tree-level settings (closed by D-183 to D-185).**
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search:** scope choice, hits from other trees, going back. Sketch in Task 2.
@@ -80,6 +80,6 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 1. G6: deferred by D-167 until tried (G5 closed by D-166).
 2. G1 and G2: closed (D-168 to D-176).
 3. G3 and C1: closed (D-179, D-180).
-4. G4: closed except the one-document export of note headings (D-184).
+4. G4: closed (D-183 to D-185).
 5. G8, G10, G11: pairing entry, settings list, reset.
 6. G12 and G13 closed (D-177, D-178, D-181).
