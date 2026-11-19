@@ -2,7 +2,7 @@
 
 Status: check of topic 7 of [ux-concept.md](../ux-concept.md) on 2026-11-18, against D-1 to D-165, ADR-060 to ADR-072, ADR-074, ADR-077 to ADR-081, [zettelkasten-claim.md](../zettelkasten-claim.md) and the open decisions in section 9 of [architecture.md](../architecture.md). This file decides nothing; it lists where every place lives and what is missing. Decisions are recorded in the log of ux-concept.md.
 
-**Verdict: not done.** The phone core (outline, Focus, capture, inbox, search in one tree, trees, history, conflicts, settings, feedback, tutorial) is decided and consistent. Missing are the places of the release 1 features added since 2026-11-16 (connection map, relation notes, readable import and export, all-trees search, tree-level settings), the entry to pairing, and how the item menu holds its new entries.
+**Verdict: not done.** The phone core (outline, Focus, capture, inbox, search in one tree, trees, history, conflicts, settings, feedback, tutorial) is decided and consistent. Missing are the places of the release 1 features added since 2026-11-16 (connection map, relation notes, readable import and export, all-trees search, tree-level settings, and since 2026-11-19 the Tags and Relation types branches and the beta format-change prompt), the entry to pairing, and how the item menu holds its new entries. Progress since the check: see D-166 to D-176.
 
 Status: **Decided** = place and path decided; **Partly** = place decided, flow or detail open; **Missing** = no place decided. Phone paths; tablet and desktop use the same paths unless noted (D-157: same bar and 📥 everywhere; D-150 and D-156: three columns on wide screens).
 
@@ -21,17 +21,18 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | All-trees search | Not placed | Not decided | Architecture row "All-trees search (UX)" | Missing (G7) |
 | Trees: switch, new | List under the tree's name at the top | Tap "My thoughts ▾"; wide: navigation column | D-115 to D-118, D-164 | Decided |
 | Trees: manage | More › Trees, ⋯ per tree: Rename, Theme, Remove from this device | More › Trees | D-119, D-163 | Decided |
-| Tree settings (tree features, ADR-079) | Not placed | Not decided | ADR-079, architecture row "Headings in notes (UX)" | Missing (G4) |
+| Tree settings (tree features: headings ADR-079, tags ADR-082, relations ADR-084) | Not placed | Not decided | ADR-079, ADR-082, ADR-084; row "Headings in notes (UX)" | Missing (G4) |
 | Themes | Theme picker with live preview | Item ⋯ › Theme; More › Theme of this tree; More › Trees › ⋯ › Theme | D-34, D-35, D-65, D-92, D-163 | Decided (one double path, C2) |
 | History of a thought | Sheet | Item ⋯ › History; 🕘 in the Focus line; wide: details column | D-85, D-151 | Decided |
 | History of a tree (exports, ADR-078) | Not placed | Not decided | ADR-078 | Missing (G4) |
 | Links and Linked from | One sheet, two tabs | ↗ / ↙ in the Focus line; wide: details column | D-85, D-114, D-121, D-151 | Partly (G9, C3) |
 | Link to… (new relation) | Target picker | Item ⋯ › Link to… | D-9, D-13 | Decided |
 | Relation note | Under the relation in the Links sheet, map card and side column; relation sheet | ＋ or ⋯ on a relation; tap a line on the map | ADR-077, D-175, D-176 | Decided |
-| Relation type: change, manage | Type chip in the relation sheet; managing types parked | Relation ⋯ › type chip | D-13, D-175; row "Tags and relation types as items" | Partly (managing parked) |
+| Relation type of one relation | Type chip in the relation sheet (`relation.type-changed`, ADR-083) | Relation ⋯ › type chip | D-13, D-175, ADR-083 | Decided |
+| Relation types (manage) | Items in the marked branch "Relation types"; a new tree has only `related` (ADR-084) | Not decided where the branch shows, nor how reverse name and symmetry are set | ADR-084; row "Tags and relation types branches (UX)" | Missing (G12) |
 | Connection map | Own place; wide: map in the middle, selected thought at the side | Item ⋯ › Map; ← Back | D-167 to D-174; row "Connection map (follow-ups)" | Decided |
 | Tags: add, remove, rename | Chips in Focus, tag picker, tag popover | `@@`; chip ＋; tap a chip | D-14, D-64, D-90 | Decided |
-| Tags: list of all, delete everywhere | Parked | Parked | Tags open question 3; row "Tags and relation types as items" | Parked |
+| Tags (manage: list, describe, nest, delete, join) | Items in the marked branch "Tags" (ADR-082); renaming a tag is a title change | Not decided where the branch shows (outline, navigation column) | ADR-082; row "Tags and relation types branches (UX)" | Missing (G12) |
 | Conflicts | Mark on the thought; More › Conflicts while any exist; top of the history | Exchange summary "Show both versions"; More › Conflicts | D-22, D-23, D-127, D-165, D-163 | Decided |
 | Exchange by file (round trip) | Flow from More | More › Exchange with another device | D-19 to D-21, D-126 | Partly (no sketch) |
 | Pairing a device | Only the "file from another tree" case | Inside the exchange flow; start of pairing not placed | D-81, D-84, D-163; architecture section 6 | Missing (G8) |
@@ -42,6 +43,7 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 | Import report | An ordinary thought at the end of the imported branch | Outline | Zettelkasten decision 4d | Decided |
 | Settings (device) | More › Settings: hand, language (also Easy), light or dark, export reminder, offer feedback, device label and name | More › Settings; wide: navigation column | D-122, D-126, D-146, ADR-070, architecture section 6 | Partly (G10) |
 | App update consent, performance report | Not placed | Not decided | ADR-036, ADR-051 | Missing (G10) |
+| Beta: format-change prompt, export of every tree, import after the update | Not placed | Not decided | ADR-085; row "Beta users' data before release 1" | Missing (G13) |
 | Reset or remove all data from this device | Not placed (the prototype had one, D-80) | Not decided | D-80 | Missing (G11) |
 | Feedback | Line at the end of menus and sheets, button at the top, More › Send feedback | As described | D-123, D-124, D-159, ADR-070 | Decided |
 | Tutorial | A tree, opened first; back by More › Trees | First start; More › Trees › "Bring the tutorial back" | D-69, D-134 to D-147, D-163 | Decided (C4) |
@@ -53,9 +55,9 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 ## Gaps (G) and conflicts (C)
 
 - **G1 Connection map (closed by D-168 to D-174).**
-- **G2 Relation note and relation type (closed by D-175):** managing relation types (rename, reverse name, delete) stays with the open decision "Tags and relation types as items".
+- **G2 Relation note and relation type (closed by D-175):** a relation's type is changed with the type chip (ADR-083); managing the types themselves is G12.
 - **G3 Readable import and export:** the branch entries exist (ADR-080), but the whole-tree export and the import of a vault as a new tree have no entry, and the flow (formats, Obsidian form, warning, progress, report) is not sketched.
-- **G4 Tree-level settings:** "Headings become thoughts" (ADR-079) and the tree's history (export events, ADR-078) have no place; More › Trees › ⋯ holds only Rename, Theme, Remove.
+- **G4 Tree-level settings:** the tree features "Headings become thoughts" (ADR-079), tags (ADR-082) and relations (ADR-084), and the tree's history (export events, ADR-078) have no place; More › Trees › ⋯ holds only Rename, Theme, Remove.
 - **G5 The focused thought's ⋯ (closed by D-166):** D-151 removed the strip with its ⋯ (D-65, D-66); Focus now has no item menu of its own, but ADR-080 needs one there, and Move to…, Theme and Delete of the focused thought have no path except ← Back first.
 - **G6 Length of the item menu (deferred by D-167; simplest form built first, ideas in open question 20):** D-59 had 9 entries; with Copy, Paste below, Sort, Export…, Import into this thought… and the map it grows to about 14. D-80 allows one level only, so it needs grouping or a decision on what stays.
 - **G7 All-trees search:** scope choice, hits from other trees, going back. Sketch in Task 2.
@@ -63,6 +65,8 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 - **G9 Linked thought in the Links sheet:** where tapping leads is an [ASSUMPTION] in D-85; D-121 answers it only for links in text.
 - **G10 Settings list:** D-122 does not list update consent (ADR-036), the performance report (ADR-051), device label and name, or "Offer feedback" (ADR-070, named in D-123).
 - **G11 Reset:** whether release 1 offers "remove all data from this device" (beyond removing one tree) is not decided.
+- **G12 Tags and relation types branches (ADR-082, ADR-084, merged 2026-11-19):** where the marked branches "Tags" and "Relation types" show (outline next to the inbox, navigation column), how a tag or type item looks, how reverse name and symmetry are set, joining tags, copying types from the tutorial; D-14 and D-64 to be read again with tags as items. Sketch needed (architecture row "Tags and relation types branches (UX)").
+- **G13 Beta format change (ADR-085):** the prompt before an update that changes the stored format, the Obsidian export of every tree, old trees shown as not readable, the import as new trees after it. Sketch needed before the first beta format change.
 - **C1 Export in More:** D-53 lists Export in More; D-122, which revises More, does not. One of them must be confirmed.
 - **C2 Tree theme in two places:** More › Theme of this tree (D-122) and More › Trees › ⋯ › Theme (D-119). Probably intended (open tree versus any tree), but not stated.
 - **C3 Name of backlinks from text:** "Mentioned in" (D-85, D-111) or "Linked from" (architecture section 8); open in the architecture row "Predefined relation types in new trees".
@@ -78,3 +82,4 @@ Status: **Decided** = place and path decided; **Partly** = place decided, flow o
 3. G3 and C1: where whole-tree export and the vault import as a new tree live.
 4. G4: one place for tree settings (features, history, theme, rename, remove).
 5. G8, G10, G11: pairing entry, settings list, reset.
+6. G12 and G13: two further sketches, order to be agreed with the owner.
