@@ -4,9 +4,15 @@ deploy job that holds the preview identity, and between a deploy-test run and pr
 No network: the GitHub API and the artifact download are replaced by recorded answers and zip fixtures built in a
 temporary folder. Run by SiteArtifactScriptRules.cs (dotnet test) as
   python3 -I tests/secure/ThoughtTree.Architecture.Rules/Deployment/site_artifact_tests.py <repository root>
+
+Mutation run, 2026-11-19 (third review N3-L2): 30 single-line mutants of site_artifact.py, each applied, tested
+and reverted; 29 killed. The one survivor, "more data than its header states" accepted, is equivalent: zipfile
+stops reading an entry at its declared size and checks its CRC, so the check is defence in depth. The mutant list
+is in the commit body of the commit that added the DownloadLimits and Api tests.
 """
 
 import contextlib
+import email.message
 import hashlib
 import io
 import os
@@ -15,6 +21,7 @@ import stat
 import sys
 import tempfile
 import unittest
+import urllib.error
 import zipfile
 
 ROOT = pathlib.Path(sys.argv.pop(1) if len(sys.argv) > 1 else ".").resolve()
@@ -66,22 +73,23 @@ def digest_of(entries):
 class FakeGitHub:
     """Recorded GitHub API answers keyed by path; unknown paths fail like an HTTP 404."""
 
-    def __init__(self, answers, archive=b""):
+    def __init__(self, answers, archive=b"", location="https://storage.example/artifact.zip"):
         self.answers = answers
         self.archive = archive
+        self.location = location
         self.calls = []
 
     def api(self, path, raw=False):
         self.calls.append(path)
         if raw:
-            return "https://storage.example/artifact.zip"
+            return self.location
         for prefix, answer in self.answers.items():
             if path == prefix or path.startswith(prefix + "?"):
                 return answer
         site_artifact.fail(f"GitHub API {path}: HTTP 404")
 
     def urlopen(self, url, timeout=None):
-        assert url == "https://storage.example/artifact.zip"
+        assert url == self.location
         return contextlib.closing(io.BytesIO(self.archive))
 
 
@@ -123,11 +131,18 @@ class Base(unittest.TestCase):
             site_artifact.fetch(args)
         return dict(line.split("=", 1) for line in out.getvalue().split())
 
-    def artifact_answers(self, entries, name=None, **run_changes):
+    def artifact_answers(self, entries, name=None, artifact=None, **run_changes):
         answers = self.main_answers(run=good_run(**run_changes))
-        answers["/actions/runs/7/artifacts"] = {"artifacts": [{
-            "id": 1, "name": name or f"site-sha256-{digest_of(entries)}", "size_in_bytes": 100, "expired": False}]}
+        record = {"id": 1, "name": name or f"site-sha256-{digest_of(entries)}", "size_in_bytes": 100, "expired": False}
+        record.update(artifact or {})
+        answers["/actions/runs/7/artifacts"] = {"artifacts": [record]}
         return answers
+
+    def assertFails(self, message, action):
+        """The script stops with an error that names the reason, so a test cannot pass through another check."""
+        with self.assertRaises(SystemExit):
+            action()
+        self.assertIn(message, self.stderr.getvalue())
 
 
 class ArchiveEntries(Base):
@@ -246,6 +261,118 @@ class Fetch(Base):
                 site_artifact._run_id(text)
 
 
+class DownloadLimits(Base):
+    """Third review N3-L2: checks that no earlier test exercised (mutants M11, M13 to M16 in the commit body)."""
+
+    def test_an_expired_artifact_is_ignored_and_the_live_one_used(self):
+        entries = site_files()
+        answers = self.artifact_answers(entries)
+        live = answers["/actions/runs/7/artifacts"]["artifacts"][0]
+        answers["/actions/runs/7/artifacts"]["artifacts"].insert(0, dict(live, id=9, expired=True))
+        self.assertEqual(self.fetch(FakeGitHub(answers, zip_bytes(entries)))["sha256"], digest_of(entries))
+
+    def test_only_an_expired_artifact_is_refused(self):
+        entries = site_files()
+        answers = self.artifact_answers(entries, artifact={"expired": True})
+        self.assertFails("exactly one unexpired artifact", lambda: self.fetch(FakeGitHub(answers, zip_bytes(entries))))
+
+    def test_a_declared_size_over_the_limit_is_refused_before_download(self):
+        entries = site_files()
+        fake = FakeGitHub(self.artifact_answers(entries, artifact={"size_in_bytes": site_artifact.MAX_BYTES + 1}), zip_bytes(entries))
+        self.assertFails("artifact is larger than", lambda: self.fetch(fake))
+        self.assertFalse(any(c.endswith("/zip") for c in fake.calls), "no download after the size check")
+
+    def test_a_download_longer_than_the_limit_is_cut_off(self):
+        entries = site_files()
+        archive = zip_bytes(entries)
+        old = site_artifact.MAX_BYTES
+        site_artifact.MAX_BYTES = len(archive) - 1  # the unpacked files stay below it; only the stream is too long
+        try:
+            fake = FakeGitHub(self.artifact_answers(entries, artifact={"size_in_bytes": 1}), archive)
+            self.assertFails("artifact download exceeds", lambda: self.fetch(fake))
+        finally:
+            site_artifact.MAX_BYTES = old
+
+    def test_a_download_address_without_https_is_refused(self):
+        entries = site_files()
+        fake = FakeGitHub(self.artifact_answers(entries), zip_bytes(entries), location="http://storage.example/artifact.zip")
+        self.assertFails("did not redirect to an https address", lambda: self.fetch(fake))
+
+    def test_a_zip_that_differs_from_github_s_recorded_digest_is_refused(self):
+        entries = site_files()
+        fake = FakeGitHub(self.artifact_answers(entries, artifact={"digest": "sha256:" + "0" * 64}), zip_bytes(entries))
+        self.assertFails("does not match the digest GitHub recorded", lambda: self.fetch(fake))
+
+    def test_a_zip_matching_github_s_recorded_digest_passes(self):
+        entries = site_files()
+        archive = zip_bytes(entries)
+        recorded = "sha256:" + hashlib.sha256(archive).hexdigest()
+        out = self.fetch(FakeGitHub(self.artifact_answers(entries, artifact={"digest": recorded}), archive))
+        self.assertEqual(out["sha256"], digest_of(entries))
+
+
+class Api(Base):
+    """The real _api with a stub opener (mutants M1 to M3): errors stop the script, redirects are not followed
+    (the token must not reach the storage host), and only a redirect yields a download address."""
+
+    def setUp(self):
+        super().setUp()
+        self._build_opener = site_artifact.urllib.request.build_opener
+        self.handlers = None
+        self.requests = []
+
+    def tearDown(self):
+        site_artifact.urllib.request.build_opener = self._build_opener
+        super().tearDown()
+
+    def answer(self, code=200, body=b"{}", location=None):
+        test = self
+
+        class Opener:
+            def open(self, request, timeout=None):
+                test.requests.append(request)
+                if code == 200:
+                    return contextlib.closing(io.BytesIO(body))
+                headers = email.message.Message()
+                if location:
+                    headers["Location"] = location
+                raise urllib.error.HTTPError(request.full_url, code, "x", headers, io.BytesIO(b""))
+
+        def build_opener(*handlers):
+            test.handlers = handlers
+            return Opener()
+
+        site_artifact.urllib.request.build_opener = build_opener
+
+    def test_an_answer_is_parsed_and_the_token_goes_to_the_api_only(self):
+        self.answer(body=b'{"default_branch": "main"}')
+        self.assertEqual(site_artifact._api(""), {"default_branch": "main"})
+        request = self.requests[0]
+        self.assertTrue(request.full_url.startswith("https://api.example/repos/Owner/Repo"))
+        self.assertEqual(request.get_header("Authorization"), "Bearer t")
+
+    def test_an_http_error_stops_the_script(self):
+        for code in (401, 404, 500):
+            with self.subTest(code=code):
+                self.answer(code=code)
+                self.assertFails(f"HTTP {code}", lambda: site_artifact._api("/actions/runs/7"))
+
+    def test_redirects_are_not_followed(self):
+        self.answer()
+        site_artifact._api("")
+        self.assertIn(site_artifact._NoRedirect, self.handlers)
+        self.assertIsNone(site_artifact._NoRedirect().redirect_request(None, None, 302, "x", {}, "https://elsewhere"))
+
+    def test_a_redirect_yields_the_download_address_only_for_raw_calls(self):
+        self.answer(code=302, location="https://storage.example/a.zip")
+        self.assertEqual(site_artifact._api("/actions/artifacts/1/zip", raw=True), "https://storage.example/a.zip")
+        self.assertFails("HTTP 302", lambda: site_artifact._api("/actions/artifacts/1/zip"))
+
+    def test_a_raw_call_that_is_not_redirected_stops_the_script(self):
+        self.answer(code=404)
+        self.assertFails("HTTP 404", lambda: site_artifact._api("/actions/artifacts/1/zip", raw=True))
+
+
 class SameRun(Base):
     """N-L1 of the re-review: deploy-test's deploy job takes the site from its own build job, in the same run."""
 
@@ -327,6 +454,16 @@ class RunOnMain(Base):
     def test_a_branch_that_is_not_the_default_branch_is_rejected(self):
         with self.assertRaises(SystemExit):
             self.check(default="develop")
+
+    def test_a_branch_head_or_run_commit_that_is_not_a_full_sha_is_refused(self):
+        # Mutant M9: the comparison would otherwise use names such as "main", which a tag can make ambiguous.
+        for head, run_sha in (("main", SHA), ("b" * 39, SHA), ("b" * 40, "main"), ("b" * 40, "A" * 40)):
+            with self.subTest(head=head, run_sha=run_sha):
+                answers = self.main_answers(run=good_run(head_sha=run_sha))
+                answers["/branches/main"] = {"commit": {"sha": head}}
+                answers[f"/compare/{run_sha}...{head}"] = {"status": "identical"}
+                self.install(FakeGitHub(answers))
+                self.assertFails("not readable", lambda: site_artifact._check_run("7", ".github/workflows/deploy-test.yml", "push", "main"))
 
     def test_the_comparison_uses_the_branch_head_commit_not_the_ambiguous_name(self):
         fake = FakeGitHub(self.main_answers())
