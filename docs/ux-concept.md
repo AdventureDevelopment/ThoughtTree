@@ -298,10 +298,10 @@ Remarks:
 
 Tags (core decided in D-14; details parked for feature work, none is a foundation decision):
 
-1. Duplicates: two devices that define the same tag name offline create two tags; decided: the app offers to join them by a `tag.joined` event (ADR-058)
+1. Duplicates: two devices that create a tag with the same title offline create two tags; decided: the app offers to join them as one action (`tag.joined`: the joined tag's children move under the target, its note is appended, the joined tag item is deleted; ADR-082)
 2. Names with spaces: where `@@name` ends, and whether a tag name can contain spaces
-3. Managing tags: renaming is decided (D-64); deleting a tag everywhere and a list of all tags are still open
-4. Structure: flat tags only, or nested tags (for example `@@garden/vegetables`). Note 2026-11-17: whether tags become items (nested tags as items inside items, a tag list in the navigation column of D-150, answering 3 as well) is an open decision in the architecture ("Tags and relation types as items", before release 1). Decided there on 2026-11-19 (ADR-082, Proposed): tags are items in the tree's Tags branch, nested tags are child items, a parent tag includes its nested tags when filtering; this also answers 3 (the branch is the list of all tags; deleting the tag item removes it everywhere, undoable) and changes how 1 joins (children moved, note appended). Needs sketch, owner to brief the UX session: the open decision "Tags and relation types branches (UX)" in the architecture
+3. Managing tags: renaming is decided (D-64; a rename is a title change of the tag item); the Tags branch is the list of all tags, and deleting the tag item removes it everywhere, undoable (ADR-082)
+4. Structure: decided (ADR-082): tags are items in the tree's Tags branch, nested tags are child items, and a parent tag includes its nested tags when filtering, searching and counting. Needs sketch, owner to brief the UX session: the open decision "Tags and relation types branches (UX)" in the architecture
 5. Look: colours for tags or not (touches the design tokens, topic 4)
 
 Bottom toolbar (D-17, revised by D-52):
@@ -334,7 +334,7 @@ Owner's dream features (named 2026-11-13, for later; nothing decided):
    - a fantasy-style land map: branches drawn as regions of a hand-drawn country, with coasts, rivers and mountains, so a project feels like a world to explore; ThoughtTree's own art, never a copy of a specific existing map
    - the atlas (D-149, replaces the land map idea with more shape): an old-fashioned map of a tree or branch as a view (ADR-062), fitting the notebook look: regions are the top-level branches, tinted by their themes; places are thoughts (a branch with many thoughts is a town, a single thought a hamlet); roads are the links between thoughts; a legend explains tags and themes; a register of known places is the index by name; markers show where you are, what was placed last and places to return to; a tap on a place turns to its page. Conditions: a map must not move (positions are stored, which touches the architecture), the outline stays the main and accessible form, and it is only worth doing beautifully
    - a Venn diagram: tags as overlapping circles, items placed in the circles of the tags they carry, so shared dimensions become visible (principle 6)
-16. A literature list export: the sources used in items (for example items linked with a relation type `cites`, from the tutorial since ADR-084, Proposed) exported as a list of references; open how sources are described (a note in a citation format, tags, or structured fields, which the comparison advises against) and which formats (Markdown list, BibTeX, RIS); touches readable export (ADR-019)
+16. A literature list export: the sources used in items (for example items linked with a relation type `cites`, from the tutorial, ADR-084) exported as a list of references; open how sources are described (a note in a citation format, tags, or structured fields, which the comparison advises against) and which formats (Markdown list, BibTeX, RIS); touches readable export (ADR-019)
 
 Templates (owner's wish, 2026-11-13):
 

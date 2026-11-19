@@ -1,10 +1,10 @@
 # ADR-076: No code plugins; extend by data, readable files or a fork
 
-id: ADR-076 · status: Proposed · kind: constraint
+id: ADR-076 · status: Accepted · kind: constraint
 
 applies_to: `src/**`
 
-Owner decision 2026-11-17 (Zettelkasten session), proposed for acceptance in a pull request review.
+Owner decision 2026-11-17 (Zettelkasten session), accepted by the owner 2026-11-19.
 
 - **MUST NOT** load or run code that is not part of the app's own build: no plugin or extension mechanism, no loading of assemblies, scripts or WebAssembly modules at run time from user content, files, trees or addresses
 - **MUST NOT** add an interface through which outside code reads decrypted content or uses the key handle

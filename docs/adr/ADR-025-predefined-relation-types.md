@@ -1,6 +1,6 @@
 # ADR-025: Relation types defined per tree, predefined set
 
-id: ADR-025 · status: Accepted · kind: bet ([bet card](bets.md#adr-025))
+id: ADR-025 · status: Superseded by ADR-084 · kind: bet ([bet card](bets.md#adr-025))
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Client*/**`
 

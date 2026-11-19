@@ -1,10 +1,10 @@
 # ADR-085: Beta data before release 1
 
-id: ADR-085 · status: Proposed · kind: constraint
+id: ADR-085 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`
 
-Amends ADR-016 and ADR-038 (they bind stored data from release 1 on); owner decision 2026-11-19 (session "Tags and relation types as items"), proposed for acceptance in a pull request review.
+Amends ADR-016 and ADR-038 (they bind stored data from release 1 on); owner decision 2026-11-19 (session "Tags and relation types as items"), accepted by the owner 2026-11-19.
 
 - **MAY** change stored formats (events, envelope, local store layout) before release 1; from release 1 on ADR-016 and ADR-038 apply without exception
 - **MUST** give every build before release 1 a stored-format version and keep it with each tree on the device
