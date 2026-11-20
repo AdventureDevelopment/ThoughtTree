@@ -82,6 +82,14 @@ Needs the role Owner (or Contributor plus User Access Administrator) on the Azur
 6. **Test whether one deployment token reaches every environment of a site** (Microsoft's documentation does not say; the design assumes it does, which is why previews have their own site). After the first preview exists, in the portal: `stapp-thoughttree-preview` › Overview › Manage deployment token: note that there is one token for the site and none per environment. Then, in Cloud Shell, while fewer than three previews exist: `T=$(az staticwebapp secrets list --name stapp-thoughttree-preview --resource-group rg-thoughttree-preview --query properties.apiKey --output tsv)`, make a folder with an `index.html`, run `SWA_CLI_DEPLOYMENT_TOKEN="$T" npx --yes @azure/static-web-apps-cli@2.1.0 deploy <folder> --env pr999999`, and check under Environments that `pr999999` appeared (the token reached an environment it was not issued for); delete it again, `unset T`, and press Reset token on the Manage deployment token page. If a staging token could be limited to one environment, record it as an open decision in `docs/architecture.md`; until then the preview site's token reaches all previews and the preview site's own main slot, never the test or production site.
 7. **Check logging** (ADR-030, ADR-046): Static Web Apps on the Free plan offers no log or diagnostic setting; check in the portal (site › Monitoring, Diagnostic settings) that nothing stores visitor IP addresses in a resource you control.
 
+## Before the first production deployment (release 1)
+
+Go through this before `deploy-production` runs for the first time, and again before each release:
+
+- **No token with rights on ThoughtTree outside this project.** A classic personal access token reaches every repository of its account, with admin rights where the account is an administrator. The classic token that another development project uses (noted 2026-11-20) must be replaced there by a fine-grained token limited to that project's repositories, then deleted (Developer settings › Personal access tokens › Tokens (classic)). If that project needs a classic token, it comes from an account without access to ThoughtTree.
+- The Claude GitHub App is installed for selected repositories only (Settings › Applications › Installed GitHub Apps › Claude).
+- Steps 2 to 7 above are done, and `deploy-test` has run green at least once.
+
 ## Removing
 
 Delete the resource groups `rg-thoughttree-test`, `rg-thoughttree-prod`, `rg-thoughttree-preview` and `rg-thoughttree-identity` (sites and identities go with them), then the custom role "ThoughtTree site deployer" (Subscription › Access control › Roles), the three GitHub environments and the two repository variables.
