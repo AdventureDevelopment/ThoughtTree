@@ -64,6 +64,7 @@ Needs the role Owner (or Contributor plus User Access Administrator) on the Azur
        --query properties.outputs
      ```
 
+   - If Azure answers `RequestDisallowedByAzure` ("The selected region is currently not accepting new customers", seen for West Europe on 2026-11-20), add `location=<region>` to `--parameters` and use the same region for `--location`, for example `northeurope`, `swedencentral`, `germanywestcentral` or `francecentral`. The region of the identities and resource groups does not matter for the app. Resource groups that already exist in another region must be deleted first (a group's region cannot change).
    - **Before every re-run:** the bootstrap runs with your Owner rights whatever `main` holds; read `git log -p infra/bootstrap/` since your last run and run it only if every change there is one you approved.
    - The output lists five values: `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID_TEST`, `AZURE_CLIENT_ID_PRODUCTION`, `AZURE_CLIENT_ID_PREVIEW`. They are identifiers, not secrets. Running the bootstrap again changes nothing that already exists.
    - Check: `az identity federated-credential list --resource-group rg-thoughttree-identity --identity-name id-thoughttree-production --query "[].subject"` shows exactly one subject, `repo:AdventureDevelopment/ThoughtTree:environment:production`; the same for `test` and `preview`. Repeat this check now and then; any other entry is an incident.
