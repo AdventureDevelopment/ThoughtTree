@@ -1,0 +1,58 @@
+# Builds the preview of a pull request (docs/architecture.md section 7, D-51), WITHOUT any credential: this
+# workflow runs the pull request's own code and its own copy of this file, so it gets contents: read only and
+# no id-token. It uploads the published site as an artifact; preview-deploy.yml, which runs from main, takes
+# that artifact as data and deploys it to the separate preview site. Pull requests from forks are not built
+# here and get no preview (the push gate still checks them).
+name: preview-build
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-build-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+
+jobs:
+  build:
+    name: Publish the preview (no credentials)
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the .NET SDK from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Publish the client app (policy hash filled in, ADR-045)
+        run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+
+      - name: Digest of the published site
+        id: site
+        run: |
+          digest=$(python3 -I eng/deploy/site_artifact.py digest "$RUNNER_TEMP/site/wwwroot")
+          echo "sha256=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Upload the site as an artifact (data for preview-deploy.yml)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-sha256-${{ steps.site.outputs.sha256 }}
+          path: ${{ runner.temp }}/site/wwwroot
+          if-no-files-found: error
+          retention-days: 3

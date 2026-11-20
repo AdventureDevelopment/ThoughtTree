@@ -129,7 +129,7 @@ The six projects exist as a skeleton without business code (foundation stage 1, 
 | `src/ThoughtTree.Server` | ASP.NET Core shell: sync API, SignalR hub, stores |
 
 - Spikes live in `spikes/` (disposable, not part of `src/` or the gate); repo-wide build properties, banned API lists and CI builds leave them out.
-- Tests live in `tests/specify`, `tests/secure`, `tests/confirm`, `tests/support`; stored data in `tests/data`. Infrastructure in `infra/`.
+- Tests live in `tests/specify`, `tests/secure`, `tests/confirm`, `tests/support`; stored data in `tests/data`. Infrastructure in `infra/` (owner setup in `infra/README.md`), deploy scripts in `eng/deploy/`.
 - Inside each project, folders by feature, named after the glossary (`Outline`, `Relations`, `Conflicts`, `Trees`, `Sync`, `Sharing`, `Search`, `Export`, `Feedback`, `Settings`, and so on); same names in every project [ADR-054].
 - Dependencies point inwards only: UI to Application to Domain; adapters to Application; Domain depends on nothing. Architecture tests enforce this [ADR-053, ADR-027].
 - Create a new project only for a real boundary (deployment, sharing, reuse) and an ADR change [ADR-054].
@@ -147,6 +147,7 @@ Run from the repository root; every command was run when it was written down. Do
 | All tests | `dotnet test ThoughtTree.slnx` |
 | Tests of one ADR | `dotnet test --filter "ADR=ADR-0xx"` [docs/adr/README.md] |
 | Inner loop (area being changed) | `dotnet test tests/<intent>/<Project>` for the area (for example `tests/specify/ThoughtTree.Domain.Specs`), plus `dotnet test tests/secure/ThoughtTree.Architecture.Rules` (about 15 seconds) |
+| Compile the Bicep templates [ADR-046] | `bicep build infra/main.bicep`, `bicep build infra/bootstrap/bootstrap.bicep`, `bicep build-params infra/test.bicepparam`, `bicep build-params infra/production.bicepparam`, `bicep build-params infra/preview.bicepparam` (standalone Bicep CLI; on GitHub the workflow `infra-check.yml` runs the same with `az bicep`, outside the gate because it downloads the Bicep CLI) |
 | Branch check | `eng/branch-check.sh` (the steps of `.github/workflows/checks.yml`; writes the verify report to `tests/secure/ThoughtTree.Architecture.Rules/bin/Release/net10.0/verify-report.md`) |
 | Push gate | `eng/branch-check.sh`, then the protected-data diffs in `.github/workflows/push-gate.yml`; its other parts are not in place yet (listed in that file) |
 | Mutation tests (changed Domain code) | `TODO(step: Domain core, foundation step 2a)` |

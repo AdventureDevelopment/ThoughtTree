@@ -1,0 +1,121 @@
+# Deploys main to the test environment after the branch checks pass (docs/architecture.md section 7, ADR-046)
+# and keeps the published site as the artifact that production promotes (deploy-production.yml): job "build"
+# publishes it once WITHOUT any credential, stores it as artifact site-sha256-<digest> for 90 days and writes
+# digest and commit to the run summary; job "deploy" builds nothing, fetches that artifact as data with
+# eng/deploy/site_artifact.py (the same path production takes) and uploads it. Only "deploy" signs in to Azure
+# through OpenID Connect as the test identity, which only jobs in the GitHub environment "test" can use; the
+# environment allows only main. No secret is stored; see infra/README.md.
+name: deploy-test
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+  AZURE_CORE_COLLECT_TELEMETRY: "false"
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  build:
+    name: Publish once and keep the artifact (no credentials)
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      sha256: ${{ steps.site.outputs.sha256 }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up the .NET SDK from global.json
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Publish the client app (policy hash filled in, ADR-045)
+        run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+
+      - name: Digest of the published site
+        id: site
+        run: |
+          digest=$(python3 -I eng/deploy/site_artifact.py digest "$RUNNER_TEMP/site/wwwroot")
+          echo "sha256=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Keep the published site for promotion to production
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-sha256-${{ steps.site.outputs.sha256 }}
+          path: ${{ runner.temp }}/site/wwwroot
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Record what can be promoted
+        env:
+          SITE_SHA256: ${{ steps.site.outputs.sha256 }}
+        run: |
+          {
+            echo "## Promotable build"
+            echo "- Test run id: \`$GITHUB_RUN_ID\` (input of deploy-production)"
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Site SHA-256: \`$SITE_SHA256\`"
+            echo "- Kept for 90 days; promotable only if this run succeeds."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Deploy the kept artifact to test
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: test
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      GH_TOKEN: ${{ github.token }}
+      BUILT_SHA256: ${{ needs.build.outputs.sha256 }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Fetch the build job's artifact as data and check it
+        run: >-
+          python3 -I eng/deploy/site_artifact.py fetch --same-run --run-id "$GITHUB_RUN_ID"
+          --workflow .github/workflows/deploy-test.yml --event push --branch main
+          --expect-sha256 "$BUILT_SHA256" --dest "$RUNNER_TEMP/site"
+
+      - name: Install the deploy tools, locked and pinned, before any sign-in (eng/deploy/install-tools.sh)
+        run: eng/deploy/install-tools.sh
+
+      - name: Sign in to Azure through OpenID Connect (ADR-046)
+        run: eng/deploy/azure-sign-in.sh
+
+      - name: Apply infra/main.bicep with infra/test.bicepparam
+        run: |
+          site=$(eng/deploy/apply-infra.sh test)
+          echo "SITE_NAME=$site" >> "$GITHUB_ENV"
+
+      - name: Upload the site and check its headers
+        run: eng/deploy/upload-site.sh rg-thoughttree-test "$SITE_NAME" "$RUNNER_TEMP/site" production

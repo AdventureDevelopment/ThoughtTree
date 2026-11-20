@@ -1,0 +1,37 @@
+# Compiles the Bicep templates (verify line of ADR-046) when infra/ changes. Kept out of the branch check and
+# the push gate because installing the Bicep CLI needs network beyond package restore (ADR-035, harness
+# principle 5; open decision "Gate suite in an agent's sandbox", docs/architecture.md section 9).
+# No Azure sign-in, no secrets.
+name: infra-check
+
+on:
+  push:
+    paths:
+      - "infra/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "infra/**"
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    name: Compile the Bicep templates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      AZURE_CORE_COLLECT_TELEMETRY: "false"
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Compile templates and parameter files
+        run: |
+          az bicep install --version v0.49.2
+          for template in infra/main.bicep infra/bootstrap/bootstrap.bicep; do az bicep build --file "$template" --stdout > /dev/null; done
+          for parameters in infra/*.bicepparam; do az bicep build-params --file "$parameters" --stdout > /dev/null; done
