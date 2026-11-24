@@ -19,7 +19,7 @@ const devLabel = { desktop: 'desktop', throttled4x: 'desktop 4x throttled¹', th
 
 // ---- Q1 and Q2 series ----
 const q1 = files.filter(f => /^q[12]-(desktop|throttled\dx|phone|tablet)-[a-z]+-(interpreted|aot)\.json$/.test(f)).map(f => ({ f, ...read(f) }));
-const key = (f) => { const m = f.match(/^q\d-([a-z0-9]+)-([a-z]+)-([a-z]+)\.json$/); return { dev: m[1], browser: m[2], build: m[3] }; };
+const key = (f) => { const m = f.match(/^[qx]\d-([a-z0-9]+)-([a-z]+)-([a-z]+)\.json$/); return { dev: m[1], browser: m[2], build: m[3] }; };
 const combos = [...new Set(q1.map(r => { const k = key(r.f); return `${k.dev}|${k.browser}|${k.build}`; }))]
   .sort((a, b) => devOrder.indexOf(a.split('|')[0]) - devOrder.indexOf(b.split('|')[0]) || a.localeCompare(b));
 const find = (dev, browser, build, scenario, dataset = 'events-100000') => {
@@ -80,6 +80,17 @@ for (const r of q5n) for (const x of r.series) {
 const pc = q5?.pairingCode ?? [];
 const t9 = pc.filter(p => p.trees === 1 || (p.nameChars === 64 && p.addressChars === 100)).map(p => [p.trees, p.nameChars, p.addressChars, p.binaryBytes, p.base32Chars, Object.entries(p.fits).filter(([, v]) => v.byteM).map(([k]) => k)[0] ?? 'none', Object.entries(p.fits).filter(([, v]) => v.base32AlnumM).map(([k]) => k)[0] ?? 'none']);
 
+// ---- Decryption in blocks (x1 files, on-device runner) ----
+const x1 = files.filter(f => /^x1-/.test(f)).map(f => ({ f, ...read(f) }));
+const t10 = [];
+for (const r of x1) for (const x of r.series) {
+  const w = x.summary.warm; const k = key(r.f);
+  const sizes = Object.keys(x.warm[0]?.blockBench?.blocks ?? {});
+  t10.push([devLabel[k.dev] ?? k.dev, k.browser, s(med(w, 'blockBench.perEvent.readMs')), s(med(w, 'blockBench.perEvent.decryptMs')),
+    ...['100', '1000', '10000'].map(n => sizes.includes(n) ? `${s(med(w, `blockBench.blocks.${n}.decryptMs`))} (read ${s(med(w, `blockBench.blocks.${n}.readMs`))})` : '–'),
+    x.warm.every(y => Object.values(y.blockBench?.blocks ?? {}).every(b => b.verified)) ? 'yes' : '**no**']);
+}
+
 // ---- answers ----
 const a = (c) => answers[c] ?? {};
 const ok = (v, lim) => v == null ? '–' : v <= lim ? 'meets' : '**misses**';
@@ -131,6 +142,10 @@ const tablesMd = [
   '### T9 Pairing code size against QR capacity (Q5, ADR-028; layout is a spike assumption)',
   '',
   table(['Trees', 'Name chars', 'Address chars', 'Binary bytes', 'Base32 chars', 'Smallest QR version, byte mode, level M', 'Same, base32 alphanumeric, level M'], t9),
+  '',
+  '### T10 Decryption of 100,000 events: one call per event against blocks (warm medians; on-device runner)',
+  '',
+  table(['Device', 'Browser', 'Read, per event', 'Decrypt, one call per event', 'Blocks of 100: decrypt (read)', 'Blocks of 1,000', 'Blocks of 10,000', 'Plaintext verified'], t10),
   '',
   '¹ CPU throttling of desktop Chromium as the phone fallback: phone unverified, estimated error about a factor of two (plan section 2).',
   '² On-device runner without a computer (docs/spikes/spike-1/README.md): cold runs fetch every boot resource with cache no-store (browser process stays warm); the import is generated, encrypted and stored on the device; Q3 swipes by hand with the acknowledgement log in a second database.',

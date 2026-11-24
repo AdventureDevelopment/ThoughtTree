@@ -212,6 +212,71 @@ export function environment() {
   });
 }
 
+// ---- Decryption in blocks (scenario=blocks; ADR-073 "SHOULD batch Web Crypto calls during replay") ----
+// Compares one AES-GCM call per event (the replay today) with blocks of many events encrypted as one unit with the
+// tree key, as a local at-rest form next to the per-event envelopes. Works chunk by chunk (10,000 events) to keep
+// memory low on phones. Block building is not timed; writing, reading and decrypting the blocks are.
+export async function blockBench(sizesCsv) {
+  const sizes = sizesCsv.split(',').map(Number);
+  const out = { events: 0, plainBytes: 0, perEvent: { readMs: 0, decryptMs: 0, calls: 0 }, blocks: {} };
+  for (const n of sizes) out.blocks[n] = { blocks: 0, writeMs: 0, readMs: 0, decryptMs: 0, verified: true };
+  const keys = Object.fromEntries(sizes.map(n => [n, []]));
+  const plainTotals = {};
+  for (let after = 0, chunk = 0; ; chunk++) {
+    let t = performance.now();
+    const recs = await S.store.readAfter(after, 10000);
+    out.perEvent.readMs += performance.now() - t;
+    if (!recs.length) break;
+    after = recs[recs.length - 1].seq;
+    t = performance.now();
+    const plains = [];
+    for (let i = 0; i < recs.length; i += 1000) plains.push(...await Promise.all(recs.slice(i, i + 1000).map(decryptOne)));
+    out.perEvent.decryptMs += performance.now() - t;
+    out.perEvent.calls += recs.length; out.events += recs.length;
+    for (const p of plains) out.plainBytes += p.length;
+    for (const n of sizes) {
+      const blobs = [];
+      for (let i = 0; i < plains.length; i += n) {
+        const part = plains.slice(i, i + n);
+        const bytes = new Uint8Array(part.reduce((a, p) => a + p.length, 0));
+        let o = 0; for (const p of part) { bytes.set(p, o); o += p.length; }
+        plainTotals[n] = (plainTotals[n] || 0) + bytes.length;
+        blobs.push(await encryptBlob('thoughttree/event-block/v1', `block-${n}-${chunk}-${i}`, bytes));
+      }
+      const key = `blocks-${n}-${chunk}`;
+      t = performance.now();
+      const tx = S.store.db.transaction(['meta'], 'readwrite');
+      tx.objectStore('meta').put(blobs, key);
+      await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+      out.blocks[n].writeMs += performance.now() - t;
+      out.blocks[n].blocks += blobs.length;
+      keys[n].push({ key, chunk, count: blobs.length });
+    }
+  }
+  for (const n of sizes) {
+    let total = 0;
+    for (const k of keys[n]) {
+      let t = performance.now();
+      const blobs = await S.store.get('meta', k.key);
+      out.blocks[n].readMs += performance.now() - t;
+      t = performance.now();
+      const plain = [];
+      for (let i = 0; i < blobs.length; i += 100)
+        plain.push(...await Promise.all(blobs.slice(i, i + 100).map((b, j) => decryptBlob('thoughttree/event-block/v1', `block-${n}-${k.chunk}-${(i + j) * n}`, b))));
+      out.blocks[n].decryptMs += performance.now() - t;
+      for (const p of plain) total += p.length;
+      const tx = S.store.db.transaction(['meta'], 'readwrite');
+      tx.objectStore('meta').delete(k.key);
+      await new Promise((res, rej) => { tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+    }
+    out.blocks[n].verified = total === plainTotals[n] && total === out.plainBytes;
+  }
+  const r = (x) => Math.round(x * 10) / 10;
+  out.perEvent.readMs = r(out.perEvent.readMs); out.perEvent.decryptMs = r(out.perEvent.decryptMs);
+  for (const n of sizes) for (const f of ['writeMs', 'readMs', 'decryptMs']) out.blocks[n][f] = r(out.blocks[n][f]);
+  return JSON.stringify(out);
+}
+
 // ---- On-device generation (scenario=generate) ----
 // Same bytes as the desktop generator (DatasetGenerator/Program.cs): test nonce 0x54545331 + 64-bit counter, AAD of
 // ADR-073, envelope line {"v":1,"eventId":..,"keyId":..,"nonce":..,"payload":..} and '\n'; the lines are hashed

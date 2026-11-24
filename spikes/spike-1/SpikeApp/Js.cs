@@ -38,6 +38,7 @@ internal static partial class Js
     [JSImport("memory", Module)] public static partial string Memory();
     [JSImport("environment", Module)] public static partial string Environment();
     [JSImport("report", Module)] public static partial void Report(string json);
+    [JSImport("blockBench", Module)] public static partial Task<string> BlockBench(string sizes);
     [JSImport("generateBegin", Module)] public static partial void GenerateBegin();
     [JSImport("encryptStoreBatch", Module)] public static partial Task EncryptStoreBatch(string eventIds, string lengths, int firstCounter);
     [JSImport("generateEnd", Module)] public static partial string GenerateEnd();

@@ -43,6 +43,17 @@ public sealed class Runner
 
         double treeVisible = 0;
         if (scenario == "empty") { Status = "empty app ready"; return 0; }
+        if (scenario == "blocks")
+        {
+            // Decryption per event against blocks of many events (Web Crypto only; no .NET work is timed).
+            await Js.InitKey(Q("seedLabel", ""), Q("keyId", ""), Q("accountId", ""));
+            await Js.OpenDb(db, durability);
+            Status = "measuring decryption in blocks";
+            await render();
+            Result["blockBench"] = JsonNode.Parse(await Js.BlockBench(Q("blocks", "100,1000,10000")));
+            Status = "blocks measured";
+            return 0;
+        }
 
         await Js.InitKey(Q("seedLabel", ""), Q("keyId", ""), Q("accountId", ""));
         switch (scenario)

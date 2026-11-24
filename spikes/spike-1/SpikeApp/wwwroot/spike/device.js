@@ -68,6 +68,8 @@ function planQueue() {
       for (const size of ['10k', '50k', '200k'])
         items.push(...seriesItems('q5', build, 'generate', `longnote-${size}`, '&noteio=1', { warm: false, runs: 3 }));
   }
+  // Decryption in blocks: browser work only, so one build is enough (AOT if ticked).
+  if ($('p-blocks').checked) items.push(...seriesItems('x1', builds.includes('aot') ? 'aot' : builds[0] || 'aot', 'blocks', 'events-100000', '', { cold: false, runs: 5 }));
   // Import into an empty store replaces the 100,000-event database, so it runs last and regenerates it.
   if ($('p-import').checked)
     for (const build of builds) items.push(...seriesItems('q1', build, 'generate', 'events-100000', '', { warm: false, runs: Math.min(runs, 3) }));
