@@ -15,6 +15,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 4x throttled¹ | chromium | interpreted | 5.47 s (p95 5.69 s) | 4.49 s (p95 4.73 s) | 30.7 s (p95 32.4 s) | 28.8 s (p95 30.0 s) | 49.8 s (p95 51.4 s) | 2.05 s (p95 2.18 s) |
 | desktop 6x throttled¹ | chromium | aot | 5.25 s (p95 5.40 s) | 3.54 s (p95 3.67 s) | 25.0 s (p95 26.1 s) | 22.3 s (p95 27.9 s) | 53.3 s (p95 55.2 s) | 3.56 s (p95 3.87 s) |
 | desktop 6x throttled¹ | chromium | interpreted | 8.34 s (p95 9.26 s) | 6.77 s (p95 7.23 s) | 44.7 s (p95 45.1 s) | 43.7 s (p95 44.3 s) | 71.7 s (p95 74.5 s) | 3.00 s (p95 3.26 s) |
+| phone² | chrome | aot | 2.32 s (p95 3.83 s) | 1.98 s (p95 2.40 s) | 15.9 s (p95 16.4 s) | 15.4 s (p95 15.8 s) | 65.1 s (p95 67.1 s) | 1.74 s (p95 2.79 s) |
+| phone² | chrome | interpreted | 2.78 s (p95 3.74 s) | 2.54 s (p95 3.95 s) | 21.7 s (p95 21.9 s) | 21.1 s (p95 45.5 s) | 73.5 s (p95 76.8 s) | 1.32 s (p95 2.40 s) |
 | phone² | firefox | aot | 1.96 s (p95 2.44 s) | 1.54 s (p95 1.85 s) | 8.11 s (p95 9.26 s) | 7.94 s (p95 8.18 s) | 38.5 s (p95 39.2 s) | 1.48 s (p95 2.22 s) |
 | phone² | firefox | interpreted | 2.72 s (p95 5.43 s) | 2.39 s (p95 2.56 s) | 16.3 s (p95 18.1 s) | 16.4 s (p95 17.5 s) | 65.0 s (p95 65.7 s) | 1.25 s (p95 2.00 s) |
 
@@ -30,6 +32,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 4x throttled¹ | chromium | interpreted | 6 ms | 3.29 s | 3.90 s | 909 ms | 17.8 s | 1.35 s | 144.70 MB | 96.84 MB |
 | desktop 6x throttled¹ | chromium | aot | 76 ms | 4.98 s | 6.18 s | 1.26 s | 6.72 s | 508 ms | 144.70 MB | 95.23 MB |
 | desktop 6x throttled¹ | chromium | interpreted | 66 ms | 4.89 s | 5.89 s | 1.35 s | 26.8 s | 2.00 s | 144.70 MB | 98.81 MB |
+| phone² | chrome | aot | 6 ms | 3.94 s | 7.00 s | 274 ms | 2.36 s | 142 ms | 144.70 MB | 157.00 MB |
+| phone² | chrome | interpreted | 7 ms | 4.14 s | 7.15 s | 264 ms | 7.35 s | 530 ms | 144.70 MB | 157.00 MB |
 | phone² | firefox | aot | 6 ms | 2.25 s | 1.91 s | 183 ms | 2.17 s | 128 ms | 144.70 MB | – |
 | phone² | firefox | interpreted | 5 ms | 2.36 s | 1.88 s | 183 ms | 9.81 s | 505 ms | 144.70 MB | – |
 
@@ -45,6 +49,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 4x throttled¹ | chromium | interpreted | 1.24 s | 4.61 s | 27.4 s | 3.7× | 5.9× | yes |
 | desktop 6x throttled¹ | chromium | aot | 526 ms | 2.32 s | 20.2 s | 4.4× | 8.7× | yes |
 | desktop 6x throttled¹ | chromium | interpreted | 1.82 s | 6.93 s | 41.5 s | 3.8× | 6.0× | yes |
+| phone² | chrome | aot | 346 ms | 1.61 s | 13.8 s | 4.7× | 8.6× | yes |
+| phone² | chrome | interpreted | 668 ms | 2.75 s | 19.6 s | 4.1× | 7.1× | yes |
 | phone² | firefox | aot | 210 ms | 843 ms | 6.72 s | 4.0× | 8.0× | yes |
 | phone² | firefox | interpreted | 549 ms | 2.05 s | 14.7 s | 3.7× | 7.2× | yes |
 
@@ -104,6 +110,14 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 6x throttled¹ | chromium | interpreted | B | 6.56 s | 3.95 s | 6.32 s | 12.9 s | 11.45 / 19.95 ms | 2727 kB | 1807 µs |
 | desktop 6x throttled¹ | chromium | interpreted | C | 6.66 s | 3.90 s | 6.30 s | 13.0 s | 11.75 / 20.80 ms | 2727 kB | 1800 µs |
 | desktop 6x throttled¹ | chromium | interpreted | A | 6.76 s | 9.04 s | 11.5 s | 18.2 s | 11.35 / 18.70 ms | – | 1828 µs |
+| phone² | chrome | aot | A | 1.95 s | 789 ms | 985 ms | 2.94 s | 2.40 / 6.25 ms | – | 151 µs |
+| phone² | chrome | aot | C | 1.90 s | 541 ms | 727 ms | 2.63 s | 2.40 / 4.50 ms | 2727 kB | 150 µs |
+| phone² | chrome | aot | B | 1.90 s | 563 ms | 749 ms | 2.67 s | 2.40 / 4.50 ms | 2727 kB | 150 µs |
+| phone² | chrome | aot | A after update | 15.7 s | 769 ms | 1.00 s | 16.7 s |  |  |  |
+| phone² | chrome | interpreted | B | 2.57 s | 1.24 s | 1.90 s | 4.46 s | 2.90 / 5.80 ms | 2727 kB | 541 µs |
+| phone² | chrome | interpreted | A | 2.55 s | 2.55 s | 3.21 s | 5.77 s | 2.90 / 5.80 ms | – | 540 µs |
+| phone² | chrome | interpreted | C | 2.50 s | 1.21 s | 1.88 s | 4.39 s | 2.90 / 5.80 ms | 2727 kB | 541 µs |
+| phone² | chrome | interpreted | A after update | 21.3 s | 2.53 s | 3.20 s | 24.5 s |  |  |  |
 | phone² | firefox | aot | A | 1.55 s | 728 ms | 893 ms | 2.44 s | 4.00 / 6.00 ms | – | 144 µs |
 | phone² | firefox | aot | C | 1.58 s | 640 ms | 813 ms | 2.41 s | 3.00 / 5.00 ms | 2727 kB | 139 µs |
 | phone² | firefox | aot | B | 1.57 s | 634 ms | 806 ms | 2.37 s | 3.00 / 5.00 ms | 2727 kB | 137 µs |
