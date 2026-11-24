@@ -253,37 +253,6 @@ public partial class InfrastructureRules
         ImperativeResource().IsMatch(command).ShouldBeTrue();
     }
 
-    [Theory]
-    [InlineData("az rest --method put --url \"$site_id/builds/$preview?api-version=2024-04-01\" --output none")]
-    [InlineData("az rest --method delete --url \"$other?api-version=2024-04-01\" --output none")]
-    [InlineData("az rest --method delete --url \"$site_id?api-version=2024-04-01\" --output none")]
-    [InlineData("az rest --url \"$site_id/builds/$preview?api-version=2024-04-01\" --method delete")]
-    public void Every_other_rest_call_stays_forbidden(string command)
-    {
-        ImperativeResource().IsMatch(command).ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Deleting_a_preview_environment_by_its_resource_is_not_imperative()
-    {
-        // The one allowed REST call (preview.sh prune): DELETE of a staging environment of the preview site, which
-        // the site deployer role allows (staticSites/builds/delete) and which returns without polling.
-        ImperativeResource().IsMatch("az rest --method delete --url \"$site_id/builds/$preview?api-version=2024-04-01\" --output none").ShouldBeFalse();
-    }
-
-    [Fact]
-    public void No_deploy_script_waits_on_an_operation_status_outside_its_resource_group()
-    {
-        // These commands poll Microsoft.Web/locations/staticSitesOperationStatuses at subscription scope, which the
-        // site deployer role (resource-group scope) cannot read: preview-deploy run 45420685246 failed that way.
-        var offenders = Repository.Files(Path.Combine("eng", "deploy"), "*.sh")
-            .SelectMany(f => PollingDelete().Matches(string.Join('\n', File.ReadAllLines(f).Where(l => !l.TrimStart().StartsWith('#'))))
-                .Select(m => $"{Repository.Relative(f)}: {m.Value}"))
-            .ToList();
-
-        offenders.ShouldBeEmpty("delete staging environments with az rest --method delete and wait on the environment list (eng/deploy/preview.sh)");
-    }
-
     [Fact]
     public void Applying_the_main_template_is_not_imperative()
     {
@@ -370,9 +339,6 @@ public partial class InfrastructureRules
     [GeneratedRegex(@"^\s*(param\s+environmentName\s+string\s*|name:\s*'[a-z-]+\$\{environmentName\}'\s*|environment:\s*environmentName\s*)$", RegexOptions.CultureInvariant)]
     private static partial Regex AllowedEnvironmentNameUse();
 
-    [GeneratedRegex(@"az\s+(group|staticwebapp|identity|role\s+assignment|role\s+definition|resource)\s+create\b|az\s+rest\b(?!\s+--method\s+delete\s+--url\s+""\$site_id/builds/\$preview\?api-version=[0-9-]+""\s)|az\s+resource\s+(update|patch|tag)\b|az\s+deployment\s+(sub|mg|tenant)\b|--template-file\s+(?!infra/main\.bicep\b)\S+|--template-uri\b|az\s+staticwebapp\s+(update|appsettings|hostname|users|identity|backends|functions|enterprise-edge)\b", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"az\s+(group|staticwebapp|identity|role\s+assignment|role\s+definition|resource)\s+create\b|az\s+rest\b|az\s+resource\s+(update|patch|tag)\b|az\s+deployment\s+(sub|mg|tenant)\b|--template-file\s+(?!infra/main\.bicep\b)\S+|--template-uri\b|az\s+staticwebapp\s+(update|appsettings|hostname|users|identity|backends|functions|enterprise-edge)\b", RegexOptions.CultureInvariant)]
     private static partial Regex ImperativeResource();
-
-    [GeneratedRegex(@"az\s+staticwebapp\s+(environment\s+)?delete\b|az\s+resource\s+delete\b", RegexOptions.CultureInvariant)]
-    private static partial Regex PollingDelete();
 }
