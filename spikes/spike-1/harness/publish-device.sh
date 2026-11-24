@@ -14,9 +14,10 @@ commit=$(git rev-parse HEAD)$(git diff --quiet -- . || echo "+dirty")
 for build in interpreted aot; do
   cp -r "publish/$build/wwwroot" "$out/$build"
   sed -i "s#<base href=\"/\" />#<base href=\"/$build/\" />#" "$out/$build/index.html"
+  rm -f "$out/$build/index.html.br" "$out/$build/index.html.gz"   # stale precompressed copies of the changed page
   cp ../../docs/spikes/spike-1/data/manifest.json "$out/$build/spike/manifest.json"
   printf '{ "gitCommit": "%s", "build": "%s" }\n' "$commit" "$build" > "$out/$build/spike/build-info.json"
-  rm -f "$out/$build/spike/durability.html" "$out/$build/spike/contract.html"   # desktop-only pages with inline scripts
+  rm -f "$out/$build"/spike/{durability,contract}.html{,.br,.gz}   # desktop-only pages with inline scripts
 done
 cat > "$out/index.html" <<'HTML'
 <!DOCTYPE html>

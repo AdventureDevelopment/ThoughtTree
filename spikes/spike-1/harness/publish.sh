@@ -8,10 +8,10 @@ echo "{" > publish/build-times.json
 first=1
 for mode in interpreted aot; do
   rm -rf "publish/$mode"
-  start=$(date +%s.%N)
+  start=$(date +%s%N)
   dotnet publish SpikeApp/SpikeApp.csproj -c Release -p:SpikeBuild=$mode -o "publish/$mode" -nologo -v q
-  end=$(date +%s.%N)
-  secs=$(echo "$end - $start" | bc)
+  end=$(date +%s%N)
+  secs=$(awk -v a="$start" -v b="$end" 'BEGIN { printf "%.3f", (b - a) / 1e9 }')
   [ $first -eq 1 ] || echo "," >> publish/build-times.json
   first=0
   printf '  "%s": %s' "$mode" "$secs" >> publish/build-times.json
