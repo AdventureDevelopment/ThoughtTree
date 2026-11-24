@@ -122,7 +122,14 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 
 ## 6. Owner next steps
 
-1. **Phone run (S8).** Run it on one mid-range Android phone, about two hours, following [spike-1/README.md](spike-1/README.md). Optionally run the 10 manual kills in your own Firefox.
+1. **Phone and tablet run (S8), no computer needed.** Open the spike address on the phone, then on the tablet, and follow "Phone and tablet without a computer" in [spike-1/README.md](spike-1/README.md):
+   - enter the model;
+   - generate the test data on the device;
+   - run the timing series (one to two hours);
+   - do 20 swipe-away rounds;
+   - share the result files with the agent.
+
+   This loses some validity against the adb run; that section lists what (cold runs without a browser restart, Q3 by swipe only). Before that, choose how the spike site is deployed; the agent proposes the options. Optionally run the 10 manual kills in your own Firefox.
 2. **Decisions (S11).** Decide AOT, the first-load and load budgets, the snapshot policy, the search variant, the durability rule and the size numbers.
 3. **Follow-up changes.** These follow as separate pull requests, as proposals only:
    - `architecture.md`: the PF5 value; open decisions "Size limits" (numbers) and "Optional unencrypted search index" (numbers from T6); the build mode in section 2.

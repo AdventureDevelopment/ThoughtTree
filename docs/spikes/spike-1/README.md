@@ -20,7 +20,7 @@ Last update: 2026-11-19 16:10 UTC, branch `claude/spike-1`. Use it to resume if 
 | Q3 kill tests (11 variants, Chromium and Firefox) | done, 940 kills or closes, 0 findings | `q3-desktop-*.json` |
 | Q2 file sizes with the measured first-load file list | done | `q2-sizes-desktop.json` |
 | Report `spike-1-report.md` and generated tables `tables.md` | written | – |
-| S8 phone run (owner) | waiting for the owner | `*-phone-*.json` |
+| S8 phone and tablet run (owner) | on-device runner ready; waiting for the spike site to be deployed (route: owner's choice) and for the owner | `*-phone-*.json`, `*-tablet-*.json` |
 
 To resume in a new session: install the toolchain, generate the datasets (their SHA-256 must match the manifest), run `harness/publish.sh`, then run only the lines of `harness/run-all.sh` whose result files are missing, then `node harness/sizes.mjs` and `node harness/summarise.mjs`, and write the report.
 
@@ -49,7 +49,52 @@ Run from `spikes/spike-1`:
 
 One page load runs one scenario: `http://localhost:5000/?scenario=snapshot&...` (5000: interpreted, 5001: AOT). The harness builds the query from the manifest (`harness/common.mjs`, `datasetQuery`). A setup run (`scenario=setup`) loads a dataset into IndexedDB and writes the snapshot at event 99,000 and the search indexes, encrypted with the test key.
 
-## Phone run (owner, step S8, about two hours)
+## Phone and tablet without a computer (owner, step S8)
+
+The spike runs in the device's own browser: Chrome on Android, Safari on an iPad or iPhone. It needs no computer, no USB cable and no account. Everything below happens on the device. The page generates the test data itself from the seed. It checks the data against the desktop file's SHA-256, so no 170 MB download is needed.
+
+**Before you start**
+- Battery above 50 % or charging, power saving off.
+- Screen timeout set to the longest value; the pages also ask the browser to keep the screen on.
+- Other apps closed; Wi-Fi on.
+- About 400 MB of free storage.
+
+**Steps**
+1. Open the spike address in the browser. The agent gives you the address once the spike site is deployed (see the deploy route in the report). It opens the device runner.
+2. **This device:** enter the model, for example "Pixel 6a" (model only, no names), and choose phone or tablet. Tap **Keep test data**, so the browser does not delete the datasets when storage runs low.
+3. **Prepare the test data:** tap **Generate missing datasets**. The page loads itself several times; leave it in front.
+   - It generates 1,000, 10,000 and 100,000 events. Each is encrypted with the test key and stored.
+   - It then shows "ready (SHA-256 matches the desktop file)". If a line stays "not generated yet", tap the button again.
+4. **Timing series:** keep both builds and the first three boxes ticked, choose "10 cold + 10 warm" (or the quick 3 + 3), and tap **Start**.
+   - The page runs one scenario per page load and comes back by itself; the status line shows "Run n of m".
+   - If the browser was closed or ran out of memory, open the address again and tap **Continue** (or **Skip the current run**).
+   - Expect one to two hours for 10 + 10; the quick setting takes about a third of that.
+5. **Durability (Q3):** tap **Open the swipe-away test**. Then repeat, until the counter shows 20 of 20:
+   1. Tap **Start writing** and wait a few seconds.
+   2. Swipe the browser away from the recent apps.
+   3. Open the page again; adding it to the home screen makes this quicker. The page checks the stored data and shows "no loss" or "FINDING".
+
+   On Chrome the test starts with durability "relaxed". For a second test with "strict", tap **Start a new test** after saving.
+6. **Results:** tap **Share all files** and send them to yourself (mail or a messenger), or **Save all files** to the device's downloads. On the durability page, tap **Save result** or **Share result**. Each file is named like the desktop files, for example `q1-phone-chrome-aot.json` or `q3-phone-chrome-swipe-relaxed.json`.
+7. **Getting them into the repository:** either attach the files in the chat with the agent, or upload them on github.com: branch `claude/spike-1`, folder `docs/spikes/spike-1/data/results`, Add file, Upload files. The agent then runs `node harness/summarise.mjs` and updates the report.
+8. **Tablet:** repeat on the tablet with the kind "tablet".
+
+**What the page measures, and what is lost without a computer**
+
+| Topic | On the device | Compared with the desktop and adb runs |
+| --- | --- | --- |
+| Timers | The browser's own `performance.now()` with marks at app ready and tree visible, as on the desktop | Same code and same marks |
+| Cold runs | Every boot resource is fetched with cache `no-store`: no HTTP cache and no compiled-code cache. The download comes over the network from the spike site | No forced browser restart (`am force-stop` needs adb): the browser process and the system's file cache stay warm. Cold times include the network download, which the desktop's localhost runs did not |
+| Warm runs | Normal reload | Same |
+| CPU | The device's own speed; no throttling. Long series can heat the device up; the series order is shuffled with the seed | The desktop fallback used 4x and 6x throttling |
+| Memory | Size of the .NET WebAssembly memory on every browser; JavaScript heap only in Chrome (rounded) | No peak memory and no system memory figures |
+| Import into an empty store | The dataset is generated, encrypted with Web Crypto and written to IndexedDB on the device; the time to write it is recorded (`importWriteMs`), plus the replay | The desktop imported a downloaded file (fetch and parse) |
+| Durability (Q3) | Swipe-away by hand. Every acknowledged write is logged in a second IndexedDB database with durability `strict` before the next write; the next start compares the store with that log | No `am force-stop` kills. The log lives in the same browser, so a loss that hits both databases at once stays invisible; the desktop logged outside the browser. Reloading instead of swiping also counts as a round |
+| Results | Files in the desktop format, with the device model, kind, browser, version, OS, memory class and connection type taken from the page | Same tables (`node harness/summarise.mjs`), marked ² |
+
+To try the device site on a computer: run `harness/publish-device.sh`, then `node harness/server.mjs --port 5080 --root publish/device-site --headers publish/device-site/staticwebapp.config.json`, and open `http://localhost:5080/`. `node harness/device-e2e.mjs` runs the whole flow in headless Chromium with phone emulation and checks for policy violations.
+
+## Phone run with a computer (adb; owner, step S8, about two hours)
 
 Needs: one mid-range Android phone with Chrome (2 to 4 years old, 4 to 6 GB RAM), USB cable, developer options and USB debugging on, a computer with `adb` (Android platform tools), .NET and Node as above. Phone: screen on, battery above 50 %, not in power-saver mode. No account, cloud or app store is involved; the phone only talks to the computer through `adb reverse`.
 
