@@ -1,0 +1,13 @@
+/* Spike 1 pages: plain, readable on a phone; no inline styles (strict CSP, ADR-045). */
+body { font-family: system-ui, sans-serif; margin: 0 16px 32px; line-height: 1.4; }
+h1 { font-size: 1.3rem; } h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+button { font-size: 1rem; padding: 0.5rem 0.9rem; margin: 0.2rem 0.3rem 0.2rem 0; }
+input, select { font-size: 1rem; padding: 0.3rem; }
+label { display: block; margin: 0.3rem 0; }
+.result { white-space: pre-wrap; font-size: 11px; overflow-wrap: anywhere; }
+.status { font-weight: 600; }
+.ok { color: #1a7f37; } .bad { color: #cf222e; }
+.big { font-size: 2.2rem; font-weight: 700; }
+table { border-collapse: collapse; font-size: 0.85rem; } td, th { border-bottom: 1px solid #ccc; padding: 0.2rem 0.4rem; text-align: left; }
+.hint { color: #555; font-size: 0.9rem; }
+@media (prefers-color-scheme: dark) { body { background: #111; color: #eee; } .hint { color: #aaa; } td, th { border-color: #444; } }

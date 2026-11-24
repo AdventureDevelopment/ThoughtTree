@@ -12,11 +12,12 @@ const port = Number(opt('--port', '5000'));
 const root = path.resolve(opt('--root', path.join(here, '../publish/interpreted/wwwroot')));
 const data = path.resolve(opt('--data', path.join(here, '../out')));
 const logFile = opt('--log', '');
+const headersFile = opt('--headers', '');   // staticwebapp.config.json: its globalHeaders are sent with every file
 
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm',
   '.json': 'application/json', '.dat': 'application/octet-stream', '.css': 'text/css', '.jsonl': 'application/x-ndjson', '.png': 'image/png', '.ico': 'image/x-icon' };
 
-export function createServer({ port, root, data, onPost }) {
+export function createServer({ port, root, data, onPost, extraHeaders = {} }) {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost');
     if (req.method === 'POST') {
@@ -36,8 +37,8 @@ export function createServer({ port, root, data, onPost }) {
     if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
     if (!fs.existsSync(file)) file = path.join(root, 'index.html');
     const ext = path.extname(file);
-    const headers = { 'content-type': types[ext] || 'application/octet-stream', 'vary': 'accept-encoding' };
-    headers['cache-control'] = ext === '.html' || url.pathname.startsWith('/data/') ? 'no-cache' : (url.pathname.startsWith('/_framework/') ? 'public, max-age=31536000, immutable' : 'no-cache');
+    const headers = { ...extraHeaders, 'content-type': types[ext] || 'application/octet-stream', 'vary': 'accept-encoding' };
+    headers['cache-control'] = ext === '.html' || url.pathname.startsWith('/data/') ? 'no-cache' : (url.pathname.includes('/_framework/') ? 'public, max-age=31536000, immutable' : 'no-cache');
     const ae = String(req.headers['accept-encoding'] || '');
     let send = file;
     if (/\bbr\b/.test(ae) && fs.existsSync(file + '.br')) { send = file + '.br'; headers['content-encoding'] = 'br'; }
@@ -51,6 +52,7 @@ export function createServer({ port, root, data, onPost }) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
   const log = logFile ? fs.openSync(logFile, 'a') : null;
-  await createServer({ port, root, data, onPost: (p, body) => { if (log) fs.writeSync(log, JSON.stringify({ path: p, body: JSON.parse(body) }) + '\n'); else console.log(p, body.slice(0, 200)); } });
+  const extraHeaders = headersFile ? JSON.parse(fs.readFileSync(headersFile, 'utf8')).globalHeaders : {};
+  await createServer({ port, root, data, extraHeaders, onPost: (p, body) => { if (log) fs.writeSync(log, JSON.stringify({ path: p, body: JSON.parse(body) }) + '\n'); else console.log(p, body.slice(0, 200)); } });
   console.log(`serving ${root} and ${data} on http://localhost:${port}`);
 }

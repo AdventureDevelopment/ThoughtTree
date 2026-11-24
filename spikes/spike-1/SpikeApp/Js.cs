@@ -8,7 +8,8 @@ internal static partial class Js
 {
     public const string Module = "spike";
 
-    public static Task Load() => JSHost.ImportAsync(Module, "/spike/interop.js");
+    /// <summary>Loads the interop module relative to the page's base address (the builds live under /interpreted/ and /aot/ on a device site).</summary>
+    public static Task Load(string baseUri) => JSHost.ImportAsync(Module, baseUri + "spike/interop.js");
 
     [JSImport("now", Module)] public static partial double Now();
     [JSImport("mark", Module)] public static partial void Mark(string name);
@@ -37,6 +38,10 @@ internal static partial class Js
     [JSImport("memory", Module)] public static partial string Memory();
     [JSImport("environment", Module)] public static partial string Environment();
     [JSImport("report", Module)] public static partial void Report(string json);
+    [JSImport("generateBegin", Module)] public static partial void GenerateBegin();
+    [JSImport("encryptStoreBatch", Module)] public static partial Task EncryptStoreBatch(string eventIds, string lengths, int firstCounter);
+    [JSImport("generateEnd", Module)] public static partial string GenerateEnd();
+    [JSImport("deviceHandOff", Module)] public static partial Task DeviceHandOff(string json);
     [JSImport("download", Module)] public static partial void Download(string json, string name);
 
     public static byte[] TakeBuffer()

@@ -1,12 +1,15 @@
 // Browser adapter of the spike app: storage, Web Crypto and timing, reached from .NET through [JSImport].
 // The raw test key is test data; production keys are non-extractable handles unwrapped by a device key (ADR-073).
 import { IdbStore } from './storage.js';
+import { Sha256 } from './sha256.js';
+import { saveRun } from './device-store.js';
 
 const enc = new TextEncoder();
 const S = { store: null, key: null, keyId: '', accountId: '', buf: null, stats: {}, marks: {}, lastSeq: 0, info: {} };
 
 function stat(name, ms) { S.stats[name] = (S.stats[name] || 0) + ms; }
 function b64(s) { const b = atob(s); const a = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+function toB64(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
 function aad(...parts) { return enc.encode(parts.join('\u001f')); }
 function unpaddedLength(u8) { let i = u8.length - 1; while (i >= 0 && u8[i] === 0) i--; if (i < 0 || u8[i] !== 0x80) throw new Error('bad padding'); return i; }
 
@@ -205,6 +208,42 @@ export function environment() {
     resources: res.filter(r => r.name.includes('/_framework/')).map(r => ({ name: r.name.replace(location.origin, ''), transferSize: r.transferSize, encodedBodySize: r.encodedBodySize, decodedBodySize: r.decodedBodySize })),
     info: S.info,
   });
+}
+
+// ---- On-device generation (scenario=generate) ----
+// Same bytes as the desktop generator (DatasetGenerator/Program.cs): test nonce 0x54545331 + 64-bit counter, AAD of
+// ADR-073, envelope line {"v":1,"eventId":..,"keyId":..,"nonce":..,"payload":..} and '\n'; the lines are hashed
+// with SHA-256 and compared with the manifest, so the device holds the identical dataset.
+let gen = null;
+export function generateBegin() { gen = { sha: new Sha256() }; }
+
+export async function encryptStoreBatch(eventIds, lengths, firstCounter) {
+  const padded = S.staged; S.staged = null;
+  const ids = eventIds.split('\n'), lens = lengths.split(',').map(Number);
+  let t = performance.now();
+  const ivs = ids.map((_, i) => { const iv = new Uint8Array(12); const v = new DataView(iv.buffer); v.setUint32(0, 0x54545331); v.setBigUint64(4, BigInt(firstCounter + i)); return iv; });
+  let o = 0;
+  const parts = lens.map(n => { const p = padded.subarray(o, o + n); o += n; return p; });
+  const cts = await Promise.all(parts.map((p, i) => crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv: ivs[i], additionalData: aad('thoughttree/event/v1', '1', S.keyId, ids[i], S.accountId) }, S.key, p)));
+  stat('generateEncryptMs', performance.now() - t);
+  t = performance.now();
+  const recs = ids.map((id, i) => ({ v: 1, eventId: id, keyId: S.keyId, nonce: ivs[i], payload: new Uint8Array(cts[i]) }));
+  await S.store.appendBatch(recs);
+  stat('importWriteMs', performance.now() - t);
+  t = performance.now();
+  for (const r of recs) gen.sha.update(enc.encode(`{"v":1,"eventId":"${r.eventId}","keyId":"${r.keyId}","nonce":"${toB64(r.nonce)}","payload":"${toB64(r.payload)}"}\n`));
+  stat('generateHashMs', performance.now() - t);
+}
+
+export function generateEnd() { const h = gen.sha.hex(); gen = null; return h; }
+
+/** Device mode: keeps the result in the device runner's store and returns to the runner page (spike/device.html). */
+export async function deviceHandOff(json) {
+  const p = new URLSearchParams(location.search);
+  await saveRun(p.get('run'), JSON.parse(json));
+  const back = p.get('back');
+  if (back && new URL(back, location.href).origin === location.origin) setTimeout(() => location.replace(back), 300);
 }
 
 /** Publishes the result: window.spikeResult for Playwright, and a "Save results" download for phone runs. */

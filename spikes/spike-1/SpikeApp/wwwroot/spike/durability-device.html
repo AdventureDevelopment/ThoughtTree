@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spike 1 swipe-away test</title>
+  <link rel="stylesheet" href="spike.css" />
+  <script type="module" src="durability-device.js"></script>
+</head>
+<body>
+  <h1>Durability: swipe-away test (Q3)</h1>
+  <p class="hint">Each round: tap Start writing, wait a few seconds, then swipe the browser away from the recent apps. Open this page again (bookmark or home screen): it checks the stored data and shows the result. Repeat until the counter reaches the target.</p>
+  <p class="status" data-testid="q3-status" id="status">checking the stored data…</p>
+  <p class="big" data-testid="q3-counter" id="counter"></p>
+  <div id="last" data-testid="q3-last"></div>
+  <label>Durability <select id="durability" data-testid="q3-durability"><option value="relaxed">relaxed</option><option value="strict">strict</option><option value="default">browser default</option></select></label>
+  <label>Target number of swipes <input id="target" data-testid="q3-target" type="number" min="1" value="20" /></label>
+  <button id="start" data-testid="q3-start">Start writing</button>
+  <button id="save" data-testid="q3-save">Save result</button>
+  <button id="share" data-testid="q3-share">Share result</button>
+  <button id="reset" data-testid="q3-reset">Start a new test (deletes this test's data)</button>
+  <p><a href="device.html">Back to the device runner</a></p>
+</body>
+</html>

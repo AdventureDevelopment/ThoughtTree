@@ -8,7 +8,7 @@ namespace SpikeApp;
 
 /// <summary>
 /// Runs one measured scenario per page load (spike plan Q1, Q2, Q4, Q5) and reports a JSON result.
-/// Query parameters: scenario (empty | setup | snapshot | full | import | noteio), dataset, seedLabel, keyId, accountId,
+/// Query parameters: scenario (empty | setup | generate | snapshot | full | import | noteio), dataset, seedLabel, keyId, accountId,
 /// checksum, snapshotChecksum, snapshotAt, chunk, batch, parallel, importBatch, durability, search (none | A | B | C).
 /// </summary>
 [System.Runtime.Versioning.SupportedOSPlatform("browser")]
@@ -61,6 +61,25 @@ public sealed class Runner
                 await WriteSnapshotAndIndexes();
                 await ReplayFrom(Js.LastSeq(), chunk, batch, parallel, render);
                 break;
+            case "generate":
+            {
+                // On-device setup without a computer: builds the dataset with the desktop generator's code, encrypts it
+                // with Web Crypto (same test key and nonces), stores it and checks its SHA-256 against the manifest.
+                await Js.DeleteDb(db);
+                await Js.OpenDb(db, durability);
+                Status = "generating";
+                await render();
+                await Generate(dataset, importBatch, render);
+                Projection = new Projection();
+                Status = "replaying and writing snapshot and index";
+                await render();
+                int stop = QI("snapshotAt", 0);
+                await ReplayFrom(0, chunk, batch, parallel, render, stopAt: stop);
+                Result["checksumAtSnapshotOk"] = Projection.Checksum() == Q("snapshotChecksum", "");
+                if (stop > 0) await WriteSnapshotAndIndexes();
+                await ReplayFrom(Js.LastSeq(), chunk, batch, parallel, render);
+                break;
+            }
             case "import":
                 await Js.DeleteDb(db);
                 await Js.OpenDb(db, durability);
@@ -111,8 +130,46 @@ public sealed class Runner
         Result["memoryAfterTree"] = MemorySnapshot();
 
         if (search != "none") await RunSearch(search, treeVisible);
-        if (scenario is "import" or "full" && Q("noteio", "0") == "1") await NoteIo();
+        if (scenario is "import" or "full" or "generate" && Q("noteio", "0") == "1") await NoteIo();
         return treeVisible;
+    }
+
+    private async Task Generate(string dataset, int batchSize, Func<Task> render)
+    {
+        var seed = SplitMix64.SeedFromLabel(Q("seedLabel", ""));
+        var builder = new DatasetGenerator.EventLogBuilder(new SplitMix64(seed), (uint)(seed >> 32));
+        var t = Js.Now();
+        if (dataset.StartsWith("events-", StringComparison.Ordinal)) builder.Build(int.Parse(dataset["events-".Length..], System.Globalization.CultureInfo.InvariantCulture));
+        else builder.BuildLongNotes(dataset switch { "longnote-10k" => 10_000, "longnote-50k" => 50_000, "longnote-200k" => 200_000, "longnote-1m" => 1_000_000, _ => throw new InvalidOperationException("unknown dataset " + dataset) });
+        Phase("generateBuildMs", Js.Now() - t);
+
+        Js.GenerateBegin();
+        var events = builder.Events;
+        for (int start = 0; start < events.Count; start += batchSize)
+        {
+            t = Js.Now();
+            int end = Math.Min(events.Count, start + batchSize);
+            var padded = new List<byte[]>(end - start);
+            for (int i = start; i < end; i++)
+                padded.Add(EnvelopeFormat.Pad(JsonSerializer.SerializeToUtf8Bytes(new PayloadWrapper { V = 1, Event = events[i].Event }, SpikeJson.Relaxed.PayloadWrapper), EnvelopeFormat.ProvisionalBuckets));
+            var all = new byte[padded.Sum(p => p.Length)];
+            int o = 0;
+            foreach (var p in padded) { p.CopyTo(all, o); o += p.Length; }
+            Phase("generateSerializePadMs", Js.Now() - t);
+            Js.StageBytes(all);
+            await Js.EncryptStoreBatch(
+                string.Join('\n', events.Skip(start).Take(end - start).Select(e => e.EventId)),
+                string.Join(',', padded.Select(p => p.Length.ToString(System.Globalization.CultureInfo.InvariantCulture))),
+                start + 1);
+            Progress = end;
+            Status = $"generated {end} of {events.Count} events";
+            await render();
+        }
+        var sha = Js.GenerateEnd();
+        Result["generated"] = events.Count;
+        Result["datasetSha256"] = sha;
+        Result["datasetShaOk"] = sha == Q("sha256", "");
+        Progress = 0;
     }
 
     private async Task ReplayFrom(int afterSeq, int chunk, int batch, bool parallel, Func<Task> render, int stopAt = 0)

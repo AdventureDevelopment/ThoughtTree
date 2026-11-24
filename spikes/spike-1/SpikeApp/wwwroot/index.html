@@ -6,10 +6,12 @@
     <title>Spike 1</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
+    <link rel="stylesheet" href="spike/spike.css" />
     <script type="importmap"></script>
 </head>
 <body>
     <div id="app">loading</div>
-    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js" autostart="false"></script>
+    <script src="spike/boot.js"></script>
 </body>
 </html>

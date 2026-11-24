@@ -2,4 +2,4 @@
 // Elsewhere: npm install playwright (any recent version) next to this folder.
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-export const { chromium, firefox } = require('playwright');
+export const { chromium, firefox, devices } = require('playwright');
