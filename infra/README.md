@@ -58,12 +58,13 @@ Needs the role Owner (or Contributor plus User Access Administrator) on the Azur
    - Run it. The `repository` value must be written exactly as GitHub writes it into the token's subject claim: owner and repository each with their numeric id, `AdventureDevelopment@322102914/ThoughtTree@1452386759` (GitHub's default subject since 2026; seen on 2026-11-24, the first sign-in with `AdventureDevelopment/ThoughtTree` was refused with AADSTS700213 and named the expected subject). The ids never change, so a renamed or re-created repository of the same name cannot sign in. To read them: `gh api repos/AdventureDevelopment/ThoughtTree --jq '"\(.owner.login)@\(.owner.id)/\(.name)@\(.id)"'`. The claim is case-sensitive:
 
      ```bash
-     az deployment sub create --name thoughttree-bootstrap --location westeurope \
+     az deployment sub create --name thoughttree-bootstrap --location northeurope \
        --template-file infra/bootstrap/bootstrap.bicep \
-       --parameters repository=AdventureDevelopment@322102914/ThoughtTree@1452386759 \
+       --parameters repository=AdventureDevelopment@322102914/ThoughtTree@1452386759 location=northeurope \
        --query properties.outputs
      ```
 
+   - Regions (owner decision 2026-11-24): resource groups and identities in North Europe (`northeurope`, the bootstrap's default), the three Static Web Apps in East US 2 (`eastus2`, `infra/*.bicepparam`). West Europe, the owner's first choice, refused both on this subscription (`RequestDisallowedByAzure`, 2026-11-20 for identities, 2026-11-24 for Static Web Apps). Static Web Apps exist only in Central US, East US 2, West US 2, East Asia and West Europe; the region holds the site resource and its settings, while the files are served from Microsoft's worldwide network and the app stores no user data in Azure. To move back to West Europe once Azure allows it (support request at aka.ms/locationineligible): change `location` in the three parameter files; the sites are re-created with new addresses.
    - If Azure answers `RequestDisallowedByAzure` ("The selected region is currently not accepting new customers", seen for West Europe on 2026-11-20), add `location=<region>` to `--parameters` and use the same region for `--location`, for example `northeurope`, `swedencentral`, `germanywestcentral` or `francecentral`. The region of the identities and resource groups does not matter for the app. Resource groups that already exist in another region must be deleted first (a group's region cannot change).
    - **Before every re-run:** the bootstrap runs with your Owner rights whatever `main` holds; read `git log -p infra/bootstrap/` since your last run and run it only if every change there is one you approved.
    - The output lists five values: `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID_TEST`, `AZURE_CLIENT_ID_PRODUCTION`, `AZURE_CLIENT_ID_PREVIEW`. They are identifiers, not secrets. Running the bootstrap again changes nothing that already exists.

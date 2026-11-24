@@ -19,7 +19,7 @@ targetScope = 'subscription'
 param repository string
 
 @description('Azure region of the resource groups and identities.')
-param location string = 'westeurope'
+param location string = 'northeurope'
 
 var environments = [
   {
