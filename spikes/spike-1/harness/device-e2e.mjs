@@ -2,6 +2,7 @@
 // own staticwebapp.config.json headers (strict CSP). Not a measurement: it checks that the phone steps work.
 // Usage: node device-e2e.mjs [--runs 3] [--out dir] [--firefox] [--port 5080]   (after harness/publish-device.sh)
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { chromium, firefox, devices } from './pw.mjs';
 import { createServer } from './server.mjs';
@@ -48,6 +49,11 @@ const files = [];
 page.on('download', async d => { const f = path.join(outDir, d.suggestedFilename()); await d.saveAs(f); files.push(f); });
 await page.click('[data-testid=save-all]');
 await page.waitForTimeout(3000);
+// "Save all" hands over one zip; unpack it with Python's zipfile (also checks that the zip is valid).
+for (const z of files.filter(f => f.endsWith('.zip')).splice(0)) {
+  execFileSync('python3', ['-I', '-m', 'zipfile', '-e', z, outDir]);
+  files.splice(files.indexOf(z), 1, ...execFileSync('python3', ['-I', '-m', 'zipfile', '-l', z]).toString().split('\n').slice(1).map(l => l.split(/\s+/)[0]).filter(Boolean).map(n => path.join(outDir, n)));
+}
 console.log('files:', files.map(f => path.basename(f)).join(', '));
 for (const f of files) {
   const r = JSON.parse(fs.readFileSync(f, 'utf8'));

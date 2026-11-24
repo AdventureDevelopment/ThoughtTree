@@ -3,6 +3,7 @@
 // format of the desktop series (harness/run-series.mjs), named <q>-<phone|tablet>-<browser>-<build>.json.
 import { allRuns, clearRuns, getRun, getState, setState } from './device-store.js';
 import { summarise, seededShuffle } from './stats.js';
+import { zip } from './zip.js';
 
 const $ = (id) => document.getElementById(id);
 const tuning = { chunk: '10000', batch: '1000', parallel: '1' };
@@ -210,8 +211,15 @@ async function init() {
   $('resume').addEventListener('click', async () => { const st = await getState('queue'); if (st && st.next < st.items.length) location.href = runUrl(st.items[st.next]); else setStatus('No run pending.'); });
   $('skip').addEventListener('click', async () => { const st = await getState('queue'); if (st && st.next < st.items.length) { st.next++; await setState('queue', st); setStatus(`Skipped; ${st.items.length - st.next} runs left. Tap Continue.`); } });
   $('stop').addEventListener('click', async () => { await archive(); setStatus('Stopped. Results so far are kept.'); });
-  $('save-all').addEventListener('click', async () => { for (const [n, f] of await resultFiles()) download(fileBlob(n, f)); });
-  $('share-all').addEventListener('click', async () => share([...(await resultFiles())].map(([n, f]) => fileBlob(n, f))));
+  // One zip file with every result file: browsers block a burst of downloads, and not every browser shares several files.
+  const allZip = async () => {
+    const files = await resultFiles();
+    const meta = (await getState('device')) || {};
+    const label = `${meta.model || 'device'}-${meta.kind || 'phone'}-${env().browser}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return new File([zip([...files].map(([n, f]) => ({ name: n, text: JSON.stringify(f, null, 1) + '\n' })))], `spike1-results-${label}.zip`, { type: 'application/zip' });
+  };
+  $('save-all').addEventListener('click', async () => download(await allZip()));
+  $('share-all').addEventListener('click', async () => share([await allZip()]));
   $('clear').addEventListener('click', async () => { if (confirm('Delete all results on this device? Save them first.')) { await clearRuns(); await setState('history', []); await setState('queue', null); await render(); } });
   await render();
   const st = await getState('queue');

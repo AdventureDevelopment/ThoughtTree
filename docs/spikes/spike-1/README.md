@@ -75,7 +75,7 @@ The spike runs in the device's own browser: Chrome on Android, Safari on an iPad
    3. Open the page again; adding it to the home screen makes this quicker. The page checks the stored data and shows "no loss" or "FINDING".
 
    On Chrome the test starts with durability "relaxed". For a second test with "strict", tap **Start a new test** after saving.
-6. **Results:** tap **Share all files** and send them to yourself (mail or a messenger), or **Save all files** to the device's downloads. On the durability page, tap **Save result** or **Share result**. Each file is named like the desktop files, for example `q1-phone-chrome-aot.json` or `q3-phone-chrome-swipe-relaxed.json`.
+6. **Results:** tap **Share all files** and send them to yourself (mail or a messenger), or **Save all files** to the device's downloads. Both hand over one zip file with every result file; each row of the table also has its own **Save**, **Share** and **Copy**. On the durability page, tap **Save result** or **Share result**. Each file is named like the desktop files, for example `q1-phone-chrome-aot.json` or `q3-phone-chrome-swipe-relaxed.json`.
 7. **Getting them into the repository:** either attach the files in the chat with the agent, or upload them on github.com: branch `claude/spike-1`, folder `docs/spikes/spike-1/data/results`, Add file, Upload files. The agent then runs `node harness/summarise.mjs` and updates the report.
 8. **Tablet:** repeat on the tablet with the kind "tablet".
 
