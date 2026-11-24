@@ -76,6 +76,7 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop | firefox 155.0 | mixed-default | SIGKILL while writing | 200 | 0 | 0 | 0 | 0 | 0 | 0 | 2.28 s |
 | desktop | firefox 155.0 | open-default | SIGKILL during open | 50 | 0 | 0 | 0 | 0 | 0 | 0 | 167 ms |
 | desktop | firefox 155.0 | snapshot-default | SIGKILL while writing | 50 | 0 | 0 | 0 | 0 | 0 | 0 | 25 ms |
+| phone | chrome 140.0.0.0 | swipe-default | swipe-away by hand² | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 1.41 s |
 | phone | firefox 159.0 | swipe-default | swipe-away by hand² | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 571 ms |
 
 ### T6 Search on the snapshot start, 10,000 items (Q4; warm medians)
@@ -166,6 +167,11 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | 1 | 100 | 200 | 451 | 722 | v20 | v20 |
 | 3 | 64 | 100 | 718 | 1149 | v25 | v25 |
 | 10 | 64 | 100 | 2160 | 3456 | v40 | none |
+
+### T10 Decryption of 100,000 events: one call per event against blocks (warm medians; on-device runner)
+
+| Device | Browser | Read, per event | Decrypt, one call per event | Blocks of 100: decrypt (read) | Blocks of 1,000 | Blocks of 10,000 | Plaintext verified |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 
 ¹ CPU throttling of desktop Chromium as the phone fallback: phone unverified, estimated error about a factor of two (plan section 2).
 ² On-device runner without a computer (docs/spikes/spike-1/README.md): cold runs fetch every boot resource with cache no-store (browser process stays warm); the import is generated, encrypted and stored on the device; Q3 swipes by hand with the acknowledgement log in a second database.
