@@ -3,6 +3,12 @@
 # no id-token. It uploads the published site as an artifact; preview-deploy.yml, which runs from main, takes
 # that artifact as data and deploys it to the separate preview site. Pull requests from forks are not built
 # here and get no preview (the push gate still checks them).
+#
+# Spike previews: a pull request that changes only one spike (spikes/<name>/, plus docs/spikes/) and holds an
+# executable spikes/<name>/preview-site.sh publishes the site that script builds instead of the app, so a spike can
+# be tried on the owner's phone and tablet. The script runs here, without credentials, like any pull request code;
+# its site goes through the same checks in preview-deploy.yml (site_artifact.py: required files, size, names;
+# eng/deploy/check-headers.sh: the policy of ADR-045 with a hash, no unsafe-inline, built-in sign-in off).
 name: preview-build
 
 on:
@@ -30,10 +36,26 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - name: Check out
+      - name: Check out (with history, to list what the pull request changes)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
+
+      - name: Choose what to publish (the app, or the site of the one spike this pull request changes)
+        id: source
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          changed=$(git diff --name-only "origin/${BASE_REF}...HEAD")
+          spikes=$(grep -oE '^spikes/[a-z0-9][a-z0-9-]*/' <<<"$changed" | sort -u || true)
+          outside=$(grep -vE '^(spikes/|docs/spikes/)' <<<"$changed" || true)
+          if [ -z "$outside" ] && [ "$(grep -c . <<<"$spikes")" -eq 1 ] && [ -x "${spikes}preview-site.sh" ]; then
+            echo "spike=${spikes%/}" >> "$GITHUB_OUTPUT"
+            echo "Publishing the site of ${spikes%/} (spike preview) instead of the app" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "spike=" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up the .NET SDK from global.json
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
@@ -41,7 +63,14 @@ jobs:
           global-json-file: global.json
 
       - name: Publish the client app (policy hash filled in, ADR-045)
+        if: steps.source.outputs.spike == ''
         run: eng/deploy/publish-client.sh "$RUNNER_TEMP/site"
+
+      - name: Publish the spike's site (its own preview-site.sh, no credentials)
+        if: steps.source.outputs.spike != ''
+        env:
+          SPIKE: ${{ steps.source.outputs.spike }}
+        run: '"$SPIKE/preview-site.sh" "$RUNNER_TEMP/site/wwwroot"'
 
       - name: Digest of the published site
         id: site
