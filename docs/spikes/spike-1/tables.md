@@ -15,6 +15,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 4x throttled¹ | chromium | interpreted | 5.47 s (p95 5.69 s) | 4.49 s (p95 4.73 s) | 30.7 s (p95 32.4 s) | 28.8 s (p95 30.0 s) | 49.8 s (p95 51.4 s) | 2.05 s (p95 2.18 s) |
 | desktop 6x throttled¹ | chromium | aot | 5.25 s (p95 5.40 s) | 3.54 s (p95 3.67 s) | 25.0 s (p95 26.1 s) | 22.3 s (p95 27.9 s) | 53.3 s (p95 55.2 s) | 3.56 s (p95 3.87 s) |
 | desktop 6x throttled¹ | chromium | interpreted | 8.34 s (p95 9.26 s) | 6.77 s (p95 7.23 s) | 44.7 s (p95 45.1 s) | 43.7 s (p95 44.3 s) | 71.7 s (p95 74.5 s) | 3.00 s (p95 3.26 s) |
+| phone² | firefox | aot | 1.96 s (p95 2.44 s) | 1.54 s (p95 1.85 s) | 8.11 s (p95 9.26 s) | 7.94 s (p95 8.18 s) | 38.5 s (p95 39.2 s) | 1.48 s (p95 2.22 s) |
+| phone² | firefox | interpreted | 2.72 s (p95 5.43 s) | 2.39 s (p95 2.56 s) | 16.3 s (p95 18.1 s) | 16.4 s (p95 17.5 s) | 65.0 s (p95 65.7 s) | 1.25 s (p95 2.00 s) |
 
 ### T2 Where the full replay goes (warm medians) and memory after it
 
@@ -28,6 +30,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 4x throttled¹ | chromium | interpreted | 6 ms | 3.29 s | 3.90 s | 909 ms | 17.8 s | 1.35 s | 144.70 MB | 96.84 MB |
 | desktop 6x throttled¹ | chromium | aot | 76 ms | 4.98 s | 6.18 s | 1.26 s | 6.72 s | 508 ms | 144.70 MB | 95.23 MB |
 | desktop 6x throttled¹ | chromium | interpreted | 66 ms | 4.89 s | 5.89 s | 1.35 s | 26.8 s | 2.00 s | 144.70 MB | 98.81 MB |
+| phone² | firefox | aot | 6 ms | 2.25 s | 1.91 s | 183 ms | 2.17 s | 128 ms | 144.70 MB | – |
+| phone² | firefox | interpreted | 5 ms | 2.36 s | 1.88 s | 183 ms | 9.81 s | 505 ms | 144.70 MB | – |
 
 ### T3 Complexity ratio (replay only: tree visible minus app ready, warm medians)
 
@@ -41,6 +45,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 4x throttled¹ | chromium | interpreted | 1.24 s | 4.61 s | 27.4 s | 3.7× | 5.9× | yes |
 | desktop 6x throttled¹ | chromium | aot | 526 ms | 2.32 s | 20.2 s | 4.4× | 8.7× | yes |
 | desktop 6x throttled¹ | chromium | interpreted | 1.82 s | 6.93 s | 41.5 s | 3.8× | 6.0× | yes |
+| phone² | firefox | aot | 210 ms | 843 ms | 6.72 s | 4.0× | 8.0× | yes |
+| phone² | firefox | interpreted | 549 ms | 2.05 s | 14.7 s | 3.7× | 7.2× | yes |
 
 ### T4 Download size of the first load and app start (Q2)
 
@@ -97,6 +103,14 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop 6x throttled¹ | chromium | interpreted | B | 6.56 s | 3.95 s | 6.32 s | 12.9 s | 11.45 / 19.95 ms | 2727 kB | 1807 µs |
 | desktop 6x throttled¹ | chromium | interpreted | C | 6.66 s | 3.90 s | 6.30 s | 13.0 s | 11.75 / 20.80 ms | 2727 kB | 1800 µs |
 | desktop 6x throttled¹ | chromium | interpreted | A | 6.76 s | 9.04 s | 11.5 s | 18.2 s | 11.35 / 18.70 ms | – | 1828 µs |
+| phone² | firefox | aot | A | 1.55 s | 728 ms | 893 ms | 2.44 s | 4.00 / 6.00 ms | – | 144 µs |
+| phone² | firefox | aot | C | 1.58 s | 640 ms | 813 ms | 2.41 s | 3.00 / 5.00 ms | 2727 kB | 139 µs |
+| phone² | firefox | aot | B | 1.57 s | 634 ms | 806 ms | 2.37 s | 3.00 / 5.00 ms | 2727 kB | 137 µs |
+| phone² | firefox | aot | A after update | 7.99 s | 720 ms | 920 ms | 8.91 s |  |  |  |
+| phone² | firefox | interpreted | B | 2.50 s | 1.49 s | 2.10 s | 4.61 s | 3.00 / 5.00 ms | 2727 kB | 603 µs |
+| phone² | firefox | interpreted | A | 2.48 s | 2.76 s | 3.36 s | 5.83 s | 3.00 / 5.00 ms | – | 605 µs |
+| phone² | firefox | interpreted | C | 2.50 s | 1.49 s | 2.10 s | 4.62 s | 3.00 / 5.00 ms | 2727 kB | 605 µs |
+| phone² | firefox | interpreted | A after update | 16.9 s | 2.78 s | 3.41 s | 20.3 s |  |  |  |
 
 ### T7 Bucket lists on the 100,000-event dataset (Q5)
 
@@ -109,18 +123,18 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | 8 buckets: 256 B to 32 KiB (factor 2) | 5 | 64.20 MB | 31.5 % | 642 B |
 | 4 buckets: 512 B, 2, 8, 32 KiB (factor 4) | 3 | 76.61 MB | 56.9 % | 766 B |
 
-### T8 Long notes: 1,000 events, 100 notes of the given length, import into an empty store (Q5; cold medians, desktop Chromium)
+### T8 Long notes: 1,000 events, 100 notes of the given length, import into an empty store (Q5; cold medians)
 
-| Build | Note length (chars) | Import | Decrypt | Parse and apply | Tree visible | Save one note | Load one note | WASM memory | Stored |
+| Device, browser, build | Note length (chars) | Import | Decrypt | Parse and apply | Tree visible | Save one note | Load one note | WASM memory | Stored |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| aot | 10k | 83 ms | 13 ms | 68 ms | 836 ms | 2 ms | 1 ms | 48.37 MB | 9.29 MB |
-| aot | 50k | 144 ms | 23 ms | 115 ms | 1.04 s | 3 ms | 2 ms | 83.69 MB | 22.02 MB |
-| aot | 200k | 241 ms | 27 ms | 258 ms | 1.40 s | 4 ms | 3 ms | 229.64 MB | 45.67 MB |
-| aot | 1m | 1.05 s | 183 ms | 1.02 s | 3.88 s | 16 ms | 11 ms | 932.25 MB | 166.84 MB |
-| interpreted | 10k | 81 ms | 11 ms | 248 ms | 981 ms | 2 ms | 1 ms | 48.37 MB | 9.29 MB |
-| interpreted | 50k | 148 ms | 18 ms | 348 ms | 1.27 s | 4 ms | 2 ms | 83.69 MB | 17.09 MB |
-| interpreted | 200k | 300 ms | 27 ms | 630 ms | 1.77 s | 8 ms | 5 ms | 233.37 MB | 45.13 MB |
-| interpreted | 1m | 958 ms | 186 ms | 1.94 s | 4.71 s | 28 ms | 20 ms | 1062.73 MB | 166.30 MB |
+| desktop chromium aot | 10k | 83 ms | 13 ms | 68 ms | 836 ms | 2 ms | 1 ms | 48.37 MB | 9.29 MB |
+| desktop chromium aot | 50k | 144 ms | 23 ms | 115 ms | 1.04 s | 3 ms | 2 ms | 83.69 MB | 22.02 MB |
+| desktop chromium aot | 200k | 241 ms | 27 ms | 258 ms | 1.40 s | 4 ms | 3 ms | 229.64 MB | 45.67 MB |
+| desktop chromium aot | 1m | 1.05 s | 183 ms | 1.02 s | 3.88 s | 16 ms | 11 ms | 932.25 MB | 166.84 MB |
+| desktop chromium interpreted | 10k | 81 ms | 11 ms | 248 ms | 981 ms | 2 ms | 1 ms | 48.37 MB | 9.29 MB |
+| desktop chromium interpreted | 50k | 148 ms | 18 ms | 348 ms | 1.27 s | 4 ms | 2 ms | 83.69 MB | 17.09 MB |
+| desktop chromium interpreted | 200k | 300 ms | 27 ms | 630 ms | 1.77 s | 8 ms | 5 ms | 233.37 MB | 45.13 MB |
+| desktop chromium interpreted | 1m | 958 ms | 186 ms | 1.94 s | 4.71 s | 28 ms | 20 ms | 1062.73 MB | 166.30 MB |
 
 ### T9 Pairing code size against QR capacity (Q5, ADR-028; layout is a spike assumption)
 
@@ -139,3 +153,4 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | 10 | 64 | 100 | 2160 | 3456 | v40 | none |
 
 ¹ CPU throttling of desktop Chromium as the phone fallback: phone unverified, estimated error about a factor of two (plan section 2).
+² On-device runner without a computer (docs/spikes/spike-1/README.md): cold runs fetch every boot resource with cache no-store (browser process stays warm); the import is generated, encrypted and stored on the device; Q3 swipes by hand with the acknowledgement log in a second database.
