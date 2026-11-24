@@ -1,11 +1,11 @@
 // End-to-end check of the on-device runner in headless Chromium with phone emulation, served with the device site's
 // own staticwebapp.config.json headers (strict CSP). Not a measurement: it checks that the phone steps work.
-// Usage: node device-e2e.mjs [--runs 3] [--out dir]   (after harness/publish-device.sh)
+// Usage: node device-e2e.mjs [--runs 3] [--out dir] [--firefox] [--port 5080]   (after harness/publish-device.sh)
 import fs from 'node:fs';
 import path from 'node:path';
-import { chromium, devices } from './pw.mjs';
+import { chromium, firefox, devices } from './pw.mjs';
 import { createServer } from './server.mjs';
-import { spikeDir } from './common.mjs';
+import { spikeDir, firefoxPath } from './common.mjs';
 
 const args = process.argv.slice(2);
 const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
@@ -13,9 +13,10 @@ const site = path.join(spikeDir, 'publish/device-site');
 const outDir = path.resolve(opt('--out', path.join(spikeDir, 'out/device-e2e')));
 fs.mkdirSync(outDir, { recursive: true });
 const headers = JSON.parse(fs.readFileSync(path.join(site, 'staticwebapp.config.json'), 'utf8')).globalHeaders;
-const server = await createServer({ port: 5080, root: site, data: site, extraHeaders: headers });
-const browser = await chromium.launch();
-const ctx = await browser.newContext({ ...devices['Pixel 7'], acceptDownloads: true });
+const server = await createServer({ port: Number(opt('--port', '5080')), root: site, data: site, extraHeaders: headers });
+const useFirefox = args.includes('--firefox');
+const browser = useFirefox ? await firefox.launch({ executablePath: firefoxPath }) : await chromium.launch();
+const ctx = await browser.newContext(useFirefox ? { acceptDownloads: true, viewport: { width: 412, height: 915 } } : { ...devices['Pixel 7'], acceptDownloads: true });
 const violations = [];
 await ctx.addInitScript(() => document.addEventListener('securitypolicyviolation', e => console.log(`CSP-VIOLATION ${e.violatedDirective} ${e.blockedURI}`)));
 const page = await ctx.newPage();
@@ -32,7 +33,8 @@ async function waitDone(label, minutes) {
   }
 }
 
-await page.goto('http://localhost:5080/');
+const base = `http://localhost:${opt('--port', '5080')}`;
+await page.goto(base + '/');
 await page.waitForURL(/device\.html/);
 await page.fill('[data-testid=model]', 'desktop Chromium, Pixel 7 emulation (e2e check)');
 await page.locator('[data-testid=model]').dispatchEvent('change');
@@ -57,7 +59,7 @@ for (const f of files) {
 }
 
 // Durability page: three rounds with a reload instead of a swipe (checks the bookkeeping, not durability).
-await page.goto('http://localhost:5080/interpreted/spike/durability-device.html');
+await page.goto(base + '/interpreted/spike/durability-device.html');
 for (let i = 0; i < 3; i++) {
   await page.waitForSelector('[data-testid=q3-start]:not([disabled])');
   await page.click('[data-testid=q3-start]');
