@@ -19,6 +19,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | phone² | chrome | interpreted | 2.78 s (p95 3.74 s) | 2.54 s (p95 3.95 s) | 21.7 s (p95 21.9 s) | 21.1 s (p95 45.5 s) | 73.5 s (p95 76.8 s) | 1.32 s (p95 2.40 s) |
 | phone² | firefox | aot | 1.96 s (p95 2.44 s) | 1.54 s (p95 1.85 s) | 8.11 s (p95 9.26 s) | 7.94 s (p95 8.18 s) | 38.5 s (p95 39.2 s) | 1.48 s (p95 2.22 s) |
 | phone² | firefox | interpreted | 2.72 s (p95 5.43 s) | 2.39 s (p95 2.56 s) | 16.3 s (p95 18.1 s) | 16.4 s (p95 17.5 s) | 65.0 s (p95 65.7 s) | 1.25 s (p95 2.00 s) |
+| tablet² | chrome | aot | 11.0 s (p95 23.9 s) | 1.25 s (p95 2.90 s) | 18.0 s (p95 20.0 s) | 10.6 s (p95 11.5 s) | 61.9 s (p95 63.1 s) | 9.20 s (p95 12.3 s) |
+| tablet² | chrome | interpreted | 5.65 s (p95 7.15 s) | 2.30 s (p95 3.17 s) | 19.7 s (p95 20.8 s) | 15.8 s (p95 16.7 s) | 78.1 s (p95 83.6 s) | 4.39 s (p95 7.48 s) |
 
 ### T2 Where the full replay goes (warm medians) and memory after it
 
@@ -36,6 +38,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | phone² | chrome | interpreted | 7 ms | 4.14 s | 7.15 s | 264 ms | 7.35 s | 530 ms | 144.70 MB | 157.00 MB |
 | phone² | firefox | aot | 6 ms | 2.25 s | 1.91 s | 183 ms | 2.17 s | 128 ms | 144.70 MB | – |
 | phone² | firefox | interpreted | 5 ms | 2.36 s | 1.88 s | 183 ms | 9.81 s | 505 ms | 144.70 MB | – |
+| tablet² | chrome | aot | 4 ms | 3.43 s | 3.81 s | 209 ms | 1.84 s | 119 ms | 144.70 MB | 10.00 MB |
+| tablet² | chrome | interpreted | 5 ms | 3.45 s | 3.83 s | 183 ms | 6.17 s | 513 ms | 144.70 MB | 18.20 MB |
 
 ### T3 Complexity ratio (replay only: tree visible minus app ready, warm medians)
 
@@ -53,6 +57,8 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | phone² | chrome | interpreted | 668 ms | 2.75 s | 19.6 s | 4.1× | 7.1× | yes |
 | phone² | firefox | aot | 210 ms | 843 ms | 6.72 s | 4.0× | 8.0× | yes |
 | phone² | firefox | interpreted | 549 ms | 2.05 s | 14.7 s | 3.7× | 7.2× | yes |
+| tablet² | chrome | aot | 192 ms | 1.02 s | 9.50 s | 5.3× | 9.3× | yes |
+| tablet² | chrome | interpreted | 462 ms | 2.12 s | 14.3 s | 4.6× | 6.7× | yes |
 
 ### T4 Download size of the first load and app start (Q2)
 
@@ -127,6 +133,14 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | phone² | firefox | interpreted | A | 2.48 s | 2.76 s | 3.36 s | 5.83 s | 3.00 / 5.00 ms | – | 605 µs |
 | phone² | firefox | interpreted | C | 2.50 s | 1.49 s | 2.10 s | 4.62 s | 3.00 / 5.00 ms | 2727 kB | 605 µs |
 | phone² | firefox | interpreted | A after update | 16.9 s | 2.78 s | 3.41 s | 20.3 s |  |  |  |
+| tablet² | chrome | aot | A | 1.22 s | 630 ms | 767 ms | 1.99 s | 2.35 / 5.60 ms | – | 118 µs |
+| tablet² | chrome | aot | C | 1.27 s | 416 ms | 558 ms | 1.84 s | 2.30 / 3.85 ms | 2727 kB | 116 µs |
+| tablet² | chrome | aot | B | 1.29 s | 422 ms | 558 ms | 1.85 s | 2.30 / 3.70 ms | 2727 kB | 115 µs |
+| tablet² | chrome | aot | A after update | 10.9 s | 606 ms | 781 ms | 11.7 s |  |  |  |
+| tablet² | chrome | interpreted | B | 2.63 s | 1.15 s | 1.82 s | 4.45 s | 2.90 / 6.20 ms | 2727 kB | 505 µs |
+| tablet² | chrome | interpreted | A | 2.44 s | 2.42 s | 3.09 s | 5.52 s | 2.70 / 6.10 ms | – | 498 µs |
+| tablet² | chrome | interpreted | C | 2.33 s | 1.14 s | 1.81 s | 4.16 s | 2.90 / 6.15 ms | 2727 kB | 505 µs |
+| tablet² | chrome | interpreted | A after update | 16.1 s | 2.43 s | 3.10 s | 19.2 s |  |  |  |
 
 ### T7 Bucket lists on the 100,000-event dataset (Q5)
 
