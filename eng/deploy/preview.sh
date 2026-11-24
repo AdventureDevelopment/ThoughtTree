@@ -23,14 +23,35 @@ previews() {
 }
 
 prune() {
+  # A staging environment is deleted with a plain REST DELETE on its resource, which returns after Azure's 202.
+  # "az staticwebapp environment delete" (and "az resource delete") then poll the operation status at
+  # /subscriptions/<id>/providers/Microsoft.Web/locations/<region>/staticSitesOperationStatuses/<id>: a
+  # subscription-scope resource the "ThoughtTree site deployer" role, assigned on rg-thoughttree-preview only,
+  # cannot read (preview-deploy run 45420685246, 2026-11-24). Instead of widening the role, this waits until the
+  # environment list, readable on the resource group, no longer shows the deleted previews: bounded, and it fails
+  # with a message naming what is left.
+  local removed=() site_id remaining
   for preview in $(previews); do
     state=$(python3 -I eng/deploy/site_artifact.py pull-request-state "${preview#pr}")
     if [ "$state" != open ]; then
+      if [ -z "${site_id:-}" ]; then
+        site_id=$(az staticwebapp show --name "$site" --resource-group "$group" --query id --output tsv)
+        [[ "$site_id" =~ ^/subscriptions/[0-9a-f-]{36}/resource[Gg]roups/$group/providers/Microsoft\.Web/static[Ss]ites/$site$ ]] \
+          || { echo "::error::unexpected id of the preview site: $site_id" >&2; exit 1; }
+      fi
       echo "Removing preview $preview (pull request ${preview#pr} is $state)"
-      az staticwebapp environment delete --name "$site" --resource-group "$group" \
-        --environment-name "$preview" --yes --output none
+      az rest --method delete --url "$site_id/builds/$preview?api-version=2024-04-01" --output none
+      removed+=("$preview")
     fi
   done
+  [ "${#removed[@]}" -eq 0 ] && return 0
+  for _ in $(seq 1 18); do
+    remaining=$(previews | grep -Fx -f <(printf '%s\n' "${removed[@]}") || true)
+    [ -z "$remaining" ] && return 0
+    sleep 10
+  done
+  echo "::error::Previews still being deleted after 3 minutes: $(tr '\n' ' ' <<<"$remaining"). Re-run this workflow later." >&2
+  exit 1
 }
 
 case "${1:-}" in
