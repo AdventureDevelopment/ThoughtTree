@@ -105,7 +105,7 @@ async function resultFile() {
   const variant = `swipe-${test.durability}`;
   const obj = {
     question: 'q3', device: `${meta.model || 'unknown model'} (${kind}, on-device runner, no adb)`, browser: b.browser, browserVersion: b.browserVersion,
-    build: 'n/a (storage is JavaScript)', os: navigator.userAgent, machine: { userAgent: navigator.userAgent, deviceMemory: navigator.deviceMemory ?? null, kind },
+    build: 'n/a (storage is JavaScript)', os: navigator.userAgent, machine: { userAgent: navigator.userAgent, deviceMemory: navigator.deviceMemory ?? null, privateModeLikely: !('serviceWorker' in navigator), kind },
     gitCommit: 'see build-info.json of the deployed spike', seed: 'round number', variant, durability: test.durability, workload: 'mixed', mode: 'manual', kills: done.length,
     method: 'swipe-away from the recent apps by hand while the page writes; on the next start the page checks the store against a log of acknowledged writes kept in a second IndexedDB database (durability strict); a loss that hits both databases at once is not visible',
     summary: {
@@ -139,6 +139,12 @@ async function init() {
     await putLogState(log, test);
   }
   show();
+  if (!('serviceWorker' in navigator)) {
+    // Firefox private window: the session's storage is deleted when it ends, so a swipe would look like total loss.
+    $('status').textContent = 'Private mode likely: this test needs a normal (not private) tab, because private storage is deleted when the browser is swiped away.';
+    $('status').className = 'bad'; $('start').disabled = true;
+    return;
+  }
   $('status').textContent = test.kills.length >= test.target ? 'Target reached. Save or share the result.' : 'Ready for the next round.';
   $('durability').addEventListener('change', async () => { if (test.kills.length) { $('status').textContent = 'Start a new test to change the durability.'; show(); return; } test.durability = $('durability').value; await putLogState(log, test); });
   $('target').addEventListener('change', async () => { test.target = Math.max(1, Number($('target').value) || 20); await putLogState(log, test); show(); });

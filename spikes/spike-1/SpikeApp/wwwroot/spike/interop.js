@@ -203,6 +203,8 @@ export function environment() {
   const sum = (f) => res.reduce((a, r) => a + (r[f] || 0), 0) + (nav ? nav[f] || 0 : 0);
   return JSON.stringify({
     userAgent: navigator.userAgent, deviceMemory: navigator.deviceMemory ?? null, hardwareConcurrency: navigator.hardwareConcurrency ?? null,
+    // Firefox hides the service worker interface in private windows; there, IndexedDB is temporary private-mode storage.
+    serviceWorkerAvailable: 'serviceWorker' in navigator,
     navigation: nav ? { responseEnd: nav.responseEnd, domContentLoaded: nav.domContentLoadedEventEnd, loadEventEnd: nav.loadEventEnd } : null,
     transfer: { transferSize: sum('transferSize'), encodedBodySize: sum('encodedBodySize'), decodedBodySize: sum('decodedBodySize'), resources: res.length + 1 },
     resources: res.filter(r => r.name.includes('/_framework/')).map(r => ({ name: r.name.replace(location.origin, ''), transferSize: r.transferSize, encodedBodySize: r.encodedBodySize, decodedBodySize: r.decodedBodySize })),

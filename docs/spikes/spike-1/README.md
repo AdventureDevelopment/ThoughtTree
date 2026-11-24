@@ -58,6 +58,7 @@ The spike runs in the device's own browser: Chrome on Android, Safari on an iPad
 - Screen timeout set to the longest value; the pages also ask the browser to keep the screen on.
 - Other apps closed; Wi-Fi on.
 - About 400 MB of free storage.
+- A normal browser tab, not a private or incognito one: private storage is temporary (and in Firefox stored separately), so the timings would not show the storage an installed app uses, and the swipe-away test cannot work because the browser deletes private data when it is swiped away. The pages warn when Firefox's private mode is likely; Chrome's incognito mode is not detected.
 
 **Steps**
 1. Open the spike address in the browser. The agent gives you the address once the spike site is deployed (see the deploy route in the report). It opens the device runner.

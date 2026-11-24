@@ -19,7 +19,7 @@ function browserOf(ua) {
 function osOf(ua) { const m = ua.match(/Android [\d.]+|iPhone OS [\d_]+|CPU OS [\d_]+|Mac OS X [\d_]+|Windows NT [\d.]+/); return m ? m[0].replace(/_/g, '.') : 'unknown'; }
 const env = () => ({ ...browserOf(navigator.userAgent), os: osOf(navigator.userAgent), userAgent: navigator.userAgent,
   deviceMemory: navigator.deviceMemory ?? null, hardwareConcurrency: navigator.hardwareConcurrency ?? null,
-  connection: navigator.connection ? navigator.connection.effectiveType : null });
+  connection: navigator.connection ? navigator.connection.effectiveType : null, privateModeLikely: !('serviceWorker' in navigator) });
 
 function datasetQuery(name) {
   const d = [...manifest.datasets, ...(manifest.longNoteDatasets ?? [])].find(x => x.name === name);
@@ -133,7 +133,7 @@ async function resultFiles() {
     const name = `${it.q}-${dk}-${e.browser}-${it.build}.json`;
     if (!files.has(name)) files.set(name, {
       question: it.q, device: `${it.model || meta.model || 'unknown model'} (${dk}, on-device runner, no adb)`, browser: e.browser, browserVersion: e.browserVersion,
-      build: it.build, os: e.os, machine: { userAgent: e.userAgent, deviceMemory: e.deviceMemory, hardwareConcurrency: e.hardwareConcurrency, connection: e.connection, kind: dk },
+      build: it.build, os: e.os, machine: { userAgent: e.userAgent, deviceMemory: e.deviceMemory, hardwareConcurrency: e.hardwareConcurrency, connection: e.connection, privateModeLikely: e.privateModeLikely ?? null, kind: dk },
       gitCommit: buildInfo.gitCommit ?? 'unknown', seed: manifest.seedLabel,
       runProtocol: '1 warm-up, then cold runs (page load with every boot resource fetched with cache no-store: no HTTP cache and no compiled-code cache; browser process and OS file cache stay warm), 1 warm-up, then warm runs (normal reload); one scenario per page load; no CPU throttling; on-device runner without adb',
       tuning, setup: null, series: [] });
@@ -155,6 +155,7 @@ function download(file) { const a = document.createElement('a'); a.href = URL.cr
 async function render() {
   const e = env();
   $('env').textContent = `${e.browser} ${e.browserVersion ?? ''}, ${e.os}, memory class ${e.deviceMemory ?? 'not reported'} GB, ${e.hardwareConcurrency ?? '?'} cores`;
+  if (e.privateModeLikely) { $('env').textContent += '. Private mode likely: storage is temporary here; use a normal tab for the series and the swipe test.'; $('env').className = 'bad'; }
   const done = await generatedDatasets();
   $('data').replaceChildren(...['events-1000', 'events-10000', 'events-100000'].map(d => {
     const p = document.createElement('p');
