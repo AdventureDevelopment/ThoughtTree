@@ -4,4 +4,4 @@ using 'main.bicep'
 
 param environmentName = 'preview'
 param previewsEnabled = true
-param location = 'westeurope'
+param location = 'eastus2'
