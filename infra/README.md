@@ -19,7 +19,7 @@ The test environment, the production environment and the pull request previews c
 
 | Identity | GitHub may use it for (subject claim) | Azure access |
 | --- | --- | --- |
-| `id-thoughttree-test` | Jobs in the GitHub environment `test` (`repo:<owner>/<repo>:environment:test`; the environment allows only `main`) | Custom role "ThoughtTree site deployer" on `rg-thoughttree-test` only |
+| `id-thoughttree-test` | Jobs in the GitHub environment `test` (`repo:<owner>@<owner id>/<repo>@<repo id>:environment:test`; the environment allows only `main`) | Custom role "ThoughtTree site deployer" on `rg-thoughttree-test` only |
 | `id-thoughttree-production` | Jobs in the GitHub environment `production` (`…:environment:production`; only `main`, only after the owner's approval) | The same role on `rg-thoughttree-prod` only |
 | `id-thoughttree-preview` | Jobs in the GitHub environment `preview` (`…:environment:preview`; only `main`: `preview-deploy.yml`, which never runs pull request code) | The same role on `rg-thoughttree-preview` only: no access to the test or production site |
 
@@ -55,19 +55,19 @@ Needs the role Owner (or Contributor plus User Access Administrator) on the Azur
      ```
 
      or by uploading the three files of `infra/bootstrap/` (Cloud Shell, "Manage files", Upload) into one folder and using that folder below instead of `infra/bootstrap/`.
-   - Run it (the repository name must be written exactly as GitHub shows it; the subject claim is case-sensitive):
+   - Run it. The `repository` value must be written exactly as GitHub writes it into the token's subject claim: owner and repository each with their numeric id, `AdventureDevelopment@322102914/ThoughtTree@1452386759` (GitHub's default subject since 2026; seen on 2026-11-24, the first sign-in with `AdventureDevelopment/ThoughtTree` was refused with AADSTS700213 and named the expected subject). The ids never change, so a renamed or re-created repository of the same name cannot sign in. To read them: `gh api repos/AdventureDevelopment/ThoughtTree --jq '"\(.owner.login)@\(.owner.id)/\(.name)@\(.id)"'`. The claim is case-sensitive:
 
      ```bash
      az deployment sub create --name thoughttree-bootstrap --location westeurope \
        --template-file infra/bootstrap/bootstrap.bicep \
-       --parameters repository=AdventureDevelopment/ThoughtTree \
+       --parameters repository=AdventureDevelopment@322102914/ThoughtTree@1452386759 \
        --query properties.outputs
      ```
 
    - If Azure answers `RequestDisallowedByAzure` ("The selected region is currently not accepting new customers", seen for West Europe on 2026-11-20), add `location=<region>` to `--parameters` and use the same region for `--location`, for example `northeurope`, `swedencentral`, `germanywestcentral` or `francecentral`. The region of the identities and resource groups does not matter for the app. Resource groups that already exist in another region must be deleted first (a group's region cannot change).
    - **Before every re-run:** the bootstrap runs with your Owner rights whatever `main` holds; read `git log -p infra/bootstrap/` since your last run and run it only if every change there is one you approved.
    - The output lists five values: `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_ID_TEST`, `AZURE_CLIENT_ID_PRODUCTION`, `AZURE_CLIENT_ID_PREVIEW`. They are identifiers, not secrets. Running the bootstrap again changes nothing that already exists.
-   - Check: `az identity federated-credential list --resource-group rg-thoughttree-identity --identity-name id-thoughttree-production --query "[].subject"` shows exactly one subject, `repo:AdventureDevelopment/ThoughtTree:environment:production`; the same for `test` and `preview`. Repeat this check now and then; any other entry is an incident.
+   - Check: `az identity federated-credential list --resource-group rg-thoughttree-identity --identity-name id-thoughttree-production --query "[].subject"` shows exactly one subject, `repo:AdventureDevelopment@322102914/ThoughtTree@1452386759:environment:production`; the same for `test` and `preview`. Repeat this check now and then; any other entry is an incident.
 2. **Create the three GitHub environments.** Repository › Settings › Environments › New environment. For each: Deployment branches and tags › Selected branches and tags › add `main` only (no other branch or tag pattern).
    - `production` in addition: Required reviewers › add **`ProductOwnerRole`** (not the account the agents use, `AdventureDevelopment`); tick **Prevent self-review**; untick **Allow administrators to bypass configured protection rules**.
    - Environment variables (Settings › Environments › the environment › Add environment variable; not secrets): `AZURE_CLIENT_ID` = `AZURE_CLIENT_ID_TEST` in `test`, `AZURE_CLIENT_ID_PRODUCTION` in `production`, `AZURE_CLIENT_ID_PREVIEW` in `preview`.

@@ -15,7 +15,7 @@
 // Changing this file changes nothing in Azure until the owner runs it again.
 targetScope = 'subscription'
 
-@description('GitHub repository as owner/name, with the exact capitalisation GitHub uses.')
+@description('GitHub repository as GitHub writes it into the OpenID Connect subject claim: owner@ownerId/name@repositoryId, for example AdventureDevelopment@322102914/ThoughtTree@1452386759 (infra/README.md).')
 param repository string
 
 @description('Azure region of the resource groups and identities.')
