@@ -20,7 +20,7 @@ Last update: 2026-11-24, phone results, branch `claude/spike-1`. Use it to resum
 | Q3 kill tests (11 variants, Chromium and Firefox) | done, 940 kills or closes, 0 findings | `q3-desktop-*.json` |
 | Q2 file sizes with the measured first-load file list | done | `q2-sizes-desktop.json` |
 | Report `spike-1-report.md` and generated tables `tables.md` | written | – |
-| S8 phone and tablet run (owner) | Fairphone 5, Firefox: Q1, Q2, Q4 done (private tab; normal-tab AOT comparison matched); Chrome on the phone, the tablet and Q3 swipe-away (normal tab) still open | `q1-phone-firefox-*.json`, `q2-phone-firefox-*.json`, `q4-phone-firefox-*.json`, `*-normal-tab.json` |
+| S8 phone and tablet run (owner) | Fairphone 5, Firefox: Q1, Q2, Q4 done (private tab; normal-tab AOT comparison matched); Q3 10 swipes (owner's choice, plan 20), 0 findings. Chrome on the phone and the tablet still open | `q1-phone-firefox-*.json`, `q2-phone-firefox-*.json`, `q4-phone-firefox-*.json`, `*-normal-tab.json`, `q3-phone-firefox-swipe-default.json` |
 
 To resume in a new session: install the toolchain, generate the datasets (their SHA-256 must match the manifest), run `harness/publish.sh`, then run only the lines of `harness/run-all.sh` whose result files are missing, then `node harness/sizes.mjs` and `node harness/summarise.mjs`, and write the report.
 
@@ -70,7 +70,7 @@ The spike runs in the device's own browser: Chrome on Android, Safari on an iPad
    - The page runs one scenario per page load and comes back by itself; the status line shows "Run n of m".
    - If the browser was closed or ran out of memory, open the address again and tap **Continue** (or **Skip the current run**).
    - Expect one to two hours for 10 + 10; the quick setting takes about a third of that.
-5. **Durability (Q3):** tap **Open the swipe-away test**. Then repeat, until the counter shows 20 of 20:
+5. **Durability (Q3):** tap **Open the swipe-away test**. Set the target to 10 (the owner's choice per browser; the plan asked for 20). Tip: add the swipe-away page to the home screen first (browser menu, Add to Home screen), so each round reopens it with one tap. Then repeat until the counter reaches the target:
    1. Tap **Start writing** and wait a few seconds.
    2. Swipe the browser away from the recent apps.
    3. Open the page again; adding it to the home screen makes this quicker. The page checks the stored data and shows "no loss" or "FINDING".

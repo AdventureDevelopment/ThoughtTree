@@ -70,6 +70,7 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop | firefox 155.0 | mixed-default | SIGKILL while writing | 200 | 0 | 0 | 0 | 0 | 0 | 0 | 2.28 s |
 | desktop | firefox 155.0 | open-default | SIGKILL during open | 50 | 0 | 0 | 0 | 0 | 0 | 0 | 167 ms |
 | desktop | firefox 155.0 | snapshot-default | SIGKILL while writing | 50 | 0 | 0 | 0 | 0 | 0 | 0 | 25 ms |
+| phone | firefox 159.0 | swipe-default | swipe-away by hand² | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 571 ms |
 
 ### T6 Search on the snapshot start, 10,000 items (Q4; warm medians)
 

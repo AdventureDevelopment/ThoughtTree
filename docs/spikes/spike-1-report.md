@@ -81,6 +81,11 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
   - no half-visible batch;
   - every database opened;
   - no snapshot or draft lost.
+- **On the phone** (Fairphone 5, Firefox, normal tab, browser-default durability): 10 swipe-aways from the recent apps while writing, with 0 findings.
+  - **What was found:** every acknowledged write was there after each swipe, no batch was half visible, and the database always opened.
+  - **Recovery** (open and check the whole store) took 0.28 to 1.05 s, growing with the store to 104,000 events.
+  - **Number of rounds:** the plan asks for 20; the owner chose 10 per browser. With 0 findings in 10 rounds, a loss rate up to about 30 % per swipe is not excluded (rule of three).
+  - **Limits:** the phone test checks that the mobile storage stack and the swipe behave like the desktop, where 940 kills showed no loss. The acknowledgement log lives in the same browser (README).
 - **Unacknowledged writes.** Batches written but not yet acknowledged were sometimes found after a restart (allowed by the plan). The harness counted 4 to 21 such batches per variant.
 - **`relaxed` against `strict`.** `relaxed` and `strict` in Chromium did not differ in safety. Strict acknowledged about 13 % fewer writes in the same time window (median 83 against 96 per run). That is a rough cost, not a Q1 timing.
 - **Not tested.** Process kills cannot show what `relaxed` risks: on an operating-system crash or a power loss, data that is still in the OS cache can be lost. The plan says power loss is not testable here.
@@ -131,7 +136,7 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 | Load budget (app ready, cold, phone) | **2.5 s** for the empty app over Wi-Fi (AOT) | Phone, Firefox: median 1.48 s, p95 2.22 s (T1); replaces the provisional 4 s from the 6x fallback |
 | Snapshot policy | Write a snapshot after about every 1,000 new events and when the app goes to the background; keep the previous one until the new one is committed. Keep snapshots across app updates unless their format version changes, because a full replay at 6x takes 25 s and needs a progress display | Snapshot start 5.3 s against 25 s full replay at 6x; 0 snapshot losses in 100 kills |
 | Search | **Variant A** (in memory, no persisted index in release 1) with AOT. With the interpreted build, B instead | Phone, AOT: first hits 0.89 s (A) against 0.81 s (B) after tree visible; interpreted 3.36 s against 2.10 s; queries ≤ 6 ms p95 |
-| Durability rule | Acknowledge a write on the transaction's `complete` event. Chromium `relaxed` is enough against process kills. Use `strict` for the event log if the owner wants cover for OS crashes (cost about 13 % fewer writes); Firefox default | 940 kills, 0 findings |
+| Durability rule | Acknowledge a write on the transaction's `complete` event. Chromium `relaxed` is enough against process kills. Use `strict` for the event log if the owner wants cover for OS crashes (cost about 13 % fewer writes); Firefox default | 940 kills on the desktop and 10 swipe-aways on the phone (Firefox), 0 findings |
 | Bucket list | 512 B, 1, 2, 4, 8, 16 KiB (6 buckets, factor 2); above 16 KiB pad to a multiple of 16 KiB | 31.5 % against 137.6 % overhead; same as 7 buckets from 256 B |
 | Maximum note | 100,000 characters (can be raised later, not lowered) | About 0.9 MB memory per note at the maximum; save and load under 10 ms |
 | Maximum title | 1,000 characters (a title event then stays within the 4 KiB bucket) | Derived from the wrapper size (median 416 B), not timed |
@@ -141,7 +146,7 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 ## 4. Not measured, and validity limits
 
 - **Phone.** Q1, Q2 and Q4 ran on one phone (Fairphone 5) in Firefox only, in a private tab; a normal-tab comparison of the AOT start and replay matched (see the status above). Cold runs had no browser restart, and the download came over the owner's Wi-Fi; memory was measured only as WebAssembly memory.
-  - **Not yet run:** Chrome on the phone (the plan's browser), the tablet, Q3 on the phone (swipe-away), and Q5 long notes on the phone.
+  - **Not yet run:** Chrome on the phone (the plan's browser, timings and 10 swipe-aways), the tablet, and Q5 long notes on the phone. Q3 on the phone ran in Firefox only, 10 swipes instead of the plan's 20 (owner's choice).
   - **The desktop fallback** (CPU throttling) does not model storage speed, thermal throttling or memory pressure. The plan's memory cap was not applied.
 - **Firefox and Safari.** The manual kills in the owner's own Firefox have not run. Safari and iOS are not part of the plan.
 - **Caching.** The warm HTTP cache stands in for the service worker cache. Web Crypto decryption was slowed by the throttling too (0.7 → 6.2 s).
@@ -160,7 +165,7 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 1. **Rest of the phone and tablet run (S8).** Done: Q1, Q2 and Q4 on the Fairphone 5 in Firefox. Still to run:
    - the same in Chrome on the phone;
    - the tablet;
-   - 20 swipe-away rounds (Q3) on each.
+   - 10 swipe-away rounds (Q3) per browser (Firefox on the phone done).
 
    Follow "Phone and tablet without a computer" in [spike-1/README.md](spike-1/README.md):
    - enter the model;

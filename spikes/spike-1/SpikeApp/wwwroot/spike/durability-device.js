@@ -62,7 +62,9 @@ async function verify() {
   const partial = [...counts].filter(([, c]) => c.n !== c.size).map(([id]) => id);
   const maxAck = (kind) => acks.filter(a => a.kind === kind).reduce((m, a) => Math.max(m, a.version), 0);
   return { openOk: true, openMs, recoveryMs, foundEvents: total, ackedEvents: [...ackedBatches.values()].reduce((a, b) => a + b, 0), missingEvents, missingBatches,
-    beyondLogBatches: [...counts.keys()].filter(id => !ackedBatches.has(id)).length, partialBatches: partial.length,
+    // Batches found without a logged acknowledgement (swiped away between the write and its log entry): count each
+    // only at the first check that finds it, as the desktop test does (harness/kill.mjs).
+    beyondLog: [...counts.keys()].filter(id => !ackedBatches.has(id) && !(test.beyond || []).includes(id)), partialBatches: partial.length,
     snapshotLost: snapshot < maxAck('snapshot'), snapshotCorrupt, draftLost: draft < maxAck('draft') };
 }
 
@@ -134,6 +136,7 @@ async function init() {
     // The previous round was interrupted (swiped away): check the store against the log.
     const k = await verify();
     k.round = test.round;
+    if (k.beyondLog) { test.beyond = [...(test.beyond || []), ...k.beyondLog]; k.beyondLogBatches = k.beyondLog.length; delete k.beyondLog; }
     k.lost = !k.openOk || k.missingEvents > 0 || k.partialBatches > 0 || k.snapshotLost || k.snapshotCorrupt || k.draftLost;
     test.kills.push(k); test.writing = false;
     await putLogState(log, test);
