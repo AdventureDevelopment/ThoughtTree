@@ -20,7 +20,7 @@ Last update: 2026-11-24, phone results, branch `claude/spike-1`. Use it to resum
 | Q3 kill tests (11 variants, Chromium and Firefox) | done, 940 kills or closes, 0 findings | `q3-desktop-*.json` |
 | Q2 file sizes with the measured first-load file list | done | `q2-sizes-desktop.json` |
 | Report `spike-1-report.md` and generated tables `tables.md` | written | – |
-| S8 phone and tablet run (owner) | Fairphone 5, Firefox: Q1, Q2, Q4 done; Chrome on the phone, the tablet and Q3 swipe-away still open | `q1-phone-firefox-*.json`, `q2-phone-firefox-*.json`, `q4-phone-firefox-*.json` |
+| S8 phone and tablet run (owner) | Fairphone 5, Firefox: Q1, Q2, Q4 done (private tab; normal-tab AOT comparison matched); Chrome on the phone, the tablet and Q3 swipe-away (normal tab) still open | `q1-phone-firefox-*.json`, `q2-phone-firefox-*.json`, `q4-phone-firefox-*.json`, `*-normal-tab.json` |
 
 To resume in a new session: install the toolchain, generate the datasets (their SHA-256 must match the manifest), run `harness/publish.sh`, then run only the lines of `harness/run-all.sh` whose result files are missing, then `node harness/sizes.mjs` and `node harness/summarise.mjs`, and write the report.
 

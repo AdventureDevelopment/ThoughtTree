@@ -6071,5 +6071,6 @@
     }
    }
   }
- ]
+ ],
+ "browsingMode": "private tab (Firefox private browsing; owner confirmed 2026-11-24): IndexedDB is the temporary private-mode store; compared with a normal tab in *-normal-tab.json"
 }

@@ -2,7 +2,15 @@
 
 Plan: [spike-1-storage-and-aot.md](spike-1-storage-and-aot.md). Detailed tables T1 to T9: [spike-1/tables.md](spike-1/tables.md). Raw results, regeneration commands and the phone steps: [spike-1/README.md](spike-1/README.md). Date: 2026-11-19, phone results added 2026-11-24, branch `claude/spike-1`.
 
-**Status: phone measured in Firefox, not yet in Chrome.** The owner ran Q1, Q2 and Q4 on a Fairphone 5 (Android 15, Firefox 159), with the on-device runner and no computer (rows marked ²). Its limits are in [spike-1/README.md](spike-1/README.md): cold runs without a browser restart, and the download over Wi-Fi included. The desktop fallback with CPU throttling 4x and 6x (marked ¹) is kept for comparison. Still missing:
+**Status: phone measured in Firefox, not yet in Chrome.** The owner ran Q1, Q2 and Q4 on a Fairphone 5 (Android 15, Firefox 159), with the on-device runner and no computer (rows marked ²). Its limits are in [spike-1/README.md](spike-1/README.md): cold runs without a browser restart, and the download over Wi-Fi included. The desktop fallback with CPU throttling 4x and 6x (marked ¹) is kept for comparison.
+
+The phone series ran in a Firefox private tab, where IndexedDB is temporary private-mode storage. A comparison in a normal tab (AOT, 3 cold and 3 warm runs, files `*-normal-tab.json`) matched within the run-to-run noise:
+- snapshot start 1.83 s cold (private tab 1.96 s);
+- full replay 8.50 s cold (8.11 s);
+- empty app 1.41 s (1.48 s);
+- IndexedDB read 1.99 s (2.25 s).
+
+The private-tab numbers stand. Still missing:
 - Chrome on the phone, which the plan names;
 - the tablet;
 - Q3 on the phone;
@@ -132,7 +140,7 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 
 ## 4. Not measured, and validity limits
 
-- **Phone.** Q1, Q2 and Q4 ran on one phone (Fairphone 5) in Firefox only. Cold runs had no browser restart, and the download came over the owner's Wi-Fi; memory was measured only as WebAssembly memory.
+- **Phone.** Q1, Q2 and Q4 ran on one phone (Fairphone 5) in Firefox only, in a private tab; a normal-tab comparison of the AOT start and replay matched (see the status above). Cold runs had no browser restart, and the download came over the owner's Wi-Fi; memory was measured only as WebAssembly memory.
   - **Not yet run:** Chrome on the phone (the plan's browser), the tablet, Q3 on the phone (swipe-away), and Q5 long notes on the phone.
   - **The desktop fallback** (CPU throttling) does not model storage speed, thermal throttling or memory pressure. The plan's memory cap was not applied.
 - **Firefox and Safari.** The manual kills in the owner's own Firefox have not run. Safari and iOS are not part of the plan.
