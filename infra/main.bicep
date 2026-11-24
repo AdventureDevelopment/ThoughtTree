@@ -1,0 +1,43 @@
+// ThoughtTree hosting for one environment (ADR-046): the static client app on Azure Static Web Apps.
+// Deployed by the deploy workflows with test.bicepparam, production.bicepparam or preview.bicepparam; they
+// differ only in their parameter values. The security headers come from staticwebapp.config.json in the client
+// app (ADR-045).
+// Logging (ADR-046: no IP addresses, no telemetry service): the Free plan offers no log sink or diagnostic
+// setting a template could configure, so there is nothing to switch off here; this template deploys no
+// Application Insights, Log Analytics workspace or diagnostic setting, and the rule tests keep it that way.
+// Whether the platform itself keeps visitor IP addresses is for the owner to check (infra/README.md).
+targetScope = 'resourceGroup'
+
+@description('Name of the environment; part of the resource name.')
+@allowed([
+  'test'
+  'production'
+  'preview'
+])
+param environmentName string
+
+@description('Whether pull request previews (staging environments) may be created on this site.')
+param previewsEnabled bool
+
+@description('Azure region of the resource; the content itself is served from a global network.')
+param location string = resourceGroup().location
+
+resource site 'Microsoft.Web/staticSites@2024-04-01' = {
+  name: 'stapp-thoughttree-${environmentName}'
+  location: location
+  sku: {
+    name: 'Free'
+    tier: 'Free'
+  }
+  properties: {
+    allowConfigFileUpdates: true
+    stagingEnvironmentPolicy: previewsEnabled ? 'Enabled' : 'Disabled'
+  }
+  tags: {
+    app: 'thoughttree'
+    environment: environmentName
+  }
+}
+
+output siteName string = site.name
+output defaultHostname string = site.properties.defaultHostname
