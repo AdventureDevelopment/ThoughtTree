@@ -1,6 +1,6 @@
 {
  "question": "q1",
- "device": "Fairphone (phone, on-device runner, no adb)",
+ "device": "Fairphone 5 (phone, on-device runner, no adb)",
  "browser": "firefox",
  "browserVersion": "159.0",
  "build": "interpreted",
