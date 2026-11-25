@@ -4,9 +4,9 @@ id: ADR-087 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**`
 
-Sets the numbers left open by ADR-015 (padding to a size bucket) and ADR-028 (name and address maximums); amends no rule. Owner decision 2026-11-25 (spike 1 decision 6), accepted by the owner 2026-11-25; user name and address limits changed by the owner the same day after the independent review (largest code against the QR size, ADR-028).
+Sets the numbers left open by ADR-015 (padding to a size bucket) and ADR-028 (name and address maximums); amends no rule. Owner decision 2026-11-25 (spike 1 decision 6), accepted by the owner 2026-11-25; user name and address limits changed by the owner the same day after the independent review (largest code against the QR size, ADR-028), as was the padding scope (event payloads only).
 
-- **MUST** pad every payload before encryption to the smallest of the buckets 512 B, 1 KiB, 2 KiB, 4 KiB, 8 KiB and 16 KiB that holds it, and a payload above 16 KiB to a multiple of 16 KiB
+- **MUST** pad every event payload of an envelope before encryption to the smallest of the buckets 512 B, 1 KiB, 2 KiB, 4 KiB, 8 KiB and 16 KiB that holds it, and a payload above 16 KiB to a multiple of 16 KiB; encrypted local-only data follows its own rules (event blocks: ADR-086) and is not padded otherwise (snapshots, drafts, search index)
 - **MUST** limit a note to 50,000 characters and a title to 1,000 characters, enforced when an event is written
 - **MUST** limit a user name to 32 characters and a server address to 100 ASCII characters (an international domain name in its ASCII form), and put one tree into a pairing code
 - **MUST** count characters as Unicode code points after normalisation (ADR-029), the same on every device; the UI MAY show a count closer to what the user sees
