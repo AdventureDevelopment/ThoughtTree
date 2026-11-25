@@ -187,6 +187,7 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | Device | Browser | Read, per event | Decrypt, one call per event | Blocks of 100: decrypt (read) | Blocks of 1,000 | Blocks of 10,000 | Plaintext verified |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | phone² | chrome | 4.54 s | 7.03 s | 968 ms (read 285 ms) | 896 ms (read 279 ms) | 1.39 s (read 399 ms) | yes |
+| phone² | firefox | 1.49 s | 1.84 s | 144 ms (read 671 ms) | 185 ms (read 646 ms) | 223 ms (read 672 ms) | yes |
 
 ¹ CPU throttling of desktop Chromium as the phone fallback: phone unverified, estimated error about a factor of two (plan section 2).
 ² On-device runner without a computer (docs/spikes/spike-1/README.md): cold runs fetch every boot resource with cache no-store (browser process stays warm); the import is generated, encrypted and stored on the device; Q3 swipes by hand with the acknowledgement log in a second database.
