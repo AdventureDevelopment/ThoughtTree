@@ -155,6 +155,8 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
   | 1,000,000 | 0.93 to 1.06 GB | about 9 MB |
 
   At 1,000,000 characters a phone would run out of memory.
+
+  **On the phone** (Fairphone 5, Chrome, both builds, 3 cold runs each; T8): with 10,000 and 50,000 characters, saving one note took 16 to 23 ms and loading it 6 to 9 ms; WebAssembly memory was 70 to 84 MB and 145 MB. The 200,000-character case did not finish in either build: the tab stopped. On the desktop the on-device generator needs about 432 MB of WebAssembly memory for that case, because it holds all events once more; importing the same data from a file needed about 230 MB. So 200,000 characters stays unmeasured on the phone, and its stop is a limit of the generator, not proof against the app.
 - **Pairing code.** With one tree, a 64-character user name and a 100-character server address, the code has 306 bytes and fits QR version 15 at level M. With 10 trees in one code it needs version 40 (T9). The code layout is a spike assumption.
 
 ## 3. Recommendation (the owner decides)
@@ -169,7 +171,7 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 | Search | **Variant A** (in memory, no persisted index in release 1) with AOT. With the interpreted build, B instead | Phone, AOT: first hits 0.89 to 0.99 s (A) against 0.75 to 0.81 s (B) after tree visible; interpreted 3.2 to 3.4 s against 1.9 to 2.1 s; queries ≤ 6 ms p95 |
 | Durability rule | Acknowledge a write on the transaction's `complete` event. Chromium `relaxed` is enough against process kills. Use `strict` for the event log if the owner wants cover for OS crashes (cost about 13 % fewer writes); Firefox default | 940 kills on the desktop and 20 swipe-aways on the phone (10 Firefox, 10 Chrome), 0 findings |
 | Bucket list | 512 B, 1, 2, 4, 8, 16 KiB (6 buckets, factor 2); above 16 KiB pad to a multiple of 16 KiB | 31.5 % against 137.6 % overhead; same as 7 buckets from 256 B |
-| Maximum note | 100,000 characters (can be raised later, not lowered) | About 0.9 MB memory per note at the maximum; save and load under 10 ms |
+| Maximum note | 100,000 characters (can be raised later, not lowered) | About 0.9 MB memory per note at the maximum; save and load under 10 ms on the desktop, and on the phone at most 23 ms and 9 ms at 50,000 characters |
 | Maximum title | 1,000 characters (a title event then stays within the 4 KiB bucket) | Derived from the wrapper size (median 416 B), not timed |
 | User name, server address | 64 and 100 characters; one tree per pairing code | 306 B, QR version 15 at level M |
 | Font budget, import limits | Left to the owner; not measured | – |
@@ -177,7 +179,7 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 ## 4. Not measured, and validity limits
 
 - **Phone.** Q1, Q2 and Q4 ran on one phone (Fairphone 5) in Firefox (private tab; a normal-tab comparison matched, see the status above) and Chrome (normal tab). Cold runs had no browser restart, and the download came over the owner's Wi-Fi; memory was measured only as WebAssembly memory.
-  - **Not yet run:** Q3 on the tablet and Q5 long notes on phone and tablet. Q3 on the phone ran with 10 swipes per browser instead of the plan's 20 (owner's choice).
+  - **Not yet run:** Q3 on the tablet; Q5 long notes on the tablet, and on the phone at 200,000 characters (the tab stopped; 2.5) and 1,000,000 (left out). Q3 on the phone ran with 10 swipes per browser instead of the plan's 20 (owner's choice).
   - **The desktop fallback** (CPU throttling) does not model storage speed, thermal throttling or memory pressure. The plan's memory cap was not applied.
 - **Firefox and Safari.** The manual kills in the owner's own Firefox have not run. Safari and iOS are not part of the plan.
 - **Caching.** The warm HTTP cache stands in for the service worker cache. Web Crypto decryption was slowed by the throttling too (0.7 → 6.2 s).

@@ -165,6 +165,10 @@ Tree visible = from navigation start to the first render of the top level, inclu
 | desktop chromium interpreted | 50k | 148 ms | 18 ms | 348 ms | 1.27 s | 4 ms | 2 ms | 83.69 MB | 17.09 MB |
 | desktop chromium interpreted | 200k | 300 ms | 27 ms | 630 ms | 1.77 s | 8 ms | 5 ms | 233.37 MB | 45.13 MB |
 | desktop chromium interpreted | 1m | 958 ms | 186 ms | 1.94 s | 4.71 s | 28 ms | 20 ms | 1062.73 MB | 166.30 MB |
+| phone chrome aot | 10k | 176 ms | 153 ms | 80 ms | 4.97 s | 17 ms | 6 ms | 83.69 MB | 251.85 MB |
+| phone chrome aot | 50k | 371 ms | 155 ms | 132 ms | 5.46 s | 23 ms | 9 ms | 144.70 MB | 250.25 MB |
+| phone chrome interpreted | 10k | 204 ms | 114 ms | 367 ms | 6.27 s | 16 ms | 7 ms | 69.73 MB | 189.46 MB |
+| phone chrome interpreted | 50k | 380 ms | 146 ms | 475 ms | 9.03 s | 20 ms | 9 ms | 144.70 MB | 205.72 MB |
 
 ### T9 Pairing code size against QR capacity (Q5, ADR-028; layout is a spike assumption)
 

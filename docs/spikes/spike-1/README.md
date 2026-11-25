@@ -20,7 +20,7 @@ Last update: 2026-11-24, phone results, branch `claude/spike-1`. Use it to resum
 | Q3 kill tests (11 variants, Chromium and Firefox) | done, 940 kills or closes, 0 findings | `q3-desktop-*.json` |
 | Q2 file sizes with the measured first-load file list | done | `q2-sizes-desktop.json` |
 | Report `spike-1-report.md` and generated tables `tables.md` | written | – |
-| S8 phone and tablet run (owner) | Fairphone 5: Firefox Q1, Q2, Q4 (private tab; normal-tab comparison matched); Chrome Q1, Q2, Q4; Q3 10 swipes each in Firefox and Chrome, 0 findings. Galaxy Tab S6 Lite (SM-P620), Chrome: Q1, Q2, Q4. Open: the block decryption measurement; optionally Q3 on the tablet | `q1-*-*.json`, `q2-*.json`, `q4-*.json` for phone and tablet, `q3-phone-*-swipe-default.json`, `*-normal-tab.json` |
+| S8 phone and tablet run (owner) | Done. Fairphone 5: Firefox and Chrome Q1, Q2, Q4, Q3 (10 swipes each, 0 findings), block decryption; Chrome Q5 long notes at 10,000 and 50,000 characters (200,000 stopped). Galaxy Tab S6 Lite (SM-P620), Chrome: Q1, Q2, Q4. Not run: Q3 and Q5 on the tablet | `q1`, `q2`, `q4`, `q5`, `x1` files of phone and tablet, `q3-phone-*-swipe-default.json`, `*-normal-tab.json` |
 
 To resume in a new session: install the toolchain, generate the datasets (their SHA-256 must match the manifest), run `harness/publish.sh`, then run only the lines of `harness/run-all.sh` whose result files are missing, then `node harness/sizes.mjs` and `node harness/summarise.mjs`, and write the report.
 
