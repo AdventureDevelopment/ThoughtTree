@@ -10,8 +10,7 @@ public static class Projection
         var tree = new Tree();
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
-        // One total order: clock, device, then event id. The event id only makes the order independent of
-        // arrival; events that tie on clock and device are rejected below, not interleaved.
+        // One total order: clock, device, then event id, so the order never depends on arrival.
         List<TreeEvent> ordered = events
             .Where(e => seen.Add(e.EventId)) // INV-2: the same event twice changes nothing
             .OrderBy(e => (e.Clock, e.DeviceId), EventOrder.Instance)
@@ -23,9 +22,9 @@ public static class Projection
         {
             if (previous is not null && previous.Clock == e.Clock && previous.DeviceId == e.DeviceId)
             {
-                // A correct device never reuses a clock (INV-8): reject the later event and report it.
+                // A correct device never reuses a clock (INV-8). Apply the event anyway (nothing is lost, INV-5)
+                // but flag it for the user to review.
                 tree.Report(AnomalyKind.SameClock, e.EventId);
-                continue;
             }
 
             previous = e;

@@ -22,7 +22,7 @@ public sealed class Tree
     /// <summary>Every item ever created, visible or deleted (INV-5).</summary>
     public IReadOnlyCollection<Item> AllItems => Items.Values;
 
-    /// <summary>Events the projection rejected or could not apply, for the user to review. Sorted by kind, then event id.</summary>
+    /// <summary>Events the user should review: flagged or not applied. Sorted by kind, then event id.</summary>
     public IReadOnlyList<Anomaly> Anomalies => _anomalies;
 
     /// <summary>Top-level items in order, deleted ones included.</summary>
