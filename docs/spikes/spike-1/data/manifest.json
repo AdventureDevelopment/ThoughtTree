@@ -1,0 +1,373 @@
+{
+  "generatorVersion": "1.0.0",
+  "seedLabel": "thoughttree-spike-1-reference-v1",
+  "seed": "579577990751916807",
+  "random": "SplitMix64 (spikes/spike-1/SpikeCore/SplitMix64.cs); ids from per-kind counters; fake clock from 2027-01-01T00:00:00Z",
+  "format": {
+    "envelope": "one JSON object per line: v (envelope version 1), eventId, keyId, nonce (base64, 12 bytes), payload (base64 AES-GCM ciphertext with 16-byte tag); no ServerSequence (not synced)",
+    "payloadWrapper": "{\"v\":1,\"event\":{type, schema, deviceId, actionId, clock{time,counter}, timestamp, reverts?, data}} (ADR-073; optional parts would be siblings of event)",
+    "aad": "UTF-8 of contextLabel, envelope version, keyId, eventId, accountId joined by U+001F (ADR-073)",
+    "contextLabel": "thoughttree/event/v1",
+    "padding": "payload wrapper UTF-8, then 0x80, then zeros to the bucket size; above the largest bucket a multiple of it",
+    "buckets": [
+      256,
+      1024,
+      4096,
+      16384
+    ],
+    "key": "SHA-256(\"thoughttree-spike-1 test key|\" + seedLabel); test data only",
+    "nonce": "big-endian 0x54545331 then the 64-bit event counter; test data only, never production (ADR-073)",
+    "keyId": "k812292d",
+    "accountId": "080b131c-0007-4000-8000-000000000001",
+    "eventTypes": "current format: relation ids (ADR-083), tag items in the Tags branch (ADR-082), relation type items (ADR-084), inbox (ADR-066)"
+  },
+  "datasets": [
+    {
+      "name": "events-1000",
+      "file": "events-1000.jsonl",
+      "events": 1000,
+      "items": 100,
+      "bytes": 1704704,
+      "sha256": "80849f75f3ab28c8d1c22c8051f035400cce0fa1102074ea11c2db72c165655c",
+      "eventsByType": {
+        "device.joined": 3,
+        "item.created": 100,
+        "item.deleted": 25,
+        "item.moved": 120,
+        "item.note-changed": 160,
+        "item.restored": 25,
+        "item.tagged": 53,
+        "item.title-changed": 451,
+        "item.untagged": 7,
+        "relation-type.set": 2,
+        "relation.added": 37,
+        "relation.note-changed": 5,
+        "relation.removed": 4,
+        "relation.restored": 1,
+        "relation.type-changed": 3,
+        "tree.default-relation-type-set": 1,
+        "tree.inbox-set": 1,
+        "tree.relation-types-set": 1,
+        "tree.tags-set": 1
+      },
+      "mixPercent": {
+        "device.joined": 0.3,
+        "item.created": 10,
+        "item.deleted": 2.5,
+        "item.moved": 12,
+        "item.note-changed": 16,
+        "item.restored": 2.5,
+        "item.tagged": 5.3,
+        "item.title-changed": 45.1,
+        "item.untagged": 0.7,
+        "relation-type.set": 0.2,
+        "relation.added": 3.7,
+        "relation.note-changed": 0.5,
+        "relation.removed": 0.4,
+        "relation.restored": 0.1,
+        "relation.type-changed": 0.3,
+        "tree.default-relation-type-set": 0.1,
+        "tree.inbox-set": 0.1,
+        "tree.relation-types-set": 0.1,
+        "tree.tags-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 295,
+        "median": 417,
+        "p95": 785,
+        "max": 4655,
+        "total": 498888
+      },
+      "paddedBytesTotal": 1174528,
+      "paddedSizeHistogram": {
+        "1024": 959,
+        "4096": 39,
+        "16384": 2
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "998aac4915a6e4494a402305f80f6414f006005d18553776d6248cb6dae06070",
+      "checksumFinal": "47aac2dfc0f96bbd72baea55b117c2d84c9a19048bcdde3625e1138f1e479b89",
+      "visibleItemsFinal": 100
+    },
+    {
+      "name": "events-10000",
+      "file": "events-10000.jsonl",
+      "events": 10000,
+      "items": 1000,
+      "bytes": 16846336,
+      "sha256": "2a1eb1b3d301f5c9fd22fd7804eb1e97c95d8a8ce402b342ea666c26fb7192bb",
+      "eventsByType": {
+        "device.joined": 3,
+        "item.created": 1000,
+        "item.deleted": 250,
+        "item.moved": 1200,
+        "item.note-changed": 1600,
+        "item.restored": 250,
+        "item.tagged": 479,
+        "item.title-changed": 4591,
+        "item.untagged": 121,
+        "relation-type.set": 2,
+        "relation.added": 317,
+        "relation.note-changed": 50,
+        "relation.removed": 69,
+        "relation.restored": 21,
+        "relation.type-changed": 43,
+        "tree.default-relation-type-set": 1,
+        "tree.inbox-set": 1,
+        "tree.relation-types-set": 1,
+        "tree.tags-set": 1
+      },
+      "mixPercent": {
+        "device.joined": 0.03,
+        "item.created": 10,
+        "item.deleted": 2.5,
+        "item.moved": 12,
+        "item.note-changed": 16,
+        "item.restored": 2.5,
+        "item.tagged": 4.79,
+        "item.title-changed": 45.91,
+        "item.untagged": 1.21,
+        "relation-type.set": 0.02,
+        "relation.added": 3.17,
+        "relation.note-changed": 0.5,
+        "relation.removed": 0.69,
+        "relation.restored": 0.21,
+        "relation.type-changed": 0.43,
+        "tree.default-relation-type-set": 0.01,
+        "tree.inbox-set": 0.01,
+        "tree.relation-types-set": 0.01,
+        "tree.tags-set": 0.01
+      },
+      "payloadWrapperBytes": {
+        "min": 295,
+        "median": 417,
+        "p95": 780,
+        "max": 4770,
+        "total": 4916083
+      },
+      "paddedBytesTotal": 11594752,
+      "paddedSizeHistogram": {
+        "1024": 9651,
+        "4096": 326,
+        "16384": 23
+      },
+      "snapshotAfterEvent": 9900,
+      "checksumAtSnapshot": "7e0792d0023b533984ff9b14552cba459d4cfaf36b63734324388f1c6c74d369",
+      "checksumFinal": "8e7cf0f888f4c1cf7fcd199b93d5d47c056759a6644190b445d33c3ae0f1f60f",
+      "visibleItemsFinal": 1000
+    },
+    {
+      "name": "events-100000",
+      "file": "events-100000.jsonl",
+      "events": 100000,
+      "items": 10000,
+      "bytes": 168532992,
+      "sha256": "1dbfa9be4e000891927dbe521572f87a011b40c8f581bb47d81cf19254f5a98d",
+      "eventsByType": {
+        "device.joined": 3,
+        "item.created": 10000,
+        "item.deleted": 2500,
+        "item.moved": 12000,
+        "item.note-changed": 16000,
+        "item.restored": 2500,
+        "item.tagged": 4774,
+        "item.title-changed": 45987,
+        "item.untagged": 1226,
+        "relation-type.set": 6,
+        "relation.added": 2965,
+        "relation.note-changed": 500,
+        "relation.removed": 747,
+        "relation.restored": 275,
+        "relation.type-changed": 513,
+        "tree.default-relation-type-set": 1,
+        "tree.inbox-set": 1,
+        "tree.relation-types-set": 1,
+        "tree.tags-set": 1
+      },
+      "mixPercent": {
+        "device.joined": 0,
+        "item.created": 10,
+        "item.deleted": 2.5,
+        "item.moved": 12,
+        "item.note-changed": 16,
+        "item.restored": 2.5,
+        "item.tagged": 4.77,
+        "item.title-changed": 45.99,
+        "item.untagged": 1.23,
+        "relation-type.set": 0.01,
+        "relation.added": 2.96,
+        "relation.note-changed": 0.5,
+        "relation.removed": 0.75,
+        "relation.restored": 0.28,
+        "relation.type-changed": 0.51,
+        "tree.default-relation-type-set": 0,
+        "tree.inbox-set": 0,
+        "tree.relation-types-set": 0,
+        "tree.tags-set": 0
+      },
+      "payloadWrapperBytes": {
+        "min": 295,
+        "median": 416,
+        "p95": 762,
+        "max": 4711,
+        "total": 48816016
+      },
+      "paddedBytesTotal": 115999744,
+      "paddedSizeHistogram": {
+        "1024": 96525,
+        "4096": 3237,
+        "16384": 238
+      },
+      "snapshotAfterEvent": 99000,
+      "checksumAtSnapshot": "31f82944461bb855afad623e36a8c135e03a090827df63fb5d066438c5ee442d",
+      "checksumFinal": "effc144400289563f807cb9d3afcbeba574fca375a4a4eb7a4cd0063c0f57a37",
+      "visibleItemsFinal": 10000
+    }
+  ],
+  "longNoteDatasets": [
+    {
+      "name": "longnote-10k",
+      "file": "longnote-10k.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 3552000,
+      "sha256": "25d807862a2167268c46aaab4e5462574c43c4fad5b582d18b603fdc278bc0cc",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 416,
+        "p95": 11107,
+        "max": 11201,
+        "total": 1483056
+      },
+      "paddedBytesTotal": 2560000,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "16384": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "043d7fc80d348248add35952c0c240fb2018064736c44ef57cc53226e348d074",
+      "checksumFinal": "40cedee8335da96e08c6559c33d5335e5ec50fb7139896a9e9523d4220642c40",
+      "visibleItemsFinal": 101
+    },
+    {
+      "name": "longnote-50k",
+      "file": "longnote-50k.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 10105600,
+      "sha256": "39cd7bd0d8c0b60ec07b5179a07fb5cf29b9d29bd5d9d877cdc40c9ae94cbec4",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 417,
+        "p95": 54033,
+        "max": 54234,
+        "total": 5775648
+      },
+      "paddedBytesTotal": 7475200,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "65536": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "9135645ad727d60082a38f7dc448a24cbfd4bace2a0a1efa380b6b323ff91cad",
+      "checksumFinal": "8909cd28bcbcce79d8316eb8acd36cdab51cffff6d42b3a53fe5732d68909d7c",
+      "visibleItemsFinal": 101
+    },
+    {
+      "name": "longnote-200k",
+      "file": "longnote-200k.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 31950800,
+      "sha256": "df213650bb682e51a311bf3bb2abe0545707e1b4e2e35a32612122c0d3b8f463",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 415,
+        "p95": 214968,
+        "max": 215381,
+        "total": 21869451
+      },
+      "paddedBytesTotal": 23859200,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "229376": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "f71f6908f3af2f402cc7105ef412f2d3a191d796373220c78285dd1587a6fe38",
+      "checksumFinal": "dcf4ece0116dde7997bfc9b6b580944dfc385f02b1ab25c2b8c195da30951b5f",
+      "visibleItemsFinal": 101
+    },
+    {
+      "name": "longnote-1m",
+      "file": "longnote-1m.jsonl",
+      "events": 1000,
+      "items": 101,
+      "bytes": 145546800,
+      "sha256": "95d44a3e73c5ddda50a7ec16e3193b3d4ccff39fcb826c1d3ca926189742aac3",
+      "eventsByType": {
+        "item.created": 101,
+        "item.note-changed": 100,
+        "item.title-changed": 798,
+        "tree.inbox-set": 1
+      },
+      "mixPercent": {
+        "item.created": 10.1,
+        "item.note-changed": 10,
+        "item.title-changed": 79.8,
+        "tree.inbox-set": 0.1
+      },
+      "payloadWrapperBytes": {
+        "min": 296,
+        "median": 417,
+        "p95": 1073403,
+        "max": 1074221,
+        "total": 107712281
+      },
+      "paddedBytesTotal": 109056000,
+      "paddedSizeHistogram": {
+        "1024": 900,
+        "1081344": 100
+      },
+      "snapshotAfterEvent": 990,
+      "checksumAtSnapshot": "ea11349d5b1654aaedb79244ac9686d73a24c45c5b2d670b436fafdeee0e7f8f",
+      "checksumFinal": "c3245431c8a77c873868b436ac2835e7dfaa043220dfc59c4d803a1bed0ad212",
+      "visibleItemsFinal": 101
+    }
+  ]
+}

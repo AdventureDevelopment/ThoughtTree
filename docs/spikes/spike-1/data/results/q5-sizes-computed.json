@@ -1,0 +1,1268 @@
+{
+  "question": "q5",
+  "device": "n/a (computation over the reference dataset)",
+  "gitCommit": "c062bb83e5bcc63a67f6fabc6ed6100b4d58d34b",
+  "seed": "thoughttree-spike-1-reference-v1",
+  "dataset": "events-100000",
+  "events": 100000,
+  "payloadWrapperBytesTotal": 48816016,
+  "payloadWrapperBytesByType": {
+    "device.joined": {
+      "count": 3,
+      "min": 398,
+      "median": 398,
+      "p95": 398,
+      "max": 398
+    },
+    "item.created": {
+      "count": 10000,
+      "min": 359,
+      "median": 449,
+      "p95": 1452,
+      "max": 4711
+    },
+    "item.deleted": {
+      "count": 2500,
+      "min": 525,
+      "median": 525,
+      "p95": 525,
+      "max": 525
+    },
+    "item.moved": {
+      "count": 12000,
+      "min": 375,
+      "median": 411,
+      "p95": 447,
+      "max": 447
+    },
+    "item.note-changed": {
+      "count": 16000,
+      "min": 381,
+      "median": 470,
+      "p95": 2059,
+      "max": 4682
+    },
+    "item.restored": {
+      "count": 2500,
+      "min": 344,
+      "median": 344,
+      "p95": 344,
+      "max": 344
+    },
+    "item.tagged": {
+      "count": 4774,
+      "min": 340,
+      "median": 340,
+      "p95": 340,
+      "max": 340
+    },
+    "item.title-changed": {
+      "count": 45987,
+      "min": 385,
+      "median": 413,
+      "p95": 441,
+      "max": 468
+    },
+    "item.untagged": {
+      "count": 1226,
+      "min": 342,
+      "median": 342,
+      "p95": 342,
+      "max": 342
+    },
+    "relation-type.set": {
+      "count": 6,
+      "min": 347,
+      "median": 355,
+      "p95": 357,
+      "max": 357
+    },
+    "relation.added": {
+      "count": 2965,
+      "min": 450,
+      "median": 450,
+      "p95": 450,
+      "max": 450
+    },
+    "relation.note-changed": {
+      "count": 500,
+      "min": 371,
+      "median": 486,
+      "p95": 585,
+      "max": 643
+    },
+    "relation.removed": {
+      "count": 747,
+      "min": 302,
+      "median": 302,
+      "p95": 302,
+      "max": 302
+    },
+    "relation.restored": {
+      "count": 275,
+      "min": 303,
+      "median": 303,
+      "p95": 303,
+      "max": 303
+    },
+    "relation.type-changed": {
+      "count": 513,
+      "min": 407,
+      "median": 407,
+      "p95": 407,
+      "max": 407
+    },
+    "tree.default-relation-type-set": {
+      "count": 1,
+      "min": 312,
+      "median": 312,
+      "p95": 312,
+      "max": 312
+    },
+    "tree.inbox-set": {
+      "count": 1,
+      "min": 296,
+      "median": 296,
+      "p95": 296,
+      "max": 296
+    },
+    "tree.relation-types-set": {
+      "count": 1,
+      "min": 305,
+      "median": 305,
+      "p95": 305,
+      "max": 305
+    },
+    "tree.tags-set": {
+      "count": 1,
+      "min": 295,
+      "median": 295,
+      "p95": 295,
+      "max": 295
+    }
+  },
+  "bucketLists": [
+    {
+      "list": "provisional: 256 B, 1, 4, 16 KiB (factor 4)",
+      "buckets": [
+        256,
+        1024,
+        4096,
+        16384
+      ],
+      "paddedBytes": 115999744,
+      "overheadPercent": 137.6,
+      "meanPaddedBytesPerEvent": 1160,
+      "ciphertextBytes": 117599744,
+      "base64FileBytesEstimate": 168799658,
+      "sizesUsed": 3,
+      "histogram": {
+        "1024": 96525,
+        "4096": 3237,
+        "16384": 238
+      }
+    },
+    {
+      "list": "factor 2: 256 B to 16 KiB (7 buckets)",
+      "buckets": [
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384
+      ],
+      "paddedBytes": 64204800,
+      "overheadPercent": 31.5,
+      "meanPaddedBytesPerEvent": 642,
+      "ciphertextBytes": 65804800,
+      "base64FileBytesEstimate": 99739733,
+      "sizesUsed": 5,
+      "histogram": {
+        "512": 87494,
+        "1024": 9031,
+        "2048": 2465,
+        "4096": 772,
+        "8192": 238
+      }
+    },
+    {
+      "list": "factor 2: 512 B to 16 KiB (6 buckets)",
+      "buckets": [
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384
+      ],
+      "paddedBytes": 64204800,
+      "overheadPercent": 31.5,
+      "meanPaddedBytesPerEvent": 642,
+      "ciphertextBytes": 65804800,
+      "base64FileBytesEstimate": 99739733,
+      "sizesUsed": 5,
+      "histogram": {
+        "512": 87494,
+        "1024": 9031,
+        "2048": 2465,
+        "4096": 772,
+        "8192": 238
+      }
+    },
+    {
+      "list": "5 buckets: 512 B, 1, 4, 16, 64 KiB",
+      "buckets": [
+        512,
+        1024,
+        4096,
+        16384,
+        65536
+      ],
+      "paddedBytes": 71202816,
+      "overheadPercent": 45.9,
+      "meanPaddedBytesPerEvent": 712,
+      "ciphertextBytes": 72802816,
+      "base64FileBytesEstimate": 109070421,
+      "sizesUsed": 4,
+      "histogram": {
+        "512": 87494,
+        "1024": 9031,
+        "4096": 3237,
+        "16384": 238
+      }
+    },
+    {
+      "list": "8 buckets: 256 B to 32 KiB (factor 2)",
+      "buckets": [
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192,
+        16384,
+        32768
+      ],
+      "paddedBytes": 64204800,
+      "overheadPercent": 31.5,
+      "meanPaddedBytesPerEvent": 642,
+      "ciphertextBytes": 65804800,
+      "base64FileBytesEstimate": 99739733,
+      "sizesUsed": 5,
+      "histogram": {
+        "512": 87494,
+        "1024": 9031,
+        "2048": 2465,
+        "4096": 772,
+        "8192": 238
+      }
+    },
+    {
+      "list": "4 buckets: 512 B, 2, 8, 32 KiB (factor 4)",
+      "buckets": [
+        512,
+        2048,
+        8192,
+        32768
+      ],
+      "paddedBytes": 76614656,
+      "overheadPercent": 56.9,
+      "meanPaddedBytesPerEvent": 766.1,
+      "ciphertextBytes": 78214656,
+      "base64FileBytesEstimate": 116286208,
+      "sizesUsed": 3,
+      "histogram": {
+        "512": 87494,
+        "2048": 11496,
+        "8192": 1010
+      }
+    }
+  ],
+  "qrCapacity": [
+    {
+      "version": 10,
+      "byteL": 271,
+      "byteM": 213,
+      "alphanumericL": 395,
+      "alphanumericM": 311
+    },
+    {
+      "version": 15,
+      "byteL": 520,
+      "byteM": 412,
+      "alphanumericL": 758,
+      "alphanumericM": 600
+    },
+    {
+      "version": 20,
+      "byteL": 858,
+      "byteM": 666,
+      "alphanumericL": 1249,
+      "alphanumericM": 970
+    },
+    {
+      "version": 25,
+      "byteL": 1273,
+      "byteM": 997,
+      "alphanumericL": 1853,
+      "alphanumericM": 1451
+    },
+    {
+      "version": 40,
+      "byteL": 2953,
+      "byteM": 2331,
+      "alphanumericL": 4296,
+      "alphanumericM": 3391
+    }
+  ],
+  "pairingCodeLayout": "spike assumption (no format exists yet): version 1 B, code kind 1 B, tree count 1 B; per tree: tree id 16, key 32, KeyId 8, account id 16, account secret 32, address length 2 + UTF-8; user id 16, name length 1 + UTF-8 (a quarter of the name as umlauts)",
+  "pairingCode": [
+    {
+      "trees": 1,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 40,
+      "binaryBytes": 203,
+      "base32Chars": 325,
+      "fits": {
+        "v10": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 100,
+      "binaryBytes": 263,
+      "base32Chars": 421,
+      "fits": {
+        "v10": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 200,
+      "binaryBytes": 363,
+      "base32Chars": 581,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 40,
+      "binaryBytes": 246,
+      "base32Chars": 394,
+      "fits": {
+        "v10": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 100,
+      "binaryBytes": 306,
+      "base32Chars": 490,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 200,
+      "binaryBytes": 406,
+      "base32Chars": 650,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 40,
+      "binaryBytes": 291,
+      "base32Chars": 466,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 100,
+      "binaryBytes": 351,
+      "base32Chars": 562,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 1,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 200,
+      "binaryBytes": 451,
+      "base32Chars": 722,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 40,
+      "binaryBytes": 495,
+      "base32Chars": 792,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 100,
+      "binaryBytes": 675,
+      "base32Chars": 1080,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 200,
+      "binaryBytes": 975,
+      "base32Chars": 1560,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 40,
+      "binaryBytes": 538,
+      "base32Chars": 861,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 100,
+      "binaryBytes": 718,
+      "base32Chars": 1149,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 200,
+      "binaryBytes": 1018,
+      "base32Chars": 1629,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 40,
+      "binaryBytes": 583,
+      "base32Chars": 933,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 100,
+      "binaryBytes": 763,
+      "base32Chars": 1221,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 3,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 200,
+      "binaryBytes": 1063,
+      "base32Chars": 1701,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": true,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 40,
+      "binaryBytes": 1517,
+      "base32Chars": 2428,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 100,
+      "binaryBytes": 2117,
+      "base32Chars": 3388,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 30,
+      "nameBytes": 37,
+      "addressChars": 200,
+      "binaryBytes": 3117,
+      "base32Chars": 4988,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 40,
+      "binaryBytes": 1560,
+      "base32Chars": 2496,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 100,
+      "binaryBytes": 2160,
+      "base32Chars": 3456,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": false
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 64,
+      "nameBytes": 80,
+      "addressChars": 200,
+      "binaryBytes": 3160,
+      "base32Chars": 5056,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 40,
+      "binaryBytes": 1605,
+      "base32Chars": 2568,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": true
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 100,
+      "binaryBytes": 2205,
+      "base32Chars": 3528,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": true,
+          "byteM": true,
+          "base32AlnumM": false
+        }
+      }
+    },
+    {
+      "trees": 10,
+      "nameChars": 100,
+      "nameBytes": 125,
+      "addressChars": 200,
+      "binaryBytes": 3205,
+      "base32Chars": 5128,
+      "fits": {
+        "v10": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v15": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v20": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v25": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        },
+        "v40": {
+          "byteL": false,
+          "byteM": false,
+          "base32AlnumM": false
+        }
+      }
+    }
+  ]
+}
