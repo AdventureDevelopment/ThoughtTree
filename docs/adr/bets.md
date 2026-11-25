@@ -13,7 +13,8 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Outcome:** One person with agents builds client and server in C#, shares Domain and Contracts without duplication, and works with one test harness.
 - **Assumption:** Download size and speed are acceptable on phones, and one ecosystem outweighs JavaScript's richer UI libraries.
 - **Signal:** Room left in the size budget; performance reports and feedback; answers to "Does ThoughtTree start fast enough on your phone?" (yes / sometimes slow / too slow).
-- **Review when:** the size budget can't be kept · the storage and AOT spike misses the targets on a mid-range phone · several performance reports about start or input arrive · a key UI part (for example Markdown editing on the phone) is only available in good quality as a JavaScript library.
+- **Review when:** the size budget can't be kept · PF8 (app ready from the cache within 1.5 s) is missed on a mid-range phone once the client shell exists · several performance reports about start or input arrive · a key UI part (for example Markdown editing on the phone) is only available in good quality as a JavaScript library.
+- **Reviewed 2026-11-25 (owner, spike 1 decision 5b):** the trigger "the storage and AOT spike misses the targets on a mid-range phone" was reached for PF1: the empty .NET app alone needs 1.25 to 1.74 s cold and 1.09 to 1.33 s from the cache on the phone (8 GB, Chrome and Firefox, AOT and interpreted); the snapshot adds about 0.5 s with AOT. Kept: the miss is below a second, not a multiple, and the alternative is a rewrite in JavaScript. PF1 now counts from app ready, app start is covered by PF8 and PF9; the spike trigger is replaced by the PF8 trigger above.
 
 <a id="adr-007"></a>
 
