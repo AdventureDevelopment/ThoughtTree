@@ -1,5 +1,3 @@
-using ThoughtTree.Domain.Clock;
-
 namespace ThoughtTree.Domain.Outline;
 
 /// <summary>Rebuilds the tree from events: duplicates dropped, one agreed order, last writer wins (ADR-002, ADR-014).</summary>
@@ -9,7 +7,6 @@ public static class Projection
     {
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
-        // INV-1: events that tie on clock and device (bad data only) fall back to the event id.
         var ordered = events
             .Where(e => seen.Add(e.EventId)) // INV-2: the same event twice changes nothing
             .OrderBy(EventKey.Of, EventKey.Comparer)

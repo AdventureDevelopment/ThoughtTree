@@ -7,14 +7,12 @@ public static class HybridClock
     /// <param name="highestInLog">The highest clock in the tree's local log, or null for an empty log.</param>
     public static EventClock Next(long now, EventClock? highestInLog)
     {
-        if (highestInLog is not { } highest || now > highest.Time)
+        if (highestInLog is not { } highest || now > highest.Value)
         {
-            return new EventClock(now, 0);
+            return new EventClock(now);
         }
 
-        // ADR-014: far-ahead clocks are accepted, never capped; a full counter rolls into the next millisecond.
-        return highest.Counter == int.MaxValue
-            ? new EventClock(highest.Time + 1, 0)
-            : new EventClock(highest.Time, highest.Counter + 1);
+        // ADR-014: at the largest value the new event ties, and the event id orders it.
+        return highest.Value == long.MaxValue ? highest : new EventClock(highest.Value + 1);
     }
 }

@@ -1,5 +1,6 @@
 using LambdaTale;
 using ThoughtTree.Domain.Clock;
+using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Specs.Clock;
 
@@ -8,45 +9,31 @@ namespace ThoughtTree.Domain.Specs.Clock;
 public class ClockEdgeSpecs
 {
     [Scenario]
-    public void INV_8_A_full_counter_rolls_into_the_next_millisecond_instead_of_failing()
+    public void INV_8_At_the_largest_clock_a_new_event_takes_that_clock_instead_of_failing()
     {
         EventClock stamp = default!;
 
-        "When a device writes after an event whose counter is at its maximum and whose time is not behind"
-            .x(() => stamp = HybridClock.Next(now: 100, highestInLog: new EventClock(100, int.MaxValue)));
+        "When a device writes while its log holds an event with the largest possible clock"
+            .x(() => stamp = HybridClock.Next(now: 100, highestInLog: new EventClock(long.MaxValue)));
 
-        "Then the new clock is above the logged one"
-            .x(() =>
-            {
-                stamp.ShouldBe(new EventClock(101, 0));
-                (stamp > new EventClock(100, int.MaxValue)).ShouldBeTrue();
-            });
+        "Then the new event takes the largest clock, and its event id orders it"
+            .x(() => stamp.ShouldBe(new EventClock(long.MaxValue)));
     }
 
     [Scenario]
-    public void Equal_times_are_ordered_by_counter()
+    public void Event_ids_are_compared_as_text_ordinal()
     {
-        "Then a higher counter is later and a higher time wins over any counter"
-            .x(() =>
-            {
-                (new EventClock(5, 2) > new EventClock(5, 1)).ShouldBeTrue();
-                (new EventClock(6, 0) > new EventClock(5, int.MaxValue)).ShouldBeTrue();
-            });
-    }
-
-    [Scenario]
-    public void Device_ids_are_compared_as_lowercase_text_ordinal()
-    {
-        const string digitFirst = "9f000000-0000-0000-0000-000000000001";
-        const string letterFirst = "a0000000-0000-0000-0000-000000000002";
-        var clock = new EventClock(1, 0);
+        var clock = new EventClock(1);
+        static EventKey Key(EventClock c, string id) => new(c, id);
 
         "Then a digit sorts before a letter, as in ordinal order"
-            .x(() => EventOrder.Instance.Compare((clock, digitFirst), (clock, letterFirst)).ShouldBeNegative());
+            .x(() => EventKey.Comparer.Compare(
+                Key(clock, "9f000000-0000-0000-0000-000000000001"),
+                Key(clock, "a0000000-0000-0000-0000-000000000002")).ShouldBeNegative());
 
-        "And a different last byte decides between ids that otherwise match"
-            .x(() => EventOrder.Instance.Compare(
-                (clock, "a0000000-0000-0000-0000-00000000000a"),
-                (clock, "a0000000-0000-0000-0000-00000000000b")).ShouldBeNegative());
+        "And a different last character decides between ids that otherwise match"
+            .x(() => EventKey.Comparer.Compare(
+                Key(clock, "a0000000-0000-0000-0000-00000000000a"),
+                Key(clock, "a0000000-0000-0000-0000-00000000000b")).ShouldBeNegative());
     }
 }

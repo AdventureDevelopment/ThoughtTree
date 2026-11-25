@@ -33,23 +33,11 @@ public static class ReferenceModel
             }
         }
 
-        // Agreed order: clock time, counter, deviceId lowercase ordinal; ties broken by EventId ordinal. Of events
-        // sharing all three, all are applied in that order; nothing is reported.
+        // Agreed order (ADR-014): clock, then EventId ordinal. Events with equal clocks all apply in that order;
+        // nothing is reported.
         all.Sort((a, b) =>
         {
-            var c = a.Clock.Time.CompareTo(b.Clock.Time);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = a.Clock.Counter.CompareTo(b.Clock.Counter);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            c = string.CompareOrdinal(Dev(a), Dev(b));
+            var c = a.Clock.Value.CompareTo(b.Clock.Value);
             if (c != 0)
             {
                 return c;
@@ -212,8 +200,6 @@ public static class ReferenceModel
 
         return sb.ToString();
     }
-
-    private static string Dev(TreeEvent e) => (e.DeviceId ?? "").ToLowerInvariant();
 
     // JSON-style quoting; everything outside printable ASCII becomes \uXXXX per UTF-16 unit, so any string is unambiguous.
     private static string Quote(string s)

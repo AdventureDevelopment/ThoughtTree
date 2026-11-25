@@ -98,7 +98,7 @@ public class OutlineSpecs
     }
 
     [Scenario]
-    public void Two_devices_that_place_an_item_after_the_same_sibling_at_the_same_time_are_ordered_by_device()
+    public void Two_devices_that_place_an_item_after_the_same_sibling_at_the_same_time_are_ordered_by_event_id()
     {
         Tree fromAThenB = default!;
         Tree fromBThenA = default!;
@@ -121,7 +121,7 @@ public class OutlineSpecs
                 fromBThenA = Projection.Replay(root.Events.Concat(b.Events).Concat(a.Events));
             });
 
-        "Then the later device in the agreed order sits directly after the root, in both cases"
+        "Then the event with the higher event id comes later in the agreed order and sits directly after the root, in both cases"
             .x(() =>
             {
                 fromAThenB.ToOutline().ShouldBe("- Root\n- FromB\n- FromA");

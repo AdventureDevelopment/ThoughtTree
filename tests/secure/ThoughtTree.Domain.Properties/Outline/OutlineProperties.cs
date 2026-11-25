@@ -51,7 +51,7 @@ public class OutlineProperties
                 equalClocksAcrossDevices++;
             }
 
-            if (h.Any(e => e.Clock.Time > 1_000_000_000_000))
+            if (h.Any(e => e.Clock.Value > 1_000_000_000_000))
             {
                 farAhead++;
             }

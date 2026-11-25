@@ -15,7 +15,7 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
     private (string EventId, string Device, EventClock Clock, string Action) Next(long time)
     {
         this.count++;
-        return ($"{device}-{this.count}", device, new EventClock(time, 0), $"action-{this.count}");
+        return ($"{device}-{this.count}", device, new EventClock(time), $"action-{this.count}");
     }
 
     public Log Create(long time, string item, string title, string? parent = null, string? after = null)

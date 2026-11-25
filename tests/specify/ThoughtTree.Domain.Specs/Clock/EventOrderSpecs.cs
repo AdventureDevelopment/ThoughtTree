@@ -1,5 +1,6 @@
 using LambdaTale;
 using ThoughtTree.Domain.Clock;
+using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Specs.Clock;
 
@@ -23,14 +24,14 @@ public class EventOrderSpecs
             .x(() => { });
 
         "When the device writes a new event"
-            .x(() => stamp = HybridClock.Next(now: 10_000, highestInLog: new EventClock(9_000, 4)));
+            .x(() => stamp = HybridClock.Next(now: 10_000, highestInLog: new EventClock(9_000)));
 
-        "Then the event carries the current time with counter zero"
-            .x(() => stamp.ShouldBe(new EventClock(10_000, 0)));
+        "Then the event carries the current time"
+            .x(() => stamp.ShouldBe(new EventClock(10_000)));
     }
 
     [Scenario]
-    public void INV_8_A_new_event_counts_on_when_the_log_is_equal_or_ahead()
+    public void INV_8_A_new_event_counts_on_by_one_when_the_log_is_equal_or_ahead()
     {
         EventClock sameTime = default!;
         EventClock ahead = default!;
@@ -39,16 +40,16 @@ public class EventOrderSpecs
             .x(() => { });
 
         "When the device writes a new event"
-            .x(() => sameTime = HybridClock.Next(now: 10_000, highestInLog: new EventClock(10_000, 2)));
+            .x(() => sameTime = HybridClock.Next(now: 10_000, highestInLog: new EventClock(10_000)));
 
         "And it writes one while the log holds an event from a clock three days ahead"
-            .x(() => ahead = HybridClock.Next(now: 10_000, highestInLog: new EventClock(10_000 + 259_200_000, 0)));
+            .x(() => ahead = HybridClock.Next(now: 10_000, highestInLog: new EventClock(10_000 + 259_200_000)));
 
-        "Then the new event comes after the logged one with the counter raised by one"
-            .x(() => sameTime.ShouldBe(new EventClock(10_000, 3)));
+        "Then the new event comes one after the logged one"
+            .x(() => sameTime.ShouldBe(new EventClock(10_001)));
 
         "And the event after a far-ahead clock counts on from that clock instead of being rejected"
-            .x(() => ahead.ShouldBe(new EventClock(10_000 + 259_200_000, 1)));
+            .x(() => ahead.ShouldBe(new EventClock(10_000 + 259_200_000 + 1)));
     }
 
     [Scenario]
@@ -62,35 +63,50 @@ public class EventOrderSpecs
         "When the device writes its first event"
             .x(() => stamp = HybridClock.Next(now: 5, highestInLog: null));
 
-        "Then the event carries the current time with counter zero"
-            .x(() => stamp.ShouldBe(new EventClock(5, 0)));
+        "Then the event carries the current time"
+            .x(() => stamp.ShouldBe(new EventClock(5)));
     }
 
     [Scenario]
-    public void Events_are_ordered_by_clock_and_then_by_device()
+    public void Events_are_ordered_by_clock_and_then_by_event_id()
     {
-        var events = new List<(EventClock Clock, string Device)>();
-        List<(EventClock Clock, string Device)> ordered = default!;
+        var events = new List<EventKey>();
+        List<EventKey> ordered = default!;
 
-        "Given events from two devices, one pair with equal clocks and one with a higher counter"
+        "Given events with equal and different clocks"
             .x(() =>
             {
-                events.Add((new EventClock(7, 1), DeviceA));
-                events.Add((new EventClock(7, 0), DeviceB));
-                events.Add((new EventClock(7, 0), DeviceA));
-                events.Add((new EventClock(6, 9), DeviceB));
+                events.Add(new EventKey(new EventClock(8), "e1"));
+                events.Add(new EventKey(new EventClock(7), "e3"));
+                events.Add(new EventKey(new EventClock(7), "e2"));
+                events.Add(new EventKey(new EventClock(6), "e4"));
             });
 
         "When the events are put in the agreed order"
-            .x(() => ordered = events.Order(EventOrder.Instance).ToList());
+            .x(() => ordered = events.Order(EventKey.Comparer).ToList());
 
-        "Then they run by time, then counter, then lowercase device text"
-            .x(() => ordered.ShouldBe(
-            [
-                (new EventClock(6, 9), DeviceB),
-                (new EventClock(7, 0), DeviceA),
-                (new EventClock(7, 0), DeviceB),
-                (new EventClock(7, 1), DeviceA),
-            ]));
+        "Then they run by clock, then by event id"
+            .x(() => ordered.Select(k => k.EventId).ShouldBe(["e4", "e2", "e3", "e1"]));
+    }
+
+    [Scenario]
+    public void The_device_does_not_decide_the_order_of_events_with_equal_clocks()
+    {
+        TreeEvent fromB = default!;
+        TreeEvent fromA = default!;
+        List<TreeEvent> ordered = default!;
+
+        "Given an event of device B with event id 'e1' and one of device A with 'e2', both at the same clock"
+            .x(() =>
+            {
+                fromB = new ItemDeleted("e1", DeviceB, new EventClock(7), "action", new ItemId("n"));
+                fromA = new ItemDeleted("e2", DeviceA, new EventClock(7), "action", new ItemId("n"));
+            });
+
+        "When the events are put in the agreed order"
+            .x(() => ordered = new[] { fromA, fromB }.OrderBy(EventKey.Of, EventKey.Comparer).ToList());
+
+        "Then device B's event comes first, because its event id is lower, although device A's id sorts first"
+            .x(() => ordered.ShouldBe([fromB, fromA]));
     }
 }

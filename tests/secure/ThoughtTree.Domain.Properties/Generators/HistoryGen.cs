@@ -8,7 +8,7 @@ namespace ThoughtTree.Domain.Properties.Generators;
 /// Valid multi-device histories, biased towards hard cases: equal clocks across devices, clocks far ahead,
 /// the same afterItemId, moves into deleted subtrees or into the item's own subtree (cycles), deletes followed
 /// by restores. Ids come from small pools and are counted, never random (ADR-034). Clocks may tie, also within one
-/// device (same-clock anomalies); every EventId is unique in the history.
+/// device; every EventId is unique in the history and does not follow the writing order, so ties apply in varied orders.
 /// </summary>
 public static class HistoryGen
 {
@@ -27,12 +27,11 @@ public static class HistoryGen
 
     // Small pools make collisions common; a few far-ahead times exercise the order at the extremes.
     private static readonly long[] Times = [1, 1, 2, 2, 3, 3, 4, 10, 4_000_000_000_000, long.MaxValue - 1];
-    private static readonly int[] Counters = [0, 0, 0, 1, 2];
     // Item 0 appears often as the shared afterItemId and as the shared parent; 6 is never created (unknown id).
     private static readonly int[] Afters = [-1, -1, 0, 0, 0, 1, 2, 3, 4, 5, 6];
     private static readonly int[] Parents = [-1, -1, 0, 0, 1, 1, 2, 3, 4, 5, 6];
 
-    private sealed record Draft(int Kind, int Item, int Parent, int After, int Device, long Time, int Counter, int Text);
+    private sealed record Draft(int Kind, int Item, int Parent, int After, int Device, long Time, int Text);
 
     private static readonly Gen<(int, int, int, int)> What = Gen.Select(
         // kinds: 0 title, 1 note, 2-4 move, 5-6 delete, 7 restore, 8 delete then restore
@@ -41,17 +40,16 @@ public static class HistoryGen
         Gen.OneOf(Parents),
         Gen.OneOf(Afters));
 
-    private static readonly Gen<(int, long, int, int)> When = Gen.Select(
+    private static readonly Gen<(int, long, int)> When = Gen.Select(
         Gen.Int[0, Devices.Length - 1],
         Gen.OneOf(Times),
-        Gen.OneOf(Counters),
         Gen.Int[0, 3]);
 
     private static readonly Gen<Draft> DraftGen = Gen.Select(What, When,
-        (w, n) => new Draft(w.Item1, w.Item2, w.Item3, w.Item4, n.Item1, n.Item2, n.Item3, n.Item4));
+        (w, n) => new Draft(w.Item1, w.Item2, w.Item3, w.Item4, n.Item1, n.Item2, n.Item3));
 
     private static Gen<Draft> CreateDraft(int item) => Gen.Select(Gen.OneOf(Parents), Gen.OneOf(Afters), When,
-        (p, a, n) => new Draft(-1, item, p, a, n.Item1, n.Item2, n.Item3, n.Item4));
+        (p, a, n) => new Draft(-1, item, p, a, n.Item1, n.Item2, n.Item3));
 
     /// <summary>A history in creation order as a device would have logged it (not shuffled).</summary>
     public static Gen<TreeEvent[]> History { get; } =
@@ -74,19 +72,14 @@ public static class HistoryGen
     {
         var result = new List<TreeEvent>();
 
-        EventClock Stamp(string device, long time, int counter)
-        {
-            // Equal (clock, device) with different EventIds is allowed: the projection rejects the later one.
-            return new EventClock(time, counter);
-        }
-
-        string EventId() => $"e0000000-0000-0000-0000-{result.Count:D12}";
+        // Scrambled, still unique (7919 and 10007 are prime, histories stay far below 10007 events).
+        string EventId() => $"e0000000-0000-0000-0000-{result.Count * 7919 % 10007:D12}";
         string Action() => $"c0000000-0000-0000-0000-{result.Count:D12}";
 
         foreach (Draft d in drafts)
         {
             var device = Devices[d.Device];
-            EventClock clock = Stamp(device, d.Time, d.Counter);
+            var clock = new EventClock(d.Time);
             ItemId item = Item(d.Item);
             var title = $"t{d.Text}";
             switch (d.Kind)
@@ -111,7 +104,7 @@ public static class HistoryGen
                     break;
                 default:
                     result.Add(new ItemDeleted(EventId(), device, clock, Action(), item));
-                    result.Add(new ItemRestored(EventId(), device, Stamp(device, clock.Time, clock.Counter + 1), Action(), item));
+                    result.Add(new ItemRestored(EventId(), device, new EventClock(clock.Value + 1), Action(), item));
                     break;
             }
         }
