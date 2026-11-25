@@ -15,27 +15,27 @@ public class ClockProperties
         Gen.OneOf(Gen.Long[0, 20], Gen.Const(4_000_000_000_000L), Gen.Const(long.MaxValue - 1), Gen.Const(long.MaxValue)));
 
     [Fact]
-    public void INV_8_a_new_event_is_above_every_clock_in_the_log_and_ties_only_at_the_largest_value()
+    public void INV_8_a_new_event_gets_exactly_the_ADR_014_clock_above_every_clock_in_the_log()
     {
         Step.List[1, 30].SampleFixed(steps =>
         {
-            EventClock? highest = null;
+            long? highest = null;
             foreach (var (write, time) in steps)
             {
-                var stamp = write ? HybridClock.Next(time, highest) : new EventClock(time);
-                if (write && highest is { } h)
+                var stamp = write ? HybridClock.Next(time, highest is { } h ? new EventClock(h) : null).Value : time;
+                if (write)
                 {
-                    if (h.Value == long.MaxValue)
+                    // ADR-014: max(now, highest + 1), and the largest value stays the largest value.
+                    var expected = highest switch
                     {
-                        stamp.ShouldBe(h);
-                    }
-                    else
-                    {
-                        stamp.ShouldBeGreaterThan(h);
-                    }
+                        null => time,
+                        long.MaxValue => long.MaxValue,
+                        { } top => Math.Max(time, top + 1),
+                    };
+                    stamp.ShouldBe(expected);
                 }
 
-                highest = highest is { } current && current >= stamp ? current : stamp;
+                highest = highest is { } current ? Math.Max(current, stamp) : stamp;
             }
         });
     }
