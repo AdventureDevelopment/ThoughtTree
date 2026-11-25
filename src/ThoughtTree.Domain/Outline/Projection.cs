@@ -10,15 +10,29 @@ public static class Projection
         var tree = new Tree();
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
-        IEnumerable<TreeEvent> ordered = events
+        // One total order: clock, device, then event id. The event id only makes the order independent of
+        // arrival; events that tie on clock and device are rejected below, not interleaved.
+        List<TreeEvent> ordered = events
             .Where(e => seen.Add(e.EventId)) // INV-2: the same event twice changes nothing
-            .OrderBy(e => (e.Clock, e.DeviceId), EventOrder.Instance);
+            .OrderBy(e => (e.Clock, e.DeviceId), EventOrder.Instance)
+            .ThenBy(e => e.EventId, StringComparer.Ordinal)
+            .ToList();
 
+        TreeEvent? previous = null;
         foreach (TreeEvent e in ordered)
         {
+            if (previous is not null && previous.Clock == e.Clock && previous.DeviceId == e.DeviceId)
+            {
+                // A correct device never reuses a clock (INV-8): reject the later event and report it.
+                tree.Report(AnomalyKind.SameClock, e.EventId);
+                continue;
+            }
+
+            previous = e;
             Apply(tree, e);
         }
 
+        tree.SortAnomalies();
         return tree;
     }
 
@@ -26,7 +40,10 @@ public static class Projection
     {
         switch (e)
         {
-            case ItemCreated c when !tree.Items.ContainsKey(c.Item):
+            case ItemCreated c when tree.Items.ContainsKey(c.Item):
+                tree.Report(AnomalyKind.DuplicateCreate, e.EventId);
+                break;
+            case ItemCreated c:
                 tree.Items[c.Item] = new Item(c.Item, c.Title, c.Note);
                 Place(tree, c.Item, c.Parent, c.After);
                 break;
@@ -45,6 +62,9 @@ public static class Projection
                 break;
             case ItemRestored r when tree.Items.TryGetValue(r.Item, out Item? item):
                 item.Deleted = false;
+                break;
+            default:
+                tree.Report(AnomalyKind.UnknownItem, e.EventId);
                 break;
         }
     }

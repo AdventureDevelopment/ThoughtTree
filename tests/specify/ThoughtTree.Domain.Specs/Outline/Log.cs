@@ -33,6 +33,13 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
         return this;
     }
 
+    public Log Note(long time, string item, string note)
+    {
+        var h = Next(time);
+        Events.Add(new ItemNoteChanged(h.EventId, h.Device, h.Clock, h.Action, Id(item), note));
+        return this;
+    }
+
     public Log Move(long time, string item, string? parent, string? after = null)
     {
         var h = Next(time);

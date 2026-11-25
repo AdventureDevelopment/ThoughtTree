@@ -14,11 +14,27 @@ public sealed class Item(ItemId id, string title, string note)
 /// <summary>The tree as a projection of the event log (ADR-002).</summary>
 public sealed class Tree
 {
+    private readonly List<Anomaly> _anomalies = [];
+
     internal Dictionary<ItemId, Item> Items { get; } = [];
     internal List<ItemId> TopLevel { get; } = [];
 
     /// <summary>Every item ever created, visible or deleted (INV-5).</summary>
     public IReadOnlyCollection<Item> AllItems => Items.Values;
+
+    /// <summary>Events the projection rejected or could not apply, for the user to review. Sorted by kind, then event id.</summary>
+    public IReadOnlyList<Anomaly> Anomalies => _anomalies;
+
+    /// <summary>Top-level items in order, deleted ones included.</summary>
+    public IReadOnlyList<ItemId> TopLevelOrder => TopLevel;
+
+    /// <summary>Children of an item in order, deleted ones included.</summary>
+    public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => Items[id].Children;
+
+    internal void Report(AnomalyKind kind, string eventId) => _anomalies.Add(new Anomaly(kind, eventId));
+
+    internal void SortAnomalies() =>
+        _anomalies.Sort((a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId));
 
     public Item? Find(ItemId id) => Items.GetValueOrDefault(id);
 
