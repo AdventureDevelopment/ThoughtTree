@@ -126,7 +126,7 @@ Owner decision 2026-11-25 (rules 1 to 9 confirmed by the owner, with revisions t
 - **If you are about to declare a class or record:** make it `sealed`, unless it is designed for inheritance.
 - **If you are about to write a block, a member or a call on `this`:** use braces for every block and an explicit accessibility on every member (build), and write `this.` before every instance member (build). Use an expression body only when the member fits on one line (preference, not checked by the build).
 - **If you are about to declare a local variable:** use `var` when the type is built-in or clear from the right-hand side (build).
-- **If you are about to add a Domain type that holds state:** make it an immutable record (`private init`), and change it through methods that return a copy. The one exception is the projection while it is built (`Tree`, `Item`): mutable inside Domain, read-only to callers.
+- **If you are about to add a Domain type that holds state:** make it an immutable record (`private init`), and change it through methods that return a copy. The one exception is the projection's `Tree` while it is built: mutable inside Domain, read-only to callers (open: owner decision on an immutable tree after a benchmark).
 - **If you are about to declare a field:** a private instance field is camelCase without a prefix (build) and is always reached through `this.`; a constant or static field is PascalCase (build).
 
 ## 5. Project layout

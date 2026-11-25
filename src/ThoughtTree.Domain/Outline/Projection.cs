@@ -37,20 +37,20 @@ public static class Projection
                 Place(tree, c.Item, c.Parent, c.After);
                 break;
             case ItemTitleChanged t when tree.Items.TryGetValue(t.Item, out Item? item):
-                item.Title = t.Title;
+                tree.Items[t.Item] = item.WithTitle(t.Title);
                 break;
             case ItemNoteChanged n when tree.Items.TryGetValue(n.Item, out Item? item):
-                item.Note = n.Note;
+                tree.Items[n.Item] = item.WithNote(n.Note);
                 break;
             case ItemMoved m when tree.Items.ContainsKey(m.Item):
-                tree.SiblingsOf(tree.Items[m.Item].Parent).Remove(m.Item);
+                tree.RemoveChild(tree.Items[m.Item].Parent, m.Item);
                 Place(tree, m.Item, m.Parent, m.After);
                 break;
             case ItemDeleted d when tree.Items.TryGetValue(d.Item, out Item? item):
-                item.Deleted = true;
+                tree.Items[d.Item] = item.WithDeleted(true);
                 break;
             case ItemRestored r when tree.Items.TryGetValue(r.Item, out Item? item):
-                item.Deleted = false;
+                tree.Items[r.Item] = item.WithDeleted(false);
                 break;
             default:
                 tree.Report(AnomalyKind.UnknownItem, e.EventId);
@@ -66,11 +66,7 @@ public static class Projection
             parent = null;
         }
 
-        tree.Items[id].Parent = parent;
-        List<ItemId> siblings = tree.SiblingsOf(parent);
-
-        // ADR-004: directly after the named sibling; first if it is empty or not a sibling at replay time.
-        var index = after is { } a ? siblings.IndexOf(a) + 1 : 0;
-        siblings.Insert(index, id);
+        tree.Items[id] = tree.Items[id].WithParent(parent);
+        tree.InsertChild(parent, id, after);
     }
 }

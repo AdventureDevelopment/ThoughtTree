@@ -1,16 +1,5 @@
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>One item of the projection. Deleted items stay as tombstones with their children (ADR-005).</summary>
-public sealed class Item(ItemId id, string title, string note)
-{
-    public ItemId Id { get; } = id;
-    public string Title { get; internal set; } = title;
-    public string Note { get; internal set; } = note;
-    public bool Deleted { get; internal set; }
-    public ItemId? Parent { get; internal set; }
-    internal List<ItemId> Children { get; } = [];
-}
-
 /// <summary>The tree as a projection of the event log (ADR-002).</summary>
 public sealed class Tree
 {
@@ -36,15 +25,13 @@ public sealed class Tree
     internal void SortAnomalies() =>
         this.anomalies.Sort((a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId));
 
-    /// <summary>A deep copy that shares nothing with this tree; used for snapshots.</summary>
+    /// <summary>A copy that shares the items, which are immutable; used for snapshots.</summary>
     internal Tree Clone()
     {
         var copy = new Tree();
         foreach ((ItemId id, Item item) in this.Items)
         {
-            var c = new Item(id, item.Title, item.Note) { Deleted = item.Deleted, Parent = item.Parent };
-            c.Children.AddRange(item.Children);
-            copy.Items[id] = c;
+            copy.Items[id] = item;
         }
 
         copy.TopLevel.AddRange(this.TopLevel);
@@ -61,7 +48,7 @@ public sealed class Tree
         Walk(this.TopLevel, 0);
         return result;
 
-        void Walk(List<ItemId> ids, int depth)
+        void Walk(IReadOnlyList<ItemId> ids, int depth)
         {
             foreach (ItemId id in ids)
             {
@@ -94,5 +81,32 @@ public sealed class Tree
         return false;
     }
 
-    internal List<ItemId> SiblingsOf(ItemId? parent) => parent is { } p ? this.Items[p].Children : this.TopLevel;
+    internal void RemoveChild(ItemId? parent, ItemId id)
+    {
+        if (parent is { } p)
+        {
+            var holder = this.Items[p];
+            this.Items[p] = holder.WithChildren(holder.Children.Remove(id));
+        }
+        else
+        {
+            this.TopLevel.Remove(id);
+        }
+    }
+
+    /// <summary>ADR-004: directly after the named sibling; first if none is named or it is not a sibling now.</summary>
+    internal void InsertChild(ItemId? parent, ItemId id, ItemId? after)
+    {
+        if (parent is { } p)
+        {
+            var holder = this.Items[p];
+            var index = after is { } a ? holder.Children.IndexOf(a) + 1 : 0;
+            this.Items[p] = holder.WithChildren(holder.Children.Insert(index, id));
+        }
+        else
+        {
+            var index = after is { } a ? this.TopLevel.IndexOf(a) + 1 : 0;
+            this.TopLevel.Insert(index, id);
+        }
+    }
 }
