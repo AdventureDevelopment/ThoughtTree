@@ -117,15 +117,15 @@ public class Device { /* AddItem, Delete, Undo, Tree, Log */ }
 
 ## 4b. Code style
 
-Owner decision 2026-11-25, adapted from the SoloAdventure project. The rules marked "build" are in `.editorconfig` at `warning`, so a breach fails the build [ADR-042].
+Owner decision 2026-11-25, adapted from the SoloAdventure project. Same form as section 4: when the trigger occurs, do the action. Rules marked "build" are in `.editorconfig` at `warning`, so a breach fails the build [ADR-042].
 
-- **Comments are a last resort.** Names and specs are the documentation. Comment only what neither can say: an ADR, `INV-n` or `D-n` id, or a non-obvious gotcha. Never restate the code; never retell a design decision (the ADR owns the why); one line of citation at most.
-- **TL;DR everywhere:** comments, docs, pull request text and commit messages lead with the point.
-- **YAGNI:** add no type, field or abstraction before something real needs it.
-- **Doc summary** (`/// <summary>`) on each public type: one sentence of role, plus the ADR id where one applies. On members only if the name does not say it.
-- **`sealed`** on classes and records unless they are designed for inheritance.
-- **Braces always, explicit accessibility** (build). **`this.` on instance members** (build). Expression-bodied members only when they fit on one line (preference, not checked by the build).
-- **Private instance fields in camelCase without a prefix** (build), always reached through `this.`; constants and static fields in PascalCase (build).
+- **If you are about to write a comment:** first try a better name or a spec. Write the comment only if neither can say it: an ADR, `INV-n` or `D-n` id, or a non-obvious gotcha. One line. Never restate the code; never retell a design decision, because the ADR owns the why.
+- **If you are about to write prose** (comment, doc, pull request text, commit message): lead with the point and cut what the reader does not need to act.
+- **If you are about to add a type, field or abstraction:** name what needs it today. If nothing does, do not add it.
+- **If you are about to add a public type:** give it a `/// <summary>` of one sentence, role plus the ADR id where one applies. Give a member one only if its name does not say it.
+- **If you are about to declare a class or record:** make it `sealed`, unless it is designed for inheritance.
+- **If you are about to write a block, a member or a call on `this`:** use braces for every block and an explicit accessibility on every member (build), and write `this.` before every instance member (build). Use an expression body only when the member fits on one line (preference, not checked by the build).
+- **If you are about to declare a field:** a private instance field is camelCase without a prefix (build) and is always reached through `this.`; a constant or static field is PascalCase (build).
 
 ## 5. Project layout
 
