@@ -14,8 +14,7 @@ public static class Projection
         // the event id keeps the order independent of arrival then (INV-1).
         List<TreeEvent> ordered = events
             .Where(e => seen.Add(e.EventId)) // INV-2: the same event twice changes nothing
-            .OrderBy(e => (e.Clock, e.DeviceId), EventOrder.Instance)
-            .ThenBy(e => e.EventId, StringComparer.Ordinal)
+            .OrderBy(EventKey.Of, EventKey.Comparer)
             .ToList();
 
         foreach (TreeEvent e in ordered)
@@ -27,7 +26,7 @@ public static class Projection
         return tree;
     }
 
-    private static void Apply(Tree tree, TreeEvent e)
+    internal static void Apply(Tree tree, TreeEvent e)
     {
         switch (e)
         {

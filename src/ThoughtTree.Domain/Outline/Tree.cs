@@ -36,6 +36,22 @@ public sealed class Tree
     internal void SortAnomalies() =>
         _anomalies.Sort((a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId));
 
+    /// <summary>A deep copy that shares nothing with this tree; used for snapshots.</summary>
+    internal Tree Clone()
+    {
+        var copy = new Tree();
+        foreach ((ItemId id, Item item) in Items)
+        {
+            var c = new Item(id, item.Title, item.Note) { Deleted = item.Deleted, Parent = item.Parent };
+            c.Children.AddRange(item.Children);
+            copy.Items[id] = c;
+        }
+
+        copy.TopLevel.AddRange(TopLevel);
+        copy._anomalies.AddRange(_anomalies);
+        return copy;
+    }
+
     public Item? Find(ItemId id) => Items.GetValueOrDefault(id);
 
     /// <summary>Items in outline order that a user sees: not deleted and no deleted ancestor.</summary>
