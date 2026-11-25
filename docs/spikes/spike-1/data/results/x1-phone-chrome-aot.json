@@ -1,0 +1,2009 @@
+{
+ "question": "x1",
+ "device": "Fairphone 5 (phone, on-device runner, no adb)",
+ "browser": "chrome",
+ "browserVersion": "140.0.0.0",
+ "build": "aot",
+ "os": "Android 10",
+ "machine": {
+  "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+  "deviceMemory": 8,
+  "hardwareConcurrency": 8,
+  "connection": "4g",
+  "privateModeLikely": false,
+  "kind": "phone"
+ },
+ "gitCommit": "e0409ab1020131a3e827ea9d3e58632fa5f945d2",
+ "seed": "thoughttree-spike-1-reference-v1",
+ "runProtocol": "1 warm-up, then cold runs (page load with every boot resource fetched with cache no-store: no HTTP cache and no compiled-code cache; browser process and OS file cache stay warm), 1 warm-up, then warm runs (normal reload); one scenario per page load; no CPU throttling; on-device runner without adb",
+ "tuning": {
+  "chunk": "10000",
+  "batch": "1000",
+  "parallel": "1"
+ },
+ "setup": {
+  "events-1000": {
+   "treeVisibleMs": 4677.3,
+   "datasetShaOk": true,
+   "checksumOk": true,
+   "snapshotPlainBytes": 47876,
+   "indexTerms": 1828,
+   "indexPostings": 3265,
+   "indexPlainBytes": 37051,
+   "indexStoredBytesB": 37083,
+   "indexStoredBytesC": 37051,
+   "storage": {
+    "usage": 1801359,
+    "quota": 137868732825,
+    "usageDetails": {
+     "indexedDB": 1801359
+    },
+    "battery": {
+     "charging": false,
+     "level": 0.41
+    }
+   },
+   "phases": {
+    "generateBuildMs": 110.1,
+    "generateSerializePadMs": 105.8,
+    "copyMs": 1.1,
+    "parseMs": 76.8,
+    "applyMs": 1.2,
+    "snapshotSerializeMs": 18,
+    "indexBuildAtSnapshotMs": 13.8,
+    "indexSerializeMs": 22.3
+   },
+   "jsPhases": {
+    "openMs": 13.699999988079071,
+    "generateEncryptMs": 90.2000000178814,
+    "importWriteMs": 159.69999998807907,
+    "generateHashMs": 88,
+    "readMs": 53.19999998807907,
+    "decryptMs": 78,
+    "unpadJoinMs": 3.5,
+    "snapshotEncryptMs": 3,
+    "snapshotWriteMs": 4.0999999940395355,
+    "indexWriteMs": 12.800000011920929
+   }
+  },
+  "events-10000": {
+   "treeVisibleMs": 7003.3,
+   "datasetShaOk": true,
+   "checksumOk": true,
+   "snapshotPlainBytes": 575177,
+   "indexTerms": 11466,
+   "indexPostings": 43743,
+   "indexPlainBytes": 358760,
+   "indexStoredBytesB": 358872,
+   "indexStoredBytesC": 358760,
+   "storage": {
+    "usage": 17198355,
+    "quota": 137868732825,
+    "usageDetails": {
+     "indexedDB": 17198355
+    },
+    "battery": {
+     "charging": false,
+     "level": 0.41
+    }
+   },
+   "phases": {
+    "generateBuildMs": 283.1,
+    "generateSerializePadMs": 300.8,
+    "copyMs": 3,
+    "parseMs": 272.9,
+    "applyMs": 8.6,
+    "snapshotSerializeMs": 26.3,
+    "indexBuildAtSnapshotMs": 89.3,
+    "indexSerializeMs": 55
+   },
+   "jsPhases": {
+    "openMs": 25.400000005960464,
+    "generateEncryptMs": 697.5,
+    "importWriteMs": 1811.3999999463558,
+    "generateHashMs": 737.9000000655651,
+    "readMs": 346.39999997615814,
+    "decryptMs": 714.8000000119209,
+    "unpadJoinMs": 15.699999988079071,
+    "snapshotEncryptMs": 6.9000000059604645,
+    "snapshotWriteMs": 39.20000001788139,
+    "indexWriteMs": 27.999999970197678
+   }
+  },
+  "events-100000": {
+   "treeVisibleMs": 54630.4,
+   "datasetShaOk": true,
+   "checksumOk": true,
+   "snapshotPlainBytes": 5456117,
+   "indexTerms": 25771,
+   "indexPostings": 410875,
+   "indexPlainBytes": 2726531,
+   "indexStoredBytesB": 2726755,
+   "indexStoredBytesC": 2726531,
+   "storage": {
+    "usage": 169342468,
+    "quota": 137868732825,
+    "usageDetails": {
+     "indexedDB": 169342468
+    },
+    "battery": {
+     "charging": false,
+     "level": 0.41
+    }
+   },
+   "phases": {
+    "generateBuildMs": 2210.1,
+    "generateSerializePadMs": 2126.2,
+    "copyMs": 31.2,
+    "parseMs": 2250.6,
+    "applyMs": 140.2,
+    "snapshotSerializeMs": 237.4,
+    "indexBuildAtSnapshotMs": 783.1,
+    "indexSerializeMs": 184.4
+   },
+   "jsPhases": {
+    "openMs": 4.0999999940395355,
+    "generateEncryptMs": 6865.09999987483,
+    "importWriteMs": 19346.29999989271,
+    "generateHashMs": 6761.000000178814,
+    "readMs": 3793.8000000715256,
+    "decryptMs": 7025.999999940395,
+    "unpadJoinMs": 131.70000004768372,
+    "snapshotEncryptMs": 51.5,
+    "snapshotWriteMs": 134.30000001192093,
+    "indexWriteMs": 129.19999998807907
+   }
+  }
+ },
+ "series": [
+  {
+   "scenario": "blocks",
+   "dataset": "events-100000",
+   "extra": "",
+   "throttle": 1,
+   "url": "aot/?scenario=blocks&dataset=events-100000",
+   "cold": [],
+   "warm": [
+    {
+     "scenario": "blocks",
+     "dataset": "events-100000",
+     "build": "aot",
+     "params": {
+      "chunk": 10000,
+      "batch": 1000,
+      "parallel": true,
+      "importBatch": 1000,
+      "durability": "default",
+      "search": "none"
+     },
+     "blockBench": {
+      "events": 100000,
+      "plainBytes": 115999744,
+      "perEvent": {
+       "readMs": 4535.7,
+       "decryptMs": 6994.2,
+       "calls": 100000
+      },
+      "blocks": {
+       "100": {
+        "blocks": 1000,
+        "writeMs": 1684.7,
+        "readMs": 278.5,
+        "decryptMs": 975.8,
+        "verified": true
+       },
+       "1000": {
+        "blocks": 100,
+        "writeMs": 1074.9,
+        "readMs": 251.8,
+        "decryptMs": 883.7,
+        "verified": true
+       },
+       "10000": {
+        "blocks": 10,
+        "writeMs": 1259.1,
+        "readMs": 401.9,
+        "decryptMs": 1439,
+        "verified": true
+       }
+      }
+     },
+     "appReadyMs": 1325.7,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 8.300000011920929
+     },
+     "storage": {
+      "usage": 190753582,
+      "quota": 137868732825,
+      "usageDetails": {
+       "indexedDB": 190753582
+      },
+      "battery": {
+       "charging": false,
+       "level": 0.92
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+      "deviceMemory": 8,
+      "hardwareConcurrency": 8,
+      "serviceWorkerAvailable": true,
+      "navigation": {
+       "responseEnd": 161.40000000596046,
+       "domContentLoaded": 237,
+       "loadEventEnd": 237.19999998807907
+      },
+      "transfer": {
+       "transferSize": 944,
+       "encodedBodySize": 4211232,
+       "decodedBodySize": 17945902,
+       "resources": 47
+      },
+      "resources": [
+       {
+        "name": "/aot/_framework/dotnet.s8hvjn1h1m.js",
+        "transferSize": 0,
+        "encodedBodySize": 13363,
+        "decodedBodySize": 49748
+       },
+       {
+        "name": "/aot/_framework/blazor.webassembly.w3qd1tpl0e.js",
+        "transferSize": 0,
+        "encodedBodySize": 16754,
+        "decodedBodySize": 60682
+       },
+       {
+        "name": "/aot/_framework/dotnet.runtime.v2rwe8u38b.js",
+        "transferSize": 0,
+        "encodedBodySize": 47651,
+        "decodedBodySize": 197975
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.9nza858klr.js",
+        "transferSize": 0,
+        "encodedBodySize": 43417,
+        "decodedBodySize": 225741
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.k0twhgmnuu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3128787,
+        "decodedBodySize": 13727240
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.egzuywrrjp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 49985,
+        "decodedBodySize": 172821
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.Web.jiod8wp9ih.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16505,
+        "decodedBodySize": 56085
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.WebAssembly.ihvwn5xvaz.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 33429,
+        "decodedBodySize": 118037
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Abstractions.jdku1tfeyu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2344,
+        "decodedBodySize": 6933
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Json.f5s2awx3ir.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4009,
+        "decodedBodySize": 10517
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.ze9wxczbn2.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3476,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.c5pdvvyczg.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7937,
+        "decodedBodySize": 25877
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.qpkt37nppd.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16398,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.Abstractions.guktsrlp8m.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 9749,
+        "decodedBodySize": 27413
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.r0zdvdeo0g.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 6916,
+        "decodedBodySize": 17685
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Options.fuq257x90j.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7012,
+        "decodedBodySize": 16661
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Primitives.y1pmi8p1bs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3337,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.WebAssembly.igy9hupfat.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4892,
+        "decodedBodySize": 12053
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.85sp5xprpw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16480,
+        "decodedBodySize": 45845
+       },
+       {
+        "name": "/aot/_framework/SpikeApp.ucww8pohrk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 21085,
+        "decodedBodySize": 71957
+       },
+       {
+        "name": "/aot/_framework/SpikeCore.tfa2oserll.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 19101,
+        "decodedBodySize": 91413
+       },
+       {
+        "name": "/aot/_framework/System.Collections.ap5qb1tk2s.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8664,
+        "decodedBodySize": 22293
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Concurrent.44hz940h5d.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8522,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Immutable.84rozeukdk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 17488,
+        "decodedBodySize": 50965
+       },
+       {
+        "name": "/aot/_framework/System.ComponentModel.s232flgnjt.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 1708,
+        "decodedBodySize": 4885
+       },
+       {
+        "name": "/aot/_framework/System.Console.tyrcrfhcvs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5634,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Diagnostics.DiagnosticSource.klwcair8b8.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 13680,
+        "decodedBodySize": 39701
+       },
+       {
+        "name": "/aot/_framework/System.IO.Pipelines.sqnlotvinv.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2351,
+        "decodedBodySize": 5909
+       },
+       {
+        "name": "/aot/_framework/System.Linq.j0q5nfnyh4.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 20119,
+        "decodedBodySize": 50453
+       },
+       {
+        "name": "/aot/_framework/System.Memory.0kg9iec2ol.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5992,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Private.CoreLib.u1uza0gk4h.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 355218,
+        "decodedBodySize": 1574165
+       },
+       {
+        "name": "/aot/_framework/System.Private.Uri.38huphuz3v.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 15180,
+        "decodedBodySize": 62229
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.tms6ssaz0a.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2913,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.JavaScript.tixfau2afw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 14427,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.4k7yk57eu0.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2449,
+        "decodedBodySize": 7445
+       },
+       {
+        "name": "/aot/_framework/System.Security.Cryptography.jeq6jm5fnc.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5672,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Text.Encodings.Web.h5dq968kq9.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7084,
+        "decodedBodySize": 29461
+       },
+       {
+        "name": "/aot/_framework/System.Text.Json.bwhlwl6sty.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 92682,
+        "decodedBodySize": 376597
+       },
+       {
+        "name": "/aot/_framework/System.Text.RegularExpressions.oe58lslesp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5498,
+        "decodedBodySize": 15125
+       },
+       {
+        "name": "/aot/_framework/icudt_EFIGS.tptq2av103.dat",
+        "transferSize": 0,
+        "encodedBodySize": 143983,
+        "decodedBodySize": 550832
+       }
+      ],
+      "info": {}
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "blocks",
+     "dataset": "events-100000",
+     "build": "aot",
+     "params": {
+      "chunk": 10000,
+      "batch": 1000,
+      "parallel": true,
+      "importBatch": 1000,
+      "durability": "default",
+      "search": "none"
+     },
+     "blockBench": {
+      "events": 100000,
+      "plainBytes": 115999744,
+      "perEvent": {
+       "readMs": 4616,
+       "decryptMs": 7026.5,
+       "calls": 100000
+      },
+      "blocks": {
+       "100": {
+        "blocks": 1000,
+        "writeMs": 1792.9,
+        "readMs": 290.6,
+        "decryptMs": 967.9,
+        "verified": true
+       },
+       "1000": {
+        "blocks": 100,
+        "writeMs": 1593.9,
+        "readMs": 269.5,
+        "decryptMs": 902.6,
+        "verified": true
+       },
+       "10000": {
+        "blocks": 10,
+        "writeMs": 1115,
+        "readMs": 369.2,
+        "decryptMs": 1389,
+        "verified": true
+       }
+      }
+     },
+     "appReadyMs": 1822.1,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 9.300000011920929
+     },
+     "storage": {
+      "usage": 190813863,
+      "quota": 137868732825,
+      "usageDetails": {
+       "indexedDB": 190813863
+      },
+      "battery": {
+       "charging": false,
+       "level": 0.92
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+      "deviceMemory": 8,
+      "hardwareConcurrency": 8,
+      "serviceWorkerAvailable": true,
+      "navigation": {
+       "responseEnd": 208.60000002384186,
+       "domContentLoaded": 425.80000001192093,
+       "loadEventEnd": 426.80000001192093
+      },
+      "transfer": {
+       "transferSize": 3944,
+       "encodedBodySize": 4194064,
+       "decodedBodySize": 17884402,
+       "resources": 47
+      },
+      "resources": [
+       {
+        "name": "/aot/_framework/dotnet.s8hvjn1h1m.js",
+        "transferSize": 300,
+        "encodedBodySize": 13363,
+        "decodedBodySize": 49748
+       },
+       {
+        "name": "/aot/_framework/blazor.webassembly.w3qd1tpl0e.js",
+        "transferSize": 300,
+        "encodedBodySize": 0,
+        "decodedBodySize": 0
+       },
+       {
+        "name": "/aot/_framework/dotnet.runtime.v2rwe8u38b.js",
+        "transferSize": 300,
+        "encodedBodySize": 47651,
+        "decodedBodySize": 197975
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.9nza858klr.js",
+        "transferSize": 300,
+        "encodedBodySize": 43417,
+        "decodedBodySize": 225741
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.k0twhgmnuu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3128787,
+        "decodedBodySize": 13727240
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.egzuywrrjp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 49985,
+        "decodedBodySize": 172821
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.Web.jiod8wp9ih.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16505,
+        "decodedBodySize": 56085
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.WebAssembly.ihvwn5xvaz.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 33429,
+        "decodedBodySize": 118037
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Abstractions.jdku1tfeyu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2344,
+        "decodedBodySize": 6933
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Json.f5s2awx3ir.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4009,
+        "decodedBodySize": 10517
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.ze9wxczbn2.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3476,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.c5pdvvyczg.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7937,
+        "decodedBodySize": 25877
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.qpkt37nppd.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16398,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.Abstractions.guktsrlp8m.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 9749,
+        "decodedBodySize": 27413
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.r0zdvdeo0g.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 6916,
+        "decodedBodySize": 17685
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Options.fuq257x90j.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7012,
+        "decodedBodySize": 16661
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Primitives.y1pmi8p1bs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3337,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.WebAssembly.igy9hupfat.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4892,
+        "decodedBodySize": 12053
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.85sp5xprpw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16480,
+        "decodedBodySize": 45845
+       },
+       {
+        "name": "/aot/_framework/SpikeApp.ucww8pohrk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 21085,
+        "decodedBodySize": 71957
+       },
+       {
+        "name": "/aot/_framework/SpikeCore.tfa2oserll.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 19101,
+        "decodedBodySize": 91413
+       },
+       {
+        "name": "/aot/_framework/System.Collections.ap5qb1tk2s.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8664,
+        "decodedBodySize": 22293
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Concurrent.44hz940h5d.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8522,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Immutable.84rozeukdk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 17488,
+        "decodedBodySize": 50965
+       },
+       {
+        "name": "/aot/_framework/System.ComponentModel.s232flgnjt.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 1708,
+        "decodedBodySize": 4885
+       },
+       {
+        "name": "/aot/_framework/System.Console.tyrcrfhcvs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5634,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Diagnostics.DiagnosticSource.klwcair8b8.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 13680,
+        "decodedBodySize": 39701
+       },
+       {
+        "name": "/aot/_framework/System.IO.Pipelines.sqnlotvinv.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2351,
+        "decodedBodySize": 5909
+       },
+       {
+        "name": "/aot/_framework/System.Linq.j0q5nfnyh4.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 20119,
+        "decodedBodySize": 50453
+       },
+       {
+        "name": "/aot/_framework/System.Memory.0kg9iec2ol.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5992,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Private.CoreLib.u1uza0gk4h.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 355218,
+        "decodedBodySize": 1574165
+       },
+       {
+        "name": "/aot/_framework/System.Private.Uri.38huphuz3v.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 15180,
+        "decodedBodySize": 62229
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.tms6ssaz0a.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2913,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.JavaScript.tixfau2afw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 14427,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.4k7yk57eu0.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2449,
+        "decodedBodySize": 7445
+       },
+       {
+        "name": "/aot/_framework/System.Security.Cryptography.jeq6jm5fnc.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5672,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Text.Encodings.Web.h5dq968kq9.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7084,
+        "decodedBodySize": 29461
+       },
+       {
+        "name": "/aot/_framework/System.Text.Json.bwhlwl6sty.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 92682,
+        "decodedBodySize": 376597
+       },
+       {
+        "name": "/aot/_framework/System.Text.RegularExpressions.oe58lslesp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5498,
+        "decodedBodySize": 15125
+       },
+       {
+        "name": "/aot/_framework/icudt_EFIGS.tptq2av103.dat",
+        "transferSize": 0,
+        "encodedBodySize": 143983,
+        "decodedBodySize": 550832
+       }
+      ],
+      "info": {}
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "blocks",
+     "dataset": "events-100000",
+     "build": "aot",
+     "params": {
+      "chunk": 10000,
+      "batch": 1000,
+      "parallel": true,
+      "importBatch": 1000,
+      "durability": "default",
+      "search": "none"
+     },
+     "blockBench": {
+      "events": 100000,
+      "plainBytes": 115999744,
+      "perEvent": {
+       "readMs": 4411.3,
+       "decryptMs": 7026,
+       "calls": 100000
+      },
+      "blocks": {
+       "100": {
+        "blocks": 1000,
+        "writeMs": 1661.6,
+        "readMs": 339.1,
+        "decryptMs": 992,
+        "verified": true
+       },
+       "1000": {
+        "blocks": 100,
+        "writeMs": 1201.2,
+        "readMs": 280.9,
+        "decryptMs": 895.7,
+        "verified": true
+       },
+       "10000": {
+        "blocks": 10,
+        "writeMs": 1242.1,
+        "readMs": 385.6,
+        "decryptMs": 1404.9,
+        "verified": true
+       }
+      }
+     },
+     "appReadyMs": 1349.7,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 8.599999994039536
+     },
+     "storage": {
+      "usage": 190874150,
+      "quota": 137868732825,
+      "usageDetails": {
+       "indexedDB": 190874150
+      },
+      "battery": {
+       "charging": false,
+       "level": 0.92
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+      "deviceMemory": 8,
+      "hardwareConcurrency": 8,
+      "serviceWorkerAvailable": true,
+      "navigation": {
+       "responseEnd": 182.69999998807907,
+       "domContentLoaded": 272.5,
+       "loadEventEnd": 272.69999998807907
+      },
+      "transfer": {
+       "transferSize": 944,
+       "encodedBodySize": 4194064,
+       "decodedBodySize": 17884402,
+       "resources": 47
+      },
+      "resources": [
+       {
+        "name": "/aot/_framework/dotnet.s8hvjn1h1m.js",
+        "transferSize": 0,
+        "encodedBodySize": 13363,
+        "decodedBodySize": 49748
+       },
+       {
+        "name": "/aot/_framework/blazor.webassembly.w3qd1tpl0e.js",
+        "transferSize": 0,
+        "encodedBodySize": 0,
+        "decodedBodySize": 0
+       },
+       {
+        "name": "/aot/_framework/dotnet.runtime.v2rwe8u38b.js",
+        "transferSize": 0,
+        "encodedBodySize": 47651,
+        "decodedBodySize": 197975
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.9nza858klr.js",
+        "transferSize": 0,
+        "encodedBodySize": 43417,
+        "decodedBodySize": 225741
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.k0twhgmnuu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3128787,
+        "decodedBodySize": 13727240
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.egzuywrrjp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 49985,
+        "decodedBodySize": 172821
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.Web.jiod8wp9ih.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16505,
+        "decodedBodySize": 56085
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.WebAssembly.ihvwn5xvaz.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 33429,
+        "decodedBodySize": 118037
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Abstractions.jdku1tfeyu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2344,
+        "decodedBodySize": 6933
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Json.f5s2awx3ir.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4009,
+        "decodedBodySize": 10517
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.ze9wxczbn2.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3476,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.c5pdvvyczg.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7937,
+        "decodedBodySize": 25877
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.qpkt37nppd.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16398,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.Abstractions.guktsrlp8m.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 9749,
+        "decodedBodySize": 27413
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.r0zdvdeo0g.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 6916,
+        "decodedBodySize": 17685
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Options.fuq257x90j.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7012,
+        "decodedBodySize": 16661
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Primitives.y1pmi8p1bs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3337,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.WebAssembly.igy9hupfat.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4892,
+        "decodedBodySize": 12053
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.85sp5xprpw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16480,
+        "decodedBodySize": 45845
+       },
+       {
+        "name": "/aot/_framework/SpikeApp.ucww8pohrk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 21085,
+        "decodedBodySize": 71957
+       },
+       {
+        "name": "/aot/_framework/SpikeCore.tfa2oserll.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 19101,
+        "decodedBodySize": 91413
+       },
+       {
+        "name": "/aot/_framework/System.Collections.ap5qb1tk2s.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8664,
+        "decodedBodySize": 22293
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Concurrent.44hz940h5d.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8522,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Immutable.84rozeukdk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 17488,
+        "decodedBodySize": 50965
+       },
+       {
+        "name": "/aot/_framework/System.ComponentModel.s232flgnjt.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 1708,
+        "decodedBodySize": 4885
+       },
+       {
+        "name": "/aot/_framework/System.Console.tyrcrfhcvs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5634,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Diagnostics.DiagnosticSource.klwcair8b8.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 13680,
+        "decodedBodySize": 39701
+       },
+       {
+        "name": "/aot/_framework/System.IO.Pipelines.sqnlotvinv.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2351,
+        "decodedBodySize": 5909
+       },
+       {
+        "name": "/aot/_framework/System.Linq.j0q5nfnyh4.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 20119,
+        "decodedBodySize": 50453
+       },
+       {
+        "name": "/aot/_framework/System.Memory.0kg9iec2ol.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5992,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Private.CoreLib.u1uza0gk4h.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 355218,
+        "decodedBodySize": 1574165
+       },
+       {
+        "name": "/aot/_framework/System.Private.Uri.38huphuz3v.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 15180,
+        "decodedBodySize": 62229
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.tms6ssaz0a.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2913,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.JavaScript.tixfau2afw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 14427,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.4k7yk57eu0.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2449,
+        "decodedBodySize": 7445
+       },
+       {
+        "name": "/aot/_framework/System.Security.Cryptography.jeq6jm5fnc.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5672,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Text.Encodings.Web.h5dq968kq9.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7084,
+        "decodedBodySize": 29461
+       },
+       {
+        "name": "/aot/_framework/System.Text.Json.bwhlwl6sty.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 92682,
+        "decodedBodySize": 376597
+       },
+       {
+        "name": "/aot/_framework/System.Text.RegularExpressions.oe58lslesp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5498,
+        "decodedBodySize": 15125
+       },
+       {
+        "name": "/aot/_framework/icudt_EFIGS.tptq2av103.dat",
+        "transferSize": 0,
+        "encodedBodySize": 143983,
+        "decodedBodySize": 550832
+       }
+      ],
+      "info": {}
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "blocks",
+     "dataset": "events-100000",
+     "build": "aot",
+     "params": {
+      "chunk": 10000,
+      "batch": 1000,
+      "parallel": true,
+      "importBatch": 1000,
+      "durability": "default",
+      "search": "none"
+     },
+     "blockBench": {
+      "events": 100000,
+      "plainBytes": 115999744,
+      "perEvent": {
+       "readMs": 4566,
+       "decryptMs": 7034.8,
+       "calls": 100000
+      },
+      "blocks": {
+       "100": {
+        "blocks": 1000,
+        "writeMs": 1706,
+        "readMs": 285,
+        "decryptMs": 962.9,
+        "verified": true
+       },
+       "1000": {
+        "blocks": 100,
+        "writeMs": 1037.1,
+        "readMs": 279.1,
+        "decryptMs": 898.7,
+        "verified": true
+       },
+       "10000": {
+        "blocks": 10,
+        "writeMs": 1024,
+        "readMs": 399,
+        "decryptMs": 1385.8,
+        "verified": true
+       }
+      }
+     },
+     "appReadyMs": 1764.9,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 6.300000011920929
+     },
+     "storage": {
+      "usage": 190934671,
+      "quota": 137868732825,
+      "usageDetails": {
+       "indexedDB": 190934671
+      },
+      "battery": {
+       "charging": false,
+       "level": 0.92
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+      "deviceMemory": 8,
+      "hardwareConcurrency": 8,
+      "serviceWorkerAvailable": true,
+      "navigation": {
+       "responseEnd": 180.5,
+       "domContentLoaded": 387.80000001192093,
+       "loadEventEnd": 388.09999999403954
+      },
+      "transfer": {
+       "transferSize": 3944,
+       "encodedBodySize": 4194064,
+       "decodedBodySize": 17884402,
+       "resources": 47
+      },
+      "resources": [
+       {
+        "name": "/aot/_framework/dotnet.s8hvjn1h1m.js",
+        "transferSize": 300,
+        "encodedBodySize": 13363,
+        "decodedBodySize": 49748
+       },
+       {
+        "name": "/aot/_framework/blazor.webassembly.w3qd1tpl0e.js",
+        "transferSize": 300,
+        "encodedBodySize": 0,
+        "decodedBodySize": 0
+       },
+       {
+        "name": "/aot/_framework/dotnet.runtime.v2rwe8u38b.js",
+        "transferSize": 300,
+        "encodedBodySize": 47651,
+        "decodedBodySize": 197975
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.9nza858klr.js",
+        "transferSize": 300,
+        "encodedBodySize": 43417,
+        "decodedBodySize": 225741
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.k0twhgmnuu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3128787,
+        "decodedBodySize": 13727240
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.egzuywrrjp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 49985,
+        "decodedBodySize": 172821
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.Web.jiod8wp9ih.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16505,
+        "decodedBodySize": 56085
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.WebAssembly.ihvwn5xvaz.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 33429,
+        "decodedBodySize": 118037
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Abstractions.jdku1tfeyu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2344,
+        "decodedBodySize": 6933
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Json.f5s2awx3ir.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4009,
+        "decodedBodySize": 10517
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.ze9wxczbn2.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3476,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.c5pdvvyczg.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7937,
+        "decodedBodySize": 25877
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.qpkt37nppd.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16398,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.Abstractions.guktsrlp8m.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 9749,
+        "decodedBodySize": 27413
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.r0zdvdeo0g.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 6916,
+        "decodedBodySize": 17685
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Options.fuq257x90j.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7012,
+        "decodedBodySize": 16661
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Primitives.y1pmi8p1bs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3337,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.WebAssembly.igy9hupfat.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4892,
+        "decodedBodySize": 12053
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.85sp5xprpw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16480,
+        "decodedBodySize": 45845
+       },
+       {
+        "name": "/aot/_framework/SpikeApp.ucww8pohrk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 21085,
+        "decodedBodySize": 71957
+       },
+       {
+        "name": "/aot/_framework/SpikeCore.tfa2oserll.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 19101,
+        "decodedBodySize": 91413
+       },
+       {
+        "name": "/aot/_framework/System.Collections.ap5qb1tk2s.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8664,
+        "decodedBodySize": 22293
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Concurrent.44hz940h5d.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8522,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Immutable.84rozeukdk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 17488,
+        "decodedBodySize": 50965
+       },
+       {
+        "name": "/aot/_framework/System.ComponentModel.s232flgnjt.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 1708,
+        "decodedBodySize": 4885
+       },
+       {
+        "name": "/aot/_framework/System.Console.tyrcrfhcvs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5634,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Diagnostics.DiagnosticSource.klwcair8b8.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 13680,
+        "decodedBodySize": 39701
+       },
+       {
+        "name": "/aot/_framework/System.IO.Pipelines.sqnlotvinv.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2351,
+        "decodedBodySize": 5909
+       },
+       {
+        "name": "/aot/_framework/System.Linq.j0q5nfnyh4.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 20119,
+        "decodedBodySize": 50453
+       },
+       {
+        "name": "/aot/_framework/System.Memory.0kg9iec2ol.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5992,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Private.CoreLib.u1uza0gk4h.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 355218,
+        "decodedBodySize": 1574165
+       },
+       {
+        "name": "/aot/_framework/System.Private.Uri.38huphuz3v.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 15180,
+        "decodedBodySize": 62229
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.tms6ssaz0a.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2913,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.JavaScript.tixfau2afw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 14427,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.4k7yk57eu0.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2449,
+        "decodedBodySize": 7445
+       },
+       {
+        "name": "/aot/_framework/System.Security.Cryptography.jeq6jm5fnc.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5672,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Text.Encodings.Web.h5dq968kq9.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7084,
+        "decodedBodySize": 29461
+       },
+       {
+        "name": "/aot/_framework/System.Text.Json.bwhlwl6sty.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 92682,
+        "decodedBodySize": 376597
+       },
+       {
+        "name": "/aot/_framework/System.Text.RegularExpressions.oe58lslesp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5498,
+        "decodedBodySize": 15125
+       },
+       {
+        "name": "/aot/_framework/icudt_EFIGS.tptq2av103.dat",
+        "transferSize": 0,
+        "encodedBodySize": 143983,
+        "decodedBodySize": 550832
+       }
+      ],
+      "info": {}
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "blocks",
+     "dataset": "events-100000",
+     "build": "aot",
+     "params": {
+      "chunk": 10000,
+      "batch": 1000,
+      "parallel": true,
+      "importBatch": 1000,
+      "durability": "default",
+      "search": "none"
+     },
+     "blockBench": {
+      "events": 100000,
+      "plainBytes": 115999744,
+      "perEvent": {
+       "readMs": 4214.5,
+       "decryptMs": 7041.4,
+       "calls": 100000
+      },
+      "blocks": {
+       "100": {
+        "blocks": 1000,
+        "writeMs": 1774.9,
+        "readMs": 252,
+        "decryptMs": 966.2,
+        "verified": true
+       },
+       "1000": {
+        "blocks": 100,
+        "writeMs": 1111.8,
+        "readMs": 300.8,
+        "decryptMs": 892.8,
+        "verified": true
+       },
+       "10000": {
+        "blocks": 10,
+        "writeMs": 1048.1,
+        "readMs": 438.1,
+        "decryptMs": 1374,
+        "verified": true
+       }
+      }
+     },
+     "appReadyMs": 1373.7,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 6.199999988079071
+     },
+     "storage": {
+      "usage": 190995228,
+      "quota": 137868732825,
+      "usageDetails": {
+       "indexedDB": 190995228
+      },
+      "battery": {
+       "charging": false,
+       "level": 0.92
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+      "deviceMemory": 8,
+      "hardwareConcurrency": 8,
+      "serviceWorkerAvailable": true,
+      "navigation": {
+       "responseEnd": 195.7000000178814,
+       "domContentLoaded": 261.7000000178814,
+       "loadEventEnd": 262.5
+      },
+      "transfer": {
+       "transferSize": 944,
+       "encodedBodySize": 4194064,
+       "decodedBodySize": 17884402,
+       "resources": 47
+      },
+      "resources": [
+       {
+        "name": "/aot/_framework/dotnet.s8hvjn1h1m.js",
+        "transferSize": 0,
+        "encodedBodySize": 13363,
+        "decodedBodySize": 49748
+       },
+       {
+        "name": "/aot/_framework/blazor.webassembly.w3qd1tpl0e.js",
+        "transferSize": 0,
+        "encodedBodySize": 0,
+        "decodedBodySize": 0
+       },
+       {
+        "name": "/aot/_framework/dotnet.runtime.v2rwe8u38b.js",
+        "transferSize": 0,
+        "encodedBodySize": 47651,
+        "decodedBodySize": 197975
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.9nza858klr.js",
+        "transferSize": 0,
+        "encodedBodySize": 43417,
+        "decodedBodySize": 225741
+       },
+       {
+        "name": "/aot/_framework/dotnet.native.k0twhgmnuu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3128787,
+        "decodedBodySize": 13727240
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.egzuywrrjp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 49985,
+        "decodedBodySize": 172821
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.Web.jiod8wp9ih.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16505,
+        "decodedBodySize": 56085
+       },
+       {
+        "name": "/aot/_framework/Microsoft.AspNetCore.Components.WebAssembly.ihvwn5xvaz.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 33429,
+        "decodedBodySize": 118037
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Abstractions.jdku1tfeyu.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2344,
+        "decodedBodySize": 6933
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.Json.f5s2awx3ir.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4009,
+        "decodedBodySize": 10517
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Configuration.ze9wxczbn2.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3476,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.c5pdvvyczg.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7937,
+        "decodedBodySize": 25877
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.DependencyInjection.qpkt37nppd.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16398,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.Abstractions.guktsrlp8m.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 9749,
+        "decodedBodySize": 27413
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Logging.r0zdvdeo0g.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 6916,
+        "decodedBodySize": 17685
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Options.fuq257x90j.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7012,
+        "decodedBodySize": 16661
+       },
+       {
+        "name": "/aot/_framework/Microsoft.Extensions.Primitives.y1pmi8p1bs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 3337,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.WebAssembly.igy9hupfat.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 4892,
+        "decodedBodySize": 12053
+       },
+       {
+        "name": "/aot/_framework/Microsoft.JSInterop.85sp5xprpw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 16480,
+        "decodedBodySize": 45845
+       },
+       {
+        "name": "/aot/_framework/SpikeApp.ucww8pohrk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 21085,
+        "decodedBodySize": 71957
+       },
+       {
+        "name": "/aot/_framework/SpikeCore.tfa2oserll.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 19101,
+        "decodedBodySize": 91413
+       },
+       {
+        "name": "/aot/_framework/System.Collections.ap5qb1tk2s.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8664,
+        "decodedBodySize": 22293
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Concurrent.44hz940h5d.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 8522,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Collections.Immutable.84rozeukdk.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 17488,
+        "decodedBodySize": 50965
+       },
+       {
+        "name": "/aot/_framework/System.ComponentModel.s232flgnjt.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 1708,
+        "decodedBodySize": 4885
+       },
+       {
+        "name": "/aot/_framework/System.Console.tyrcrfhcvs.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5634,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Diagnostics.DiagnosticSource.klwcair8b8.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 13680,
+        "decodedBodySize": 39701
+       },
+       {
+        "name": "/aot/_framework/System.IO.Pipelines.sqnlotvinv.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2351,
+        "decodedBodySize": 5909
+       },
+       {
+        "name": "/aot/_framework/System.Linq.j0q5nfnyh4.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 20119,
+        "decodedBodySize": 50453
+       },
+       {
+        "name": "/aot/_framework/System.Memory.0kg9iec2ol.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5992,
+        "decodedBodySize": 14613
+       },
+       {
+        "name": "/aot/_framework/System.Private.CoreLib.u1uza0gk4h.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 355218,
+        "decodedBodySize": 1574165
+       },
+       {
+        "name": "/aot/_framework/System.Private.Uri.38huphuz3v.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 15180,
+        "decodedBodySize": 62229
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.tms6ssaz0a.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2913,
+        "decodedBodySize": 8981
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.InteropServices.JavaScript.tixfau2afw.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 14427,
+        "decodedBodySize": 46869
+       },
+       {
+        "name": "/aot/_framework/System.Runtime.4k7yk57eu0.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 2449,
+        "decodedBodySize": 7445
+       },
+       {
+        "name": "/aot/_framework/System.Security.Cryptography.jeq6jm5fnc.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5672,
+        "decodedBodySize": 20757
+       },
+       {
+        "name": "/aot/_framework/System.Text.Encodings.Web.h5dq968kq9.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 7084,
+        "decodedBodySize": 29461
+       },
+       {
+        "name": "/aot/_framework/System.Text.Json.bwhlwl6sty.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 92682,
+        "decodedBodySize": 376597
+       },
+       {
+        "name": "/aot/_framework/System.Text.RegularExpressions.oe58lslesp.wasm",
+        "transferSize": 0,
+        "encodedBodySize": 5498,
+        "decodedBodySize": 15125
+       },
+       {
+        "name": "/aot/_framework/icudt_EFIGS.tptq2av103.dat",
+        "transferSize": 0,
+        "encodedBodySize": 143983,
+        "decodedBodySize": 550832
+       }
+      ],
+      "info": {}
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    }
+   ],
+   "summary": {
+    "cold": null,
+    "warm": {
+     "appReadyMs": {
+      "n": 5,
+      "median": 1373.7,
+      "p95": 1822.1,
+      "min": 1325.7,
+      "max": 1822.1
+     },
+     "blockBench.blocks.100.blocks": {
+      "n": 5,
+      "median": 1000,
+      "p95": 1000,
+      "min": 1000,
+      "max": 1000
+     },
+     "blockBench.blocks.100.decryptMs": {
+      "n": 5,
+      "median": 967.9,
+      "p95": 992,
+      "min": 962.9,
+      "max": 992
+     },
+     "blockBench.blocks.100.readMs": {
+      "n": 5,
+      "median": 285,
+      "p95": 339.1,
+      "min": 252,
+      "max": 339.1
+     },
+     "blockBench.blocks.100.writeMs": {
+      "n": 5,
+      "median": 1706,
+      "p95": 1792.9,
+      "min": 1661.6,
+      "max": 1792.9
+     },
+     "blockBench.blocks.1000.blocks": {
+      "n": 5,
+      "median": 100,
+      "p95": 100,
+      "min": 100,
+      "max": 100
+     },
+     "blockBench.blocks.1000.decryptMs": {
+      "n": 5,
+      "median": 895.7,
+      "p95": 902.6,
+      "min": 883.7,
+      "max": 902.6
+     },
+     "blockBench.blocks.1000.readMs": {
+      "n": 5,
+      "median": 279.1,
+      "p95": 300.8,
+      "min": 251.8,
+      "max": 300.8
+     },
+     "blockBench.blocks.1000.writeMs": {
+      "n": 5,
+      "median": 1111.8,
+      "p95": 1593.9,
+      "min": 1037.1,
+      "max": 1593.9
+     },
+     "blockBench.blocks.10000.blocks": {
+      "n": 5,
+      "median": 10,
+      "p95": 10,
+      "min": 10,
+      "max": 10
+     },
+     "blockBench.blocks.10000.decryptMs": {
+      "n": 5,
+      "median": 1389,
+      "p95": 1439,
+      "min": 1374,
+      "max": 1439
+     },
+     "blockBench.blocks.10000.readMs": {
+      "n": 5,
+      "median": 399,
+      "p95": 438.1,
+      "min": 369.2,
+      "max": 438.1
+     },
+     "blockBench.blocks.10000.writeMs": {
+      "n": 5,
+      "median": 1115,
+      "p95": 1259.1,
+      "min": 1024,
+      "max": 1259.1
+     },
+     "blockBench.events": {
+      "n": 5,
+      "median": 100000,
+      "p95": 100000,
+      "min": 100000,
+      "max": 100000
+     },
+     "blockBench.perEvent.calls": {
+      "n": 5,
+      "median": 100000,
+      "p95": 100000,
+      "min": 100000,
+      "max": 100000
+     },
+     "blockBench.perEvent.decryptMs": {
+      "n": 5,
+      "median": 7026.5,
+      "p95": 7041.4,
+      "min": 6994.2,
+      "max": 7041.4
+     },
+     "blockBench.perEvent.readMs": {
+      "n": 5,
+      "median": 4535.7,
+      "p95": 4616,
+      "min": 4214.5,
+      "max": 4616
+     },
+     "blockBench.plainBytes": {
+      "n": 5,
+      "median": 115999744,
+      "p95": 115999744,
+      "min": 115999744,
+      "max": 115999744
+     },
+     "environment.deviceMemory": {
+      "n": 5,
+      "median": 8,
+      "p95": 8,
+      "min": 8,
+      "max": 8
+     },
+     "environment.hardwareConcurrency": {
+      "n": 5,
+      "median": 8,
+      "p95": 8,
+      "min": 8,
+      "max": 8
+     },
+     "environment.navigation.domContentLoaded": {
+      "n": 5,
+      "median": 272.5,
+      "p95": 425.8,
+      "min": 237,
+      "max": 425.8
+     },
+     "environment.navigation.loadEventEnd": {
+      "n": 5,
+      "median": 272.7,
+      "p95": 426.8,
+      "min": 237.2,
+      "max": 426.8
+     },
+     "environment.navigation.responseEnd": {
+      "n": 5,
+      "median": 182.7,
+      "p95": 208.6,
+      "min": 161.4,
+      "max": 208.6
+     },
+     "environment.transfer.decodedBodySize": {
+      "n": 5,
+      "median": 17884402,
+      "p95": 17945902,
+      "min": 17884402,
+      "max": 17945902
+     },
+     "environment.transfer.encodedBodySize": {
+      "n": 5,
+      "median": 4194064,
+      "p95": 4211232,
+      "min": 4194064,
+      "max": 4211232
+     },
+     "environment.transfer.resources": {
+      "n": 5,
+      "median": 47,
+      "p95": 47,
+      "min": 47,
+      "max": 47
+     },
+     "environment.transfer.transferSize": {
+      "n": 5,
+      "median": 944,
+      "p95": 3944,
+      "min": 944,
+      "max": 3944
+     },
+     "jsPhases.openMs": {
+      "n": 5,
+      "median": 8.3,
+      "p95": 9.3,
+      "min": 6.2,
+      "max": 9.3
+     },
+     "storage.battery.level": {
+      "n": 5,
+      "median": 0.92,
+      "p95": 0.92,
+      "min": 0.92,
+      "max": 0.92
+     },
+     "storage.quota": {
+      "n": 5,
+      "median": 137868732825,
+      "p95": 137868732825,
+      "min": 137868732825,
+      "max": 137868732825
+     },
+     "storage.usage": {
+      "n": 5,
+      "median": 190874150,
+      "p95": 190995228,
+      "min": 190753582,
+      "max": 190995228
+     },
+     "storage.usageDetails.indexedDB": {
+      "n": 5,
+      "median": 190874150,
+      "p95": 190995228,
+      "min": 190753582,
+      "max": 190995228
+     }
+    }
+   }
+  }
+ ]
+}

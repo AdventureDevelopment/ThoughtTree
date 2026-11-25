@@ -76,7 +76,14 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
     | JSON parsing | 2.36 s | 2.17 s |
 
     .NET runs equally fast in both browsers. The difference is browser work: Chrome decrypts the 100,000 events, one AES-GCM call each, 3.7 times slower, and reads them 1.75 times slower.
-  - **Possible remedies**, not measured: decrypt fewer, larger units on the device (for example, store events locally in encrypted chunks of many events, while each event keeps its own envelope for sync), or lean on the snapshot so that a full replay stays rare.
+  - **Remedy, measured: decryption in blocks** (T10; Chrome on the phone, 5 runs). The same 100,000 events were stored once more as blocks of 1,000 events, each encrypted with the tree key through Web Crypto. ADR-073 asks for this ("SHOULD batch Web Crypto calls during replay"), and the key stays a non-extractable handle.
+
+    | | One call per event | Blocks of 1,000 |
+    | --- | --- | --- |
+    | Decrypt | 7.0 s | 0.90 s |
+    | Read | 4.5 s | 0.28 s |
+
+    Blocks of 100 give nearly the same (0.97 s and 0.29 s), blocks of 10,000 slightly less (1.39 s and 0.40 s). Writing the blocks took 1.1 to 1.7 s once. Estimated from the parts, not measured as a whole: a replay that reads blocks would take about 6 s in Chrome instead of 15.9 s, within 10 s. The per-event envelopes stay as they are for sync; the blocks are a local, rebuildable form like the snapshot.
   - **Outliers:** single disturbed runs (screen or other apps, owner's note) show up as one slow run in a series, for example one warm interpreted full replay of 45.5 s against about 21 s. The medians are unaffected; the p95 of that series is not meaningful.
 - **On the tablet, Chrome** (Galaxy Tab S6 Lite, T1 to T3):
   - **Warm, the tablet is faster than the phone:** snapshot start 1.25 s with AOT (interpreted 2.30 s); full replay 10.6 s (15.8 s). Decryption takes 3.8 s and the IndexedDB read 3.4 s.
@@ -157,6 +164,7 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 | AOT | **Use AOT** for release 1 | Faster in every warm measurement on phone and tablet: replay 1.4 to 2.0×, snapshot start 1.2 to 1.8×; on the desktop the only build meeting PF1. Cost: +2.1 MB Brotli, which on a slow connection makes the first, uncached start slower (tablet: 9.2 against 4.4 s); with the service worker cache only the first start pays it. In Chrome the 10 s replay target is missed even with AOT (Web Crypto, see 2.1) |
 | First-load budget (PF5, decision 5) | **4.8 MB Brotli** (AOT 4.38 MB measured + about 10 %); 2.5 MB if interpreted is chosen | T4 |
 | Load budget (app ready) | Two budgets instead of one: **1.5 s for a start from the cache** (service worker or HTTP cache; AOT), and **3 s for the first start over a good connection**, which the first-load size budget limits; the owner decides whether the first start is budgeted at all, because it depends on the network | Cached (warm) empty app with AOT: 0.9 s tablet, 1.09 s and 1.32 s phone. Uncached: 1.48 s and 1.74 s phone (p95 2.22 and 2.79 s), but 9.2 s on the tablet's connection; replaces the provisional 4 s from the 6x fallback |
+| Local event blocks | **Keep events locally also in encrypted blocks of about 1,000** (tree key, Web Crypto, rebuildable from the per-event envelopes), and replay from them; a stored format, so to be decided before release 1 | Chrome on the phone: decrypt 7.0 → 0.90 s, read 4.5 → 0.28 s for 100,000 events (T10); estimated full replay about 6 s instead of 15.9 s |
 | Snapshot policy | Write a snapshot after about every 1,000 new events and when the app goes to the background; keep the previous one until the new one is committed. Keep snapshots across app updates unless their format version changes, because a full replay on the phone takes 8 to 16 s with AOT and needs a progress display. Consider decrypting larger local units (2.1) | Phone, AOT: snapshot start 2.0 to 2.3 s against full replay 8.1 s (Firefox) and 15.9 s (Chrome); 0 snapshot losses in 100 kills |
 | Search | **Variant A** (in memory, no persisted index in release 1) with AOT. With the interpreted build, B instead | Phone, AOT: first hits 0.89 to 0.99 s (A) against 0.75 to 0.81 s (B) after tree visible; interpreted 3.2 to 3.4 s against 1.9 to 2.1 s; queries ≤ 6 ms p95 |
 | Durability rule | Acknowledge a write on the transaction's `complete` event. Chromium `relaxed` is enough against process kills. Use `strict` for the event log if the owner wants cover for OS crashes (cost about 13 % fewer writes); Firefox default | 940 kills on the desktop and 20 swipe-aways on the phone (10 Firefox, 10 Chrome), 0 findings |
@@ -200,4 +208,4 @@ Search (Q4) and the size limits (Q5) are in sections 2.4 and 2.5 and in tables T
 2. **Decisions (S11).** Decide AOT, the first-load and load budgets, the snapshot policy, the search variant, the durability rule and the size numbers.
 3. **Follow-up changes.** These follow as separate pull requests, as proposals only:
    - `architecture.md`: the PF5 value; open decisions "Size limits" (numbers) and "Optional unencrypted search index" (numbers from T6); the build mode in section 2.
-   - Proposed ADRs: size limits; snapshot policy; storage acknowledgement rule.
+   - Proposed ADRs: size limits; snapshot policy; local event blocks; storage acknowledgement rule.
