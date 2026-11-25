@@ -5,8 +5,8 @@ public readonly record struct EventClock(long Time, int Counter) : IComparable<E
 {
     public int CompareTo(EventClock other)
     {
-        int byTime = Time.CompareTo(other.Time);
-        return byTime != 0 ? byTime : Counter.CompareTo(other.Counter);
+        int byTime = this.Time.CompareTo(other.Time);
+        return byTime != 0 ? byTime : this.Counter.CompareTo(other.Counter);
     }
 
     public static bool operator <(EventClock left, EventClock right) => left.CompareTo(right) < 0;

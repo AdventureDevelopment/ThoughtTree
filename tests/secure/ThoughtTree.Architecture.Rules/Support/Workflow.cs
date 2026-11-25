@@ -11,18 +11,18 @@ internal sealed class Workflow
 {
     private Workflow(string path, YamlMappingNode root)
     {
-        Path = path;
-        Root = root;
-        Triggers = ReadTriggers(Child(root, "on"));
-        Permissions = Child(root, "permissions");
-        Jobs = Child(root, "jobs") is YamlMappingNode jobs
+        this.Path = path;
+        this.Root = root;
+        this.Triggers = ReadTriggers(Child(root, "on"));
+        this.Permissions = Child(root, "permissions");
+        this.Jobs = Child(root, "jobs") is YamlMappingNode jobs
             ? jobs.Children.Select(j => new WorkflowJob(Scalar(j.Key) ?? string.Empty, j.Value as YamlMappingNode ?? new YamlMappingNode(), this)).ToList()
             : [];
     }
 
     public string Path { get; }
 
-    public string Name => Repository.Relative(Path);
+    public string Name => Repository.Relative(this.Path);
 
     public YamlMappingNode Root { get; }
 
@@ -93,12 +93,12 @@ internal sealed class WorkflowJob(string id, YamlMappingNode node, Workflow work
     public Workflow Workflow { get; } = workflow;
 
     /// <summary>The job's own permissions, or the workflow's when the job has none.</summary>
-    public YamlNode? EffectivePermissions => Workflow.Child(Node, "permissions") ?? Workflow.Permissions;
+    public YamlNode? EffectivePermissions => Workflow.Child(this.Node, "permissions") ?? this.Workflow.Permissions;
 
-    public bool CanRequestIdToken => Workflow.GrantsWrite(EffectivePermissions, "id-token");
+    public bool CanRequestIdToken => Workflow.GrantsWrite(this.EffectivePermissions, "id-token");
 
     /// <summary>The GitHub environment name, from `environment: name` or `environment: { name: ... }`.</summary>
-    public string? Environment => Workflow.Child(Node, "environment") switch
+    public string? Environment => Workflow.Child(this.Node, "environment") switch
     {
         YamlScalarNode s => s.Value,
         YamlMappingNode m => Workflow.Scalar(Workflow.Child(m, "name")),
@@ -106,13 +106,13 @@ internal sealed class WorkflowJob(string id, YamlMappingNode node, Workflow work
     };
 
     /// <summary>The reusable workflow a job calls (`uses:` at job level), or null.</summary>
-    public string? Calls => Workflow.Scalar(Workflow.Child(Node, "uses"));
+    public string? Calls => Workflow.Scalar(Workflow.Child(this.Node, "uses"));
 
-    public IReadOnlyList<WorkflowStep> Steps => Workflow.Child(Node, "steps") is YamlSequenceNode steps
+    public IReadOnlyList<WorkflowStep> Steps => Workflow.Child(this.Node, "steps") is YamlSequenceNode steps
         ? steps.Children.OfType<YamlMappingNode>().Select(s => new WorkflowStep(s)).ToList()
         : [];
 
-    public override string ToString() => $"{Workflow.Name}: job {Id}";
+    public override string ToString() => $"{this.Workflow.Name}: job {this.Id}";
 }
 
 /// <summary>One step of a job.</summary>
@@ -120,11 +120,11 @@ internal sealed class WorkflowStep(YamlMappingNode node)
 {
     public YamlMappingNode Node { get; } = node;
 
-    public string? Uses => Workflow.Scalar(Workflow.Child(Node, "uses"));
+    public string? Uses => Workflow.Scalar(Workflow.Child(this.Node, "uses"));
 
-    public string? Run => Workflow.Scalar(Workflow.Child(Node, "run"));
+    public string? Run => Workflow.Scalar(Workflow.Child(this.Node, "run"));
 
-    public string? With(string input) => Workflow.Scalar(Workflow.Child(Workflow.Child(Node, "with"), input));
+    public string? With(string input) => Workflow.Scalar(Workflow.Child(Workflow.Child(this.Node, "with"), input));
 
-    public bool HasWith(string input) => Workflow.Child(Workflow.Child(Node, "with"), input) is not null;
+    public bool HasWith(string input) => Workflow.Child(Workflow.Child(this.Node, "with"), input) is not null;
 }

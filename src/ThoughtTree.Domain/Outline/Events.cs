@@ -5,7 +5,7 @@ namespace ThoughtTree.Domain.Outline;
 /// <summary>Ids are lowercase GUID text; ordinal comparison (ADR-014).</summary>
 public readonly record struct ItemId(string Value)
 {
-    public override string ToString() => Value;
+    public override string ToString() => this.Value;
 }
 
 /// <summary>An immutable fact about a tree (ADR-002). Header fields are shared by every event.</summary>

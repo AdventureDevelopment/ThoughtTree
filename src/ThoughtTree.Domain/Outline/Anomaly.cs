@@ -2,7 +2,7 @@ namespace ThoughtTree.Domain.Outline;
 
 public enum AnomalyKind
 {
-    // Declared in alphabetical order of their names: anomalies are listed in this order (model contract).
+    // Alphabetical: Tree.Anomalies lists kinds in this order, as the reference model does.
     /// <summary>A second creation of an item id that exists; kept in the log, not applied.</summary>
     DuplicateCreate,
 

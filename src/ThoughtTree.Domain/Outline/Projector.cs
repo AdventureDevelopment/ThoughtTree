@@ -8,9 +8,9 @@ public sealed class Snapshot
 {
     internal Snapshot(Tree tree, EventKey? last, HashSet<string> ids)
     {
-        Tree = tree;
-        Last = last;
-        Ids = ids;
+        this.Tree = tree;
+        this.Last = last;
+        this.Ids = ids;
     }
 
     internal Tree Tree { get; }
@@ -24,11 +24,11 @@ public sealed class Snapshot
 /// </summary>
 public sealed class Projector
 {
-    private readonly HashSet<string> _ids = new(StringComparer.Ordinal);
-    private EventKey? _last;
-    private Tree _tree = new();
+    private readonly HashSet<string> ids = new(StringComparer.Ordinal);
+    private EventKey? last;
+    private Tree tree = new();
 
-    public Tree Tree => _tree;
+    public Tree Tree => this.tree;
 
     /// <returns>
     /// True if the event is now part of the tree (or was already). False if it belongs before the events already
@@ -36,26 +36,26 @@ public sealed class Projector
     /// </returns>
     public bool TryAdd(TreeEvent e)
     {
-        if (_ids.Contains(e.EventId))
+        if (this.ids.Contains(e.EventId))
         {
             return true; // INV-2
         }
 
         EventKey key = EventKey.Of(e);
-        if (_last is { } last && EventKey.Comparer.Compare(key, last) < 0)
+        if (this.last is { } last && EventKey.Comparer.Compare(key, last) < 0)
         {
             return false;
         }
 
-        _ids.Add(e.EventId);
-        _last = key;
-        Projection.Apply(_tree, e);
-        _tree.SortAnomalies();
+        this.ids.Add(e.EventId);
+        this.last = key;
+        Projection.Apply(this.tree, e);
+        this.tree.SortAnomalies();
         return true;
     }
 
     /// <summary>A copy of the current state; later events do not change it.</summary>
-    public Snapshot TakeSnapshot() => new(_tree.Clone(), _last, [.. _ids]);
+    public Snapshot TakeSnapshot() => new(this.tree.Clone(), this.last, [.. this.ids]);
 
     /// <summary>
     /// Carries on from a snapshot with the events it does not contain. Returns null if the snapshot is stale: an unseen
@@ -63,8 +63,8 @@ public sealed class Projector
     /// </summary>
     public static Projector? TryResume(Snapshot snapshot, IEnumerable<TreeEvent> remaining)
     {
-        var projector = new Projector { _tree = snapshot.Tree.Clone(), _last = snapshot.Last };
-        projector._ids.UnionWith(snapshot.Ids);
+        var projector = new Projector { tree = snapshot.Tree.Clone(), last = snapshot.Last };
+        projector.ids.UnionWith(snapshot.Ids);
 
         foreach (TreeEvent e in remaining.OrderBy(EventKey.Of, EventKey.Comparer))
         {

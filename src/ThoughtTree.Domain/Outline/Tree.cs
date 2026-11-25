@@ -14,58 +14,58 @@ public sealed class Item(ItemId id, string title, string note)
 /// <summary>The tree as a projection of the event log (ADR-002).</summary>
 public sealed class Tree
 {
-    private readonly List<Anomaly> _anomalies = [];
+    private readonly List<Anomaly> anomalies = [];
 
     internal Dictionary<ItemId, Item> Items { get; } = [];
     internal List<ItemId> TopLevel { get; } = [];
 
     /// <summary>Every item ever created, visible or deleted (INV-5).</summary>
-    public IReadOnlyCollection<Item> AllItems => Items.Values;
+    public IReadOnlyCollection<Item> AllItems => this.Items.Values;
 
     /// <summary>Events the user should review: flagged or not applied. Sorted by kind, then event id.</summary>
-    public IReadOnlyList<Anomaly> Anomalies => _anomalies;
+    public IReadOnlyList<Anomaly> Anomalies => this.anomalies;
 
     /// <summary>Top-level items in order, deleted ones included.</summary>
-    public IReadOnlyList<ItemId> TopLevelOrder => TopLevel;
+    public IReadOnlyList<ItemId> TopLevelOrder => this.TopLevel;
 
     /// <summary>Children of an item in order, deleted ones included.</summary>
-    public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => Items[id].Children;
+    public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => this.Items[id].Children;
 
-    internal void Report(AnomalyKind kind, string eventId) => _anomalies.Add(new Anomaly(kind, eventId));
+    internal void Report(AnomalyKind kind, string eventId) => this.anomalies.Add(new Anomaly(kind, eventId));
 
     internal void SortAnomalies() =>
-        _anomalies.Sort((a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId));
+        this.anomalies.Sort((a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId));
 
     /// <summary>A deep copy that shares nothing with this tree; used for snapshots.</summary>
     internal Tree Clone()
     {
         var copy = new Tree();
-        foreach ((ItemId id, Item item) in Items)
+        foreach ((ItemId id, Item item) in this.Items)
         {
             var c = new Item(id, item.Title, item.Note) { Deleted = item.Deleted, Parent = item.Parent };
             c.Children.AddRange(item.Children);
             copy.Items[id] = c;
         }
 
-        copy.TopLevel.AddRange(TopLevel);
-        copy._anomalies.AddRange(_anomalies);
+        copy.TopLevel.AddRange(this.TopLevel);
+        copy.anomalies.AddRange(this.anomalies);
         return copy;
     }
 
-    public Item? Find(ItemId id) => Items.GetValueOrDefault(id);
+    public Item? Find(ItemId id) => this.Items.GetValueOrDefault(id);
 
     /// <summary>Items in outline order that a user sees: not deleted and no deleted ancestor.</summary>
     public IReadOnlyList<(int Depth, Item Item)> VisibleOutline()
     {
         var result = new List<(int, Item)>();
-        Walk(TopLevel, 0);
+        Walk(this.TopLevel, 0);
         return result;
 
         void Walk(List<ItemId> ids, int depth)
         {
             foreach (ItemId id in ids)
             {
-                Item item = Items[id];
+                Item item = this.Items[id];
                 if (item.Deleted)
                 {
                     continue;
@@ -79,11 +79,11 @@ public sealed class Tree
 
     /// <summary>Titles as an indented text outline, for expected-tree comparisons.</summary>
     public string ToOutline() =>
-        string.Join('\n', VisibleOutline().Select(e => new string(' ', e.Depth * 2) + "- " + e.Item.Title));
+        string.Join('\n', this.VisibleOutline().Select(e => new string(' ', e.Depth * 2) + "- " + e.Item.Title));
 
     internal bool IsSameOrDescendant(ItemId candidate, ItemId ancestor)
     {
-        for (ItemId? current = candidate; current is { } c; current = Items[c].Parent)
+        for (ItemId? current = candidate; current is { } c; current = this.Items[c].Parent)
         {
             if (c == ancestor)
             {
@@ -94,5 +94,5 @@ public sealed class Tree
         return false;
     }
 
-    internal List<ItemId> SiblingsOf(ItemId? parent) => parent is { } p ? Items[p].Children : TopLevel;
+    internal List<ItemId> SiblingsOf(ItemId? parent) => parent is { } p ? this.Items[p].Children : this.TopLevel;
 }

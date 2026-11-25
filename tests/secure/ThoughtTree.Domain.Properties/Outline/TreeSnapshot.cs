@@ -59,10 +59,22 @@ public static class TreeSnapshot
         var sb = new StringBuilder("\"");
         foreach (char ch in s)
         {
-            if (ch == '"') sb.Append("\\\"");
-            else if (ch == '\\') sb.Append("\\\\");
-            else if (ch >= ' ' && ch <= '~') sb.Append(ch);
-            else sb.Append("\\u").Append(((int)ch).ToString("x4", System.Globalization.CultureInfo.InvariantCulture));
+            if (ch == '"')
+            {
+                sb.Append("\\\"");
+            }
+            else if (ch == '\\')
+            {
+                sb.Append("\\\\");
+            }
+            else if (ch >= ' ' && ch <= '~')
+            {
+                sb.Append(ch);
+            }
+            else
+            {
+                sb.Append("\\u").Append(((int)ch).ToString("x4", System.Globalization.CultureInfo.InvariantCulture));
+            }
         }
 
         return sb.Append('"').ToString();

@@ -6,21 +6,21 @@ namespace ThoughtTree.Architecture.Rules.Support;
 internal sealed partial record VerifyLine(string Adr, string Command, string Comment)
 {
     /// <summary>The ADR named in <c>dotnet test --filter "ADR=ADR-0xx"</c>, or null for other commands.</summary>
-    public string? FilterAdr => FilterPattern().Match(Command) is { Success: true } m ? m.Groups[1].Value : null;
+    public string? FilterAdr => FilterPattern().Match(this.Command) is { Success: true } m ? m.Groups[1].Value : null;
 
     /// <summary>The loop the line waits for (after deployment, release, server), wherever "when:" appears in the comment.</summary>
-    public string? When => WhenPattern().Match(Comment) is { Success: true } m ? m.Groups[1].Value : null;
+    public string? When => WhenPattern().Match(this.Comment) is { Success: true } m ? m.Groups[1].Value : null;
 
     /// <summary>True when the comment starts with "when:", the form docs/adr/README.md uses.</summary>
-    public bool HasCanonicalWhen => CanonicalWhenPattern().IsMatch(Comment);
+    public bool HasCanonicalWhen => CanonicalWhenPattern().IsMatch(this.Comment);
 
     /// <summary>A check that only reads files: grep, negated grep or sha256sum.</summary>
-    public bool IsStatic => StaticPattern().IsMatch(Command);
+    public bool IsStatic => StaticPattern().IsMatch(this.Command);
 
     /// <summary>The value after "expect", if the comment names one.</summary>
-    public string? Expected => ExpectPattern().Match(Comment) is { Success: true } m ? m.Groups[1].Value : null;
+    public string? Expected => ExpectPattern().Match(this.Comment) is { Success: true } m ? m.Groups[1].Value : null;
 
-    public override string ToString() => $"{Adr}: {Command}";
+    public override string ToString() => $"{this.Adr}: {this.Command}";
 
     [GeneratedRegex(@"^dotnet test --filter ""ADR=(ADR-\d{3})""$", RegexOptions.CultureInvariant)]
     private static partial Regex FilterPattern();

@@ -10,8 +10,7 @@ public static class Projection
         var tree = new Tree();
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
-        // One total order: clock, device, then event id. Only bad data ties on clock and device (INV-8);
-        // the event id keeps the order independent of arrival then (INV-1).
+        // INV-1: events that tie on clock and device (bad data only) fall back to the event id.
         List<TreeEvent> ordered = events
             .Where(e => seen.Add(e.EventId)) // INV-2: the same event twice changes nothing
             .OrderBy(EventKey.Of, EventKey.Comparer)
@@ -61,8 +60,7 @@ public static class Projection
 
     private static void Place(Tree tree, ItemId id, ItemId? parent, ItemId? after)
     {
-        // ADR-023: a missing parent or a move under itself or its own subtree puts the item at top level.
-        // The item is detached from the old parent's children before this call, so test via the parent chain.
+        // ADR-023. The item is already detached from its old parent, so test the cycle through the parent chain.
         if (parent is { } p && (!tree.Items.ContainsKey(p) || tree.IsSameOrDescendant(p, id)))
         {
             parent = null;

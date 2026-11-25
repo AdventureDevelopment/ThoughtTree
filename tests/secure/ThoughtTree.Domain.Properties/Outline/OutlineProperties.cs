@@ -30,14 +30,41 @@ public class OutlineProperties
             total++;
             h.Select(e => e.EventId).Distinct().Count().ShouldBe(h.Length);
             var anomalies = Projection.Replay(h).Anomalies;
-            if (h.GroupBy(e => (e.Clock, e.DeviceId)).Any(g => g.Count() > 1)) sameClock++;
-            if (anomalies.Any(a => a.Kind == AnomalyKind.DuplicateCreate)) dupCreate++;
-            if (anomalies.Any(a => a.Kind == AnomalyKind.UnknownItem)) unknownItem++;
+            if (h.GroupBy(e => (e.Clock, e.DeviceId)).Any(g => g.Count() > 1))
+            {
+                sameClock++;
+            }
+
+            if (anomalies.Any(a => a.Kind == AnomalyKind.DuplicateCreate))
+            {
+                dupCreate++;
+            }
+
+            if (anomalies.Any(a => a.Kind == AnomalyKind.UnknownItem))
+            {
+                unknownItem++;
+            }
+
             h.Select(e => e.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(3);
-            if (h.GroupBy(e => e.Clock).Any(g => g.Select(e => e.DeviceId).Distinct().Count() > 1)) equalClocksAcrossDevices++;
-            if (h.Any(e => e.Clock.Time > 1_000_000_000_000)) farAhead++;
-            if (h.OfType<ItemMoved>().Any(m => m.Parent == m.Item || m.Parent is not null)) cycleMoves++;
-            if (h.OfType<ItemRestored>().Any(r => h.OfType<ItemDeleted>().Any(d => d.Item == r.Item))) deleteThenRestore++;
+            if (h.GroupBy(e => e.Clock).Any(g => g.Select(e => e.DeviceId).Distinct().Count() > 1))
+            {
+                equalClocksAcrossDevices++;
+            }
+
+            if (h.Any(e => e.Clock.Time > 1_000_000_000_000))
+            {
+                farAhead++;
+            }
+
+            if (h.OfType<ItemMoved>().Any(m => m.Parent == m.Item || m.Parent is not null))
+            {
+                cycleMoves++;
+            }
+
+            if (h.OfType<ItemRestored>().Any(r => h.OfType<ItemDeleted>().Any(d => d.Item == r.Item)))
+            {
+                deleteThenRestore++;
+            }
         }, seed: "0N0XIzNsQ0O2", iter: 500, threads: 1);
 
         sameClock.ShouldBeGreaterThan(total / 10);
@@ -136,10 +163,17 @@ public class OutlineProperties
 
             listed.Count.ShouldBe(items.Count);
             listed.Distinct().Count().ShouldBe(items.Count);
-            foreach (ItemId id in tree.TopLevelOrder) items[id].Parent.ShouldBeNull();
+            foreach (ItemId id in tree.TopLevelOrder)
+            {
+                items[id].Parent.ShouldBeNull();
+            }
+
             foreach (Item item in items.Values)
             {
-                foreach (ItemId child in tree.ChildrenOf(item.Id)) items[child].Parent.ShouldBe(item.Id);
+                foreach (ItemId child in tree.ChildrenOf(item.Id))
+                {
+                    items[child].Parent.ShouldBe(item.Id);
+                }
             }
 
             // Every visible item (not deleted, no deleted ancestor) is reachable from top level.
@@ -152,7 +186,10 @@ public class OutlineProperties
             {
                 for (Item? c = i; c is not null; c = c.Parent is { } p ? items[p] : null)
                 {
-                    if (c.Deleted) return true;
+                    if (c.Deleted)
+                    {
+                        return true;
+                    }
                 }
 
                 return false;

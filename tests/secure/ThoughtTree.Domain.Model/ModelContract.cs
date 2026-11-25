@@ -26,18 +26,35 @@ public static class ReferenceModel
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var all = new List<TreeEvent>();
         foreach (var e in events)
-            if (seen.Add(e.EventId)) all.Add(e);
+        {
+            if (seen.Add(e.EventId))
+            {
+                all.Add(e);
+            }
+        }
 
         // Agreed order: clock time, counter, deviceId lowercase ordinal; ties broken by EventId ordinal. Of events
         // sharing all three, all are applied in that order; nothing is reported.
         all.Sort((a, b) =>
         {
             int c = a.Clock.Time.CompareTo(b.Clock.Time);
-            if (c != 0) return c;
+            if (c != 0)
+            {
+                return c;
+            }
+
             c = a.Clock.Counter.CompareTo(b.Clock.Counter);
-            if (c != 0) return c;
+            if (c != 0)
+            {
+                return c;
+            }
+
             c = string.CompareOrdinal(Dev(a), Dev(b));
-            if (c != 0) return c;
+            if (c != 0)
+            {
+                return c;
+            }
+
             return string.CompareOrdinal(a.EventId, b.EventId);
         });
 
@@ -47,8 +64,16 @@ public static class ReferenceModel
 
         List<string> SiblingsOf(string? parent)
         {
-            if (parent == null) return top;
-            if (!kids.TryGetValue(parent, out var l)) kids[parent] = l = new List<string>();
+            if (parent == null)
+            {
+                return top;
+            }
+
+            if (!kids.TryGetValue(parent, out var l))
+            {
+                kids[parent] = l = new List<string>();
+            }
+
             return l;
         }
 
@@ -64,7 +89,10 @@ public static class ReferenceModel
             if (after is { } a && !string.IsNullOrEmpty(a.Value) && a.Value != item.Id)
             {
                 int at = list.IndexOf(a.Value);
-                if (at >= 0) index = at + 1;
+                if (at >= 0)
+                {
+                    index = at + 1;
+                }
             }
             list.Insert(index, item.Id);
             item.Parent = parent;
@@ -77,8 +105,12 @@ public static class ReferenceModel
             {
                 case ItemCreated c:
                 {
-                    if (string.IsNullOrEmpty(c.Item.Value)) break; // empty id: silently ignored (no rule)
-                    if (items.ContainsKey(c.Item.Value)) { anomalies.Add(("duplicate-create", e.EventId)); break; }
+                    if (string.IsNullOrEmpty(c.Item.Value))
+                        {
+                            break; // empty id: silently ignored (no rule)
+                        }
+
+                        if (items.ContainsKey(c.Item.Value)) { anomalies.Add(("duplicate-create", e.EventId)); break; }
                     var item = new Item { Id = c.Item.Value, Title = c.Title ?? "", Note = c.Note ?? "" };
                     // Parent resolved before the item is registered, so an item cannot be its own parent.
                     var parent = ResolveParent(c.Parent);
@@ -87,16 +119,48 @@ public static class ReferenceModel
                     break;
                 }
                 case ItemTitleChanged t:
-                    if (items.TryGetValue(t.Item.Value ?? "", out var ti)) ti.Title = t.Title ?? ""; else anomalies.Add(("unknown-item", e.EventId));
+                    if (items.TryGetValue(t.Item.Value ?? "", out var ti))
+                    {
+                        ti.Title = t.Title ?? "";
+                    }
+                    else
+                    {
+                        anomalies.Add(("unknown-item", e.EventId));
+                    }
+
                     break;
                 case ItemNoteChanged n:
-                    if (items.TryGetValue(n.Item.Value ?? "", out var ni)) ni.Note = n.Note ?? ""; else anomalies.Add(("unknown-item", e.EventId));
+                    if (items.TryGetValue(n.Item.Value ?? "", out var ni))
+                    {
+                        ni.Note = n.Note ?? "";
+                    }
+                    else
+                    {
+                        anomalies.Add(("unknown-item", e.EventId));
+                    }
+
                     break;
                 case ItemDeleted d:
-                    if (items.TryGetValue(d.Item.Value ?? "", out var di)) di.Deleted = true; else anomalies.Add(("unknown-item", e.EventId)); // idempotent; children untouched
+                    if (items.TryGetValue(d.Item.Value ?? "", out var di))
+                    {
+                        di.Deleted = true;
+                    }
+                    else
+                    {
+                        anomalies.Add(("unknown-item", e.EventId)); // idempotent; children untouched
+                    }
+
                     break;
                 case ItemRestored r:
-                    if (items.TryGetValue(r.Item.Value ?? "", out var ri)) ri.Deleted = false; else anomalies.Add(("unknown-item", e.EventId)); // only this item, not its subtree
+                    if (items.TryGetValue(r.Item.Value ?? "", out var ri))
+                    {
+                        ri.Deleted = false;
+                    }
+                    else
+                    {
+                        anomalies.Add(("unknown-item", e.EventId)); // only this item, not its subtree
+                    }
+
                     break;
                 case ItemMoved m:
                 {
@@ -104,8 +168,11 @@ public static class ReferenceModel
                     var parent = ResolveParent(m.Parent);
                     // Cycle: walk up from the requested parent; reaching the moved item means top level instead.
                     for (var p = parent; p != null; p = items[p].Parent)
-                        if (p == mi.Id) { parent = null; break; }
-                    SiblingsOf(mi.Parent).Remove(mi.Id);
+                        {
+                            if (p == mi.Id) { parent = null; break; }
+                        }
+
+                        SiblingsOf(mi.Parent).Remove(mi.Id);
                     // 'after' naming the item itself is treated as "not a sibling": first under the parent.
                     Place(mi, parent, m.After);
                     break;
@@ -116,7 +183,11 @@ public static class ReferenceModel
         // Canonical text: depth-first over the whole tree including tombstones.
         var sb = new StringBuilder();
         var stack = new Stack<(string Id, int Depth)>();
-        for (int i = top.Count - 1; i >= 0; i--) stack.Push((top[i], 0));
+        for (int i = top.Count - 1; i >= 0; i--)
+        {
+            stack.Push((top[i], 0));
+        }
+
         while (stack.Count > 0)
         {
             var (id, depth) = stack.Pop();
@@ -126,10 +197,19 @@ public static class ReferenceModel
               .Append(it.Deleted ? "deleted" : "live").Append(' ')
               .Append(Quote(it.Title)).Append(' ').Append(Quote(it.Note)).Append('\n');
             if (kids.TryGetValue(id, out var ch))
-                for (int i = ch.Count - 1; i >= 0; i--) stack.Push((ch[i], depth + 1));
+            {
+                for (int i = ch.Count - 1; i >= 0; i--)
+                {
+                    stack.Push((ch[i], depth + 1));
+                }
+            }
         }
         anomalies.Sort((a, b) => { int c = string.CompareOrdinal(a.Kind, b.Kind); return c != 0 ? c : string.CompareOrdinal(a.EventId, b.EventId); });
-        foreach (var (kind, id) in anomalies) sb.Append("anomaly ").Append(kind).Append(' ').Append(Quote(id)).Append('\n');
+        foreach (var (kind, id) in anomalies)
+        {
+            sb.Append("anomaly ").Append(kind).Append(' ').Append(Quote(id)).Append('\n');
+        }
+
         return sb.ToString();
     }
 
@@ -141,10 +221,22 @@ public static class ReferenceModel
         var sb = new StringBuilder("\"");
         foreach (char ch in s)
         {
-            if (ch == '"') sb.Append("\\\"");
-            else if (ch == '\\') sb.Append("\\\\");
-            else if (ch >= ' ' && ch <= '~') sb.Append(ch);
-            else sb.Append("\\u").Append(((int)ch).ToString("x4", System.Globalization.CultureInfo.InvariantCulture));
+            if (ch == '"')
+            {
+                sb.Append("\\\"");
+            }
+            else if (ch == '\\')
+            {
+                sb.Append("\\\\");
+            }
+            else if (ch >= ' ' && ch <= '~')
+            {
+                sb.Append(ch);
+            }
+            else
+            {
+                sb.Append("\\u").Append(((int)ch).ToString("x4", System.Globalization.CultureInfo.InvariantCulture));
+            }
         }
         return sb.Append('"').ToString();
     }
