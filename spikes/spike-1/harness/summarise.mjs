@@ -1,6 +1,6 @@
 // Generates the tables of the spike 1 report from the result files (plan section 4: tables are generated, not typed).
 // Replaces the answers table between <!-- answers:start --> and <!-- answers:end --> in docs/spikes/spike-1-report.md
-// and writes the detailed tables T1 to T9 to docs/spikes/spike-1/tables.md (kept out of the report for its length limit). Usage: node summarise.mjs [--print]
+// and writes the detailed tables T0 to T10 (T0: the answers in every configuration) to docs/spikes/spike-1/tables.md (kept out of the report for its length limit). Usage: node summarise.mjs [--print]
 import fs from 'node:fs';
 import path from 'node:path';
 import { resultsDir, repoDir } from './common.mjs';
@@ -104,8 +104,16 @@ for (const build of ['interpreted', 'aot']) for (const dev of devOrder) for (con
 for (const b of q2?.builds ?? []) ansRows.push([`Q2 download, ${b.build}`, `${mb(b.firstLoad.brotli)} Brotli, ${mb(b.firstLoad.gzip)} gzip, ${mb(b.firstLoad.raw)} raw (${b.firstLoad.files} files); publish ${Math.round(b.publishSeconds)} s`]);
 if (q3.length) ansRows.push(['Q3 durability (desktop)', `${q3total.kills} kills or closes over ${q3.filter(r => r.device.startsWith('desktop')).length} variants; findings (lost or half-visible data, unreadable store): ${q3total.findings}`]);
 
-const answersMd = table(['Question', 'Measured (generated from the result files)'], ansRows);
+// The report shows the rows the decisions rest on (devices, desktop Chromium, download, durability);
+// tables.md holds every configuration (T0).
+const decisive = (r) => !/throttled|desktop, firefox/.test(r[0]);
+const answersMd = table(['Question', 'Measured (generated from the result files)'], ansRows.filter(decisive)) + '\n\nAll configurations, including desktop Firefox and the throttled fallback: T0 in [spike-1/tables.md](spike-1/tables.md).';
+const allAnswersMd = table(['Question', 'Measured (generated from the result files)'], ansRows);
 const tablesMd = [
+  '### T0 Answers in every configuration (the report shows the decisive rows)',
+  '',
+  allAnswersMd,
+  '',
   '### T1 Start and replay, 100,000 events (median, p95 in brackets)',
   'Tree visible = from navigation start to the first render of the top level, including app start.',
   '',
