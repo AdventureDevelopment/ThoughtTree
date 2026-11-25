@@ -570,7 +570,7 @@ Example of an event before encryption:
 
 - Client: the local store (IndexedDB, behind a port that keeps SQLite possible; see open decisions), behind a port of the application layer, with these logical stores per tree: events (envelopes), sync progress per destination, snapshots, search and backlink index, tree access (key, `KeyId`, account), device token, device settings and UI state, drafts, local usage counters, event blocks (a rebuildable encrypted copy of the events for replay, ADR-086, Proposed); plus the layout version for migrations
 - Drafts: text being edited is saved locally as a draft on every change and becomes an event at the end of the editing session; after a crash or a killed tab, the draft is recovered and turned into an event, so R1 covers text being typed as well; drafts may be written with `relaxed` durability (ADR-088), so an operating system crash or power loss can cost the last changes of a draft, never a saved event
-- An event counts as saved only when the transaction storing its envelope reports `complete`; events and tree access are written with `strict` durability, rebuildable or short-lived data (snapshots, event blocks, search index, drafts) may use `relaxed` (ADR-088, owner decision 2026-11-25 after spike 1)
+- An event counts as saved only when the transaction storing its envelope reports `complete`; every local store is written with `strict` durability except the rebuildable or short-lived ones listed in ADR-088 (snapshots, event blocks, search index, drafts, UI state), which may use `relaxed` (ADR-088, owner decision 2026-11-25 after spike 1)
 - Snapshots speed up startup; the projection replays only events after the latest snapshot
 - Snapshots and the search index record the app version whose projection built them; after an update they are discarded and rebuilt from the full log, so events skipped by the older version take effect; the app shows the progress of the rebuild (owner decision 2026-11-25, open decision "Snapshots across app updates", decided again before v1)
 - All local data is partitioned by tree: events, snapshots, key, account identity and search index are stored per tree id
@@ -969,7 +969,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-085](adr/ADR-085-beta-data-before-release-1.md) | Beta data before release 1 (amends ADR-016, ADR-038) | `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**` |
 | [ADR-086](adr/ADR-086-local-event-blocks.md) | Local event blocks for replay (Proposed) | `src/ThoughtTree.Client*/**` |
 | [ADR-087](adr/ADR-087-stored-size-limits.md) | Stored size limits: padding buckets, note, title, user name and server address | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
-| [ADR-088](adr/ADR-088-write-acknowledgement.md) | When a local write counts as saved: on `complete`, `strict` for events and tree access | `src/ThoughtTree.Client*/**` |
+| [ADR-088](adr/ADR-088-write-acknowledgement.md) | When a local write counts as saved: on `complete`; `strict` for every store not listed as `relaxed` | `src/ThoughtTree.Client*/**` |
 
 **Open decisions**
 

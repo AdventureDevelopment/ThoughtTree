@@ -4,11 +4,11 @@ id: ADR-088 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`
 
-Owner decision 2026-11-25 (spike 1 decision 8, option B), accepted by the owner 2026-11-25; test rule and why line corrected by the owner the same day after the independent review; amends no ADR.
+Owner decision 2026-11-25 (spike 1 decision 8, option B), accepted by the owner 2026-11-25; test rule, why line and the scope of `strict` (every store not listed as `relaxed`) changed by the owner the same day after the independent review; amends no ADR.
 
 - **MUST** treat an event as saved (shown as saved, its draft cleared, its undo step recorded) only after the transaction that stores its envelope reports `complete`
-- **MUST** write events and tree access with `strict` durability where the browser offers the setting
-- **MAY** write rebuildable or short-lived data (snapshots, event blocks, search index, drafts, UI state) with `relaxed` durability
+- **MUST** write every local store with `strict` durability where the browser offers the setting, unless it is listed in the next rule; this covers events, tree access, device token, sync progress, the layout version, device settings and any new store
+- **MAY** write only these rebuildable or short-lived stores with `relaxed` durability: snapshots, event blocks, search index, drafts, UI state
 - **MUST** secure this with end-to-end scenario 8: after the app is killed while writing, no saved event is lost, no batch is half visible and the store opens; push gate in Chromium, nightly in Chromium, WebKit and Firefox
 
 verify:
