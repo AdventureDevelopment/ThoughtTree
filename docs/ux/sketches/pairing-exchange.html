@@ -1,0 +1,272 @@
+<title>Pairing and exchange</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: phone frames in three groups: how a reason shows in the Links sheet (two variants), the relation sheet where type and reason are edited, and when the reason is written while linking (two variants); then the map. Paper tokens as in the other sketches. */
+:root{--bg:#efece6;--fg:#2a2520;--muted:#6d645a;--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--t-bg:#f7f3ec;--t-card:#fffdf8;--t-text:#2a2520;--t-muted:#6d645a;--t-faint:#9a9084;--t-line:#e9e1d4;--t-edge:#cbbfae;--t-accent:#9a5e28;--t-ink:#fff;--t-acc-text:#84511f;--t-sel:#f3e7d5;--t-shade:rgba(42,37,32,.18);--t-pop:#fffdf8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-edge:#5a5046;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--fg:#ece5da;--muted:#a89e90;
+--t-bg:#1c1915;--t-card:#23201b;--t-text:#ece5da;--t-muted:#a89e90;--t-faint:#7d7469;--t-line:#363029;--t-edge:#5a5046;--t-accent:#e3a35f;--t-ink:#2a160d;--t-acc-text:#ecb985;--t-sel:#3b2e1e;--t-shade:rgba(0,0,0,.35);--t-pop:#2a2621;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;margin:0 0 4px;text-wrap:balance}
+h2.v{font-size:17px;margin:28px 0 4px}
+.lead{margin:0 0 6px;color:var(--muted);max-width:76ch}
+.row{display:flex;flex-wrap:wrap;gap:22px;margin-top:10px}
+.col{flex:1 1 290px;max-width:330px;min-width:0}
+h3{font-size:14.5px;margin:0 0 8px}
+p.d{font-size:13px;color:var(--muted);margin:8px 0 0}
+.ph{position:relative;height:640px;border-radius:20px;overflow:hidden;background:var(--t-bg);color:var(--t-text);border:1px solid var(--t-line);display:flex;flex-direction:column;font-size:14px}
+.top{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid var(--t-line);font-size:12.5px;color:var(--t-muted);min-height:40px}
+.top b{color:var(--t-text)}
+.sp{flex:1}
+.fhead{background:var(--t-card);padding:14px 14px 6px}
+.fhead h4{font-size:19px;font-weight:400;margin:0 0 6px;line-height:1.25}
+.fline{display:flex;gap:14px;font-size:12.5px;color:var(--t-acc-text);padding:6px 0 8px}
+.page{flex:1;background:var(--t-card)}
+.shade{position:absolute;inset:0;background:var(--t-shade)}
+.sheet{position:absolute;inset:auto 0 0 0;background:var(--t-pop);border-top:1px solid var(--t-line);border-radius:16px 16px 0 0;padding:6px 0 14px;box-shadow:0 -8px 28px rgba(0,0,0,.15);font-size:13.5px}
+.grab{width:36px;height:4px;border-radius:2px;background:var(--t-line);margin:0 auto 8px}
+.shead{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--t-line);padding:0 14px 6px}
+.stab{font-size:13px;padding:5px 10px;border-radius:999px;color:var(--t-muted)}
+.stab.on{background:var(--t-sel);color:var(--t-acc-text);font-weight:600}
+.x{color:var(--t-acc-text);font-weight:700;padding:4px 8px}
+.g{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t-muted);padding:10px 14px 4px}
+.r{display:flex;gap:8px;padding:9px 14px;border-bottom:1px solid var(--t-line);align-items:flex-start}
+.r .m{flex:1;min-width:0}
+.ty{color:var(--t-muted);font-size:12px}
+.ti{font-size:14px}
+.why{font-size:12.5px;color:var(--t-muted);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.why.add{color:var(--t-acc-text);font-size:11.5px}
+.ed{color:var(--t-acc-text);font-weight:700;padding:2px 6px}
+.bub{font-size:12px;color:var(--t-acc-text);padding:2px 6px}
+.ctx{font-size:12.5px;color:var(--t-muted);margin-top:2px}
+.addl{display:inline-block;font-size:14px;color:var(--t-acc-text);border:1.5px solid var(--t-line);border-radius:10px;padding:7px 13px;margin:10px 14px 0}
+.fbl{font-size:11.5px;color:var(--t-faint);padding:10px 14px 0;border-top:1px solid var(--t-line);margin-top:10px}
+.rel{display:flex;flex-direction:column;gap:4px;padding:10px 14px;border-bottom:1px solid var(--t-line)}
+.rel .ends{font-size:14px}
+.typ{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:13.5px;border:1.5px solid var(--t-line);border-radius:10px;padding:5px 10px;color:var(--t-text);background:var(--t-card)}
+.typ b{color:var(--t-acc-text);font-weight:600}
+.lab{font-size:12px;color:var(--t-muted);padding:10px 14px 4px}
+.field{margin:0 14px;border:1.5px solid var(--t-accent);border-radius:10px;padding:9px 11px;min-height:84px;background:var(--t-card);font-size:14px;color:var(--t-text)}
+.field.ph0{color:var(--t-faint);border-color:var(--t-line)}
+.caret{display:inline-block;width:1.5px;height:16px;background:var(--t-accent);vertical-align:-3px}
+.meta{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-size:12.5px;color:var(--t-acc-text)}
+.rm{margin:6px 14px 0;font-size:13.5px;color:var(--t-text);padding:9px 0;border-top:1px solid var(--t-line)}
+.kb{height:190px;background:var(--t-line);opacity:.7;display:grid;place-items:center;font-size:12px;color:var(--t-muted);margin-top:auto}
+.tb{display:flex;gap:14px;align-items:center;padding:6px 12px;border-top:1px solid var(--t-line);background:var(--t-bg);font-size:14px;color:var(--t-acc-text)}
+.tb .sp{flex:1}
+.pick .item{padding:10px 14px;border-bottom:1px solid var(--t-line)}
+.pick .item small{display:block;color:var(--t-muted);font-size:12px}
+.pick .item.sel{background:var(--t-sel)}
+.btnrow{display:flex;gap:8px;padding:12px 14px 0}
+.btn{font-size:13px;color:var(--t-acc-text);border:1.5px solid var(--t-line);border-radius:10px;padding:7px 13px}
+.btn.pri{background:var(--t-accent);border-color:var(--t-accent);color:var(--t-ink)}
+.msg{position:absolute;inset-inline:12px;bottom:76px;background:var(--t-text);color:var(--t-bg);border-radius:12px;padding:10px 12px;font-size:13px;display:flex;gap:10px;align-items:center}
+.msg b{color:var(--t-bg)}
+.msg .a{color:var(--t-sel);font-weight:600;white-space:nowrap}
+.bar{display:flex;justify-content:space-around;border-top:1px solid var(--t-line);background:var(--t-bg);padding:6px 4px 10px;font-size:11px;color:var(--t-muted)}
+.bar span{display:flex;flex-direction:column;align-items:center;gap:1px}
+.bar i{font-style:normal;font-size:16px;color:var(--t-acc-text)}
+.fab{position:absolute;inset-inline-end:14px;bottom:66px;width:50px;height:50px;border-radius:16px;background:var(--t-accent);color:var(--t-ink);display:grid;place-items:center;font-size:22px}
+.mapbox{flex:1;background:var(--t-card);position:relative}
+.mapbox svg{position:absolute;inset:0;width:100%;height:100%}
+.card{position:absolute;inset-inline:10px;bottom:10px;background:var(--t-pop);border:1px solid var(--t-line);border-radius:14px;box-shadow:0 6px 22px rgba(0,0,0,.14);padding:10px 12px;font-size:13px}
+.card b{font-size:14px}
+.card small{display:block;color:var(--t-muted);font-size:12px;margin:1px 0 6px}
+.card .reason{border-inline-start:3px solid var(--t-edge);padding-inline-start:8px;margin:4px 0 8px;color:var(--t-text)}
+.card .reason span{display:block;color:var(--t-muted);font-size:11.5px}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.hear{margin-top:10px;border:1px dashed var(--t-edge);border-radius:12px;padding:10px 12px;font-size:13px;background:var(--t-card);color:var(--t-text);max-width:820px}
+.hear b{color:var(--t-acc-text)}
+.list{flex:1;background:var(--t-card);overflow:hidden}
+.n{display:flex;align-items:center;gap:6px;padding:10px 10px;border-bottom:1px solid var(--t-line);white-space:nowrap;overflow:hidden}
+.n .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.n small{color:var(--t-muted);font-size:12px;margin-inline-start:auto}
+.n small.from{margin-inline-start:6px;font-style:italic}
+.n.sys{opacity:.62}
+.c1{padding-inline-start:30px}
+.tw{width:16px;color:var(--t-acc-text);font-weight:700;text-align:center}
+.dot{width:16px;color:var(--t-muted);font-size:9px;text-align:center}
+.back{color:var(--t-acc-text);font-weight:700;background:var(--t-sel);border-radius:8px;padding:2px 9px}
+.pop{position:absolute;width:230px;background:var(--t-pop);border:1px solid var(--t-line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.18);font-size:13.5px;overflow:hidden}
+.pop .it{display:flex;align-items:center;padding:0 12px;height:38px}
+.pop .it.on{color:var(--t-acc-text);font-weight:600}
+.pop .grp{border-top:1px solid var(--t-line)}
+.pop .fbl{margin-top:0}
+.navc{display:flex;flex-direction:column;gap:5px;padding:12px 14px;font-size:13px;background:var(--t-bg)}
+.navc .h{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--t-muted);margin-top:8px}
+.navc small{color:var(--t-muted);font-size:11.5px;margin-inline-start:4px}
+.navc .sub{padding-inline-start:14px}
+.navc .more{color:var(--t-acc-text)}
+.hint{display:flex;align-items:center;gap:8px;margin:8px 12px;padding:8px 10px;border-radius:10px;background:var(--t-sel);font-size:12.5px}
+.hint .a,.tagged .a{margin-inline-start:auto;color:var(--t-acc-text);font-weight:600;white-space:nowrap}
+.chipt{font-size:13px;border-radius:999px;padding:2px 10px;background:var(--t-sel);color:var(--t-acc-text)}
+.chipt.big{font-size:18px;padding:3px 14px}
+.note{font-size:13.5px;color:var(--t-text);padding:10px 14px;background:var(--t-card)}
+.sec{padding:5px 14px;background:var(--t-card);font-size:14.5px}
+.sec small{display:block;color:var(--t-muted);font-size:12.5px}
+.tagged{display:flex;align-items:center;padding:12px 14px 6px;background:var(--t-card);font-size:12.5px;border-top:1px solid var(--t-line)}
+.g2{color:var(--t-muted);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.tyblock{background:var(--t-card);padding:6px 14px 10px;border-bottom:1px solid var(--t-line)}
+.tyrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;font-size:13.5px}
+.tyrow .lbl{color:var(--t-muted)}
+.fld{border:1.5px solid var(--t-line);border-radius:8px;padding:4px 10px;background:var(--t-bg)}
+.sw{width:40px;height:24px;border-radius:12px;background:var(--t-line);position:relative;flex:none}
+.sw span{position:absolute;inset-block:3px;inset-inline-start:3px;width:18px;border-radius:50%;background:var(--t-card)}
+.ex{font-size:12.5px;color:var(--t-muted);background:var(--t-bg);border-radius:8px;padding:7px 9px;margin-top:4px}
+.ex b{color:var(--t-acc-text);font-weight:600}
+.tags{display:flex;gap:6px;margin-bottom:8px}
+.tag{font-size:11px;border-radius:999px;padding:1px 8px;background:var(--t-sel);color:var(--t-acc-text)}
+.tag.on{outline:2px solid var(--t-accent)}
+.hint2{font-size:12px;color:var(--t-muted);padding:8px 14px 0}
+.opt{padding:8px 14px;font-size:13.5px;border-bottom:1px solid var(--t-line)}
+.opt small{color:var(--t-muted);font-size:11.5px;margin-inline-start:6px}
+.opt.on{color:var(--t-acc-text);font-weight:600}
+.opt.off{color:var(--t-faint)}
+.opt.more{color:var(--t-acc-text)}
+.warn{margin:10px 14px 0;padding:10px 12px;border-radius:10px;background:var(--t-sel);font-size:12.5px;line-height:1.45}
+.warn1{margin:10px 14px 0;font-size:12.5px;color:var(--t-text)}
+.warn1 u{color:var(--t-acc-text)}
+.check{margin:10px 14px 0;font-size:13px}
+.btn.dim{opacity:.45}
+.p{font-size:13px;margin:10px 14px 0;color:var(--t-text)}
+.p.small{font-size:12px;color:var(--t-muted)}
+.fld2{margin:0 14px;border:1.5px solid var(--t-line);border-radius:8px;padding:6px 10px;font-size:14px;background:var(--t-card)}
+.swrow{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;font-size:13.5px;border-bottom:1px solid var(--t-line)}
+.sw.on{background:var(--t-accent)}
+.sw.on span{inset-inline-start:19px}
+.foot{font-size:12px;color:var(--t-muted);padding:10px 14px 0}
+.prog{padding:10px 14px;background:var(--t-sel);display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;font-size:13px}
+.prog .pb{grid-column:1;height:6px;border-radius:3px;background:var(--t-line);overflow:hidden}
+.prog .pb span{display:block;height:100%;background:var(--t-accent)}
+.prog .btn{grid-row:1 / span 2;grid-column:2}
+.prog .ps{grid-column:1 / -1;font-size:11.5px;color:var(--t-muted)}
+.n.rep .t{font-weight:600}
+
+.qr{width:170px;height:170px;margin:14px auto 6px;background:
+ repeating-linear-gradient(90deg,var(--t-text) 0 10px,transparent 10px 17px),
+ repeating-linear-gradient(0deg,var(--t-card) 0 6px,transparent 6px 13px);
+ border:10px solid var(--t-card);outline:1px solid var(--t-line);border-radius:6px;opacity:.85}
+.center{text-align:center}
+.code{text-align:center;font-size:13px;margin-top:8px;color:var(--t-muted)}
+.code b{font:600 14px ui-monospace,Menlo,Consolas,monospace;color:var(--t-text);letter-spacing:.04em}
+.cam{height:300px;background:var(--t-text);opacity:.85;display:grid;place-items:center}
+.cam .frame{width:170px;height:170px;border:3px solid var(--t-card);border-radius:18px}
+.empty2{padding:40px 20px;text-align:center;font-size:14px;background:var(--t-card);display:flex;flex-direction:column;gap:6px;align-items:center}
+.empty2 p{margin:0;max-width:30ch}
+.big{display:flex;flex-direction:column;gap:2px;margin:10px 14px 0;padding:11px 12px;border:1.5px solid var(--t-line);border-radius:12px;background:var(--t-card);font-size:14px}
+.big b{color:var(--t-acc-text)}
+.big small{color:var(--t-muted);font-size:12px}
+.sumrow{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--t-line);font-size:13.5px}
+.sumrow .a{margin-inline-start:auto;color:var(--t-acc-text);font-weight:600;white-space:nowrap}
+</style>
+
+<h1>Pairing and exchanging by file</h1>
+<p class="lead">Release 1 has no server: your own devices hold the same tree after pairing (once per tree and device), and then bring each other up to date by an encrypted file, as a round trip (D-19, D-20). This sketch shows both, phone first. "Phone" holds the tree "My thoughts"; "Tablet" is the new device. Example content only.</p>
+
+<h2 class="v">Pairing: once per tree and device</h2>
+<div class="row">
+  <div class="col">
+    <h3>1 · Phone: show the code</h3>
+    <div class="ph"><div class="top"><span class="back">←</span> <b>Pair another device</b></div>
+      <div class="page" style="padding:10px 0">
+        <p class="p">Bring “My thoughts” onto another device of yours.</p>
+        <div class="qr" aria-label="Pairing code as a QR code"></div>
+        <p class="p center">On the other device: tree list › <b>＋ Pair with a device…</b>, then scan.</p>
+        <div class="code">Or type: <b>KQ7M-4TZP-9WXD-HR2A</b></div>
+        <div class="warn1" style="margin-top:12px">🔑 This code opens the whole tree. Show it only to your own device.</div>
+      </div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div></div>
+    <p class="d">From More › This tree… › Pair another device… (D-187). The code is made on the phone; nothing goes through a server. The typed code is for devices without a camera. Before the code shows, the first pairing on a device asks for the device label and your name (frame 2).</p>
+  </div>
+  <div class="col">
+    <h3>2 · First pairing: label and name</h3>
+    <div class="ph"><div class="top"><b>Pair another device</b></div><div class="page"></div><div class="shade"></div>
+      <div class="sheet" style="top:150px">
+        <div class="grab"></div>
+        <div class="shead"><b style="font-size:14px">Before the first pairing</b><span class="sp"></span><span class="x">✕</span></div>
+        <div class="lab">This device</div><div class="fld2">Phone</div>
+        <p class="p small">So you can tell your devices apart in the history.</p>
+        <div class="lab">Your name</div><div class="fld2">B.</div>
+        <p class="p small">Any name you choose; an alias is fine.</p>
+        <div class="btnrow"><span class="btn pri">Continue</span></div>
+      </div></div>
+    <p class="d">Asked once per device, prefilled from the platform ("Phone", "Tablet") and empty for the name; changeable later in More › Settings (D-188). The tablet asks the same after scanning.</p>
+  </div>
+  <div class="col">
+    <h3>3 · Tablet: scan</h3>
+    <div class="ph"><div class="top"><span class="back">←</span> <b>Pair with a device</b></div>
+      <div class="cam"><div class="frame"></div></div>
+      <p class="p center">Point the camera at the code on your other device.</p>
+      <div class="btnrow" style="justify-content:center"><span class="btn">Type the code instead</span></div>
+      <div class="page"></div></div>
+    <p class="d">From the tree list: "＋ Pair with a device…", next to "＋ New tree" and "＋ Import a tree…" (D-117, D-179), because the new device may hold no tree yet. The camera is asked for only here, and only with the browser's own prompt.</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <h3>4 · Tablet: add the tree?</h3>
+    <div class="ph"><div class="top"><b>Pair with a device</b></div><div class="page"></div><div class="shade"></div>
+      <div class="sheet" style="top:200px">
+        <div class="grab"></div>
+        <div class="shead"><b style="font-size:14px">Add “My thoughts” to this tablet?</b><span class="sp"></span><span class="x">✕</span></div>
+        <p class="p">It becomes a further tree here. Your other trees on this tablet stay as they are.</p>
+        <div class="btnrow"><span class="btn pri">Add as a further tree</span><span class="btn">Don’t add</span></div>
+      </div></div>
+    <p class="d">Pairing only adds a tree, or does nothing (D-84). If this tablet already knows you under another name, one more question follows: "Is ‘B.’ on Phone the same person as ‘Britta’ here? · Yes, the same person · No" (architecture, pairing step 8).</p>
+  </div>
+  <div class="col">
+    <h3>5 · Tablet: paired, waiting for thoughts</h3>
+    <div class="ph"><div class="top"><b>My thoughts ▾</b></div>
+      <div class="empty2">
+        <p><b>“My thoughts” is on this tablet now.</b></p>
+        <p>Its thoughts arrive with the first exchange. On Phone: More › Exchange with another device › Send.</p>
+        <span class="btn">Receive from another device</span>
+      </div>
+      <div class="list"></div>
+      <div class="bar"><span><i>⋯</i>More</span><span><i>↩</i>Undo</span><span><i>🔍</i>Search</span><span><i>＋</i>Add here</span></div><div class="fab">📥</div></div>
+    <p class="d">The tree exists but is empty until the first file arrives (pairing step 9). An empty place of D-129: one calm sentence and one action. Thoughts captured here meanwhile are kept and travel back with the next exchange.</p>
+  </div>
+</div>
+
+<h2 class="v">Exchanging by file: the round trip</h2>
+<div class="row">
+  <div class="col">
+    <h3>6 · More › Exchange with another device</h3>
+    <div class="ph"><div class="top"><b>My thoughts ▾</b></div><div class="page"></div><div class="shade"></div>
+      <div class="sheet" style="top:170px">
+        <div class="grab"></div>
+        <div class="shead"><b style="font-size:14px">Exchange “My thoughts”</b><span class="sp"></span><span class="x">✕</span></div>
+        <p class="p small">Last copied to another device: 5 days ago</p>
+        <div class="big"><b>Send to another device</b><small>An encrypted file with everything in this tree. Only your paired devices can open it.</small></div>
+        <div class="big"><b>Receive from another device</b><small>Choose the file your other device sent.</small></div>
+        <div class="fbl">Something not right? Send feedback</div>
+      </div></div>
+    <p class="d">Send writes the encrypted file (ADR-007) and opens the device's share sheet (AirDrop, Nearby Share, a USB stick, any file transfer). Receive opens the file picker. The "last copied" line is the export reminder's (D-126).</p>
+  </div>
+  <div class="col">
+    <h3>7 · Received, and send back</h3>
+    <div class="ph"><div class="top"><b>My thoughts ▾</b></div><div class="page"></div><div class="shade"></div>
+      <div class="sheet" style="top:150px">
+        <div class="grab"></div>
+        <div class="shead"><b style="font-size:14px">From Phone</b><span class="sp"></span><span class="x">✕</span></div>
+        <div class="sumrow">7 new or changed thoughts <span class="a">Show</span></div>
+        <div class="sumrow">2 changes overlapped · the later one was kept <span class="a">Show both versions</span></div>
+        <p class="p">Phone does not have what changed here since. Send it back, so both are the same?</p>
+        <div class="btnrow"><span class="btn pri">Send back to Phone</span><span class="btn">Not now</span></div>
+      </div></div>
+    <p class="d">The summary of D-21 and D-127: Show filters the tree to what arrived; "Show both versions" opens the conflicts. Then the offer of D-20 to send back, worded with the other device's label; "Not now" closes. When nothing new arrived: "Nothing new from Phone".</p>
+  </div>
+  <div class="col">
+    <h3>8 · A file from a tree this device does not hold</h3>
+    <div class="ph"><div class="top"><b>My thoughts ▾</b></div><div class="page"></div><div class="shade"></div>
+      <div class="sheet" style="top:230px">
+        <div class="grab"></div>
+        <div class="shead"><b style="font-size:14px">This file is from “Ideas”</b><span class="sp"></span><span class="x">✕</span></div>
+        <p class="p">This device does not hold “Ideas” yet, so it cannot open the file. Pair this device with the one that sent it, then receive the file again.</p>
+        <div class="btnrow"><span class="btn pri">Pair with a device…</span><span class="btn">Don’t add</span></div>
+      </div></div>
+    <p class="d">The file is encrypted with the key of "Ideas", which this device does not have: it must pair first (D-81, D-84). D-163 chose "Open as its own tree" · "Don't add" for this sheet; since the file cannot be opened before pairing, this sketch proposes "Pair with a device…" instead (D-193).</p>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+{
+  "$comment": "Pin of StaticSitesClient, Microsoft's deploy client that the Static Web Apps CLI runs (eng/deploy/install-tools.sh). sha256 was computed from a download on 2026-11-19 and matched Microsoft's metadata at https://aka.ms/swalocaldeploy (tags stable and latest then). Licence: Microsoft, closed source, no licence text in the binary; not on the ADR-050 list. The owner's approval is recorded in eng/deploy/licences.json for this buildId only; DeployToolRules fails when the pin changes without a new approval there. To update: read the metadata, download the linux-x64 file, compare its SHA-256 with the metadata, and change buildId, url and sha256 here in a pull request (owner review, CODEOWNERS).",
+  "buildId": "a58ffd5ddfced557500b295844f2490acc313951",
+  "url": "https://swalocaldeployv2-bndtgugjgqc3dhdx.b01.azurefd.net/downloads/a58ffd5ddfced557500b295844f2490acc313951/linux/StaticSitesClient",
+  "sha256": "0a3c8166b05fa427ed57386d9ba3d82d4f3f3e4f66fabc26c1f934fa705458fa"
+}

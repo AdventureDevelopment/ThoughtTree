@@ -1,0 +1,115 @@
+# Deploys a pull request's preview and removes the previews of closed pull requests (docs/architecture.md
+# section 7, D-51). Runs from main only: workflow_run, schedule and workflow_dispatch always use the workflow
+# file and scripts of the default branch, so a pull request cannot change what runs here with the credential.
+# The pull request's build arrives as an artifact of preview-build.yml and is handled as data: never executed,
+# checked for size, paths and digest by eng/deploy/site_artifact.py. The pull request number comes from the
+# GitHub API, never from the artifact or from text in the event. Previews go to their own site
+# (stapp-thoughttree-preview); the preview identity has no access to the test or production site
+# (infra/README.md). Fork pull requests are not deployed.
+name: preview-deploy
+
+on:
+  workflow_run:
+    workflows: [preview-build]
+    types: [completed]
+  schedule:
+    - cron: "41 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-deploy-${{ github.event.workflow_run.head_branch || 'prune' }}
+  cancel-in-progress: false
+
+env:
+  AZURE_CORE_COLLECT_TELEMETRY: "false"
+
+jobs:
+  deploy:
+    name: Deploy the preview of a pull request
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: preview
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+    steps:
+      - name: Check out main (never the pull request)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Find the pull request through the GitHub API
+        id: target
+        run: python3 -I eng/deploy/site_artifact.py preview-target --run-id "$RUN_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch the build as data and check it
+        if: steps.target.outputs.skip == 'false'
+        run: >-
+          python3 -I eng/deploy/site_artifact.py fetch --run-id "$RUN_ID"
+          --workflow .github/workflows/preview-build.yml --event pull_request --dest "$RUNNER_TEMP/site"
+
+      - name: Install the deploy tools, locked and pinned, before any sign-in (eng/deploy/install-tools.sh)
+        if: steps.target.outputs.skip == 'false'
+        run: eng/deploy/install-tools.sh
+
+      - name: Sign in to Azure through OpenID Connect (ADR-046)
+        if: steps.target.outputs.skip == 'false'
+        run: eng/deploy/azure-sign-in.sh
+
+      - name: Apply infra/main.bicep with infra/preview.bicepparam
+        if: steps.target.outputs.skip == 'false'
+        run: eng/deploy/apply-infra.sh preview
+
+      - name: Upload the preview and check its headers
+        if: steps.target.outputs.skip == 'false'
+        env:
+          PULL_REQUEST: ${{ steps.target.outputs.pull_request }}
+        run: eng/deploy/preview.sh deploy "$PULL_REQUEST" "$RUNNER_TEMP/site"
+
+  prune:
+    name: Remove the previews of closed pull requests
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: preview
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Sign in to Azure through OpenID Connect (ADR-046)
+        run: eng/deploy/azure-sign-in.sh
+
+      - name: Remove previews whose pull request is closed
+        run: |
+          if ! az staticwebapp show --name stapp-thoughttree-preview --resource-group rg-thoughttree-preview --output none 2>/dev/null; then
+            echo "::notice::The preview site does not exist yet; nothing to remove."
+            exit 0
+          fi
+          eng/deploy/preview.sh prune
