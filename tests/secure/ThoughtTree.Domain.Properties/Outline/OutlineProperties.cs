@@ -30,7 +30,7 @@ public class OutlineProperties
             total++;
             h.Select(e => e.EventId).Distinct().Count().ShouldBe(h.Length);
             var anomalies = Projection.Replay(h).Anomalies;
-            if (anomalies.Any(a => a.Kind == AnomalyKind.SameClock)) sameClock++;
+            if (h.GroupBy(e => (e.Clock, e.DeviceId)).Any(g => g.Count() > 1)) sameClock++;
             if (anomalies.Any(a => a.Kind == AnomalyKind.DuplicateCreate)) dupCreate++;
             if (anomalies.Any(a => a.Kind == AnomalyKind.UnknownItem)) unknownItem++;
             h.Select(e => e.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(3);

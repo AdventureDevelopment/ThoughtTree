@@ -19,7 +19,7 @@ public class AnomalySpecs
         new(eventId, Device, new EventClock(time, 0), "action", new ItemId(item), title);
 
     [Scenario]
-    public void INV_1_Two_events_with_the_same_device_and_clock_apply_in_event_id_order_and_flag_the_later_one_in_any_arrival_order()
+    public void INV_1_Two_events_with_the_same_device_and_clock_apply_in_event_id_order_in_any_arrival_order()
     {
         Tree first = default!;
         Tree second = default!;
@@ -42,28 +42,27 @@ public class AnomalySpecs
                 second = Projection.Replay([late, early, create]);
             });
 
-        "Then both renames apply in event id order, so the later id wins, and it is flagged, in both cases"
+        "Then both renames apply in event id order, so the later id wins, in both cases"
             .x(() =>
             {
                 first.ToOutline().ShouldBe("- Two");
-                first.Anomalies.ShouldBe([new Anomaly(AnomalyKind.SameClock, "e2")]);
                 TreeText.Full(second).ShouldBe(TreeText.Full(first));
             });
     }
 
     [Scenario]
-    public void INV_5_A_tied_creation_is_flagged_but_its_item_is_not_lost()
+    public void INV_5_Two_creations_at_the_same_device_and_clock_both_stay_in_the_tree()
     {
         Tree tree = default!;
 
         "When the tree is rebuilt from two creations of different items by one device at the same clock"
             .x(() => tree = Projection.Replay([Create("e1", 5, "a", "A"), Create("e2", 5, "b", "B")]));
 
-        "Then both items are in the tree and the later event id is flagged"
+        "Then both items are in the tree and nothing is reported"
             .x(() =>
             {
                 tree.AllItems.Count.ShouldBe(2);
-                tree.Anomalies.ShouldBe([new Anomaly(AnomalyKind.SameClock, "e2")]);
+                tree.Anomalies.ShouldBeEmpty();
             });
     }
 

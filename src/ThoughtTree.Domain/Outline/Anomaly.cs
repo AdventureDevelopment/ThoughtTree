@@ -6,9 +6,6 @@ public enum AnomalyKind
     /// <summary>A second creation of an item id that exists; kept in the log, not applied.</summary>
     DuplicateCreate,
 
-    /// <summary>Same device and same clock as an earlier event with another id. The event is applied after it in event id order and flagged for the user to review.</summary>
-    SameClock,
-
     /// <summary>A change to an item that does not exist at that point of the replay; kept in the log, not applied.</summary>
     UnknownItem,
 }

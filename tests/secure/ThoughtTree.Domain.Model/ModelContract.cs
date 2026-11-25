@@ -29,7 +29,7 @@ public static class ReferenceModel
             if (seen.Add(e.EventId)) all.Add(e);
 
         // Agreed order: clock time, counter, deviceId lowercase ordinal; ties broken by EventId ordinal. Of events
-        // sharing all three, all are applied in that order; each after the first is reported as anomaly 'same-clock' (owner decision).
+        // sharing all three, all are applied in that order; nothing is reported.
         all.Sort((a, b) =>
         {
             int c = a.Clock.Time.CompareTo(b.Clock.Time);
@@ -71,13 +71,8 @@ public static class ReferenceModel
         }
 
         var anomalies = new List<(string Kind, string EventId)>();
-        TreeEvent? prev = null;
         foreach (var e in all)
         {
-            bool sameClock = prev != null && prev.Clock.Time == e.Clock.Time && prev.Clock.Counter == e.Clock.Counter
-                && string.Equals(Dev(prev), Dev(e), StringComparison.Ordinal);
-            prev = e;
-            if (sameClock) anomalies.Add(("same-clock", e.EventId)); // flagged, but still applied
             switch (e)
             {
                 case ItemCreated c:

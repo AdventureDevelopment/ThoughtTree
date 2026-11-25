@@ -45,7 +45,6 @@ public static class TreeSnapshot
 
     public static string KindName(AnomalyKind kind) => kind switch
     {
-        AnomalyKind.SameClock => "same-clock",
         AnomalyKind.DuplicateCreate => "duplicate-create",
         AnomalyKind.UnknownItem => "unknown-item",
         _ => throw new ArgumentOutOfRangeException(nameof(kind)),
