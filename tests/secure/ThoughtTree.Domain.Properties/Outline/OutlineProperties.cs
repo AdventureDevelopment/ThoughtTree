@@ -1,4 +1,5 @@
 using CsCheck;
+using ThoughtTree.Domain.Properties.Support;
 using ThoughtTree.Domain.Model;
 using ThoughtTree.Domain.Outline;
 using ThoughtTree.Domain.Properties.Generators;
@@ -6,8 +7,7 @@ using ThoughtTree.Domain.Properties.Generators;
 namespace ThoughtTree.Domain.Properties.Outline;
 
 /// <summary>
-/// Properties of the projection over generated multi-device histories. Fixed seeds and counts keep runs
-/// deterministic and short; nightly runs may raise <see cref="Iterations"/>.
+/// Properties of the projection over generated multi-device histories; the inputs are the same in every run (<see cref="Deterministic"/>).
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-002")]
@@ -17,15 +17,13 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-023")]
 public class OutlineProperties
 {
-    private const int Iterations = 1000;
-
     private static string State(IEnumerable<TreeEvent> events) => TreeSnapshot.Render(Projection.Replay(events));
 
     [Fact]
     public void Generated_histories_are_valid_and_hit_the_hard_cases()
     {
         int sameClock = 0, dupCreate = 0, unknownItem = 0, equalClocksAcrossDevices = 0, farAhead = 0, cycleMoves = 0, deleteThenRestore = 0, total = 0;
-        HistoryGen.History.Sample(h =>
+        HistoryGen.History.SampleFixed(h =>
         {
             total++;
             h.Select(e => e.EventId).Distinct().Count().ShouldBe(h.Length);
@@ -65,7 +63,7 @@ public class OutlineProperties
             {
                 deleteThenRestore++;
             }
-        }, seed: "0N0XIzNsQ0O2", iter: 500, threads: 1);
+        }, 500);
 
         sameClock.ShouldBeGreaterThan(total / 10);
         dupCreate.ShouldBeGreaterThan(total / 10);
@@ -80,16 +78,14 @@ public class OutlineProperties
     [Fact]
     public void INV_1_order_independence_any_shuffle_gives_the_same_full_state()
     {
-        HistoryGen.HistoryAndShuffle.Sample(t => State(t.Shuffled).ShouldBe(State(t.Events)),
-            seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        HistoryGen.HistoryAndShuffle.SampleFixed(t => State(t.Shuffled).ShouldBe(State(t.Events)));
     }
 
     [Fact]
     public void INV_1_anomalies_are_reported_identically_for_every_shuffle()
     {
-        HistoryGen.HistoryAndShuffle.Sample(t =>
-            Projection.Replay(t.Shuffled).Anomalies.ShouldBe(Projection.Replay(t.Events).Anomalies),
-            seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+            Projection.Replay(t.Shuffled).Anomalies.ShouldBe(Projection.Replay(t.Events).Anomalies));
     }
 
     [Fact]
@@ -105,7 +101,7 @@ public class OutlineProperties
             }
 
             return (h, withDuplicates);
-        }).Sample(t => State(t.withDuplicates).ShouldBe(State(t.h)), seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        }).SampleFixed(t => State(t.withDuplicates).ShouldBe(State(t.h)));
     }
 
     [Fact]
@@ -113,7 +109,7 @@ public class OutlineProperties
     {
         // Each event goes to log A, B or C; some go to two logs (overlap, as after a partial sync).
         Gen.Select(HistoryGen.History, Gen.Int[0, 5].List[0, 40], (h, assign) =>
-            (h, assign)).Sample(t =>
+            (h, assign)).SampleFixed(t =>
         {
             TreeEvent[] all = t.h;
             List<TreeEvent> LogOf(int device) => all
@@ -131,13 +127,13 @@ public class OutlineProperties
             State(b.Concat(a).Concat(c).Concat(a)).ShouldBe(expected);  // repeated merge
             // merging two projections' logs: Replay(A+B) is stable under adding C twice
             State(a.Concat(b).Concat(c).Concat(c)).ShouldBe(expected);
-        }, seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        });
     }
 
     [Fact]
     public void INV_4_tree_shape_one_parent_no_cycles_every_visible_item_reachable()
     {
-        HistoryGen.HistoryAndShuffle.Sample(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
         {
             Tree tree = Projection.Replay(t.Shuffled);
             var items = tree.AllItems.ToDictionary(i => i.Id);
@@ -194,18 +190,18 @@ public class OutlineProperties
 
                 return false;
             }
-        }, seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        });
     }
 
     [Fact]
     public void INV_5_nothing_lost_every_created_item_is_in_the_projection()
     {
-        HistoryGen.HistoryAndShuffle.Sample(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
         {
             var created = t.Shuffled.OfType<ItemCreated>().Select(c => c.Item).ToHashSet();
             var present = Projection.Replay(t.Shuffled).AllItems.Select(i => i.Id).ToHashSet();
             present.SetEquals(created).ShouldBeTrue();
-        }, seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        });
     }
 
     /// <summary>
@@ -215,8 +211,7 @@ public class OutlineProperties
     [Fact]
     public void Projection_equals_the_reference_model_on_every_history()
     {
-        HistoryGen.HistoryAndShuffle.Sample(t =>
-            State(t.Shuffled).ShouldBe(ReferenceModel.ReplayToCanonicalText(t.Shuffled)),
-            seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+            State(t.Shuffled).ShouldBe(ReferenceModel.ReplayToCanonicalText(t.Shuffled)));
     }
 }

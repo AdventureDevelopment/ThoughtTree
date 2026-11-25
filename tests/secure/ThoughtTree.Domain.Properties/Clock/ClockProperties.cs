@@ -1,4 +1,5 @@
 using CsCheck;
+using ThoughtTree.Domain.Properties.Support;
 using ThoughtTree.Domain.Clock;
 
 namespace ThoughtTree.Domain.Properties.Clock;
@@ -8,8 +9,6 @@ namespace ThoughtTree.Domain.Properties.Clock;
 [Trait("ADR", "ADR-014")]
 public class ClockProperties
 {
-    private const int Iterations = 1000;
-
     // Steps: (true, t) the device writes at wall time t; (false, t) it receives an event stamped t.
     private static readonly Gen<(bool Write, long Time)> Step = Gen.Select(
         Gen.Bool,
@@ -18,7 +17,7 @@ public class ClockProperties
     [Fact]
     public void INV_8_a_new_event_is_above_every_clock_in_the_log_and_ties_only_at_the_largest_value()
     {
-        Step.List[1, 30].Sample(steps =>
+        Step.List[1, 30].SampleFixed(steps =>
         {
             EventClock? highest = null;
             foreach (var (write, time) in steps)
@@ -38,6 +37,6 @@ public class ClockProperties
 
                 highest = highest is { } current && current >= stamp ? current : stamp;
             }
-        }, seed: "0N0XIzNsQ0O2", iter: Iterations, threads: 1);
+        });
     }
 }

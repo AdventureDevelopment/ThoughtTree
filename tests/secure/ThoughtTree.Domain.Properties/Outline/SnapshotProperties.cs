@@ -1,4 +1,5 @@
 using CsCheck;
+using ThoughtTree.Domain.Properties.Support;
 using ThoughtTree.Domain.Outline;
 using ThoughtTree.Domain.Properties.Generators;
 
@@ -10,9 +11,6 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-016")]
 public class SnapshotProperties
 {
-    private const int Iterations = 1000;
-    private const string Seed = "0N0XIzNsQ0O2";
-
     private static string State(IEnumerable<TreeEvent> events) => TreeSnapshot.Render(Projection.Replay(events));
 
     private static List<TreeEvent> Sorted(IEnumerable<TreeEvent> events) =>
@@ -21,7 +19,7 @@ public class SnapshotProperties
     [Fact]
     public void INV_7_events_applied_one_at_a_time_in_order_equal_a_full_replay_at_every_step()
     {
-        HistoryGen.HistoryAndShuffle.Sample(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
         {
             var projector = new Projector();
             var applied = new List<TreeEvent>();
@@ -31,13 +29,13 @@ public class SnapshotProperties
                 applied.Add(e);
                 TreeSnapshot.Render(projector.Tree).ShouldBe(State(applied));
             }
-        }, seed: Seed, iter: Iterations, threads: 1);
+        });
     }
 
     [Fact]
     public void INV_7_whatever_the_projector_accepts_from_any_arrival_order_equals_a_full_replay_of_those_events()
     {
-        HistoryGen.HistoryAndShuffle.Sample(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
         {
             var projector = new Projector();
             var accepted = new List<TreeEvent>();
@@ -59,13 +57,13 @@ public class SnapshotProperties
 
             // The fallback the caller uses on a refusal gives the full answer.
             State(t.Shuffled).ShouldBe(State(t.Events));
-        }, seed: Seed, iter: Iterations, threads: 1);
+        });
     }
 
     [Fact]
     public void INV_6_a_snapshot_of_any_prefix_plus_the_remaining_events_equals_a_full_replay()
     {
-        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[0, 60], (t, cut) => (t, cut)).Sample(x =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[0, 60], (t, cut) => (t, cut)).SampleFixed(x =>
         {
             List<TreeEvent> sorted = Sorted(x.t.Events);
             var k = sorted.Count == 0 ? 0 : x.cut % (sorted.Count + 1);
@@ -84,14 +82,14 @@ public class SnapshotProperties
             var resumed = Projector.TryResume(snapshot, remaining);
             resumed.ShouldNotBeNull();
             TreeSnapshot.Render(resumed.Tree).ShouldBe(State(x.t.Events));
-        }, seed: Seed, iter: Iterations, threads: 1);
+        });
     }
 
     [Fact]
     public void INV_6_a_snapshot_of_any_subset_resumes_to_the_full_replay_or_is_refused_as_stale()
     {
         int staleCount = 0, freshCount = 0;
-        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Bool.List[1, 60], Gen.Int[0, 60], (t, mask, cut) => (t, mask, cut)).Sample(x =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Bool.List[1, 60], Gen.Int[0, 60], (t, mask, cut) => (t, mask, cut)).SampleFixed(x =>
         {
             List<TreeEvent> sorted = Sorted(x.t.Events);
             // Half of the cases are a prefix of the order (never stale), half an arbitrary subset (usually stale).
@@ -122,10 +120,10 @@ public class SnapshotProperties
                 resumed.ShouldNotBeNull();
                 TreeSnapshot.Render(resumed.Tree).ShouldBe(State(x.t.Events));
             }
-        }, seed: Seed, iter: Iterations, threads: 1);
+        });
 
         // Both outcomes must be common, or the property proves little.
-        staleCount.ShouldBeGreaterThan(Iterations / 10);
-        freshCount.ShouldBeGreaterThan(Iterations / 10);
+        staleCount.ShouldBeGreaterThan(Deterministic.Iterations / 10);
+        freshCount.ShouldBeGreaterThan(Deterministic.Iterations / 10);
     }
 }
