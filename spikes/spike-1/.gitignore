@@ -1,0 +1,6 @@
+out/
+bin/
+obj/
+publish/
+node_modules/
+profiles/

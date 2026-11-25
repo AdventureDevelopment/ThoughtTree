@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spike 1 on this device</title>
+  <link rel="stylesheet" href="spike.css" />
+  <script type="module" src="device.js"></script>
+</head>
+<body>
+  <h1>Spike 1: storage and AOT on this device</h1>
+  <p class="hint">Test data only; nothing leaves this device unless you save or share a result file. Steps: docs/spikes/spike-1/README.md, section "Phone and tablet without a computer".</p>
+  <p class="status" data-testid="device-status" id="status">loading</p>
+
+  <h2>1. This device</h2>
+  <label>Device model (model only, no names) <input id="model" data-testid="model" placeholder="for example Pixel 6a" /></label>
+  <label>Kind <select id="kind" data-testid="kind"><option value="phone">phone</option><option value="tablet">tablet</option></select></label>
+  <p id="env" class="hint"></p>
+  <button id="persist" data-testid="persist">Keep test data (persistent storage)</button>
+
+  <h2>2. Prepare the test data</h2>
+  <p class="hint">Generates the encrypted datasets on this device from the seed and checks each against the desktop file's SHA-256. The 100,000-event dataset takes about 170 MB and several minutes.</p>
+  <div id="data"></div>
+  <button id="prepare" data-testid="prepare">Generate missing datasets</button>
+
+  <h2>3. Timing series</h2>
+  <label><input type="checkbox" id="b-interpreted" checked /> interpreted build</label>
+  <label><input type="checkbox" id="b-aot" checked /> AOT build</label>
+  <label><input type="checkbox" id="p-main" checked /> Start and replay (Q1, Q2)</label>
+  <label><input type="checkbox" id="p-import" checked /> Import into an empty store (Q1, slow)</label>
+  <label><input type="checkbox" id="p-search" checked /> Search (Q4)</label>
+  <label><input type="checkbox" id="p-blocks" /> Decryption in blocks (one AES-GCM call per event against blocks of 100, 1,000 and 10,000 events; 5 runs, a few minutes)</label>
+  <label><input type="checkbox" id="p-longnotes" /> Long notes (Q5; 1,000,000 characters left out, needs about 1 GB memory)</label>
+  <label>Runs per series <select id="runs" data-testid="runs"><option value="3">3 cold + 3 warm (quick)</option><option value="10" selected>10 cold + 10 warm (as on the desktop)</option></select></label>
+  <button id="start" data-testid="start">Start</button>
+  <button id="resume" data-testid="resume">Continue</button>
+  <button id="skip" data-testid="skip">Skip the current run</button>
+  <button id="stop" data-testid="stop">Stop</button>
+
+  <h2>4. Durability (Q3)</h2>
+  <p><a href="durability-device.html" data-testid="durability-link">Open the swipe-away test</a></p>
+
+  <h2>5. Results</h2>
+  <div id="results" data-testid="results"></div>
+  <button id="save-all" data-testid="save-all">Save all files (one zip)</button>
+  <button id="share-all" data-testid="share-all">Share all files (one zip)</button>
+  <button id="clear" data-testid="clear">Delete results on this device</button>
+</body>
+</html>
