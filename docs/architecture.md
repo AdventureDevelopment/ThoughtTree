@@ -85,7 +85,7 @@ ThoughtTree is a hierarchical note-taking Progressive Web App for structuring th
 - **Domain project for the client, contracts project shared with the server**: the server cannot decrypt events, so it needs only the envelope, the export file format and the API data; all domain logic (events, tree, projection, conflicts, clock) lives in a client-side domain project
 - **End-to-end encryption**: event payloads are encrypted on the device with the tree's key, handed over only by pairing or sharing; the server stores and relays ciphertext plus minimal routing metadata (account id, event id, sequence number)
 - **Several independent trees per device**: each tree has its own key, account identity and event log; nothing is shared between trees
-- **Deterministic replay**: every device orders a tree's events by hybrid logical clock and device id, so all devices compute the same tree from the same events
+- **Deterministic replay**: every device orders a tree's events by hybrid logical clock and event id, so all devices compute the same tree from the same events
 - **Touch-first UI**: the outliner is designed for phone and tablet gestures first; desktop keyboard shortcuts come as an add-on
 - **Pluggable sync transport**: every exchange between two logs follows the same steps, independent of how the bytes travel; the Sync Engine talks to an `ISyncTransport` abstraction, with the server and the file as the first transports
 - **No gaps per device**: every transport delivers the events of a device without gaps: a device never holds a later event of device D without all earlier ones; conflict detection relies on this
@@ -467,7 +467,7 @@ Example of an event before encryption:
   "schema": 1,
   "deviceId": "3f2a…",
   "actionId": "5b19…",
-  "clock": { "time": 1794407400123, "counter": 0 },
+  "clock": 1794407400123,
   "timestamp": "2026-11-11T15:30:00.123+01:00",
   "data": { "itemId": "a71c…", "title": "Ideas", "replaces": ["9e04…"] }
 }
@@ -476,8 +476,8 @@ Example of an event before encryption:
 **Ordering of siblings**
 
 - Position by reference: `item.created` and `item.moved` place an item directly after a named sibling (`afterItemId`), or first under its parent when empty
-- The projection replays all events of a tree in one agreed order, sorted by `Clock`, then `DeviceId`; every device computes the same order, independent of the order in which events arrived
-- `Clock` is a hybrid logical clock: a UTC time in milliseconds (64-bit) plus a counter (32-bit). A new event gets the device's current UTC time, or, if the highest clock in the tree's local log is equal or later, that clock with the counter raised by one
+- The projection replays all events of a tree in one agreed order, sorted by `Clock`, then `EventId` (text, ordinal); every device computes the same order, independent of the order in which events arrived
+- `Clock` is a hybrid logical clock, one 64-bit number in UTC milliseconds: a new event gets the device's current UTC time, or, if the highest clock in the tree's local log is equal or later, that clock plus one (ADR-014)
 - The clock is not stored separately: it is always derived from the highest clock in the tree's local log, so events received by sync or file raise it automatically
 - Events from a device whose clock is far ahead are accepted like all others, so every device keeps the same order; the receiving device warns that the other device's clock seems wrong
 - `DeviceId` is compared as the lowercase text form of the GUID, character by character (ordinal), never by the binary GUID order of .NET
@@ -518,7 +518,7 @@ Example of an event before encryption:
 
 **Conflict resolution**
 
-- Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `DeviceId`); with the hybrid clock this is usually the latest edit in real time
+- Events are commutative where possible; otherwise last-writer-wins per field, decided by the agreed event order (`Clock`, then `EventId`); with the hybrid clock this is usually the latest edit in real time
 - `Timestamp` is never used to decide anything; only `Clock` is, which stays consistent even when device clocks drift
 - Events that carry `replaces` (a list of event ids of the changes they replace; a missing value means the event replaces nothing known): `item.title-changed`, `item.note-changed`, `item.moved`, `relation.type-changed`, `relation.note-changed`, `relation-type.set`, `tree.feature-changed`, `tree.server-changed`, `view.set` (ADR-018, ADR-077, ADR-083, ADR-084)
 - Conflict: two or more changes of the same field of the same element (item, relation, relation type, tree feature, server address, view) that no later change replaces and whose values differ; the projection shows the winner by agreed order and marks the element, offering all competing values
@@ -970,7 +970,6 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-086](adr/ADR-086-local-event-blocks.md) | Local event blocks for replay | `src/ThoughtTree.Client*/**` |
 | [ADR-087](adr/ADR-087-stored-size-limits.md) | Stored size limits: padding buckets, note, title, user name and server address | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-088](adr/ADR-088-write-acknowledgement.md) | When a local write counts as saved: on `complete`; `strict` for every store not listed as `relaxed` | `src/ThoughtTree.Client*/**` |
-| [ADR-089](adr/ADR-089-event-id-breaks-replay-ties.md) | The event id breaks replay ties (proposed; amends ADR-014) | `src/ThoughtTree.Domain/**` |
 
 **Open decisions**
 
@@ -1148,9 +1147,9 @@ Scenarios grouped by quality goal; "secured by" names the invariant, test kind o
 | Top-level Item | An item without a parent; a tree can have several |
 | Parent / Children | The item directly above an item / the items directly below it |
 | Sibling Order | The order of the children under one parent; follows from replaying the events, each placing an item after a named sibling |
-| Hybrid Logical Clock | The clock carried by every event: UTC time plus a counter; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
+| Hybrid Logical Clock | The clock carried by every event: one number in UTC milliseconds; it follows real time where possible and never goes back behind any event the device has seen, so events can be ordered the same way on every device |
 | Conflict | Two or more changes with different values of the same field of an element (item, relation, relation type, tree feature, server address, view) made without seeing each other; shown to the user, who picks the value |
-| Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then device id |
+| Agreed Event Order | The order every device replays a tree's events in: by hybrid logical clock, then event id |
 | Collapse | Hide an item's children in the view; UI state of one device, not a domain event |
 | Focus | Make an item the temporary top of the view, showing its branch and the item as a page (title, tags, note; D-151, ADR-072); "zoom" is used only for magnifying (pinch or browser zoom) |
 | Event | Immutable record of one change to the tree |
