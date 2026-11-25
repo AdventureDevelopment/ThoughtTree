@@ -13,6 +13,9 @@ public static class HybridClock
         }
 
         // Equal or later: keep the highest time and count on. Far-ahead clocks are accepted, never capped.
-        return new EventClock(highest.Time, checked(highest.Counter + 1));
+        // A full counter rolls into the next millisecond, so the clock still rises and never throws.
+        return highest.Counter == int.MaxValue
+            ? new EventClock(highest.Time + 1, 0)
+            : new EventClock(highest.Time, highest.Counter + 1);
     }
 }
