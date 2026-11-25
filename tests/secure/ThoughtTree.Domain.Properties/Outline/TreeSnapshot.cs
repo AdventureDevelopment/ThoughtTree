@@ -57,7 +57,7 @@ public static class TreeSnapshot
     private static string Quote(string s)
     {
         var sb = new StringBuilder("\"");
-        foreach (char ch in s)
+        foreach (var ch in s)
         {
             if (ch == '"')
             {

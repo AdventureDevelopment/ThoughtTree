@@ -85,10 +85,10 @@ public static class HistoryGen
 
         foreach (Draft d in drafts)
         {
-            string device = Devices[d.Device];
+            var device = Devices[d.Device];
             EventClock clock = Stamp(device, d.Time, d.Counter);
             ItemId item = Item(d.Item);
-            string title = $"t{d.Text}";
+            var title = $"t{d.Text}";
             switch (d.Kind)
             {
                 case -1:

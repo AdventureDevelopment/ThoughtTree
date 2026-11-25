@@ -98,7 +98,7 @@ public class OutlineProperties
         Gen.Select(HistoryGen.History, Gen.Int[0, 7].List[0, 12], (h, picks) =>
         {
             var withDuplicates = h.ToList();
-            foreach (int p in picks)
+            foreach (var p in picks)
             {
                 TreeEvent e = h[p % h.Length];
                 withDuplicates.Insert((p * 7) % (withDuplicates.Count + 1), e);
@@ -124,7 +124,7 @@ public class OutlineProperties
             // Events that landed in no log are put in A so the union is the whole history.
             a.AddRange(all.Except(a.Concat(b).Concat(c)));
 
-            string expected = State(all);
+            var expected = State(all);
             State(a.Concat(b).Concat(c)).ShouldBe(expected);            // (A + B) + C
             State(a.Concat(b.Concat(c))).ShouldBe(expected);            // A + (B + C)
             State(c.Concat(b).Concat(a)).ShouldBe(expected);            // C + B + A
@@ -145,7 +145,7 @@ public class OutlineProperties
             // One parent that exists, and the parent chain ends (no cycle).
             foreach (Item item in items.Values)
             {
-                int steps = 0;
+                var steps = 0;
                 for (ItemId? p = item.Parent; p is { } id; p = items[id].Parent)
                 {
                     items.ContainsKey(id).ShouldBeTrue();

@@ -37,7 +37,7 @@ public static class ReferenceModel
         // sharing all three, all are applied in that order; nothing is reported.
         all.Sort((a, b) =>
         {
-            int c = a.Clock.Time.CompareTo(b.Clock.Time);
+            var c = a.Clock.Time.CompareTo(b.Clock.Time);
             if (c != 0)
             {
                 return c;
@@ -85,10 +85,10 @@ public static class ReferenceModel
         void Place(Item item, string? parent, ItemId? after)
         {
             var list = SiblingsOf(parent);
-            int index = 0; // first, unless 'after' is a sibling here right now (tombstones count)
+            var index = 0; // first, unless 'after' is a sibling here right now (tombstones count)
             if (after is { } a && !string.IsNullOrEmpty(a.Value) && a.Value != item.Id)
             {
-                int at = list.IndexOf(a.Value);
+                var at = list.IndexOf(a.Value);
                 if (at >= 0)
                 {
                     index = at + 1;
@@ -183,7 +183,7 @@ public static class ReferenceModel
         // Canonical text: depth-first over the whole tree including tombstones.
         var sb = new StringBuilder();
         var stack = new Stack<(string Id, int Depth)>();
-        for (int i = top.Count - 1; i >= 0; i--)
+        for (var i = top.Count - 1; i >= 0; i--)
         {
             stack.Push((top[i], 0));
         }
@@ -198,13 +198,13 @@ public static class ReferenceModel
               .Append(Quote(it.Title)).Append(' ').Append(Quote(it.Note)).Append('\n');
             if (kids.TryGetValue(id, out var ch))
             {
-                for (int i = ch.Count - 1; i >= 0; i--)
+                for (var i = ch.Count - 1; i >= 0; i--)
                 {
                     stack.Push((ch[i], depth + 1));
                 }
             }
         }
-        anomalies.Sort((a, b) => { int c = string.CompareOrdinal(a.Kind, b.Kind); return c != 0 ? c : string.CompareOrdinal(a.EventId, b.EventId); });
+        anomalies.Sort((a, b) => { var c = string.CompareOrdinal(a.Kind, b.Kind); return c != 0 ? c : string.CompareOrdinal(a.EventId, b.EventId); });
         foreach (var (kind, id) in anomalies)
         {
             sb.Append("anomaly ").Append(kind).Append(' ').Append(Quote(id)).Append('\n');
@@ -219,7 +219,7 @@ public static class ReferenceModel
     private static string Quote(string s)
     {
         var sb = new StringBuilder("\"");
-        foreach (char ch in s)
+        foreach (var ch in s)
         {
             if (ch == '"')
             {

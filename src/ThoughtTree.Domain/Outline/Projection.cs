@@ -11,7 +11,7 @@ public static class Projection
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
         // INV-1: events that tie on clock and device (bad data only) fall back to the event id.
-        List<TreeEvent> ordered = events
+        var ordered = events
             .Where(e => seen.Add(e.EventId)) // INV-2: the same event twice changes nothing
             .OrderBy(EventKey.Of, EventKey.Comparer)
             .ToList();
@@ -70,7 +70,7 @@ public static class Projection
         List<ItemId> siblings = tree.SiblingsOf(parent);
 
         // ADR-004: directly after the named sibling; first if it is empty or not a sibling at replay time.
-        int index = after is { } a ? siblings.IndexOf(a) + 1 : 0;
+        var index = after is { } a ? siblings.IndexOf(a) + 1 : 0;
         siblings.Insert(index, id);
     }
 }

@@ -43,7 +43,7 @@ public class SnapshotProperties
             var accepted = new List<TreeEvent>();
             foreach (TreeEvent e in t.Shuffled)
             {
-                string before = TreeSnapshot.Render(projector.Tree);
+                var before = TreeSnapshot.Render(projector.Tree);
                 if (projector.TryAdd(e))
                 {
                     accepted.Add(e);
@@ -68,7 +68,7 @@ public class SnapshotProperties
         Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[0, 60], (t, cut) => (t, cut)).Sample(x =>
         {
             List<TreeEvent> sorted = Sorted(x.t.Events);
-            int k = sorted.Count == 0 ? 0 : x.cut % (sorted.Count + 1);
+            var k = sorted.Count == 0 ? 0 : x.cut % (sorted.Count + 1);
             var projector = new Projector();
             foreach (TreeEvent e in sorted.Take(k))
             {
@@ -81,7 +81,7 @@ public class SnapshotProperties
             // The events the snapshot lacks arrive in any order, some of them again.
             var remaining = x.t.Shuffled.Where(e => !prefix.Contains(e.EventId)).Concat(x.t.Shuffled.Take(2)).ToList();
 
-            Projector? resumed = Projector.TryResume(snapshot, remaining);
+            var resumed = Projector.TryResume(snapshot, remaining);
             resumed.ShouldNotBeNull();
             TreeSnapshot.Render(resumed.Tree).ShouldBe(State(x.t.Events));
         }, seed: Seed, iter: Iterations, threads: 1);
@@ -106,9 +106,9 @@ public class SnapshotProperties
 
             var ids = inSnapshot.Select(e => e.EventId).ToHashSet();
             var remaining = x.t.Shuffled.Where(e => !ids.Contains(e.EventId)).ToList();
-            Projector? resumed = Projector.TryResume(projector.TakeSnapshot(), remaining);
+            var resumed = Projector.TryResume(projector.TakeSnapshot(), remaining);
 
-            bool stale = inSnapshot.Count > 0 && remaining.Any(e =>
+            var stale = inSnapshot.Count > 0 && remaining.Any(e =>
                 EventKey.Comparer.Compare(EventKey.Of(e), EventKey.Of(inSnapshot[^1])) < 0);
 
             if (stale)

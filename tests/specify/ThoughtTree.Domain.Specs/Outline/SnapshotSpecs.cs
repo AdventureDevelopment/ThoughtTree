@@ -36,8 +36,8 @@ public class SnapshotSpecs
     {
         Log log = default!;
         Projector projector = default!;
-        bool accepted = true;
-        string before = "";
+        var accepted = true;
+        var before = "";
 
         "Given a projector that has applied events up to clock 5"
             .x(() =>
@@ -133,7 +133,7 @@ public class SnapshotSpecs
     public void INV_6_A_snapshot_is_stale_when_an_unseen_event_belongs_before_it()
     {
         Snapshot snapshot = default!;
-        Projector? resumed = new Projector();
+        Projector? resumed = null;
 
         "Given a snapshot taken after an event with clock 5"
             .x(() =>

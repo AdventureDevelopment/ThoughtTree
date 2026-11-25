@@ -41,7 +41,7 @@ public sealed class Projector
             return true; // INV-2
         }
 
-        EventKey key = EventKey.Of(e);
+        var key = EventKey.Of(e);
         if (this.last is { } last && EventKey.Comparer.Compare(key, last) < 0)
         {
             return false;

@@ -9,7 +9,7 @@ public readonly record struct EventKey(EventClock Clock, string DeviceId, string
 
     public static IComparer<EventKey> Comparer { get; } = Comparer<EventKey>.Create(static (a, b) =>
     {
-        int byClockAndDevice = EventOrder.Instance.Compare((a.Clock, a.DeviceId), (b.Clock, b.DeviceId));
+        var byClockAndDevice = EventOrder.Instance.Compare((a.Clock, a.DeviceId), (b.Clock, b.DeviceId));
         return byClockAndDevice != 0 ? byClockAndDevice : string.CompareOrdinal(a.EventId, b.EventId);
     });
 }

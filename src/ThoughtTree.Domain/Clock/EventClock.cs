@@ -5,7 +5,7 @@ public readonly record struct EventClock(long Time, int Counter) : IComparable<E
 {
     public int CompareTo(EventClock other)
     {
-        int byTime = this.Time.CompareTo(other.Time);
+        var byTime = this.Time.CompareTo(other.Time);
         return byTime != 0 ? byTime : this.Counter.CompareTo(other.Counter);
     }
 
