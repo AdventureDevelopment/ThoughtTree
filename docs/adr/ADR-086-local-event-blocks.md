@@ -1,10 +1,10 @@
 # ADR-086: Local event blocks for replay
 
-id: ADR-086 · status: Proposed · kind: constraint
+id: ADR-086 · status: Accepted · kind: constraint
 
 applies_to: `src/ThoughtTree.Client*/**`
 
-Owner decision 2026-11-25 (spike 1 decision 4, option A), proposed; the owner reviews this text before accepting it. Meets the "SHOULD batch Web Crypto calls during replay" rule of ADR-073; amends no ADR. Part of the local store layout (ADR-074), versioned by ADR-038 and free to change before release 1 (ADR-085).
+Owner decision 2026-11-25 (spike 1 decision 4, option A), accepted by the owner 2026-11-25 after reviewing the text. Meets the "SHOULD batch Web Crypto calls during replay" rule of ADR-073; amends no ADR. Part of the local store layout (ADR-074), versioned by ADR-038 and free to change before release 1 (ADR-085).
 
 - **MUST** keep the per-event envelopes as the source of truth; blocks are a local copy that can be rebuilt from them at any time
 - **MUST NOT** sync, export or send blocks to a server; sync and the envelope format stay unchanged
