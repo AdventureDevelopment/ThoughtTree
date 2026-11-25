@@ -7,7 +7,6 @@ public static class Projection
 {
     public static Tree Replay(IEnumerable<TreeEvent> events)
     {
-        var tree = new Tree();
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
         // INV-1: events that tie on clock and device (bad data only) fall back to the event id.
@@ -16,49 +15,39 @@ public static class Projection
             .OrderBy(EventKey.Of, EventKey.Comparer)
             .ToList();
 
-        foreach (TreeEvent e in ordered)
+        var tree = Tree.Empty;
+        foreach (var e in ordered)
         {
-            Apply(tree, e);
+            tree = Apply(tree, e);
         }
 
-        tree.SortAnomalies();
         return tree;
     }
 
-    internal static void Apply(Tree tree, TreeEvent e)
+    internal static Tree Apply(Tree tree, TreeEvent e)
     {
         switch (e)
         {
             case ItemCreated c when tree.Items.ContainsKey(c.Item):
-                tree.Report(AnomalyKind.DuplicateCreate, e.EventId);
-                break;
+                return tree.WithAnomaly(AnomalyKind.DuplicateCreate, e.EventId);
             case ItemCreated c:
-                tree.Items[c.Item] = new Item(c.Item, c.Title, c.Note);
-                Place(tree, c.Item, c.Parent, c.After);
-                break;
-            case ItemTitleChanged t when tree.Items.TryGetValue(t.Item, out Item? item):
-                tree.Items[t.Item] = item.WithTitle(t.Title);
-                break;
-            case ItemNoteChanged n when tree.Items.TryGetValue(n.Item, out Item? item):
-                tree.Items[n.Item] = item.WithNote(n.Note);
-                break;
-            case ItemMoved m when tree.Items.ContainsKey(m.Item):
-                tree.RemoveChild(tree.Items[m.Item].Parent, m.Item);
-                Place(tree, m.Item, m.Parent, m.After);
-                break;
-            case ItemDeleted d when tree.Items.TryGetValue(d.Item, out Item? item):
-                tree.Items[d.Item] = item.WithDeleted(true);
-                break;
-            case ItemRestored r when tree.Items.TryGetValue(r.Item, out Item? item):
-                tree.Items[r.Item] = item.WithDeleted(false);
-                break;
+                return Place(tree.WithItem(new Item(c.Item, c.Title, c.Note)), c.Item, c.Parent, c.After);
+            case ItemTitleChanged t when tree.Items.TryGetValue(t.Item, out var item):
+                return tree.WithItem(item.WithTitle(t.Title));
+            case ItemNoteChanged n when tree.Items.TryGetValue(n.Item, out var item):
+                return tree.WithItem(item.WithNote(n.Note));
+            case ItemMoved m when tree.Items.TryGetValue(m.Item, out var item):
+                return Place(tree.RemoveChild(item.Parent, m.Item), m.Item, m.Parent, m.After);
+            case ItemDeleted d when tree.Items.TryGetValue(d.Item, out var item):
+                return tree.WithItem(item.WithDeleted(true));
+            case ItemRestored r when tree.Items.TryGetValue(r.Item, out var item):
+                return tree.WithItem(item.WithDeleted(false));
             default:
-                tree.Report(AnomalyKind.UnknownItem, e.EventId);
-                break;
+                return tree.WithAnomaly(AnomalyKind.UnknownItem, e.EventId);
         }
     }
 
-    private static void Place(Tree tree, ItemId id, ItemId? parent, ItemId? after)
+    private static Tree Place(Tree tree, ItemId id, ItemId? parent, ItemId? after)
     {
         // ADR-023. The item is already detached from its old parent, so test the cycle through the parent chain.
         if (parent is { } p && (!tree.Items.ContainsKey(p) || tree.IsSameOrDescendant(p, id)))
@@ -66,7 +55,6 @@ public static class Projection
             parent = null;
         }
 
-        tree.Items[id] = tree.Items[id].WithParent(parent);
-        tree.InsertChild(parent, id, after);
+        return tree.WithItem(tree.Items[id].WithParent(parent)).InsertChild(parent, id, after);
     }
 }

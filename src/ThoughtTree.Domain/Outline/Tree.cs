@@ -1,43 +1,31 @@
+using System.Collections;
+using System.Collections.Immutable;
+
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>The tree as a projection of the event log (ADR-002).</summary>
-public sealed class Tree
+/// <summary>
+/// The tree as a projection of the event log (ADR-002), immutable: applying an event returns a new tree that shares
+/// everything unchanged with the old one, so a snapshot is just a reference.
+/// </summary>
+public sealed record Tree
 {
-    private readonly List<Anomaly> anomalies = [];
+    public static Tree Empty { get; } = new();
 
-    internal Dictionary<ItemId, Item> Items { get; } = [];
-    internal List<ItemId> TopLevel { get; } = [];
+    internal ImmutableDictionary<ItemId, Item> Items { get; private init; } = ImmutableDictionary<ItemId, Item>.Empty;
 
-    /// <summary>Every item ever created, visible or deleted (INV-5).</summary>
-    public IReadOnlyCollection<Item> AllItems => this.Items.Values;
+    internal ImmutableList<ItemId> TopLevel { get; private init; } = [];
 
     /// <summary>Events the user should review: flagged or not applied. Sorted by kind, then event id.</summary>
-    public IReadOnlyList<Anomaly> Anomalies => this.anomalies;
+    public ImmutableList<Anomaly> Anomalies { get; private init; } = [];
+
+    /// <summary>Every item ever created, visible or deleted (INV-5).</summary>
+    public IReadOnlyCollection<Item> AllItems => new ItemCollection(this.Items);
 
     /// <summary>Top-level items in order, deleted ones included.</summary>
     public IReadOnlyList<ItemId> TopLevelOrder => this.TopLevel;
 
     /// <summary>Children of an item in order, deleted ones included.</summary>
     public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => this.Items[id].Children;
-
-    internal void Report(AnomalyKind kind, string eventId) => this.anomalies.Add(new Anomaly(kind, eventId));
-
-    internal void SortAnomalies() =>
-        this.anomalies.Sort((a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId));
-
-    /// <summary>A copy that shares the items, which are immutable; used for snapshots.</summary>
-    internal Tree Clone()
-    {
-        var copy = new Tree();
-        foreach ((ItemId id, Item item) in this.Items)
-        {
-            copy.Items[id] = item;
-        }
-
-        copy.TopLevel.AddRange(this.TopLevel);
-        copy.anomalies.AddRange(this.anomalies);
-        return copy;
-    }
 
     public Item? Find(ItemId id) => this.Items.GetValueOrDefault(id);
 
@@ -50,9 +38,9 @@ public sealed class Tree
 
         void Walk(IReadOnlyList<ItemId> ids, int depth)
         {
-            foreach (ItemId id in ids)
+            foreach (var id in ids)
             {
-                Item item = this.Items[id];
+                var item = this.Items[id];
                 if (item.Deleted)
                 {
                     continue;
@@ -68,6 +56,15 @@ public sealed class Tree
     public string ToOutline() =>
         string.Join('\n', this.VisibleOutline().Select(e => new string(' ', e.Depth * 2) + "- " + e.Item.Title));
 
+    internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
+
+    internal Tree WithAnomaly(AnomalyKind kind, string eventId) =>
+        this with
+        {
+            Anomalies = this.Anomalies.Add(new Anomaly(kind, eventId)).Sort(
+                (a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId)),
+        };
+
     internal bool IsSameOrDescendant(ItemId candidate, ItemId ancestor)
     {
         for (ItemId? current = candidate; current is { } c; current = this.Items[c].Parent)
@@ -81,32 +78,37 @@ public sealed class Tree
         return false;
     }
 
-    internal void RemoveChild(ItemId? parent, ItemId id)
+    internal Tree RemoveChild(ItemId? parent, ItemId id)
     {
         if (parent is { } p)
         {
             var holder = this.Items[p];
-            this.Items[p] = holder.WithChildren(holder.Children.Remove(id));
+            return this.WithItem(holder.WithChildren(holder.Children.Remove(id)));
         }
-        else
-        {
-            this.TopLevel.Remove(id);
-        }
+
+        return this with { TopLevel = this.TopLevel.Remove(id) };
     }
 
     /// <summary>ADR-004: directly after the named sibling; first if none is named or it is not a sibling now.</summary>
-    internal void InsertChild(ItemId? parent, ItemId id, ItemId? after)
+    internal Tree InsertChild(ItemId? parent, ItemId id, ItemId? after)
     {
         if (parent is { } p)
         {
             var holder = this.Items[p];
             var index = after is { } a ? holder.Children.IndexOf(a) + 1 : 0;
-            this.Items[p] = holder.WithChildren(holder.Children.Insert(index, id));
+            return this.WithItem(holder.WithChildren(holder.Children.Insert(index, id)));
         }
-        else
-        {
-            var index = after is { } a ? this.TopLevel.IndexOf(a) + 1 : 0;
-            this.TopLevel.Insert(index, id);
-        }
+
+        var topIndex = after is { } t ? this.TopLevel.IndexOf(t) + 1 : 0;
+        return this with { TopLevel = this.TopLevel.Insert(topIndex, id) };
+    }
+
+    private sealed class ItemCollection(ImmutableDictionary<ItemId, Item> items) : IReadOnlyCollection<Item>
+    {
+        public int Count => items.Count;
+
+        public IEnumerator<Item> GetEnumerator() => items.Values.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }
 }

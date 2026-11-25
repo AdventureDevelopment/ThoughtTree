@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace ThoughtTree.Domain.Outline;
 
 /// <summary>
@@ -6,7 +8,7 @@ namespace ThoughtTree.Domain.Outline;
 /// </summary>
 public sealed class Snapshot
 {
-    internal Snapshot(Tree tree, EventKey? last, HashSet<string> ids)
+    internal Snapshot(Tree tree, EventKey? last, ImmutableHashSet<string> ids)
     {
         this.Tree = tree;
         this.Last = last;
@@ -15,7 +17,7 @@ public sealed class Snapshot
 
     internal Tree Tree { get; }
     internal EventKey? Last { get; }
-    internal HashSet<string> Ids { get; }
+    internal ImmutableHashSet<string> Ids { get; }
 }
 
 /// <summary>
@@ -24,9 +26,9 @@ public sealed class Snapshot
 /// </summary>
 public sealed class Projector
 {
-    private readonly HashSet<string> ids = new(StringComparer.Ordinal);
+    private ImmutableHashSet<string> ids = ImmutableHashSet.Create<string>(StringComparer.Ordinal);
     private EventKey? last;
-    private Tree tree = new();
+    private Tree tree = Tree.Empty;
 
     public Tree Tree => this.tree;
 
@@ -47,15 +49,14 @@ public sealed class Projector
             return false;
         }
 
-        this.ids.Add(e.EventId);
+        this.ids = this.ids.Add(e.EventId);
         this.last = key;
-        Projection.Apply(this.tree, e);
-        this.tree.SortAnomalies();
+        this.tree = Projection.Apply(this.tree, e);
         return true;
     }
 
-    /// <summary>A copy of the current state; later events do not change it.</summary>
-    public Snapshot TakeSnapshot() => new(this.tree.Clone(), this.last, [.. this.ids]);
+    /// <summary>The current state; later events do not change it, because the tree and the id set are immutable.</summary>
+    public Snapshot TakeSnapshot() => new(this.tree, this.last, this.ids);
 
     /// <summary>
     /// Carries on from a snapshot with the events it does not contain. Returns null if the snapshot is stale: an unseen
@@ -63,10 +64,9 @@ public sealed class Projector
     /// </summary>
     public static Projector? TryResume(Snapshot snapshot, IEnumerable<TreeEvent> remaining)
     {
-        var projector = new Projector { tree = snapshot.Tree.Clone(), last = snapshot.Last };
-        projector.ids.UnionWith(snapshot.Ids);
+        var projector = new Projector { tree = snapshot.Tree, last = snapshot.Last, ids = snapshot.Ids };
 
-        foreach (TreeEvent e in remaining.OrderBy(EventKey.Of, EventKey.Comparer))
+        foreach (var e in remaining.OrderBy(EventKey.Of, EventKey.Comparer))
         {
             if (!projector.TryAdd(e))
             {
