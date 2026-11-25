@@ -115,6 +115,18 @@ public class Device { /* AddItem, Delete, Undo, Tree, Log */ }
 - Add specs freely; never edit or delete an existing spec without the owner's approval [ADR-035, ADR-054].
 - Time, ids and randomness come from the fakes [ADR-034]; a spec is deterministic.
 
+## 4b. Code style
+
+Owner decision 2026-11-25, adapted from the SoloAdventure project. The rules marked "build" are in `.editorconfig` at `warning`, so a breach fails the build [ADR-042].
+
+- **Comments are a last resort.** Names and specs are the documentation. Comment only what neither can say: an ADR, `INV-n` or `D-n` id, or a non-obvious gotcha. Never restate the code; never retell a design decision (the ADR owns the why); one line of citation at most.
+- **TL;DR everywhere:** comments, docs, pull request text and commit messages lead with the point.
+- **YAGNI:** add no type, field or abstraction before something real needs it.
+- **Doc summary** (`/// <summary>`) on each public type: one sentence of role, plus the ADR id where one applies. On members only if the name does not say it.
+- **`sealed`** on classes and records unless they are designed for inheritance.
+- **Braces always, explicit accessibility** (build). **`this.` on instance members** (build). Expression-bodied members only when they fit on one line (preference, not checked by the build).
+- **Private instance fields in camelCase without a prefix** (build), always reached through `this.`; constants and static fields in PascalCase (build).
+
 ## 5. Project layout
 
 The six projects exist as a skeleton without business code (foundation stage 1, architecture.md section 9); the solution is `ThoughtTree.slnx`. The layout [ADR-054, architecture.md section 5]:
