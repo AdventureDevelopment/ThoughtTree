@@ -20,3 +20,7 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
    first glance and finds summaries clutter. Open: summaries in spec classes, secure tests and `src/`; what carries the
    ADR and INV links instead (traits, an attribute, `applies_to`); timing open. Cards A and C of the clean-code review
    (summary check, spec summaries S2) depend on it.
+6. **One approved sweep over the protected test files** (owner, 2026-11-26): write out the one-letter names in
+   `tests/specify/**` and the reference model (the files left in `eng/pending-renames.txt`, AGENTS.md section 4b),
+   together with the protected findings of `docs/reviews/2026-11-26-clean-code.md` the owner approves on its card C
+   (S2 waits for item 5). Needs the owner's approval of the list before it starts (ADR-035).
