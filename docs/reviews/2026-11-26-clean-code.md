@@ -237,6 +237,13 @@ TL;DR: an independent review of everything the branch adds over `main` in `src/`
 - Fix: none now; when a third consumer appears, consider `Replay` as `Projector.Empty.AddRange(events).Tree` behind the budget checks.
 - Effort: none now. Protected: no.
 
+## Owner decisions on the protected findings, 2026-11-26
+
+- Done now: S8, S9, S10, S11, S12, T11 and C4 (`Title.Text`, `Note.Text`).
+- With the next spec change (`docs/plan/next-work.md` item 2): S3, S4, S5, S6, S7.
+- S2 waits for the decision on doc comments (`docs/plan/next-work.md` item 5).
+- Still open: T5, T9.
+
 ## Overlap with the domain-core review
 
 - `Tree.ToOutline` as test-only Domain API: known (maintainability/L9); not repeated.

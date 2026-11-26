@@ -5,12 +5,15 @@ The queue of work items, first item next. It only orders the work and points to 
 decisions in `docs/architecture.md` section 9. When an item is done, remove it; add new work you find, with its source
 (AGENTS.md section 4).
 
-1. **Act on the clean-code review** (`docs/reviews/2026-11-26-clean-code.md`, its refactoring order). Owner decisions
-   2026-11-26: card 1 (b), explicit conversion to `Title` and `Note` everywhere; card 2 (b), rename to `ItemId`,
-   `ParentId`, `AfterItemId`; card 3 (a), drop the `ADR_0xx_` prefixes in scenario titles. The owner approves the
-   protected changes these need. First, so later step 2a work builds on the new names.
+1. **Rest of the clean-code review** (`docs/reviews/2026-11-26-clean-code.md`): its refactoring order is done except
+   H1, which waits for item 5. Left outside that order, not protected: C10 (`Tree.Anomalies` sorts on every read), T4
+   (one naming form for securing tests), T7 (the hard-case counter), H3 (one public type per file), H4 (spec
+   conventions as a rule). Needs the owner first: T5 (remove a repeated gate test) and T9 (which ADR, if any, the
+   printing rule secures).
 2. **Open findings for the next spec and property change** (`docs/reviews/2026-11-26-domain-core.md`, rows marked "Next
-   spec change" and "Next property change"). Spec changes need the owner's approval (ADR-035).
+   spec change" and "Next property change"), together with S3 to S7 of `docs/reviews/2026-11-26-clean-code.md` (one
+   spec helper, one tree renderer, scenarios in the class of their topic, the snapshot class name, Given/When/Then in
+   the INV-11 specs; owner, 2026-11-26). Spec changes need the owner's approval (ADR-035).
 3. **Rest of foundation step 2a**: the payload wrapper and INV-9 to INV-14, INV-13 first (same event id with different
    content); `docs/architecture.md` section 9 ("Release 1 scope", decision 7) and the invariant catalogue in section 8.
 4. **Flaky growth budget** (found with INV-11, 2026-11-26): `PF6_a_sync_batch_of_late_events_grows_about_linearly` in
@@ -18,12 +21,11 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
    `8741775` before INV-11; make the ratio check stable without weakening it (ADR-035).
 5. **Decide where doc comments stay** (owner, 2026-11-26, after the clean-code review): the owner wants code readable at
    first glance and finds summaries clutter. Open: summaries in spec classes, secure tests and `src/`; what carries the
-   ADR and INV links instead (traits, an attribute, `applies_to`); timing open. Cards A and C of the clean-code review
-   (summary check, spec summaries S2) depend on it.
+   ADR and INV links instead (traits, an attribute, `applies_to`); timing open. The clean-code review's H1 (summary
+   check) and S2 (spec summaries) depend on it.
 6. **One approved sweep over the protected test files** (owner, 2026-11-26): write out the one-letter names in
-   `tests/specify/**` and the reference model (the files left in `eng/pending-renames.txt`, AGENTS.md section 4b),
-   together with the protected findings of `docs/reviews/2026-11-26-clean-code.md` the owner approves on its card C
-   (S2 waits for item 5), and `Item.Deleted` becoming the state `Lifecycle { Live, Deleted }` with `Deleted()` and
-   `Restored()` instead of `WithDeleted(bool)` (AGENTS.md section 4b; its line in `eng/approved-primitives.txt` goes
-   with it). The owner can imagine `Archived` as a further `Lifecycle` value: that needs its own events and an ADR
-   first. Needs the owner's approval of the list before it starts (ADR-035).
+   `tests/specify/**` and the reference model (the files left in `eng/pending-renames.txt`, AGENTS.md section 4b), and
+   turn `Item.Deleted` into the state `Lifecycle { Live, Deleted }` with `Deleted()` and `Restored()` instead of
+   `WithDeleted(bool)` (AGENTS.md section 4b; its line in `eng/approved-primitives.txt` goes with it). The owner can
+   imagine `Archived` as a further `Lifecycle` value: that needs its own events and an ADR first. Needs the owner's
+   approval before it starts (ADR-035).
