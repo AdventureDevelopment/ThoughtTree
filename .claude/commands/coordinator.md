@@ -16,6 +16,10 @@ report and any decision cards to the coordinator with send_message (the parent s
 
 Read worker reports from their messages; check workers with get_session and the newest result events only. Put each
 decision card to me with AskUserQuestion, one at a time, and send my answer back. If a worker is stuck (a permission
-prompt, a missing tool), tell me instead of retrying. Archive a worker when its item is done, then tell me in a few
-short lines what was done and what is next, and ask before starting the next item. Short lists, no wide tables (I read
+prompt, a missing tool), tell me instead of retrying. Archive a worker when its item is done, then run
+/clean-code-review for that item and wait for its report. Put its decision cards to me one at a time the same way. Then
+start one worker that records my decisions in the review file (each card marked with the decision and date) and, if
+the review leaves work, adds one item "Act on the review" with the file and the decisions to docs/plan/next-work.md;
+same rules as any worker. Then tell me in a few short lines what was done, what the review found and what is next, and
+ask before starting the next item. Short lists, no wide tables (I read
 on a phone). Open no pull request.
