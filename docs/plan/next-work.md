@@ -5,11 +5,10 @@ The queue of work items, first item next. It only orders the work and points to 
 decisions in `docs/architecture.md` section 9. When an item is done, remove it; add new work you find, with its source
 (AGENTS.md section 4).
 
-1. **INV-11 text normalisation** (ADR-029, foundation step 2a). Spec first. Includes the owner decision whether titles and
-   notes get a text type (they are listed in `eng/approved-primitives.txt`). Done when the specs, the properties and the
-   reference model rules cover INV-11 and the approved-primitives entries for titles and notes are resolved.
-   Decided by the owner 2026-11-26 ("Text normalisation details (INV-11)", `docs/architecture.md` section 9).
-2. **Open findings for the next spec and property change** (`docs/reviews/2026-11-26-domain-core.md`, rows marked "Next
+1. **Open findings for the next spec and property change** (`docs/reviews/2026-11-26-domain-core.md`, rows marked "Next
    spec change" and "Next property change"). Spec changes need the owner's approval (ADR-035).
-3. **Rest of foundation step 2a**: the payload wrapper and INV-9 to INV-14, INV-13 first (same event id with different
+2. **Rest of foundation step 2a**: the payload wrapper and INV-9 to INV-14, INV-13 first (same event id with different
    content); `docs/architecture.md` section 9 ("Release 1 scope", decision 7) and the invariant catalogue in section 8.
+3. **Text with an unpaired surrogate** (found with INV-11, 2026-11-26): building a title or note from it fails, so such text
+   is rejected; the owner decides reject and report, or replace with U+FFFD, before intake is built (open decision
+   "Unpaired surrogates in text" in `docs/architecture.md` section 9).
