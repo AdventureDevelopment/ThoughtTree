@@ -29,10 +29,10 @@ public sealed record Tree
     public IReadOnlyCollection<Item> AllItems => new ItemCollection(this.Items);
 
     /// <summary>Deleted items included.</summary>
-    public IReadOnlyList<ItemId> TopLevelOrder => this.SiblingsFrom(this.FirstTopLevel);
+    public IReadOnlyList<ItemId> TopLevelOrder => this.SiblingsFrom(this.FirstOf(null));
 
     /// <summary>Deleted items included.</summary>
-    public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => this.SiblingsFrom(this.FirstChild.TryGetValue(id, out var first) ? first : null);
+    public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => this.SiblingsFrom(this.FirstOf(id));
 
     public Item? Find(ItemId id) => this.Items.GetValueOrDefault(id);
 
@@ -83,35 +83,44 @@ public sealed record Tree
         return false;
     }
 
-    internal Tree RemoveChild(ItemId? parent, ItemId id)
+    internal bool IsUnknownParent(ItemId? parent) => parent is { } p && !this.Items.ContainsKey(p);
+
+    internal bool IsUnusableAfter(ItemId? after, ItemId item) => after is { } a && (a == item || !this.Items.ContainsKey(a));
+
+    internal Tree RemoveChild(ItemId id)
     {
-        var previous = this.PreviousSibling.TryGetValue(id, out var p) ? p : (ItemId?)null;
-        var next = this.NextSibling.TryGetValue(id, out var n) ? n : (ItemId?)null;
+        var previous = this.PreviousOf(id);
+        var next = this.NextOf(id);
         var tree = this with
         {
             NextSibling = this.NextSibling.Remove(id),
             PreviousSibling = this.PreviousSibling.Remove(id),
         };
 
-        tree = previous is { } before ? tree.LinkAfter(before, next) : tree.WithFirst(parent, next);
+        tree = previous is { } before ? tree.LinkAfter(before, next) : tree.WithFirst(this.Items[id].Parent, next);
         return next is { } following ? tree.LinkBefore(following, previous) : tree;
     }
 
     internal Tree InsertChild(ItemId? parent, ItemId id, ItemId? after)
     {
-        var afterIsASibling = after is { } a && this.Items[a].Parent == parent;
-        if (afterIsASibling)
+        if (after is { } before && this.Items[before].Parent == parent)
         {
-            var before = after!.Value;
-            var next = this.NextSibling.TryGetValue(before, out var n) ? n : (ItemId?)null;
+            var next = this.NextOf(before);
             var linked = this.LinkAfter(before, id).LinkBefore(id, before).LinkAfter(id, next);
             return next is { } following ? linked.LinkBefore(following, id) : linked;
         }
 
-        var first = parent is { } p ? (this.FirstChild.TryGetValue(p, out var f) ? f : (ItemId?)null) : this.FirstTopLevel;
+        var first = this.FirstOf(parent);
         var asFirst = this.WithFirst(parent, id).LinkAfter(id, first);
         return first is { } oldFirst ? asFirst.LinkBefore(oldFirst, id) : asFirst;
     }
+
+    private ItemId? NextOf(ItemId id) => this.NextSibling.TryGetValue(id, out var next) ? next : null;
+
+    private ItemId? PreviousOf(ItemId id) => this.PreviousSibling.TryGetValue(id, out var previous) ? previous : null;
+
+    private ItemId? FirstOf(ItemId? parent) =>
+        parent is { } p ? (this.FirstChild.TryGetValue(p, out var first) ? first : null) : this.FirstTopLevel;
 
     private Tree LinkAfter(ItemId item, ItemId? next) =>
         this with { NextSibling = next is { } n ? this.NextSibling.SetItem(item, n) : this.NextSibling.Remove(item) };
@@ -128,7 +137,7 @@ public sealed record Tree
     private List<ItemId> SiblingsFrom(ItemId? first)
     {
         var siblings = new List<ItemId>();
-        for (var current = first; current is { } id; current = this.NextSibling.TryGetValue(id, out var n) ? n : null)
+        for (var current = first; current is { } id; current = this.NextOf(id))
         {
             siblings.Add(id);
         }

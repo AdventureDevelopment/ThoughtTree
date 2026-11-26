@@ -21,48 +21,35 @@ public static class Projection
 
     internal static Tree Apply(Tree tree, TreeEvent e)
     {
-        switch (e)
+        if (e is ItemEvent { ItemId: var id } and not ItemCreated && !tree.Items.ContainsKey(id))
         {
-            case ItemCreated c when tree.Items.ContainsKey(c.ItemId):
-                return tree.WithAnomaly(AnomalyKind.DuplicateCreate, e, c.ItemId);
-            case ItemCreated c:
-                return CreateWithFallbackPlace(tree, c);
-            case ItemTitleChanged t when tree.Items.TryGetValue(t.ItemId, out var item):
-                return t.Title is { } title ? tree.WithItem(item.WithTitle(title)) : tree;
-            case ItemNoteChanged n when tree.Items.TryGetValue(n.ItemId, out var item):
-                return n.Note is { } note ? tree.WithItem(item.WithNote(note)) : tree;
-            case ItemMoved m when tree.Items.ContainsKey(m.ItemId):
-                return MoveUnlessImpossible(tree, m);
-            case ItemDeleted d when tree.Items.TryGetValue(d.ItemId, out var item):
-                return tree.WithItem(item.WithDeleted(true));
-            case ItemRestored r when tree.Items.TryGetValue(r.ItemId, out var item):
-                return tree.WithItem(item.WithDeleted(false));
-            case ItemTitleChanged t:
-                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, t.ItemId);
-            case ItemNoteChanged n:
-                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, n.ItemId);
-            case ItemMoved m:
-                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, m.ItemId);
-            case ItemDeleted d:
-                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, d.ItemId);
-            case ItemRestored r:
-                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, r.ItemId);
-            default:
-                return tree.WithAnomaly(AnomalyKind.UnknownEventType, e, null);
+            return tree.WithAnomaly(AnomalyKind.UnknownItem, e, id);
         }
+
+        return e switch
+        {
+            ItemCreated c when tree.Items.ContainsKey(c.ItemId) => tree.WithAnomaly(AnomalyKind.DuplicateCreate, e, c.ItemId),
+            ItemCreated c => CreateWithFallbackPlace(tree, c),
+            ItemTitleChanged t => t.Title is { } title ? tree.WithItem(tree.Items[t.ItemId].WithTitle(title)) : tree,
+            ItemNoteChanged n => n.Note is { } note ? tree.WithItem(tree.Items[n.ItemId].WithNote(note)) : tree,
+            ItemMoved m => MoveUnlessImpossible(tree, m),
+            ItemDeleted d => tree.WithItem(tree.Items[d.ItemId].WithDeleted(true)),
+            ItemRestored r => tree.WithItem(tree.Items[r.ItemId].WithDeleted(false)),
+            _ => tree.WithAnomaly(AnomalyKind.UnknownEventType, e, null),
+        };
     }
 
     private static Tree CreateWithFallbackPlace(Tree tree, ItemCreated c)
     {
         var parent = c.ParentId;
-        if (parent is { } p && !tree.Items.ContainsKey(p))
+        if (tree.IsUnknownParent(parent))
         {
             tree = tree.WithAnomaly(AnomalyKind.UnknownParent, c, c.ItemId);
             parent = null;
         }
 
         var after = c.AfterItemId;
-        if (after is { } a && (a == c.ItemId || !tree.Items.ContainsKey(a)))
+        if (tree.IsUnusableAfter(after, c.ItemId))
         {
             tree = tree.WithAnomaly(AnomalyKind.UnknownAfter, c, c.ItemId);
             after = null;
@@ -74,12 +61,12 @@ public static class Projection
 
     private static Tree MoveUnlessImpossible(Tree tree, ItemMoved m)
     {
-        if (m.ParentId is { } p && !tree.Items.ContainsKey(p))
+        if (tree.IsUnknownParent(m.ParentId))
         {
             return tree.WithAnomaly(AnomalyKind.UnknownParent, m, m.ItemId);
         }
 
-        if (m.AfterItemId is { } a && (a == m.ItemId || !tree.Items.ContainsKey(a)))
+        if (tree.IsUnusableAfter(m.AfterItemId, m.ItemId))
         {
             return tree.WithAnomaly(AnomalyKind.UnknownAfter, m, m.ItemId);
         }
@@ -89,7 +76,7 @@ public static class Projection
             return tree.WithAnomaly(AnomalyKind.Cycle, m, m.ItemId);
         }
 
-        var item = tree.Items[m.ItemId];
-        return tree.RemoveChild(item.Parent, m.ItemId).WithItem(item.WithParent(m.ParentId)).InsertChild(m.ParentId, m.ItemId, m.AfterItemId);
+        var moved = tree.Items[m.ItemId].WithParent(m.ParentId);
+        return tree.RemoveChild(m.ItemId).WithItem(moved).InsertChild(m.ParentId, m.ItemId, m.AfterItemId);
     }
 }
