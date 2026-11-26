@@ -32,19 +32,19 @@ public abstract record TreeEvent(EventId EventId, DeviceId DeviceId, EventClock 
     public sealed override string ToString() => $"{this.GetType().Name} {this.EventId}";
 }
 
-/// <summary>Creates an item under a parent after a sibling (ADR-004).</summary>
+/// <summary>Creates an item under a parent after a sibling (ADR-004); a missing title or note starts empty (ADR-016).</summary>
 public sealed record ItemCreated(EventId EventId, DeviceId DeviceId, EventClock Clock, ActionId ActionId,
-    ItemId Item, ItemId? Parent, ItemId? After, string Title, string Note = "")
+    ItemId Item, ItemId? Parent, ItemId? After, Title? Title, Note? Note = null)
     : TreeEvent(EventId, DeviceId, Clock, ActionId);
 
-/// <summary>Sets an item's title.</summary>
+/// <summary>Sets an item's title; a missing title changes nothing (ADR-016).</summary>
 public sealed record ItemTitleChanged(EventId EventId, DeviceId DeviceId, EventClock Clock, ActionId ActionId,
-    ItemId Item, string Title)
+    ItemId Item, Title? Title)
     : TreeEvent(EventId, DeviceId, Clock, ActionId);
 
-/// <summary>Sets an item's note.</summary>
+/// <summary>Sets an item's note; a missing note changes nothing (ADR-016).</summary>
 public sealed record ItemNoteChanged(EventId EventId, DeviceId DeviceId, EventClock Clock, ActionId ActionId,
-    ItemId Item, string Note)
+    ItemId Item, Note? Note)
     : TreeEvent(EventId, DeviceId, Clock, ActionId);
 
 /// <summary>Moves an item under a parent after a sibling (ADR-004, ADR-023).</summary>

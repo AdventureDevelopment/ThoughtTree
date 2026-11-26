@@ -15,7 +15,7 @@ public static class CanonicalTree
             var siblings = item.Parent is { } p ? tree.ChildrenOf(p) : tree.TopLevelOrder;
             lines.Add($"item {Quote(item.Id.Value)} parent {(item.Parent is { } q ? Quote(q.Value) : "none")} " +
                 $"position {IndexOf(siblings, item.Id)} deleted {Bool(item.Deleted)} visible {Bool(IsVisible(tree, item))} " +
-                $"title {Quote(item.Title)} note {Quote(item.Note)}");
+                $"title {Quote(item.Title.Value)} note {Quote(item.Note.Value)}");
         }
 
         lines.Add(string.Concat(tree.TopLevelOrder.Select(id => " " + Quote(id.Value)).Prepend("top")));

@@ -45,6 +45,10 @@ The reference model replays a log by exactly these rules and nothing else. Each 
 24. A move to the place the item already has is applied, without a report.
 25. A new item that names itself as its parent has an unknown parent (rule 12).
 
+## Text (owner decisions 2026-11-26, INV-11)
+
+26. Every title and note is replayed in Unicode NFC; in a title each line break becomes one space, in a note one line feed. The line breaks are CR LF (counted as one), CR, LF, U+0085, U+2028, U+2029, vertical tab and form feed (ADR-029; architecture.md section 9, "Text normalisation details (INV-11)").
+
 ## Not in the model
 
 - Clock stamping (ADR-014, INV-8): checked by its own property, not by replay.

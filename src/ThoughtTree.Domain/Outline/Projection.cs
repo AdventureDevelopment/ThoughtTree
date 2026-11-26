@@ -28,9 +28,9 @@ public static class Projection
             case ItemCreated c:
                 return CreateWithFallbackPlace(tree, c);
             case ItemTitleChanged t when tree.Items.TryGetValue(t.Item, out var item):
-                return t.Title is null ? tree : tree.WithItem(item.WithTitle(t.Title));
+                return t.Title is { } title ? tree.WithItem(item.WithTitle(title)) : tree;
             case ItemNoteChanged n when tree.Items.TryGetValue(n.Item, out var item):
-                return n.Note is null ? tree : tree.WithItem(item.WithNote(n.Note));
+                return n.Note is { } note ? tree.WithItem(item.WithNote(note)) : tree;
             case ItemMoved m when tree.Items.ContainsKey(m.Item):
                 return MoveUnlessImpossible(tree, m);
             case ItemDeleted d when tree.Items.TryGetValue(d.Item, out var item):
@@ -68,7 +68,7 @@ public static class Projection
             after = null;
         }
 
-        tree = tree.WithItem(new Item(c.Item, c.Title ?? "", c.Note ?? "").WithParent(parent));
+        tree = tree.WithItem(new Item(c.Item, c.Title ?? default, c.Note ?? default).WithParent(parent));
         return tree.InsertChild(parent, c.Item, after);
     }
 

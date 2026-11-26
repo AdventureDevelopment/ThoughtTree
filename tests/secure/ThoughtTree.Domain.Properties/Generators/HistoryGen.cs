@@ -23,6 +23,7 @@ public static class HistoryGen
     private static readonly long[] Times = [1, 1, 2, 2, 3, 3, 4, 10, 4_000_000_000_000, long.MaxValue - 1];
     private const int NeverCreated = ItemPool;
     private static readonly int[] Afters = [-1, -1, 0, 0, 0, 1, 2, 3, 4, 5, NeverCreated];
+    private static readonly string[] RawTexts = ["", " Cafe\u0301", " one\r\ntwo", " one\n\rtwo\u2028three", " a\u000Bb\u000Cc\u0085d\u2029e", " \u00C5\u212B"];
     private static readonly int[] Parents = [-1, -1, 0, 0, 1, 1, 2, 3, 4, 5, NeverCreated];
 
     private const int ScrambleStep = 7919;
@@ -91,18 +92,19 @@ public static class HistoryGen
             var device = new DeviceId(Devices[d.Device]);
             var clock = new EventClock(d.Time);
             ItemId item = Item(d.Item);
-            var title = $"t{d.Text}";
+            var title = $"t{d.Text}{RawTexts[d.Text % RawTexts.Length]}";
+            var note = $"n{d.Text}{RawTexts[(d.Text + 1) % RawTexts.Length]}";
             switch (d.Kind)
             {
                 case Kind.Create:
                     result.Add(new ItemCreated(EventId(), device, clock, Action(), item, Ref(d.Parent), Ref(d.After),
-                        d.Text == 3 ? null! : title, d.Text == 3 ? null! : $"n{d.Text}"));
+                        d.Text == 3 ? (Title?)null : title, d.Text == 3 ? (Note?)null : note));
                     break;
                 case Kind.Title:
                     result.Add(new ItemTitleChanged(EventId(), device, clock, Action(), item, title));
                     break;
                 case Kind.Note:
-                    result.Add(new ItemNoteChanged(EventId(), device, clock, Action(), item, $"n{d.Text}"));
+                    result.Add(new ItemNoteChanged(EventId(), device, clock, Action(), item, note));
                     break;
                 case Kind.Move:
                     result.Add(new ItemMoved(EventId(), device, clock, Action(), item, Ref(d.Parent), Ref(d.After)));

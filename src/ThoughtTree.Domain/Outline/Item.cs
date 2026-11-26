@@ -3,7 +3,7 @@ namespace ThoughtTree.Domain.Outline;
 /// <summary>One item of the tree, deleted items included (ADR-005).</summary>
 public sealed record Item
 {
-    internal Item(ItemId id, string title, string note)
+    internal Item(ItemId id, Title title, Note note)
     {
         this.Id = id;
         this.Title = title;
@@ -12,9 +12,9 @@ public sealed record Item
 
     public ItemId Id { get; private init; }
 
-    public string Title { get; private init; }
+    public Title Title { get; private init; }
 
-    public string Note { get; private init; }
+    public Note Note { get; private init; }
 
     public bool Deleted { get; private init; }
 
@@ -22,9 +22,9 @@ public sealed record Item
 
     public override string ToString() => $"Item {this.Id}";
 
-    internal Item WithTitle(string title) => this with { Title = title };
+    internal Item WithTitle(Title title) => this with { Title = title };
 
-    internal Item WithNote(string note) => this with { Note = note };
+    internal Item WithNote(Note note) => this with { Note = note };
 
     internal Item WithDeleted(bool deleted) => this with { Deleted = deleted };
 

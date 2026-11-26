@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Model;
@@ -19,7 +20,7 @@ namespace ThoughtTree.Domain.Model;
 /// K is the zero-based index among all children of the same parent, deleted ones included; B is true or false.
 /// KIND is one of duplicate-create, unknown-item, unknown-parent, unknown-after, cycle, unknown-event-type.
 /// </remarks>
-public static class ReferenceModel
+public static partial class ReferenceModel
 {
 
     public static string ReplayToCanonicalText(IEnumerable<TreeEvent> events)
@@ -58,6 +59,17 @@ public static class ReferenceModel
 
     private static string? IdOrNone(ItemId? id) =>
         id is null || string.IsNullOrEmpty(id.Value.Value) ? null : id.Value.Value;
+
+    // R26
+    private static string TitleText(string text) =>
+        LineBreak().Replace(text, " ").Normalize(NormalizationForm.FormC);
+
+    // R26
+    private static string NoteText(string text) =>
+        LineBreak().Replace(text, "\n").Normalize(NormalizationForm.FormC);
+
+    [GeneratedRegex("\r\n|[\r\n\u0085\u2028\u2029\v\f]", RegexOptions.CultureInvariant)]
+    private static partial Regex LineBreak();
 
     private static string Quote(string? s)
     {
@@ -122,16 +134,16 @@ public static class ReferenceModel
                     this.Create(c);
                     break;
                 case ItemTitleChanged t:
-                    if (this.Existing(t, t.Item) is { } titled && t.Title is not null)
+                    if (this.Existing(t, t.Item) is { } titled && t.Title is { } title)
                     {
-                        titled.Title = t.Title; // R7, R9
+                        titled.Title = TitleText(title.Value); // R7, R9
                     }
 
                     break;
                 case ItemNoteChanged n:
-                    if (this.Existing(n, n.Item) is { } noted && n.Note is not null)
+                    if (this.Existing(n, n.Item) is { } noted && n.Note is { } note)
                     {
-                        noted.Note = n.Note; // R7, R9
+                        noted.Note = NoteText(note.Value); // R7, R9
                     }
 
                     break;
@@ -225,7 +237,7 @@ public static class ReferenceModel
             }
 
             // R4
-            this.items[id] = new Node { Id = id, Parent = parent, Title = c.Title ?? "", Note = c.Note ?? "" };
+            this.items[id] = new Node { Id = id, Parent = parent, Title = TitleText(c.Title?.Value ?? ""), Note = NoteText(c.Note?.Value ?? "") };
             this.Place(id, parent, after);
         }
 

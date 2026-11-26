@@ -3,14 +3,4 @@
 # exists. A value with more meaning than its type (an id, a point in time, a unit, an outcome) gets its own type first.
 # Format: the member as PrimitiveRules names it, then "#" and the reason. Changes need the owner's review (CODEOWNERS).
 
-ThoughtTree.Domain.Outline.Item.Title                       # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.Item.Note                        # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemCreated.ctor(Title)          # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemCreated.ctor(Note)           # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemCreated.Title                # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemCreated.Note                 # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemTitleChanged.ctor(Title)     # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemTitleChanged.Title           # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemNoteChanged.ctor(Note)       # text type decided with INV-11 (text normalisation)
-ThoughtTree.Domain.Outline.ItemNoteChanged.Note             # text type decided with INV-11 (text normalisation)
 ThoughtTree.Domain.Outline.Tree.ToOutline:result            # test-only rendering; moves out of the Domain with the next spec change
