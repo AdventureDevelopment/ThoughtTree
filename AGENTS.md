@@ -49,6 +49,7 @@ Read this first. Rules carry their ADR id in brackets; the ADR has the detail an
 Rules read as trigger and action, the way hooks do: when the trigger occurs, do the action.
 
 - **When you start a change:** work in small steps. Write the specification first (`tests/specify`), then the code, then securing tests [architecture.md section 8, harness principle 10].
+- **When you finish a work item or find new work:** update `docs/plan/next-work.md` in the same commit: remove the item you finished, add new work with its source. The queue only orders and points to where things are decided; it does not repeat them. `/coordinator` (`.claude/commands/coordinator.md`) works through it with one worker session per item.
 - **When you write a test:** choose its intent: Specify (acceptance criteria, written first), Secure (properties, invariants, formats, simulation, architecture and component rules, budgets) or Confirm (end-to-end, deployment, manual) [ADR-054]. Tag the intent with `[Trait("Intent", ...)]` [ADR-054].
 - **When a test secures an ADR:** tag it with `[Trait("ADR", "ADR-0xx")]`; `dotnet test --filter "ADR=ADR-0xx"` must match at least one test [ADR-035, docs/adr/README.md].
 - **When a test checks an invariant:** name its `INV-n` in the test. **When you write a UI specification:** name its UX decision `D-n` [architecture.md section 8, ADR-064].
