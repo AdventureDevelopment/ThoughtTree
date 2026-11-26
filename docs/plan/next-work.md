@@ -26,6 +26,9 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
 6. **One approved sweep over the protected test files** (owner, 2026-11-26): write out the one-letter names in
    `tests/specify/**` and the reference model (the files left in `eng/pending-renames.txt`, AGENTS.md section 4b), and
    turn `Item.Deleted` into the state `Lifecycle { Live, Deleted }` with `Deleted()` and `Restored()` instead of
-   `WithDeleted(bool)` (AGENTS.md section 4b; its line in `eng/approved-primitives.txt` goes with it). The owner can
+   `WithDeleted(bool)` (AGENTS.md section 4b; its line in `eng/approved-primitives.txt` goes with it). In the reference
+   model also (owner, 2026-11-26): `sb` written out, `IdOrNone` without `id.Value.Value`, `Quote` without its unreachable
+   `null` branch, the `Report` field `Item` named `ItemId`; better names only, no restructuring towards the Domain's
+   code, so the referee stays independent (ADR-035). The owner can
    imagine `Archived` as a further `Lifecycle` value: that needs its own events and an ADR first. Needs the owner's
    approval before it starts (ADR-035).
