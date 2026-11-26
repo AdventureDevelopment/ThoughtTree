@@ -15,8 +15,15 @@ public sealed record Tree
 
     internal ImmutableList<ItemId> TopLevel { get; private init; } = [];
 
-    /// <summary>Events the user should review: flagged or not applied. Sorted by kind, then event id.</summary>
-    public ImmutableList<Anomaly> Anomalies { get; private init; } = [];
+    /// <summary>
+    /// Events not carried out as written, grouped by item in item id order, those without an item last; inside a group
+    /// in the agreed order (owner decision 2026-11-26, reference model rules 18 and 19).
+    /// </summary>
+    public IReadOnlyList<Anomaly> Anomalies =>
+        [.. this.Reported.OrderBy(a => a.Item is null).ThenBy(a => a.Item?.Value, StringComparer.Ordinal)];
+
+    /// <summary>In the order the events were applied, which is the agreed order.</summary>
+    private ImmutableList<Anomaly> Reported { get; init; } = [];
 
     /// <summary>Every item ever created, visible or deleted (INV-5).</summary>
     public IReadOnlyCollection<Item> AllItems => new ItemCollection(this.Items);
@@ -58,12 +65,8 @@ public sealed record Tree
 
     internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
 
-    internal Tree WithAnomaly(AnomalyKind kind, string eventId) =>
-        this with
-        {
-            Anomalies = this.Anomalies.Add(new Anomaly(kind, eventId)).Sort(
-                (a, b) => a.Kind != b.Kind ? a.Kind.CompareTo(b.Kind) : string.CompareOrdinal(a.EventId, b.EventId)),
-        };
+    internal Tree WithAnomaly(AnomalyKind kind, TreeEvent e, ItemId? item) =>
+        this with { Reported = this.Reported.Add(new Anomaly(kind, e.EventId, item)) };
 
     internal bool IsSameOrDescendant(ItemId candidate, ItemId ancestor)
     {

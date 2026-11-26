@@ -34,8 +34,9 @@ public static class HistoryGen
     private sealed record Draft(int Kind, int Item, int Parent, int After, int Device, long Time, int Text);
 
     private static readonly Gen<(int, int, int, int)> What = Gen.Select(
-        // kinds: 0 title, 1 note, 2-4 move, 5-6 delete, 7 restore, 8 delete then restore
-        Gen.OneOf(0, 1, 2, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8, 8),
+        // kinds: 0 title, 1 note, 2-4 move, 5-6 delete, 7 restore, 8 delete then restore, 9 unknown event type,
+        // 10 title or note change without a value
+        Gen.OneOf(0, 1, 2, 2, 2, 3, 3, 4, 4, 5, 6, 7, 8, 8, 9, 10),
         Gen.Int[0, ItemPool - 1],
         Gen.OneOf(Parents),
         Gen.OneOf(Afters));
@@ -85,7 +86,8 @@ public static class HistoryGen
             switch (d.Kind)
             {
                 case -1:
-                    result.Add(new ItemCreated(EventId(), device, clock, Action(), item, Ref(d.Parent), Ref(d.After), title, $"n{d.Text}"));
+                    result.Add(new ItemCreated(EventId(), device, clock, Action(), item, Ref(d.Parent), Ref(d.After),
+                        d.Text == 3 ? null! : title, d.Text == 3 ? null! : $"n{d.Text}"));
                     break;
                 case 0:
                     result.Add(new ItemTitleChanged(EventId(), device, clock, Action(), item, title));
@@ -99,6 +101,15 @@ public static class HistoryGen
                 case 5 or 6:
                     result.Add(new ItemDeleted(EventId(), device, clock, Action(), item));
                     break;
+                case 9:
+                    result.Add(new FutureEvent(EventId(), device, clock, Action()));
+                    break;
+                case 10 when d.Text % 2 == 0:
+                    result.Add(new ItemTitleChanged(EventId(), device, clock, Action(), item, null!));
+                    break;
+                case 10:
+                    result.Add(new ItemNoteChanged(EventId(), device, clock, Action(), item, null!));
+                    break;
                 case 7:
                     result.Add(new ItemRestored(EventId(), device, clock, Action(), item));
                     break;
@@ -111,4 +122,8 @@ public static class HistoryGen
 
         return [.. result];
     }
+
+    /// <summary>An event type this app does not know, as from a newer app version (ADR-016).</summary>
+    public sealed record FutureEvent(string EventId, string DeviceId, EventClock Clock, string ActionId)
+        : TreeEvent(EventId, DeviceId, Clock, ActionId);
 }

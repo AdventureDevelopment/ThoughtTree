@@ -17,12 +17,13 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-023")]
 public class OutlineProperties
 {
-    private static string State(IEnumerable<TreeEvent> events) => TreeSnapshot.Render(Projection.Replay(events));
+    private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));
 
     [Fact]
     public void Generated_histories_hit_the_hard_cases()
     {
-        int sameClock = 0, dupCreate = 0, unknownItem = 0, equalClocksAcrossDevices = 0, farAhead = 0, cycleMoves = 0, deleteThenRestore = 0, total = 0;
+        var reported = new Dictionary<AnomalyKind, int>();
+        int sameClock = 0, equalClocksAcrossDevices = 0, farAhead = 0, deleteThenRestore = 0, total = 0;
         HistoryGen.History.SampleFixed(h =>
         {
             total++;
@@ -33,14 +34,9 @@ public class OutlineProperties
                 sameClock++;
             }
 
-            if (anomalies.Any(a => a.Kind == AnomalyKind.DuplicateCreate))
+            foreach (var kind in anomalies.Select(a => a.Kind).Distinct())
             {
-                dupCreate++;
-            }
-
-            if (anomalies.Any(a => a.Kind == AnomalyKind.UnknownItem))
-            {
-                unknownItem++;
+                reported[kind] = reported.GetValueOrDefault(kind) + 1;
             }
 
             h.Select(e => e.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(3);
@@ -54,11 +50,6 @@ public class OutlineProperties
                 farAhead++;
             }
 
-            if (MovesIntoOwnSubtree(h))
-            {
-                cycleMoves++;
-            }
-
             if (h.OfType<ItemRestored>().Any(r => h.OfType<ItemDeleted>().Any(d => d.Item == r.Item)))
             {
                 deleteThenRestore++;
@@ -66,37 +57,15 @@ public class OutlineProperties
         }, 500);
 
         sameClock.ShouldBeGreaterThan(total / 10);
-        dupCreate.ShouldBeGreaterThan(total / 10);
-        unknownItem.ShouldBeGreaterThan(total / 10);
+        foreach (var kind in Enum.GetValues<AnomalyKind>())
+        {
+            reported.GetValueOrDefault(kind).ShouldBeGreaterThan(total / 10, kind.ToString());
+        }
+
         // Each hard case must be common, not a rarity.
         equalClocksAcrossDevices.ShouldBeGreaterThan(total / 4);
         farAhead.ShouldBeGreaterThan(total / 4);
-        cycleMoves.ShouldBeGreaterThan(total / 5); // measured 112 of 500
         deleteThenRestore.ShouldBeGreaterThan(total / 4);
-    }
-
-    // ADR-023: true if some move, at its point of the replay, names the item itself or one of its descendants as parent.
-    private static bool MovesIntoOwnSubtree(TreeEvent[] history)
-    {
-        var projector = new Projector();
-        foreach (var e in history.OrderBy(EventKey.Of, EventKey.Comparer))
-        {
-            var tree = projector.Tree;
-            if (e is ItemMoved { Parent: { } parent } m && tree.Find(m.Item) is not null)
-            {
-                for (var current = tree.Find(parent); current is not null; current = current.Parent is { } up ? tree.Find(up) : null)
-                {
-                    if (current.Id == m.Item)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            projector.TryAdd(e);
-        }
-
-        return false;
     }
 
     [Fact]
@@ -173,7 +142,7 @@ public class OutlineProperties
                 }
             }
 
-            TreeSnapshot.Render(projector.Tree).ShouldBe(expected);
+            CanonicalTree.Render(projector.Tree).ShouldBe(expected);
         });
     }
 
@@ -252,7 +221,7 @@ public class OutlineProperties
     }
 
     /// <summary>
-    /// Real projection against the reference model on the same history. The adapter is <see cref="TreeSnapshot.Render"/>;
+    /// Real projection against the reference model on the same history. The adapter is <see cref="CanonicalTree.Render"/>;
     /// its format is aligned with the model's canonical text.
     /// </summary>
     [Fact]

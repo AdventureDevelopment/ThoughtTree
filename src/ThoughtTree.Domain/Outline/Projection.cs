@@ -26,32 +26,74 @@ public static class Projection
         switch (e)
         {
             case ItemCreated c when tree.Items.ContainsKey(c.Item):
-                return tree.WithAnomaly(AnomalyKind.DuplicateCreate, e.EventId);
+                return tree.WithAnomaly(AnomalyKind.DuplicateCreate, e, c.Item);
             case ItemCreated c:
-                return Place(tree.WithItem(new Item(c.Item, c.Title, c.Note)), c.Item, c.Parent, c.After);
+                return Create(tree, c);
             case ItemTitleChanged t when tree.Items.TryGetValue(t.Item, out var item):
-                return tree.WithItem(item.WithTitle(t.Title));
+                return t.Title is null ? tree : tree.WithItem(item.WithTitle(t.Title)); // ADR-016: missing means unchanged
             case ItemNoteChanged n when tree.Items.TryGetValue(n.Item, out var item):
-                return tree.WithItem(item.WithNote(n.Note));
-            case ItemMoved m when tree.Items.TryGetValue(m.Item, out var item):
-                return Place(tree.RemoveChild(item.Parent, m.Item), m.Item, m.Parent, m.After);
+                return n.Note is null ? tree : tree.WithItem(item.WithNote(n.Note));
+            case ItemMoved m when tree.Items.ContainsKey(m.Item):
+                return Move(tree, m);
             case ItemDeleted d when tree.Items.TryGetValue(d.Item, out var item):
                 return tree.WithItem(item.WithDeleted(true));
             case ItemRestored r when tree.Items.TryGetValue(r.Item, out var item):
                 return tree.WithItem(item.WithDeleted(false));
+            case ItemTitleChanged t:
+                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, t.Item);
+            case ItemNoteChanged n:
+                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, n.Item);
+            case ItemMoved m:
+                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, m.Item);
+            case ItemDeleted d:
+                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, d.Item);
+            case ItemRestored r:
+                return tree.WithAnomaly(AnomalyKind.UnknownItem, e, r.Item);
             default:
-                return tree.WithAnomaly(AnomalyKind.UnknownItem, e.EventId);
+                return tree.WithAnomaly(AnomalyKind.UnknownEventType, e, null);
         }
     }
 
-    private static Tree Place(Tree tree, ItemId id, ItemId? parent, ItemId? after)
+    // ADR-004 rule 5: an unknown parent means top level, an unknown or own afterItemId means first; both are reported.
+    private static Tree Create(Tree tree, ItemCreated c)
     {
-        // ADR-023. The item is already detached from its old parent, so test the cycle through the parent chain.
-        if (parent is { } p && (!tree.Items.ContainsKey(p) || tree.IsSameOrDescendant(p, id)))
+        var parent = c.Parent;
+        if (parent is { } p && !tree.Items.ContainsKey(p))
         {
+            tree = tree.WithAnomaly(AnomalyKind.UnknownParent, c, c.Item);
             parent = null;
         }
 
-        return tree.WithItem(tree.Items[id].WithParent(parent)).InsertChild(parent, id, after);
+        var after = c.After;
+        if (after is { } a && (a == c.Item || !tree.Items.ContainsKey(a)))
+        {
+            tree = tree.WithAnomaly(AnomalyKind.UnknownAfter, c, c.Item);
+            after = null;
+        }
+
+        tree = tree.WithItem(new Item(c.Item, c.Title ?? "", c.Note ?? "").WithParent(parent));
+        return tree.InsertChild(parent, c.Item, after);
+    }
+
+    // ADR-004 rule 4 and ADR-023 rule 3: a move that cannot be carried out is not applied and is reported.
+    private static Tree Move(Tree tree, ItemMoved m)
+    {
+        if (m.Parent is { } p && !tree.Items.ContainsKey(p))
+        {
+            return tree.WithAnomaly(AnomalyKind.UnknownParent, m, m.Item);
+        }
+
+        if (m.After is { } a && (a == m.Item || !tree.Items.ContainsKey(a)))
+        {
+            return tree.WithAnomaly(AnomalyKind.UnknownAfter, m, m.Item);
+        }
+
+        if (m.Parent is { } target && tree.IsSameOrDescendant(target, m.Item))
+        {
+            return tree.WithAnomaly(AnomalyKind.Cycle, m, m.Item);
+        }
+
+        var item = tree.Items[m.Item];
+        return tree.RemoveChild(item.Parent, m.Item).WithItem(item.WithParent(m.Parent)).InsertChild(m.Parent, m.Item, m.After);
     }
 }

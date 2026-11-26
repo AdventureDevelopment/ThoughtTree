@@ -79,7 +79,7 @@ public class AnomalySpecs
             {
                 tree.ToOutline().ShouldBe("- First");
                 tree.AllItems.Count.ShouldBe(1);
-                tree.Anomalies.ShouldBe([new Anomaly(AnomalyKind.DuplicateCreate, "e2")]);
+                tree.Anomalies.ShouldBe([new Anomaly(AnomalyKind.DuplicateCreate, "e2", new ItemId("n"))]);
             });
     }
 
@@ -95,7 +95,7 @@ public class AnomalySpecs
             .x(() =>
             {
                 tree.ToOutline().ShouldBe("- Created");
-                tree.Anomalies.ShouldBe([new Anomaly(AnomalyKind.UnknownItem, "e1")]);
+                tree.Anomalies.ShouldBe([new Anomaly(AnomalyKind.UnknownItem, "e1", new ItemId("n"))]);
             });
     }
 

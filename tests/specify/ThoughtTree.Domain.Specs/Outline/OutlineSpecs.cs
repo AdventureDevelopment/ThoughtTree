@@ -130,28 +130,6 @@ public class OutlineSpecs
     }
 
     [Scenario]
-    public void ADR_023_A_move_that_would_create_a_cycle_puts_the_item_at_top_level()
-    {
-        Log log = default!;
-        Tree tree = default!;
-
-        "Given a log that moves 'Parent' under its own child"
-            .x(() => log = new Log().Create(1, "parent", "Parent").Create(2, "child", "Child", parent: "parent")
-                .Move(3, "parent", "child"));
-
-        "When the tree is rebuilt"
-            .x(() => tree = Projection.Replay(log.Events));
-
-        "Then 'Parent' stands at top level with its subtree and no item is lost"
-            .x(() =>
-            {
-                tree.ToOutline().ShouldBe("- Parent\n  - Child");
-                tree.Find(Log.Id("parent"))!.Parent.ShouldBeNull();
-                tree.AllItems.Count.ShouldBe(2);
-            });
-    }
-
-    [Scenario]
     public void ADR_005_A_deleted_item_is_hidden_with_its_children_but_kept()
     {
         Log log = default!;

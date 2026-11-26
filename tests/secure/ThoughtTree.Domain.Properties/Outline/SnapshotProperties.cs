@@ -11,7 +11,7 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-016")]
 public class SnapshotProperties
 {
-    private static string State(IEnumerable<TreeEvent> events) => TreeSnapshot.Render(Projection.Replay(events));
+    private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));
 
     private static List<TreeEvent> Sorted(IEnumerable<TreeEvent> events) =>
         events.DistinctBy(e => e.EventId).OrderBy(EventKey.Of, EventKey.Comparer).ToList();
@@ -27,7 +27,7 @@ public class SnapshotProperties
             {
                 projector.TryAdd(e).ShouldBeTrue();
                 applied.Add(e);
-                TreeSnapshot.Render(projector.Tree).ShouldBe(State(applied));
+                CanonicalTree.Render(projector.Tree).ShouldBe(State(applied));
             }
         });
     }
@@ -41,7 +41,7 @@ public class SnapshotProperties
             var accepted = new List<TreeEvent>();
             foreach (TreeEvent e in t.Shuffled)
             {
-                var before = TreeSnapshot.Render(projector.Tree);
+                var before = CanonicalTree.Render(projector.Tree);
                 if (projector.TryAdd(e))
                 {
                     accepted.Add(e);
@@ -49,10 +49,10 @@ public class SnapshotProperties
                 else
                 {
                     // A refusal changes nothing; the caller rebuilds from the log.
-                    TreeSnapshot.Render(projector.Tree).ShouldBe(before);
+                    CanonicalTree.Render(projector.Tree).ShouldBe(before);
                 }
 
-                TreeSnapshot.Render(projector.Tree).ShouldBe(State(accepted));
+                CanonicalTree.Render(projector.Tree).ShouldBe(State(accepted));
             }
 
             // The fallback the caller uses on a refusal gives the full answer.
@@ -81,7 +81,7 @@ public class SnapshotProperties
 
             var resumed = Projector.TryResume(snapshot, remaining);
             resumed.ShouldNotBeNull();
-            TreeSnapshot.Render(resumed.Tree).ShouldBe(State(x.t.Events));
+            CanonicalTree.Render(resumed.Tree).ShouldBe(State(x.t.Events));
         });
     }
 
@@ -118,7 +118,7 @@ public class SnapshotProperties
             {
                 freshCount++;
                 resumed.ShouldNotBeNull();
-                TreeSnapshot.Render(resumed.Tree).ShouldBe(State(x.t.Events));
+                CanonicalTree.Render(resumed.Tree).ShouldBe(State(x.t.Events));
             }
         });
 
