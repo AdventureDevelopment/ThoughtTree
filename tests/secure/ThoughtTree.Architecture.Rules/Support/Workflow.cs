@@ -16,7 +16,7 @@ internal sealed class Workflow
         this.Triggers = ReadTriggers(Child(root, "on"));
         this.Permissions = Child(root, "permissions");
         this.Jobs = Child(root, "jobs") is YamlMappingNode jobs
-            ? jobs.Children.Select(j => new WorkflowJob(Scalar(j.Key) ?? string.Empty, j.Value as YamlMappingNode ?? new YamlMappingNode(), this)).ToList()
+            ? jobs.Children.Select(job => new WorkflowJob(Scalar(job.Key) ?? string.Empty, job.Value as YamlMappingNode ?? new YamlMappingNode(), this)).ToList()
             : [];
     }
 
@@ -64,21 +64,21 @@ internal sealed class Workflow
     public static bool GrantsWrite(YamlNode? permissions, string scope) => permissions switch
     {
         null => true,
-        YamlScalarNode s => s.Value is "write-all",
-        YamlMappingNode m => Scalar(Child(m, scope)) is "write",
+        YamlScalarNode scalar => scalar.Value is "write-all",
+        YamlMappingNode mapping => Scalar(Child(mapping, scope)) is "write",
         _ => true,
     };
 
     public static YamlNode? Child(YamlNode? node, string key) =>
-        node is YamlMappingNode m && m.Children.TryGetValue(new YamlScalarNode(key), out var value) ? value : null;
+        node is YamlMappingNode mapping && mapping.Children.TryGetValue(new YamlScalarNode(key), out var value) ? value : null;
 
     public static string? Scalar(YamlNode? node) => (node as YamlScalarNode)?.Value;
 
     private static HashSet<string> ReadTriggers(YamlNode? on) => on switch
     {
-        YamlScalarNode s when s.Value is not null => [s.Value],
-        YamlSequenceNode q => q.Children.Select(Scalar).OfType<string>().ToHashSet(StringComparer.Ordinal),
-        YamlMappingNode m => m.Children.Keys.Select(Scalar).OfType<string>().ToHashSet(StringComparer.Ordinal),
+        YamlScalarNode scalar when scalar.Value is not null => [scalar.Value],
+        YamlSequenceNode sequence => sequence.Children.Select(Scalar).OfType<string>().ToHashSet(StringComparer.Ordinal),
+        YamlMappingNode mapping => mapping.Children.Keys.Select(Scalar).OfType<string>().ToHashSet(StringComparer.Ordinal),
         _ => [],
     };
 }
@@ -100,8 +100,8 @@ internal sealed class WorkflowJob(string id, YamlMappingNode node, Workflow work
     /// <summary>The GitHub environment name, from `environment: name` or `environment: { name: ... }`.</summary>
     public string? Environment => Workflow.Child(this.Node, "environment") switch
     {
-        YamlScalarNode s => s.Value,
-        YamlMappingNode m => Workflow.Scalar(Workflow.Child(m, "name")),
+        YamlScalarNode scalar => scalar.Value,
+        YamlMappingNode mapping => Workflow.Scalar(Workflow.Child(mapping, "name")),
         _ => null,
     };
 
@@ -109,7 +109,7 @@ internal sealed class WorkflowJob(string id, YamlMappingNode node, Workflow work
     public string? Calls => Workflow.Scalar(Workflow.Child(this.Node, "uses"));
 
     public IReadOnlyList<WorkflowStep> Steps => Workflow.Child(this.Node, "steps") is YamlSequenceNode steps
-        ? steps.Children.OfType<YamlMappingNode>().Select(s => new WorkflowStep(s)).ToList()
+        ? steps.Children.OfType<YamlMappingNode>().Select(stepNode => new WorkflowStep(stepNode)).ToList()
         : [];
 
     public override string ToString() => $"{this.Workflow.Name}: job {this.Id}";

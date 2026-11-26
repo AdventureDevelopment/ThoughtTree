@@ -28,6 +28,6 @@ internal static class MsBuild
 
         using var json = JsonDocument.Parse(output);
         return [.. json.RootElement.GetProperty("Items").GetProperty(itemType).EnumerateArray()
-            .Select(i => i.GetProperty("FullPath").GetString()!)];
+            .Select(item => item.GetProperty("FullPath").GetString()!)];
     }
 }

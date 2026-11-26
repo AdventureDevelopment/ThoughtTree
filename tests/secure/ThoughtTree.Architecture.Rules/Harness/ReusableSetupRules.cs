@@ -15,7 +15,7 @@ public sealed class ReusableSetupRules
     [Fact]
     public void Every_listed_part_of_the_reusable_setup_exists()
     {
-        EntriesOf(ReusableSetup).Where(p => !File.Exists(Repository.PathOf(p)) && !Directory.Exists(Repository.PathOf(p)))
+        EntriesOf(ReusableSetup).Where(path => !File.Exists(Repository.PathOf(path)) && !Directory.Exists(Repository.PathOf(path)))
             .ToList().ShouldBeEmpty($"remove or fix stale lines in {ReusableSetup}");
     }
 
@@ -24,9 +24,9 @@ public sealed class ReusableSetupRules
     {
         var terms = TermPattern(EntriesOf(DomainTerms));
         var offenders = ReusableFiles()
-            .SelectMany(f => File.ReadLines(f).Select((line, i) => (File: f, Line: i + 1, Text: line)))
-            .Where(l => terms.IsMatch(l.Text))
-            .Select(l => $"{Repository.Relative(l.File)}:{l.Line}: {terms.Match(l.Text).Value}")
+            .SelectMany(file => File.ReadLines(file).Select((line, index) => (File: file, Line: index + 1, Text: line)))
+            .Where(numberedLine => terms.IsMatch(numberedLine.Text))
+            .Select(numberedLine => $"{Repository.Relative(numberedLine.File)}:{numberedLine.Line}: {terms.Match(numberedLine.Text).Value}")
             .ToList();
 
         offenders.ShouldBeEmpty($"keep the reusable setup free of {DomainTerms}; move project-specific parts into their own files");
@@ -45,12 +45,12 @@ public sealed class ReusableSetupRules
         new($@"\b({string.Join('|', terms.Select(Regex.Escape))})\b", RegexOptions.CultureInvariant);
 
     private static IEnumerable<string> EntriesOf(string list) =>
-        File.ReadAllLines(Repository.PathOf(list)).Select(l => l.Trim()).Where(l => l.Length > 0 && !l.StartsWith('#'));
+        File.ReadAllLines(Repository.PathOf(list)).Select(line => line.Trim()).Where(line => line.Length > 0 && !line.StartsWith('#'));
 
     private static IEnumerable<string> ReusableFiles() =>
-        EntriesOf(ReusableSetup).SelectMany(p => p.EndsWith('/')
-            ? Directory.EnumerateFiles(Repository.PathOf(p), "*", SearchOption.AllDirectories).Where(f => !IsSkipped(f))
-            : [Repository.PathOf(p)]);
+        EntriesOf(ReusableSetup).SelectMany(entry => entry.EndsWith('/')
+            ? Directory.EnumerateFiles(Repository.PathOf(entry), "*", SearchOption.AllDirectories).Where(file => !IsSkipped(file))
+            : [Repository.PathOf(entry)]);
 
     private static bool IsSkipped(string path) => Repository.Relative(path).Split('/').Intersect(SkippedFolders).Any();
 }

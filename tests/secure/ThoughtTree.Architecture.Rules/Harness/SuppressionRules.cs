@@ -20,8 +20,8 @@ public sealed partial class SuppressionRules
     {
         var approved = ApprovedFiles();
         var offenders = ScannedFiles()
-            .Where(f => !approved.Contains(Repository.Relative(f)))
-            .SelectMany(f => Suppressions(Repository.Relative(f), File.ReadAllText(f)))
+            .Where(file => !approved.Contains(Repository.Relative(file)))
+            .SelectMany(file => Suppressions(Repository.Relative(file), File.ReadAllText(file)))
             .ToList();
 
         offenders.ShouldBeEmpty("ADR-042: suppress only in files listed in eng/approved-suppressions.txt");
@@ -82,23 +82,23 @@ public sealed partial class SuppressionRules
 
         return pattern is null
             ? []
-            : pattern.Matches(text).Select(m => $"{relativePath}: {m.Value.Trim()}");
+            : pattern.Matches(text).Select(match => $"{relativePath}: {match.Value.Trim()}");
     }
 
     private static IEnumerable<string> ScannedFiles()
     {
-        var below = ScannedFolders.SelectMany(d => ScannedPatterns.SelectMany(p => Repository.Files(d, p)));
-        var root = ScannedPatterns.SelectMany(p => Directory.EnumerateFiles(Repository.Root, p, SearchOption.TopDirectoryOnly));
+        var below = ScannedFolders.SelectMany(folder => ScannedPatterns.SelectMany(pattern => Repository.Files(folder, pattern)));
+        var root = ScannedPatterns.SelectMany(pattern => Directory.EnumerateFiles(Repository.Root, pattern, SearchOption.TopDirectoryOnly));
         return below.Concat(root).Distinct().Order(StringComparer.Ordinal);
     }
 
     private static HashSet<string> ApprovedFiles() =>
-        [.. ApprovedLines().Select(l => l.Split('#', 2)[0].Trim())];
+        [.. ApprovedLines().Select(line => line.Split('#', 2)[0].Trim())];
 
     private static IEnumerable<string> ApprovedLines() =>
         File.ReadAllLines(Repository.PathOf("eng", "approved-suppressions.txt"))
-            .Select(l => l.Trim())
-            .Where(l => l.Length > 0 && !l.StartsWith('#'));
+            .Select(line => line.Trim())
+            .Where(line => line.Length > 0 && !line.StartsWith('#'));
 
     [GeneratedRegex(@"#\s*pragma\s+warning\s+disable|\[\s*(assembly\s*:\s*|module\s*:\s*)?(global::)?(System\.Diagnostics\.CodeAnalysis\.)?(Unconditional)?SuppressMessage(Attribute)?\s*\(", RegexOptions.CultureInvariant)]
     private static partial Regex CodeSuppression();

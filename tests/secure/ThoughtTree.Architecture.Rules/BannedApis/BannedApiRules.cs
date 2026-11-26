@@ -136,7 +136,7 @@ public sealed class BannedApiRules
     {
         var files = await MsBuild.ItemsAsync(Repository.PathOf("src", project, project + ".csproj"), "AdditionalFiles");
 
-        files.Select(Path.GetFileName).Where(f => f!.StartsWith("BannedSymbols", StringComparison.Ordinal)).Order(StringComparer.Ordinal)
+        files.Select(Path.GetFileName).Where(fileName => fileName!.StartsWith("BannedSymbols", StringComparison.Ordinal)).Order(StringComparer.Ordinal)
             .ShouldBe(expected.Order(StringComparer.Ordinal));
     }
 
@@ -153,14 +153,14 @@ public sealed class BannedApiRules
         }
     }
 
-    public static TheoryData<string> EntriesOf(string file) => [.. Lines(file).Select(l => l.Split(';')[0].Trim())];
+    public static TheoryData<string> EntriesOf(string file) => [.. Lines(file).Select(line => line.Split(';')[0].Trim())];
 
     private static async Task EntryFires(string file, string symbol)
     {
         Snippets.TryGetValue(symbol, out var body)
             .ShouldBeTrue($"Add a snippet for '{symbol}' to BannedApiRules.Snippets that proves the entry fires.");
 
-        var line = Lines(file).Single(l => l.Split(';')[0].Trim() == symbol);
+        var line = Lines(file).Single(candidate => candidate.Split(';')[0].Trim() == symbol);
         var onlyThisEntry = new BannedSymbolFile("BannedSymbols.txt", line);
 
         var withEntry = await BannedApiDiagnosticsAsync(Wrap(body!), [onlyThisEntry]);
@@ -186,9 +186,9 @@ public sealed class BannedApiRules
         """;
 
     private static IEnumerable<string> Lines(string file) => File.ReadAllLines(Repository.PathOf("src", file))
-        .Select(l => l.Trim())
-        .Where(l => l.Length > 0 && !l.StartsWith('#'));
+        .Select(line => line.Trim())
+        .Where(line => line.Length > 0 && !line.StartsWith('#'));
 
     private static BannedSymbolFile[] FilesOf(params string[] files) =>
-        [.. files.Select(f => BannedSymbolFile.FromDisk(Repository.PathOf("src", f)))];
+        [.. files.Select(file => BannedSymbolFile.FromDisk(Repository.PathOf("src", file)))];
 }

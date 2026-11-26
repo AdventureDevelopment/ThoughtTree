@@ -17,8 +17,8 @@ public sealed partial class CommentRules
     {
         var approved = Approved().ToHashSet();
         var unapproved = AllComments()
-            .Where(c => !approved.Contains(c) && !IsReferenceModelRuleMarker(c))
-            .Select(c => $"{c.File} :: {c.Text}")
+            .Where(comment => !approved.Contains(comment) && !IsReferenceModelRuleMarker(comment))
+            .Select(comment => $"{comment.File} :: {comment.Text}")
             .ToList();
 
         unapproved.ShouldBeEmpty($"express it in code, or list it in {ApprovedList} (AGENTS.md section 4b)");
@@ -28,7 +28,7 @@ public sealed partial class CommentRules
     public void Every_approved_comment_still_exists()
     {
         var existing = AllComments().ToHashSet();
-        var stale = Approved().Where(c => !existing.Contains(c)).Select(c => $"{c.File} :: {c.Text}").ToList();
+        var stale = Approved().Where(comment => !existing.Contains(comment)).Select(comment => $"{comment.File} :: {comment.Text}").ToList();
 
         stale.ShouldBeEmpty($"remove stale lines from {ApprovedList}");
     }
@@ -55,21 +55,21 @@ public sealed partial class CommentRules
 
     private static IEnumerable<Comment> AllComments() =>
         Repository.Files("src", "*.cs").Concat(Repository.Files("tests", "*.cs"))
-            .SelectMany(f => CommentsIn(Repository.Relative(f), File.ReadAllText(f)));
+            .SelectMany(file => CommentsIn(Repository.Relative(file), File.ReadAllText(file)));
 
     private static IEnumerable<Comment> CommentsIn(string file, string code) =>
         CSharpSyntaxTree.ParseText(code).GetRoot().DescendantTrivia()
-            .Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia) || t.IsKind(SyntaxKind.MultiLineCommentTrivia))
-            .Select(t => new Comment(file, t.ToString().Trim()));
+            .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia) || trivia.IsKind(SyntaxKind.MultiLineCommentTrivia))
+            .Select(trivia => new Comment(file, trivia.ToString().Trim()));
 
     private static IEnumerable<Comment> Approved() =>
         File.ReadAllLines(Repository.PathOf(ApprovedList))
-            .Where(l => l.Length > 0 && !l.StartsWith('#'))
-            .Select(l => l.Split(" :: ", 2))
-            .Select(p => new Comment(p[0].Trim(), p[1].Trim()));
+            .Where(line => line.Length > 0 && !line.StartsWith('#'))
+            .Select(line => line.Split(" :: ", 2))
+            .Select(parts => new Comment(parts[0].Trim(), parts[1].Trim()));
 
-    private static bool IsReferenceModelRuleMarker(Comment c) =>
-        c.File == ReferenceModel && RuleMarker().IsMatch(c.Text);
+    private static bool IsReferenceModelRuleMarker(Comment comment) =>
+        comment.File == ReferenceModel && RuleMarker().IsMatch(comment.Text);
 
     [GeneratedRegex(@"^// R\d+(, R\d+)*(:|$)")]
     private static partial Regex RuleMarker();

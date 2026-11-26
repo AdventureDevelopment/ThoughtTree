@@ -18,7 +18,7 @@ internal static class DependencyConditions
         var regex = new Regex(pattern, RegexOptions.CultureInvariant);
         return type =>
         {
-            var offending = type.Dependencies.Select(d => d.Target.FullName).Where(n => regex.IsMatch(n)).Distinct().ToList();
+            var offending = type.Dependencies.Select(dependency => dependency.Target.FullName).Where(name => regex.IsMatch(name)).Distinct().ToList();
             return new ConditionResult(type, offending.Count == 0, "uses " + string.Join(", ", offending));
         };
     }
@@ -30,7 +30,7 @@ internal static class DependencyConditions
         return type =>
         {
             var offending = type.Dependencies.OfType<MethodCallDependency>()
-                .Select(d => d.TargetMember.FullName).Where(n => regex.IsMatch(n)).Distinct().ToList();
+                .Select(dependency => dependency.TargetMember.FullName).Where(name => regex.IsMatch(name)).Distinct().ToList();
             return new ConditionResult(type, offending.Count == 0, "calls " + string.Join(", ", offending));
         };
     }

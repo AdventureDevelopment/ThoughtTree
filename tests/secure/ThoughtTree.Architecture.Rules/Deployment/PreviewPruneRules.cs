@@ -17,7 +17,7 @@ public sealed partial class PreviewPruneRules
 {
     private const string KnownAction = "'Microsoft.Web/locations/staticSitesOperationStatuses/read'";
 
-    private static string PreviewScript => string.Join('\n', File.ReadAllLines(Repository.PathOf("eng", "deploy", "preview.sh")).Where(l => !l.TrimStart().StartsWith('#')));
+    private static string PreviewScript => string.Join('\n', File.ReadAllLines(Repository.PathOf("eng", "deploy", "preview.sh")).Where(line => !line.TrimStart().StartsWith('#')));
 
     [Fact]
     public async Task Prune_behaves_as_decided_against_a_stub_az()
@@ -56,14 +56,14 @@ public sealed partial class PreviewPruneRules
         script.ShouldContain("Code: AuthorizationFailed", customMessage: "and the known error code");
         script.ShouldContain("staticSitesOperationStatuses/[0-9a-zA-Z-]+'", customMessage: "and the subscription-scope shape of the operation status");
         script.ShouldContain("Previews still listed after the wait", customMessage: "every delete is checked on the environment list");
-        BroadTolerance().Matches(script).Select(m => m.Value).ShouldBeEmpty("no || true, || : or 2>/dev/null on the delete");
+        BroadTolerance().Matches(script).Select(match => match.Value).ShouldBeEmpty("no || true, || : or 2>/dev/null on the delete");
     }
 
     [Fact]
     public void No_rest_call_in_the_deploy_scripts()
     {
         Repository.Files(Path.Combine("eng", "deploy"), "*.sh")
-            .Where(f => RestCall().IsMatch(File.ReadAllText(f)))
+            .Where(script => RestCall().IsMatch(File.ReadAllText(script)))
             .Select(Repository.Relative)
             .ShouldBeEmpty("az rest stays banned in eng/deploy (owner, 2026-11-24: we have that rule for a reason)");
     }

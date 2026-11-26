@@ -13,7 +13,7 @@ public sealed class TestToolchainRules
 
     private static readonly Dictionary<string, string> CentralVersions = XDocument.Load(Repository.PathOf("Directory.Packages.props"))
         .Descendants("PackageVersion")
-        .ToDictionary(e => (string)e.Attribute("Include")!, e => (string)e.Attribute("Version")!);
+        .ToDictionary(packageVersion => (string)packageVersion.Attribute("Include")!, packageVersion => (string)packageVersion.Attribute("Version")!);
 
     [Theory]
     [InlineData("xunit")]
@@ -26,17 +26,17 @@ public sealed class TestToolchainRules
     [Fact]
     public void No_xunit_v3_and_no_other_spec_library()
     {
-        var packages = CentralVersions.Keys.Concat(AllProjects().SelectMany(p => p.PackageReferences)).ToList();
+        var packages = CentralVersions.Keys.Concat(AllProjects().SelectMany(project => project.PackageReferences)).ToList();
 
-        packages.ShouldNotContain(p => p.StartsWith("xunit.v3", StringComparison.OrdinalIgnoreCase));
-        packages.ShouldNotContain(p => OtherSpecLibraries.Any(l => p.StartsWith(l, StringComparison.OrdinalIgnoreCase)));
+        packages.ShouldNotContain(package => package.StartsWith("xunit.v3", StringComparison.OrdinalIgnoreCase));
+        packages.ShouldNotContain(package => OtherSpecLibraries.Any(library => package.StartsWith(library, StringComparison.OrdinalIgnoreCase)));
     }
 
     [Fact]
     public void Package_versions_live_only_in_directory_packages_props()
     {
         var withVersion = Repository.Files("src", "*.csproj").Concat(Repository.Files("tests", "*.csproj"))
-            .Where(f => XDocument.Load(f).Descendants("PackageReference").Any(r => r.Attribute("Version") is not null || r.Attribute("VersionOverride") is not null))
+            .Where(projectFile => XDocument.Load(projectFile).Descendants("PackageReference").Any(reference => reference.Attribute("Version") is not null || reference.Attribute("VersionOverride") is not null))
             .Select(Repository.Relative);
 
         withVersion.ShouldBeEmpty();

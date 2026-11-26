@@ -22,8 +22,8 @@ public sealed partial class PullRequestIsolationRules
     public void No_job_that_runs_pull_request_code_can_request_an_openid_connect_token()
     {
         var offenders = Workflow.All()
-            .Where(w => w.Triggers.Overlaps(PullRequestEvents))
-            .SelectMany(w => w.Jobs)
+            .Where(workflow => workflow.Triggers.Overlaps(PullRequestEvents))
+            .SelectMany(workflow => workflow.Jobs)
             .SelectMany(OpenIdConnectJobs)
             .ToList();
 
@@ -34,10 +34,10 @@ public sealed partial class PullRequestIsolationRules
     public void No_job_that_runs_pull_request_code_uses_a_deployment_environment()
     {
         var offenders = Workflow.All()
-            .Where(w => w.Triggers.Overlaps(PullRequestEvents))
-            .SelectMany(w => w.Jobs)
-            .Where(j => j.Environment is not null)
-            .Select(j => $"{j}: environment {j.Environment}")
+            .Where(workflow => workflow.Triggers.Overlaps(PullRequestEvents))
+            .SelectMany(workflow => workflow.Jobs)
+            .Where(job => job.Environment is not null)
+            .Select(job => $"{job}: environment {job.Environment}")
             .ToList();
 
         offenders.ShouldBeEmpty("deployment environments hold the sign-in identities; pull request code never runs in one");
@@ -47,11 +47,11 @@ public sealed partial class PullRequestIsolationRules
     public void Workflow_run_workflows_never_check_out_the_code_that_triggered_them()
     {
         var offenders = Workflow.All()
-            .Where(w => w.Triggers.Contains("workflow_run"))
-            .SelectMany(w => w.Jobs)
-            .SelectMany(j => j.Steps.Where(s => s.Uses?.StartsWith("actions/checkout@", StringComparison.Ordinal) == true)
-                .Where(s => s.HasWith("ref") || s.HasWith("repository"))
-                .Select(_ => $"{j}: checkout with ref or repository"))
+            .Where(workflow => workflow.Triggers.Contains("workflow_run"))
+            .SelectMany(workflow => workflow.Jobs)
+            .SelectMany(job => job.Steps.Where(step => step.Uses?.StartsWith("actions/checkout@", StringComparison.Ordinal) == true)
+                .Where(step => step.HasWith("ref") || step.HasWith("repository"))
+                .Select(_ => $"{job}: checkout with ref or repository"))
             .ToList();
 
         offenders.ShouldBeEmpty("a workflow_run job checks out main only; the pull request's build arrives as an artifact, as data");
@@ -60,14 +60,14 @@ public sealed partial class PullRequestIsolationRules
     [Fact]
     public void Workflow_run_jobs_take_other_runs_only_as_data_through_site_artifact_py()
     {
-        Workflow.All().Where(w => w.Triggers.Contains("workflow_run")).SelectMany(WorkflowRunViolations).ToList()
+        Workflow.All().Where(workflow => workflow.Triggers.Contains("workflow_run")).SelectMany(WorkflowRunViolations).ToList()
             .ShouldBeEmpty("a workflow_run job never fetches, checks out or downloads the triggering code; artifacts come only through eng/deploy/site_artifact.py fetch");
     }
 
     [Fact]
     public void Workflow_run_jobs_with_a_credential_skip_runs_from_forks()
     {
-        Workflow.All().Where(w => w.Triggers.Contains("workflow_run")).SelectMany(ForkFilterViolations).ToList()
+        Workflow.All().Where(workflow => workflow.Triggers.Contains("workflow_run")).SelectMany(ForkFilterViolations).ToList()
             .ShouldBeEmpty($"every job that can get an OpenID Connect token and runs on workflow_run has the condition '{ForkFilter}'");
     }
 
@@ -94,9 +94,9 @@ public sealed partial class PullRequestIsolationRules
             text.ShouldNotContain("stapp-thoughttree-test", customMessage: $"{name}: only deploy-test.yml deploys to the test site");
         }
 
-        var previewJobs = Workflow.All().SelectMany(w => w.Jobs).Where(j => j.Environment == "preview").ToList();
+        var previewJobs = Workflow.All().SelectMany(workflow => workflow.Jobs).Where(job => job.Environment == "preview").ToList();
         previewJobs.ShouldNotBeEmpty("previews are deployed by jobs in the GitHub environment 'preview'");
-        previewJobs.ShouldAllBe(j => j.Workflow.Triggers.All(t => t == "workflow_run" || t == "schedule" || t == "workflow_dispatch"));
+        previewJobs.ShouldAllBe(job => job.Workflow.Triggers.All(trigger => trigger == "workflow_run" || trigger == "schedule" || trigger == "workflow_dispatch"));
     }
 
     [Theory]
@@ -183,10 +183,10 @@ public sealed partial class PullRequestIsolationRules
 
     internal static IEnumerable<string> ForkFilterViolations(Workflow workflow) =>
         workflow.Jobs
-            .Where(j => j.CanRequestIdToken)
-            .Where(j => Workflow.Scalar(Workflow.Child(j.Node, "if")) is not { } condition
+            .Where(job => job.CanRequestIdToken)
+            .Where(job => Workflow.Scalar(Workflow.Child(job.Node, "if")) is not { } condition
                 || !(condition.Contains(ForkFilter, StringComparison.Ordinal) || condition.Contains("github.event_name != 'workflow_run'", StringComparison.Ordinal)))
-            .Select(j => $"{j}: no fork filter");
+            .Select(job => $"{job}: no fork filter");
 
     internal static IEnumerable<string> CredentialJobViolations(Workflow workflow)
     {
@@ -217,7 +217,7 @@ public sealed partial class PullRequestIsolationRules
         if (job.Calls is { } called && called.StartsWith("./", StringComparison.Ordinal) && visited.Add(called))
         {
             var target = Repository.PathOf(called[2..].Split('/'));
-            foreach (var inner in Workflow.Load(target).Jobs.SelectMany(j => OpenIdConnectJobs(j, visited)))
+            foreach (var inner in Workflow.Load(target).Jobs.SelectMany(calledJob => OpenIdConnectJobs(calledJob, visited)))
             {
                 yield return $"{job} calls {inner}";
             }

@@ -21,7 +21,7 @@ internal static class SourceArchitecture
     public static void ShouldHold(this IArchRule rule)
     {
         var results = rule.Evaluate(Instance).ToList();
-        var violations = results.Where(r => !r.Passed).Select(r => r.Description).ToList();
+        var violations = results.Where(result => !result.Passed).Select(result => result.Description).ToList();
 
         violations.ShouldBeEmpty(rule.Description);
     }

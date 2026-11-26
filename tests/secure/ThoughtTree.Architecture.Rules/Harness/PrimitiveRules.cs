@@ -23,7 +23,7 @@ public sealed class PrimitiveRules
     public void Every_public_string_long_or_int_is_approved()
     {
         var approved = Approved().ToHashSet(StringComparer.Ordinal);
-        var unapproved = Checked.SelectMany(a => a.GetExportedTypes()).SelectMany(PrimitivesIn).Where(p => !approved.Contains(p)).ToList();
+        var unapproved = Checked.SelectMany(assembly => assembly.GetExportedTypes()).SelectMany(PrimitivesIn).Where(primitive => !approved.Contains(primitive)).ToList();
 
         unapproved.ShouldBeEmpty($"give the value its own type, or list it in {ApprovedList} (AGENTS.md section 4b)");
     }
@@ -31,9 +31,9 @@ public sealed class PrimitiveRules
     [Fact]
     public void Every_approved_entry_still_exists()
     {
-        var existing = Checked.SelectMany(a => a.GetExportedTypes()).SelectMany(PrimitivesIn).ToHashSet(StringComparer.Ordinal);
+        var existing = Checked.SelectMany(assembly => assembly.GetExportedTypes()).SelectMany(PrimitivesIn).ToHashSet(StringComparer.Ordinal);
 
-        Approved().Where(p => !existing.Contains(p)).ToList().ShouldBeEmpty($"remove stale lines from {ApprovedList}");
+        Approved().Where(entry => !existing.Contains(entry)).ToList().ShouldBeEmpty($"remove stale lines from {ApprovedList}");
     }
 
     [Fact]
@@ -59,20 +59,20 @@ public sealed class PrimitiveRules
         const BindingFlags declaredPublic = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
         foreach (var constructor in type.GetConstructors(declaredPublic))
         {
-            foreach (var parameter in constructor.GetParameters().Where(p => Primitives.Contains(p.ParameterType)))
+            foreach (var parameter in constructor.GetParameters().Where(candidate => Primitives.Contains(candidate.ParameterType)))
             {
                 yield return $"{type.FullName}.ctor({parameter.Name})";
             }
         }
 
-        foreach (var property in type.GetProperties(declaredPublic).Where(p => Primitives.Contains(p.PropertyType)))
+        foreach (var property in type.GetProperties(declaredPublic).Where(candidate => Primitives.Contains(candidate.PropertyType)))
         {
             yield return $"{type.FullName}.{property.Name}";
         }
 
-        foreach (var method in type.GetMethods(declaredPublic).Where(m => !m.IsSpecialName && !GeneratedMembers.Contains(m.Name)))
+        foreach (var method in type.GetMethods(declaredPublic).Where(candidate => !candidate.IsSpecialName && !GeneratedMembers.Contains(candidate.Name)))
         {
-            foreach (var parameter in method.GetParameters().Where(p => Primitives.Contains(p.ParameterType)))
+            foreach (var parameter in method.GetParameters().Where(candidate => Primitives.Contains(candidate.ParameterType)))
             {
                 yield return $"{type.FullName}.{method.Name}({parameter.Name})";
             }
@@ -89,8 +89,8 @@ public sealed class PrimitiveRules
 
     private static IEnumerable<string> Approved() =>
         File.ReadAllLines(Repository.PathOf(ApprovedList))
-            .Select(l => l.Split('#', 2)[0].Trim())
-            .Where(l => l.Length > 0);
+            .Select(line => line.Split('#', 2)[0].Trim())
+            .Where(line => line.Length > 0);
 
     public sealed class SampleWithPrimitives(string name)
     {

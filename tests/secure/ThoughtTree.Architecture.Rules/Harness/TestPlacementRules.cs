@@ -56,7 +56,7 @@ public sealed partial class TestPlacementRules
     public void Support_projects_hold_no_tests()
     {
         Repository.Files(Path.Combine("tests", "support"), "*.cs")
-            .Where(f => TestAttribute().IsMatch(File.ReadAllText(f)))
+            .Where(file => TestAttribute().IsMatch(File.ReadAllText(file)))
             .Select(Repository.Relative)
             .ShouldBeEmpty("tests/support holds shared helpers only (ADR-054)");
     }
@@ -65,13 +65,13 @@ public sealed partial class TestPlacementRules
     public void Adr_traits_name_existing_adrs()
     {
         var existing = Directory.GetFiles(Repository.PathOf("docs", "adr"), "ADR-*.md")
-            .Select(f => Path.GetFileName(f)[..7])
+            .Select(file => Path.GetFileName(file)[..7])
             .ToHashSet();
 
         var unknown = Repository.Files("tests", "*.cs")
-            .SelectMany(f => AdrTrait().Matches(File.ReadAllText(f)).Select(m => (File: Repository.Relative(f), Id: m.Groups[1].Value)))
-            .Where(t => !existing.Contains(t.Id))
-            .Select(t => $"{t.File}: {t.Id}");
+            .SelectMany(file => AdrTrait().Matches(File.ReadAllText(file)).Select(match => (File: Repository.Relative(file), Id: match.Groups[1].Value)))
+            .Where(trait => !existing.Contains(trait.Id))
+            .Select(trait => $"{trait.File}: {trait.Id}");
 
         unknown.ShouldBeEmpty();
     }

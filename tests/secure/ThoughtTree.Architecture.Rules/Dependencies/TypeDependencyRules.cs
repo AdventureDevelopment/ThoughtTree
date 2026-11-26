@@ -18,7 +18,7 @@ public sealed class TypeDependencyRules
     [Trait("ADR", "ADR-054")]
     public void All_six_source_assemblies_are_loaded()
     {
-        Instance.Assemblies.Select(a => a.Name.Split(',')[0]).Order(StringComparer.Ordinal)
+        Instance.Assemblies.Select(assembly => assembly.Name.Split(',')[0]).Order(StringComparer.Ordinal)
             .ShouldBe(All.Order(StringComparer.Ordinal));
     }
 
@@ -30,7 +30,7 @@ public sealed class TypeDependencyRules
     [MemberData(nameof(SourceNames))]
     public void Every_type_lives_in_the_namespace_of_its_project(string project)
     {
-        var otherProjects = string.Join('|', All.Where(p => p != project && !project.StartsWith(p + ".", StringComparison.Ordinal)).Select(Escape));
+        var otherProjects = string.Join('|', All.Where(other => other != project && !project.StartsWith(other + ".", StringComparison.Ordinal)).Select(Escape));
         Types().That().ResideInAssembly(Load(project))
             .And().DoNotHaveFullNameMatching(CompositionRootsAndGeneratedTypes)
             .Should().ResideInNamespaceMatching($@"^{Escape(project)}(\..*)?$")

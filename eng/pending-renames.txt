@@ -2,31 +2,6 @@
 # Protected files wait for the owner-approved rename in docs/plan/next-work.md. Remove a line once the file is renamed;
 # NameRules fails on a listed file that no longer has a one-letter name.
 
-tests/secure/ThoughtTree.Architecture.Rules/BannedApis/BannedApiAnalyzerRunner.cs
-tests/secure/ThoughtTree.Architecture.Rules/BannedApis/BannedApiRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Dependencies/ProjectReferenceRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Dependencies/TypeDependencyRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Deployment/DeployToolRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Deployment/DeploymentIdentityRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Deployment/InfrastructureRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Deployment/PreviewPruneRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Deployment/PromotionRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Deployment/PullRequestIsolationRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Deployment/SecurityHeaderRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Harness/CommentRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Harness/PrimitiveRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Harness/ReusableSetupRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Harness/SuppressionRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Harness/TestPlacementRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Harness/TestToolchainRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Harness/VerifyLineRules.cs
-tests/secure/ThoughtTree.Architecture.Rules/Support/AdrVerifyLines.cs
-tests/secure/ThoughtTree.Architecture.Rules/Support/DependencyConditions.cs
-tests/secure/ThoughtTree.Architecture.Rules/Support/MsBuild.cs
-tests/secure/ThoughtTree.Architecture.Rules/Support/ProjectFile.cs
-tests/secure/ThoughtTree.Architecture.Rules/Support/Repository.cs
-tests/secure/ThoughtTree.Architecture.Rules/Support/SourceArchitecture.cs
-tests/secure/ThoughtTree.Architecture.Rules/Support/Workflow.cs
 tests/secure/ThoughtTree.Domain.Model/ModelContract.cs
 tests/specify/ThoughtTree.Domain.Specs/Clock/ClockEdgeSpecs.cs
 tests/specify/ThoughtTree.Domain.Specs/Clock/EventOrderSpecs.cs

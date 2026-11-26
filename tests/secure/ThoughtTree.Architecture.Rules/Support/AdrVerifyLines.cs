@@ -6,10 +6,10 @@ namespace ThoughtTree.Architecture.Rules.Support;
 internal sealed partial record VerifyLine(string Adr, string Command, string Comment)
 {
     /// <summary>The ADR named in <c>dotnet test --filter "ADR=ADR-0xx"</c>, or null for other commands.</summary>
-    public string? FilterAdr => FilterPattern().Match(this.Command) is { Success: true } m ? m.Groups[1].Value : null;
+    public string? FilterAdr => FilterPattern().Match(this.Command) is { Success: true } match ? match.Groups[1].Value : null;
 
     /// <summary>The loop the line waits for (after deployment, release, server), wherever "when:" appears in the comment.</summary>
-    public string? When => WhenPattern().Match(this.Comment) is { Success: true } m ? m.Groups[1].Value : null;
+    public string? When => WhenPattern().Match(this.Comment) is { Success: true } match ? match.Groups[1].Value : null;
 
     /// <summary>True when the comment starts with "when:", the form docs/adr/README.md uses.</summary>
     public bool HasCanonicalWhen => CanonicalWhenPattern().IsMatch(this.Comment);
@@ -18,7 +18,7 @@ internal sealed partial record VerifyLine(string Adr, string Command, string Com
     public bool IsStatic => StaticPattern().IsMatch(this.Command);
 
     /// <summary>The value after "expect", if the comment names one.</summary>
-    public string? Expected => ExpectPattern().Match(this.Comment) is { Success: true } m ? m.Groups[1].Value : null;
+    public string? Expected => ExpectPattern().Match(this.Comment) is { Success: true } match ? match.Groups[1].Value : null;
 
     public override string ToString() => $"{this.Adr}: {this.Command}";
 
@@ -50,21 +50,21 @@ internal static class AdrVerifyLines
         {
             var adr = Path.GetFileName(file)[..7];
             var text = File.ReadAllLines(file);
-            var start = Array.FindIndex(text, l => l.Trim() == "verify:");
+            var start = Array.FindIndex(text, line => line.Trim() == "verify:");
             if (start < 0)
             {
                 continue;
             }
 
-            var open = Array.FindIndex(text, start, l => l.TrimStart().StartsWith("```", StringComparison.Ordinal));
-            for (var i = open + 1; i < text.Length && !text[i].TrimStart().StartsWith("```", StringComparison.Ordinal); i++)
+            var open = Array.FindIndex(text, start, line => line.TrimStart().StartsWith("```", StringComparison.Ordinal));
+            for (var index = open + 1; index < text.Length && !text[index].TrimStart().StartsWith("```", StringComparison.Ordinal); index++)
             {
-                if (text[i].Trim().Length == 0)
+                if (text[index].Trim().Length == 0)
                 {
                     continue;
                 }
 
-                var (command, comment) = SplitComment(text[i]);
+                var (command, comment) = SplitComment(text[index]);
                 lines.Add(new VerifyLine(adr, command, comment));
             }
         }
@@ -76,20 +76,20 @@ internal static class AdrVerifyLines
     internal static (string Command, string Comment) SplitComment(string line)
     {
         char? quote = null;
-        for (var i = 0; i < line.Length; i++)
+        for (var index = 0; index < line.Length; index++)
         {
-            var c = line[i];
-            if (quote is null && (c == '\'' || c == '"'))
+            var character = line[index];
+            if (quote is null && (character == '\'' || character == '"'))
             {
-                quote = c;
+                quote = character;
             }
-            else if (quote == c)
+            else if (quote == character)
             {
                 quote = null;
             }
-            else if (quote is null && c == '#' && i > 0 && char.IsWhiteSpace(line[i - 1]))
+            else if (quote is null && character == '#' && index > 0 && char.IsWhiteSpace(line[index - 1]))
             {
-                return (line[..i].Trim(), line[(i + 1)..].Trim());
+                return (line[..index].Trim(), line[(index + 1)..].Trim());
             }
         }
 
