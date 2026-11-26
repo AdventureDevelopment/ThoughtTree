@@ -8,6 +8,7 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
 1. **INV-11 text normalisation** (ADR-029, foundation step 2a). Spec first. Includes the owner decision whether titles and
    notes get a text type (they are listed in `eng/approved-primitives.txt`). Done when the specs, the properties and the
    reference model rules cover INV-11 and the approved-primitives entries for titles and notes are resolved.
+   Waits for the owner on the open decision "Text normalisation details (INV-11)" in `docs/architecture.md` section 9.
 2. **Open findings for the next spec and property change** (`docs/reviews/2026-11-26-domain-core.md`, rows marked "Next
    spec change" and "Next property change"). Spec changes need the owner's approval (ADR-035).
 3. **Rest of foundation step 2a**: the payload wrapper and INV-9 to INV-14, INV-13 first (same event id with different
