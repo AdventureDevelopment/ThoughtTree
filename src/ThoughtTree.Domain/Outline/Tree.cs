@@ -63,6 +63,9 @@ public sealed record Tree
     public string ToOutline() =>
         string.Join('\n', this.VisibleOutline().Select(e => new string(' ', e.Depth * 2) + "- " + e.Item.Title));
 
+    // No titles or notes in logs or error messages.
+    public override string ToString() => $"Tree with {this.Items.Count} items";
+
     internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
 
     internal Tree WithAnomaly(AnomalyKind kind, TreeEvent e, ItemId? item) =>

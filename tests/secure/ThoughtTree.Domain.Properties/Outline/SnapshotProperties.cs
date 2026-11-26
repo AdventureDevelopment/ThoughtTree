@@ -8,7 +8,6 @@ namespace ThoughtTree.Domain.Properties.Outline;
 /// <summary>INV-6 (snapshot equivalence) and INV-7 (incremental equals full) over generated histories.</summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-002")]
-[Trait("ADR", "ADR-016")]
 public class SnapshotProperties
 {
     private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));

@@ -25,6 +25,9 @@ public sealed record Item
     /// <summary>Children in order, deleted ones included (ADR-004: the order lives here, never on the children).</summary>
     public ImmutableList<ItemId> Children { get; private init; } = [];
 
+    // No titles or notes in logs or error messages.
+    public override string ToString() => $"Item {this.Id}";
+
     internal Item WithTitle(string title) => this with { Title = title };
 
     internal Item WithNote(string note) => this with { Note = note };

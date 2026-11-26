@@ -14,6 +14,7 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-004")]
 [Trait("ADR", "ADR-005")]
 [Trait("ADR", "ADR-014")]
+[Trait("ADR", "ADR-016")]
 [Trait("ADR", "ADR-023")]
 public class OutlineProperties
 {
