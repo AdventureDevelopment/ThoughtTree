@@ -971,6 +971,7 @@ Each decision is a separate, agent-optimised record in [`docs/adr`](adr/README.m
 | [ADR-086](adr/ADR-086-local-event-blocks.md) | Local event blocks for replay | `src/ThoughtTree.Client*/**` |
 | [ADR-087](adr/ADR-087-stored-size-limits.md) | Stored size limits: padding buckets, note, title, user name and server address | `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`, `src/ThoughtTree.Client*/**` |
 | [ADR-088](adr/ADR-088-write-acknowledgement.md) | When a local write counts as saved: on `complete`; `strict` for every store not listed as `relaxed` | `src/ThoughtTree.Client*/**` |
+| [ADR-089](adr/ADR-089-no-content-in-printed-output.md) | No user content in printed output (Proposed) | `src/**` |
 
 **Open decisions**
 
