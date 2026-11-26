@@ -19,6 +19,7 @@ public sealed class TextProperties
         "a", "e", "A", " ", "\u0301", "\u0308", "\u00E9", "\u212B", "\u1100", "\u1161", "\uAC00",
         "\r", "\n", "\r\n", "\u0085", "\u2028", "\u2029", "\u000B", "\u000C",
         "\U0001F469\u200D\U0001F467", "\U0001F44D\U0001F3FD",
+        "\uD800", "\uDC00", "\uFFFD",
     ];
 
     private static readonly string[] LineBreakPieces = ["\r", "\n", "\r\n", "\u0085", "\u2028", "\u2029", "\u000B", "\u000C"];
@@ -95,6 +96,38 @@ public sealed class TextProperties
             texts[0].ShouldBe(texts[2]);
             texts[1].ShouldBe(texts[3]);
         });
+    }
+
+    [Fact]
+    public void INV_11_each_unpaired_surrogate_becomes_one_replacement_character()
+    {
+        RawText.SampleFixed(raw =>
+        {
+            var replacements = raw.Count(c => c == '\uFFFD') + UnpairedSurrogates(raw);
+            foreach (var text in new[] { new Title(raw).Value, new Note(raw).Value })
+            {
+                UnpairedSurrogates(text).ShouldBe(0);
+                text.Count(c => c == '\uFFFD').ShouldBe(replacements);
+            }
+        });
+    }
+
+    private static int UnpairedSurrogates(string text)
+    {
+        var unpaired = 0;
+        for (var i = 0; i < text.Length; i++)
+        {
+            if (char.IsSurrogatePair(text, i))
+            {
+                i++;
+            }
+            else if (char.IsSurrogate(text[i]))
+            {
+                unpaired++;
+            }
+        }
+
+        return unpaired;
     }
 
     private static Gen<string> TextOf(string[] pieces) =>
