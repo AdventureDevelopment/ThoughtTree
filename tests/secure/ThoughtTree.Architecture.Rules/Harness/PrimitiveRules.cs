@@ -15,7 +15,7 @@ public sealed class PrimitiveRules
 
     private static readonly Assembly[] Checked =
     [
-        typeof(ThoughtTree.Domain.Outline.Tree).Assembly,
+        Assembly.Load("ThoughtTree.Domain"),
         Assembly.Load("ThoughtTree.Client.App"),
     ];
 
