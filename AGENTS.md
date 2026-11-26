@@ -49,7 +49,7 @@ Read this first. Rules carry their ADR id in brackets; the ADR has the detail an
 Rules read as trigger and action, the way hooks do: when the trigger occurs, do the action.
 
 - **When you start a change:** work in small steps. Write the specification first (`tests/specify`), then the code, then securing tests [architecture.md section 8, harness principle 10].
-- **When the tests are green, before the commit:** refactor. Check names, extract methods, give values with a meaning their own type, remove comments; then run the inner loop again.
+- **When the tests are green, before the commit:** refactor until the change reads at first glance (goal of section 4b). Check names, extract methods, give values with a meaning their own type, remove comments; then run the inner loop again.
 - **When you add or change a check, rule, workflow, script, build setting or harness helper:** keep it reusable for the next project (owner goal, architecture.md section 9, "Reusable setup"): no term from `eng/domain-terms.txt`, project-specific data in its own file, and the file listed in `eng/reusable-setup.txt`. `ReusableSetupRules` in the architecture rules fails the branch check on a domain term in a listed file.
 - **When you finish a work item or find new work:** update `docs/plan/next-work.md` in the same commit: remove the item you finished, add new work with its source. The queue only orders and points to where things are decided; it does not repeat them. `/coordinator` (`.claude/commands/coordinator.md`) works through it with one worker session per item.
 - **When a work item is finished:** before the next item, the coordinator runs `/clean-code-review` (`.claude/commands/clean-code-review.md`) on it: one independent reviewer session writes `docs/reviews/<date>-<topic>.md`, the owner decides its cards, and the decisions go into the review file and, if work is left, one item "Act on the review" in `docs/plan/next-work.md`.
@@ -120,6 +120,8 @@ public class Device { /* AddItem, Delete, Undo, Tree, Log */ }
 - Time, ids and randomness come from the fakes [ADR-034]; a spec is deterministic.
 
 ## 4b. Code style
+
+Goal (owner, 2026-11-26): code is readable at first glance; wherever a reader's eye stops and wonders, the code is not done. Follow these rules when you generate code, not only when you refactor; the refactoring step before each commit (section 4) checks the change against this goal. The owner reads most work on a phone and looks at code only in reviews at a workstation, so the refactoring step and the clean-code review hold the goal in between. Where doc comments stay is open (`docs/plan/next-work.md`); until it is decided, the summary rule below stands.
 
 Owner decision 2026-11-25 (rules 1 to 9 confirmed by the owner, with revisions to 6 and 9), adapted from the SoloAdventure project. Same form as section 4: when the trigger occurs, do the action. Rules marked "build" are in `.editorconfig` at `warning`, so a breach fails the build [ADR-042].
 

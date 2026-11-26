@@ -8,6 +8,8 @@ commits of the last finished work item. Send the reviewer this brief, with the s
 
 - Read AGENTS.md, `docs/adr/README.md` and every `Accepted` ADR whose `applies_to` matches a file in the scope.
 - Review the code, specifications and tests changed in the scope; read the whole branch as context.
+- Yardstick: the goal of AGENTS.md section 4b, code readable at first glance; report every place where the eye stops
+  and wonders, even when no rule names it.
 - Emphasis: clean code (naming, size and responsibility, duplication, dead code, terms of the glossary, ADR-063); names
   of tests and specifications and their rules (AGENTS.md section 4a, ADR-054, ADR-035); refactoring opportunities
   ordered by value and risk; other ideas that make the code easier to maintain.
