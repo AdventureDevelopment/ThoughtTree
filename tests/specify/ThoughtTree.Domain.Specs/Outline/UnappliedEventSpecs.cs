@@ -12,7 +12,7 @@ namespace ThoughtTree.Domain.Specs.Outline;
 public sealed class UnappliedEventSpecs
 {
     private static IEnumerable<(AnomalyKind Kind, ItemId? Item)> Reports(Tree tree) =>
-        tree.Anomalies.Select(a => (a.Kind, a.Item));
+        tree.Anomalies.Select(a => (a.Kind, a.ItemId));
 
     [Scenario]
     public void ADR_023_A_move_into_the_items_own_subtree_is_not_applied_and_is_reported()

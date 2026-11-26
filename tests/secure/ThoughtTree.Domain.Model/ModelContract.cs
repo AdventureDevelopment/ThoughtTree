@@ -137,14 +137,14 @@ public static partial class ReferenceModel
                     this.Create(c);
                     break;
                 case ItemTitleChanged t:
-                    if (this.Existing(t, t.Item) is { } titled && t.Title is { } title)
+                    if (this.Existing(t, t.ItemId) is { } titled && t.Title is { } title)
                     {
                         titled.Title = TitleText(title.Value); // R7, R9
                     }
 
                     break;
                 case ItemNoteChanged n:
-                    if (this.Existing(n, n.Item) is { } noted && n.Note is { } note)
+                    if (this.Existing(n, n.ItemId) is { } noted && n.Note is { } note)
                     {
                         noted.Note = NoteText(note.Value); // R7, R9
                     }
@@ -154,14 +154,14 @@ public static partial class ReferenceModel
                     this.Move(m);
                     break;
                 case ItemDeleted d:
-                    if (this.Existing(d, d.Item) is { } deleted)
+                    if (this.Existing(d, d.ItemId) is { } deleted)
                     {
                         deleted.Deleted = true; // R8
                     }
 
                     break;
                 case ItemRestored r:
-                    if (this.Existing(r, r.Item) is { } restored)
+                    if (this.Existing(r, r.ItemId) is { } restored)
                     {
                         restored.Deleted = false; // R8
                     }
@@ -218,21 +218,21 @@ public static partial class ReferenceModel
 
         private void Create(ItemCreated c)
         {
-            var id = c.Item.Value;
+            var id = c.ItemId.Value;
             if (this.items.ContainsKey(id))
             {
                 this.reports.Add(new Report("duplicate-create", c.EventId.Value, id)); // R5
                 return;
             }
 
-            var parent = IdOrNone(c.Parent);
+            var parent = IdOrNone(c.ParentId);
             if (parent is not null && !this.items.ContainsKey(parent))
             {
                 this.reports.Add(new Report("unknown-parent", c.EventId.Value, id)); // R12
                 parent = null;
             }
 
-            var after = IdOrNone(c.After);
+            var after = IdOrNone(c.AfterItemId);
             if (after is not null && (after == id || !this.items.ContainsKey(after)))
             {
                 this.reports.Add(new Report("unknown-after", c.EventId.Value, id)); // R13
@@ -246,15 +246,15 @@ public static partial class ReferenceModel
 
         private void Move(ItemMoved m)
         {
-            var node = this.Existing(m, m.Item);
+            var node = this.Existing(m, m.ItemId);
             if (node is null)
             {
                 return;
             }
 
             var id = node.Id;
-            var parent = IdOrNone(m.Parent);
-            var after = IdOrNone(m.After);
+            var parent = IdOrNone(m.ParentId);
+            var after = IdOrNone(m.AfterItemId);
             if (parent is not null && !this.items.ContainsKey(parent))
             {
                 this.reports.Add(new Report("unknown-parent", m.EventId.Value, id)); // R14

@@ -49,7 +49,7 @@ public sealed class OutlineProperties
                 farAhead++;
             }
 
-            if (h.OfType<ItemRestored>().Any(r => h.OfType<ItemDeleted>().Any(d => d.Item == r.Item)))
+            if (h.OfType<ItemRestored>().Any(r => h.OfType<ItemDeleted>().Any(d => d.ItemId == r.ItemId)))
             {
                 deleteThenRestore++;
             }
@@ -208,7 +208,7 @@ public sealed class OutlineProperties
     {
         HistoryGen.HistoryAndShuffle.SampleFixed(t =>
         {
-            var created = t.Shuffled.OfType<ItemCreated>().Select(c => c.Item).ToHashSet();
+            var created = t.Shuffled.OfType<ItemCreated>().Select(c => c.ItemId).ToHashSet();
             var present = Projection.Replay(t.Shuffled).AllItems.Select(i => i.Id).ToHashSet();
             present.SetEquals(created).ShouldBeTrue();
         });

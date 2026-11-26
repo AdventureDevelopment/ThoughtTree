@@ -20,7 +20,7 @@ public sealed record Tree
 
     /// <summary>Grouped by item id, those without an item last; replay order inside a group (model rules 18, 19).</summary>
     public IReadOnlyList<Anomaly> Anomalies =>
-        [.. this.Reported.OrderBy(a => a.Item is null).ThenBy(a => a.Item?.Value, StringComparer.Ordinal)];
+        [.. this.Reported.OrderBy(a => a.ItemId is null).ThenBy(a => a.ItemId?.Value, StringComparer.Ordinal)];
 
     /// <summary>In replay order.</summary>
     private ImmutableList<Anomaly> Reported { get; init; } = [];
