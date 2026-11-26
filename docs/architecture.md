@@ -485,6 +485,8 @@ Example of an event before encryption:
 - Two items placed after the same sibling at the same time are ordered by that agreed event order
 - If the referenced sibling is deleted, it stays in the projection as a tombstone, so the reference still resolves
 - If the referenced sibling is under a different parent at the time of replay, the item is placed first under its parent
+- A move whose parent or `afterItemId` does not exist at that point of the replay, or whose `afterItemId` is the item itself, is not applied; the item stays where it was and the move is reported (ADR-004)
+- A new item whose parent does not exist at that point of the replay is placed at top level; one whose `afterItemId` does not exist or is the item itself is placed first under its parent; both are reported (ADR-004)
 
 **Event exchange**
 
@@ -529,7 +531,7 @@ Example of an event before encryption:
 - To decide this, `item.deleted` carries what the deleting device had seen: for every device of the tree the highest clock it had received from that device (`seen`); a change in the subtree from device D with a clock above `seen[D]` was not seen
 - The item stays deleted in the projection, but is marked with a conflict listing the unseen changes; the user either keeps it deleted (a new deletion that has seen them) or restores it (`item.restored`) together with the changes
 - A conflict marker is derived from the log by the projection, not stored
-- A move that would create a cycle is applied with the moved item placed at top level instead of under the requested parent
+- A move that would put an item under itself or one of its descendants is not applied; the item stays where it was and the move is reported (ADR-023)
 - Deleted items are tombstoned, never physically removed, to keep merges consistent
 - Merging always means taking the union of two event logs, with events identified by `EventId`; trees are never merged directly, the projection rebuilds the tree from the combined log
 - Two devices that were used on their own before pairing keep separate trees; pairing only adds a further tree, and content moves between them by importing a tree into another under a new item (see Importing a tree into another, D-84), after which the ordinary merge rule applies
