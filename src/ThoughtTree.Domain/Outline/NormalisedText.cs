@@ -3,44 +3,7 @@ using System.Text;
 
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>An item's title, single-line and in Unicode NFC whatever it was built from (ADR-029, INV-11).</summary>
-public readonly record struct Title
-{
-    private readonly string? value;
-
-    public Title(string value)
-    {
-        this.value = NormalisedText.ForTitle(value);
-    }
-
-    public string Value => this.value ?? "";
-
-    public bool Equals(Title other) => string.Equals(this.Value, other.Value, StringComparison.Ordinal);
-
-    public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(this.Value);
-
-    public override string ToString() => this.Value;
-}
-
-/// <summary>An item's note, in Unicode NFC with every line break stored as a line feed (ADR-029, INV-11).</summary>
-public readonly record struct Note
-{
-    private readonly string? value;
-
-    public Note(string value)
-    {
-        this.value = NormalisedText.ForNote(value);
-    }
-
-    public string Value => this.value ?? "";
-
-    public bool Equals(Note other) => string.Equals(this.Value, other.Value, StringComparison.Ordinal);
-
-    public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(this.Value);
-
-    public override string ToString() => this.Value;
-}
-
+/// <summary>Brings raw text into the stored form of a title or a note (ADR-029, INV-11).</summary>
 internal static class NormalisedText
 {
     private const char Replacement = '\uFFFD';
@@ -63,7 +26,6 @@ internal static class NormalisedText
 
     private static string WithoutUnpairedSurrogates(string text)
     {
-        ArgumentNullException.ThrowIfNull(text);
         if (text.AsSpan().IndexOfAnyInRange(FirstSurrogate, LastSurrogate) == -1)
         {
             return text;
@@ -86,9 +48,9 @@ internal static class NormalisedText
         return result.ToString();
     }
 
-    private static string WithLineBreaksAs(string text, char lineBreak, SearchValues<char> toReplace)
+    private static string WithLineBreaksAs(string text, char lineBreak, SearchValues<char> needsWork)
     {
-        if (!text.AsSpan().ContainsAny(toReplace))
+        if (!text.AsSpan().ContainsAny(needsWork))
         {
             return text;
         }

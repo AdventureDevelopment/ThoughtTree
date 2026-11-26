@@ -7,7 +7,7 @@ public static class Projection
     {
         var ordered = events
             .DistinctBy(e => e.EventId)
-            .OrderBy(EventKey.Of, EventKey.Comparer)
+            .Order(EventKey.AgreedOrder)
             .ToList();
 
         var tree = Tree.Empty;

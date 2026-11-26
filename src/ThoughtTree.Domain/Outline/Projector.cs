@@ -7,9 +7,6 @@ public sealed record Projector
 {
     private const int DefaultCheckpointInterval = 1000;
 
-    private static readonly IComparer<TreeEvent> AgreedOrder =
-        Comparer<TreeEvent>.Create(static (a, b) => EventKey.Comparer.Compare(EventKey.Of(a), EventKey.Of(b)));
-
     private Projector(int checkpointInterval)
     {
         this.CheckpointInterval = checkpointInterval;
@@ -33,7 +30,7 @@ public sealed record Projector
     /// <summary>Rebuilds once, from the earliest new event, however many of the events arrive late.</summary>
     public Projector AddRange(IEnumerable<TreeEvent> events)
     {
-        var newEvents = events.DistinctBy(e => e.EventId).Where(e => !this.Ids.Contains(e.EventId)).Order(AgreedOrder).ToList();
+        var newEvents = events.DistinctBy(e => e.EventId).Where(e => !this.Ids.Contains(e.EventId)).Order(EventKey.AgreedOrder).ToList();
         if (newEvents.Count == 0)
         {
             return this;
@@ -42,10 +39,10 @@ public sealed record Projector
         var applied = this.AppliedInAgreedOrder;
         foreach (var e in newEvents)
         {
-            applied = applied.Insert(~applied.BinarySearch(e, AgreedOrder), e);
+            applied = applied.Insert(~applied.BinarySearch(e, EventKey.AgreedOrder), e);
         }
 
-        var earliestNew = applied.BinarySearch(newEvents[0], AgreedOrder);
+        var earliestNew = applied.BinarySearch(newEvents[0], EventKey.AgreedOrder);
         var allArriveAfterEverythingApplied = earliestNew == this.AppliedInAgreedOrder.Count;
         var withEvents = this with
         {
@@ -57,10 +54,6 @@ public sealed record Projector
             ? withEvents.ApplyFrom(earliestNew, this.Tree)
             : withEvents.RewindTo(this.Checkpoints.FindLast(c => c.Position <= earliestNew)!);
     }
-
-    internal static Projector WithCheckpointInterval(int events) => new(events);
-
-    internal int CheckpointCount => this.Checkpoints.Count;
 
     private Projector RewindTo(Checkpoint checkpoint) =>
         (this with { Checkpoints = this.Checkpoints.RemoveAll(c => c.Position > checkpoint.Position) })
@@ -81,6 +74,10 @@ public sealed record Projector
 
         return this with { Tree = tree, Checkpoints = checkpoints };
     }
+
+    internal static Projector WithCheckpointInterval(int eventsPerCheckpoint) => new(eventsPerCheckpoint);
+
+    internal int CheckpointCount => this.Checkpoints.Count;
 
     private sealed record Checkpoint(int Position, Tree Tree);
 }

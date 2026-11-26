@@ -18,11 +18,11 @@ public sealed record Tree
 
     private ImmutableDictionary<ItemId, ItemId> PreviousSibling { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
 
-    /// <summary>Grouped by item id, those without an item last; replay order inside a group (model rules 18, 19).</summary>
+    /// <summary>Grouped by item id, those without an item last; agreed order inside a group (model rules 18, 19).</summary>
     public IReadOnlyList<Anomaly> Anomalies =>
         [.. this.Reported.OrderBy(a => a.ItemId is null).ThenBy(a => a.ItemId?.Value, StringComparer.Ordinal)];
 
-    /// <summary>In replay order.</summary>
+    /// <summary>In agreed order.</summary>
     private ImmutableList<Anomaly> Reported { get; init; } = [];
 
     /// <summary>Deleted items included (INV-5).</summary>
