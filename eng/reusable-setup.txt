@@ -16,3 +16,4 @@ infra/
 .github/workflows/
 tests/secure/ThoughtTree.Architecture.Rules/
 tests/secure/ThoughtTree.Domain.Properties/Support/
+.claude/commands/
