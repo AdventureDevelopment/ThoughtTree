@@ -3,10 +3,7 @@ using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Specs.Outline;
 
-/// <summary>
-/// Writes events the way devices would: ids and clocks are counted, never random (ADR-034). An event id is the device
-/// plus a count, so two logs in one scenario need different devices, or their events collide as duplicates (INV-2).
-/// </summary>
+/// <summary>Writes events with counted ids and clocks (ADR-034).</summary>
 internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001")
 {
     private int count;
@@ -15,6 +12,7 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
 
     public static ItemId Id(string name) => new(name);
 
+    // An event id is device plus count: two logs in one scenario need different devices.
     private (string EventId, string Device, EventClock Clock, string Action) Next(long time)
     {
         this.count++;

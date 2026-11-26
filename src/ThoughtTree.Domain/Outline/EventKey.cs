@@ -2,7 +2,7 @@ using ThoughtTree.Domain.Clock;
 
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>The replay order of a tree: clock, then event id as text, ordinal (ADR-014). Distinct events never compare equal.</summary>
+/// <summary>The replay order of events: clock, then event id, ordinal (ADR-014).</summary>
 public readonly record struct EventKey(EventClock Clock, string EventId)
 {
     public static EventKey Of(TreeEvent e) => new(e.Clock, e.EventId);

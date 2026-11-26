@@ -1,6 +1,6 @@
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>Rebuilds the tree from events: duplicates dropped, one agreed order, last writer wins (ADR-002, ADR-014).</summary>
+/// <summary>Rebuilds the tree from events (ADR-002, ADR-014).</summary>
 public static class Projection
 {
     public static Tree Replay(IEnumerable<TreeEvent> events)
@@ -8,7 +8,7 @@ public static class Projection
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
         var ordered = events
-            .Where(e => seen.Add(e.EventId)) // INV-2: the same event twice changes nothing
+            .Where(e => seen.Add(e.EventId)) // INV-2
             .OrderBy(EventKey.Of, EventKey.Comparer)
             .ToList();
 
@@ -30,7 +30,7 @@ public static class Projection
             case ItemCreated c:
                 return Create(tree, c);
             case ItemTitleChanged t when tree.Items.TryGetValue(t.Item, out var item):
-                return t.Title is null ? tree : tree.WithItem(item.WithTitle(t.Title)); // ADR-016: missing means unchanged
+                return t.Title is null ? tree : tree.WithItem(item.WithTitle(t.Title)); // ADR-016
             case ItemNoteChanged n when tree.Items.TryGetValue(n.Item, out var item):
                 return n.Note is null ? tree : tree.WithItem(item.WithNote(n.Note));
             case ItemMoved m when tree.Items.ContainsKey(m.Item):
@@ -54,7 +54,7 @@ public static class Projection
         }
     }
 
-    // ADR-004 rule 5: an unknown parent means top level, an unknown or own afterItemId means first; both are reported.
+    // ADR-004 rule 5
     private static Tree Create(Tree tree, ItemCreated c)
     {
         var parent = c.Parent;
@@ -75,7 +75,7 @@ public static class Projection
         return tree.InsertChild(parent, c.Item, after);
     }
 
-    // ADR-004 rule 4 and ADR-023 rule 3: a move that cannot be carried out is not applied and is reported.
+    // ADR-004 rule 4, ADR-023 rule 3
     private static Tree Move(Tree tree, ItemMoved m)
     {
         if (m.Parent is { } p && !tree.Items.ContainsKey(p))

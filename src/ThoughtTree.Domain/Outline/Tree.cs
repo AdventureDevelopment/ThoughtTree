@@ -3,10 +3,7 @@ using System.Collections.Immutable;
 
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>
-/// The tree as a projection of the event log (ADR-002), immutable: applying an event returns a new tree that shares
-/// everything unchanged with the old one, so a snapshot is just a reference.
-/// </summary>
+/// <summary>The tree as a projection of the event log, immutable (ADR-002).</summary>
 public sealed record Tree
 {
     public static Tree Empty { get; } = new();
@@ -15,28 +12,25 @@ public sealed record Tree
 
     internal ImmutableList<ItemId> TopLevel { get; private init; } = [];
 
-    /// <summary>
-    /// Events not carried out as written, grouped by item in item id order, those without an item last; inside a group
-    /// in the agreed order (owner decision 2026-11-26, reference model rules 18 and 19).
-    /// </summary>
+    /// <summary>Grouped by item id, those without an item last; replay order inside a group (model rules 18, 19).</summary>
     public IReadOnlyList<Anomaly> Anomalies =>
         [.. this.Reported.OrderBy(a => a.Item is null).ThenBy(a => a.Item?.Value, StringComparer.Ordinal)];
 
-    /// <summary>In the order the events were applied, which is the agreed order.</summary>
+    /// <summary>In replay order.</summary>
     private ImmutableList<Anomaly> Reported { get; init; } = [];
 
-    /// <summary>Every item ever created, visible or deleted (INV-5).</summary>
+    /// <summary>Deleted items included (INV-5).</summary>
     public IReadOnlyCollection<Item> AllItems => new ItemCollection(this.Items);
 
-    /// <summary>Top-level items in order, deleted ones included.</summary>
+    /// <summary>Deleted items included.</summary>
     public IReadOnlyList<ItemId> TopLevelOrder => this.TopLevel;
 
-    /// <summary>Children of an item in order, deleted ones included.</summary>
+    /// <summary>Deleted items included.</summary>
     public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => this.Items[id].Children;
 
     public Item? Find(ItemId id) => this.Items.GetValueOrDefault(id);
 
-    /// <summary>Items in outline order that a user sees: not deleted and no deleted ancestor.</summary>
+    /// <summary>Items not deleted and without a deleted ancestor, in outline order.</summary>
     public IReadOnlyList<(int Depth, Item Item)> VisibleOutline()
     {
         var result = new List<(int, Item)>();
@@ -59,11 +53,11 @@ public sealed record Tree
         }
     }
 
-    /// <summary>Titles as an indented text outline, for expected-tree comparisons.</summary>
+    /// <summary>The visible titles as an indented outline.</summary>
     public string ToOutline() =>
         string.Join('\n', this.VisibleOutline().Select(e => new string(' ', e.Depth * 2) + "- " + e.Item.Title));
 
-    // No titles or notes in logs or error messages.
+    // A record prints every property; titles and notes must stay out of logs.
     public override string ToString() => $"Tree with {this.Items.Count} items";
 
     internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
@@ -95,7 +89,7 @@ public sealed record Tree
         return this with { TopLevel = this.TopLevel.Remove(id) };
     }
 
-    /// <summary>ADR-004: directly after the named sibling; first if none is named or it is not a sibling now.</summary>
+    // ADR-004: IndexOf gives -1 for a non-sibling, so such an item lands first.
     internal Tree InsertChild(ItemId? parent, ItemId id, ItemId? after)
     {
         if (parent is { } p)

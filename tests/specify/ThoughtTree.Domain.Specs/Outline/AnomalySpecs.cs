@@ -4,7 +4,7 @@ using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Specs.Outline;
 
-/// <summary>Events the projection does not apply are kept in the log and reported for the user to review (owner decisions 2026-11-25).</summary>
+/// <summary>Events the projection does not apply are reported (ADR-005, ADR-014).</summary>
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-005")]
 [Trait("ADR", "ADR-014")]

@@ -4,7 +4,7 @@ using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Specs.Outline;
 
-/// <summary>A missing title or note means "unchanged", never "reset" (ADR-016; owner decision 2026-11-26, card 17).</summary>
+/// <summary>A missing title or note leaves the item as it is (ADR-016).</summary>
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-016")]
 public class MissingTextSpecs

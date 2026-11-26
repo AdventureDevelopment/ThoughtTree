@@ -6,9 +6,7 @@ using ThoughtTree.Domain.Properties.Generators;
 
 namespace ThoughtTree.Domain.Properties.Outline;
 
-/// <summary>
-/// Properties of the projection over generated multi-device histories; the inputs are the same in every run (<see cref="Deterministic"/>).
-/// </summary>
+/// <summary>Properties of the projection over generated multi-device histories.</summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-002")]
 [Trait("ADR", "ADR-004")]
@@ -63,7 +61,6 @@ public class OutlineProperties
             reported.GetValueOrDefault(kind).ShouldBeGreaterThan(total / 10, kind.ToString());
         }
 
-        // Each hard case must be common, not a rarity.
         equalClocksAcrossDevices.ShouldBeGreaterThan(total / 4);
         farAhead.ShouldBeGreaterThan(total / 4);
         deleteThenRestore.ShouldBeGreaterThan(total / 4);
@@ -101,7 +98,7 @@ public class OutlineProperties
     [Fact]
     public void INV_3_merge_is_union_in_any_split_and_grouping()
     {
-        // Each event goes to log A, B or C; some go to two logs (overlap, as after a partial sync).
+        // Each event goes to log A, B or C, some to two (overlap, as after a partial sync).
         Gen.Select(HistoryGen.History, Gen.Int[0, 5].List[0, 40], (h, assign) =>
             (h, assign)).SampleFixed(t =>
         {
@@ -115,14 +112,13 @@ public class OutlineProperties
             a.AddRange(all.Except(a.Concat(b).Concat(c)));
 
             var expected = State(all);
-            State(a.Concat(b).Concat(c)).ShouldBe(expected);            // (A + B) + C
-            State(a.Concat(b.Concat(c))).ShouldBe(expected);            // A + (B + C)
-            State(c.Concat(b).Concat(a)).ShouldBe(expected);            // C + B + A
-            State(b.Concat(a).Concat(c).Concat(a)).ShouldBe(expected);  // repeated merge
-            // merging two projections' logs: Replay(A+B) is stable under adding C twice
+            State(a.Concat(b).Concat(c)).ShouldBe(expected);
+            State(a.Concat(b.Concat(c))).ShouldBe(expected);
+            State(c.Concat(b).Concat(a)).ShouldBe(expected);
+            State(b.Concat(a).Concat(c).Concat(a)).ShouldBe(expected);
             State(a.Concat(b).Concat(c).Concat(c)).ShouldBe(expected);
 
-            // A device that holds log A receives B and then C one event at a time; a late event forces a rebuild.
+            // A device holding A receives B and C one event at a time.
             var held = new List<TreeEvent>(a);
             var projector = new Projector();
             foreach (var e in a.OrderBy(EventKey.Of, EventKey.Comparer))
@@ -155,7 +151,7 @@ public class OutlineProperties
             Tree tree = Projection.Replay(t.Shuffled);
             var items = tree.AllItems.ToDictionary(i => i.Id);
 
-            // One parent that exists, and the parent chain ends (no cycle).
+            // INV-4: one parent, no cycle
             foreach (Item item in items.Values)
             {
                 var steps = 0;
@@ -166,7 +162,7 @@ public class OutlineProperties
                 }
             }
 
-            // Every item sits in exactly one sibling list, the one of its parent.
+            // INV-4: in exactly one sibling list
             var listed = new List<ItemId>();
             listed.AddRange(tree.TopLevelOrder);
             foreach (Item item in items.Values)
@@ -189,7 +185,7 @@ public class OutlineProperties
                 }
             }
 
-            // Every visible item (not deleted, no deleted ancestor) is reachable from top level.
+            // INV-4: every visible item reachable
             var outline = tree.VisibleOutline().Select(e => e.Item.Id).ToList();
             outline.Distinct().Count().ShouldBe(outline.Count);
             var expectedVisible = items.Values.Where(i => !IsHidden(i)).Select(i => i.Id).ToHashSet();
@@ -221,10 +217,6 @@ public class OutlineProperties
         });
     }
 
-    /// <summary>
-    /// Real projection against the reference model on the same history. The adapter is <see cref="CanonicalTree.Render"/>;
-    /// its format is aligned with the model's canonical text.
-    /// </summary>
     [Fact]
     public void Projection_equals_the_reference_model_on_every_history()
     {

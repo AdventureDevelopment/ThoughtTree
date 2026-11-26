@@ -9,8 +9,7 @@ namespace ThoughtTree.Domain.Properties.Clock;
 [Trait("ADR", "ADR-014")]
 public class ClockProperties
 {
-    // Steps: (true, t) the device writes at wall time t; (false, t) it receives an event stamped t.
-    private static readonly Gen<(bool Write, long Time)> Step = Gen.Select(
+    private static readonly Gen<(bool DeviceWrites, long WallTimeOrReceivedClock)> Step = Gen.Select(
         Gen.Bool,
         Gen.OneOf(Gen.Long[0, 20], Gen.Const(4_000_000_000_000L), Gen.Const(long.MaxValue - 1), Gen.Const(long.MaxValue)));
 
@@ -25,7 +24,7 @@ public class ClockProperties
                 var stamp = write ? HybridClock.Next(time, highest is { } h ? new EventClock(h) : null).Value : time;
                 if (write)
                 {
-                    // ADR-014: max(now, highest + 1), and the largest value stays the largest value.
+                    // ADR-014
                     var expected = highest switch
                     {
                         null => time,

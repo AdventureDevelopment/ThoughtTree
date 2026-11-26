@@ -2,11 +2,7 @@ using CsCheck;
 
 namespace ThoughtTree.Domain.Properties.Support;
 
-/// <summary>
-/// Runs a property over a fixed sequence of inputs (ADR-035). CsCheck's own <c>seed:</c> fixes only the first iteration,
-/// so every iteration gets its own seed derived from one master seed. On a failure CsCheck shrinks from that seed and
-/// reports the seed of the smallest counterexample it finds.
-/// </summary>
+/// <summary>Runs a property over the same inputs in every run, and shrinks a failure (ADR-035).</summary>
 internal static class Deterministic
 {
     public const string MasterSeed = "0N0XIzNsQ0O2";
@@ -17,6 +13,7 @@ internal static class Deterministic
 
     public static void SampleFixed<T>(this Gen<T> gen, Action<T> assert, int iterations = Iterations)
     {
+        // CsCheck's seed: fixes only the first iteration, so each iteration gets a seed of its own.
         var master = PCG.Parse(MasterSeed);
         for (var i = 0; i < iterations; i++)
         {

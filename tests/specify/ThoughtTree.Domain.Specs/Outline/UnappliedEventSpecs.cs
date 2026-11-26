@@ -4,10 +4,7 @@ using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Specs.Outline;
 
-/// <summary>
-/// Events the projection cannot carry out as written: moves are not applied, new items get a fallback place, and every
-/// such event is reported with its item (ADR-004 rules 4 and 5, ADR-023 rule 3, ADR-016; owner decisions 2026-11-26).
-/// </summary>
+/// <summary>Events the projection cannot carry out as written, and their reports (ADR-004, ADR-016, ADR-023).</summary>
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-004")]
 [Trait("ADR", "ADR-016")]

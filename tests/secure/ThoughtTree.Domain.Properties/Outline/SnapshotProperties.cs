@@ -47,14 +47,12 @@ public class SnapshotProperties
                 }
                 else
                 {
-                    // A refusal changes nothing; the caller rebuilds from the log.
                     CanonicalTree.Render(projector.Tree).ShouldBe(before);
                 }
 
                 CanonicalTree.Render(projector.Tree).ShouldBe(State(accepted));
             }
 
-            // The fallback the caller uses on a refusal gives the full answer.
             State(t.Shuffled).ShouldBe(State(t.Events));
         });
     }
@@ -75,7 +73,6 @@ public class SnapshotProperties
             Snapshot snapshot = projector.TakeSnapshot();
             var prefix = sorted.Take(k).Select(e => e.EventId).ToHashSet();
 
-            // The events the snapshot lacks arrive in any order, some of them again.
             var remaining = x.t.Shuffled.Where(e => !prefix.Contains(e.EventId)).Concat(x.t.Shuffled.Take(2)).ToList();
 
             var resumed = Projector.TryResume(snapshot, remaining);
@@ -121,7 +118,6 @@ public class SnapshotProperties
             }
         });
 
-        // Both outcomes must be common, or the property proves little.
         staleCount.ShouldBeGreaterThan(Deterministic.Iterations / 10);
         freshCount.ShouldBeGreaterThan(Deterministic.Iterations / 10);
     }

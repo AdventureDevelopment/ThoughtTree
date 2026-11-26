@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>One item of the projection, immutable: a change swaps it for a copy. Deleted items stay as tombstones with their children (ADR-005).</summary>
+/// <summary>One item of the tree, deleted items included (ADR-005).</summary>
 public sealed record Item
 {
     internal Item(ItemId id, string title, string note)
@@ -22,10 +22,10 @@ public sealed record Item
 
     public ItemId? Parent { get; private init; }
 
-    /// <summary>Children in order, deleted ones included (ADR-004: the order lives here, never on the children).</summary>
+    /// <summary>In order, deleted ones included (ADR-004).</summary>
     public ImmutableList<ItemId> Children { get; private init; } = [];
 
-    // No titles or notes in logs or error messages.
+    // A record prints every property; titles and notes must stay out of logs.
     public override string ToString() => $"Item {this.Id}";
 
     internal Item WithTitle(string title) => this with { Title = title };

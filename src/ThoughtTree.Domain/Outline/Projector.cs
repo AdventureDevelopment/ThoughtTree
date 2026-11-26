@@ -2,10 +2,7 @@ using System.Collections.Immutable;
 
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>
-/// The tree as of a point in the replay order, plus what is needed to carry on from there. A local cache that can be
-/// thrown away and rebuilt from the log (ADR-002, ADR-016).
-/// </summary>
+/// <summary>The state of a projector at one point of the replay, a cache that can be thrown away (ADR-002).</summary>
 public sealed class Snapshot
 {
     internal Snapshot(Tree tree, EventKey? last, ImmutableHashSet<string> ids)
@@ -20,10 +17,7 @@ public sealed class Snapshot
     internal ImmutableHashSet<string> Ids { get; }
 }
 
-/// <summary>
-/// Applies events one at a time. An event that sorts after everything applied so far is applied directly; one that sorts
-/// before it cannot be, and the caller rebuilds from the log with <see cref="Projection.Replay"/> (INV-6, INV-7).
-/// </summary>
+/// <summary>Applies events one at a time (INV-6, INV-7).</summary>
 public sealed class Projector
 {
     private ImmutableHashSet<string> ids = ImmutableHashSet.Create<string>(StringComparer.Ordinal);
@@ -32,10 +26,7 @@ public sealed class Projector
 
     public Tree Tree => this.tree;
 
-    /// <returns>
-    /// True if the event is now part of the tree (or was already). False if it belongs before the events already
-    /// applied: nothing changed, and the caller must rebuild from the log.
-    /// </returns>
+    /// <returns>False if the event sorts before those applied; nothing changed then.</returns>
     public bool TryAdd(TreeEvent e)
     {
         if (this.ids.Contains(e.EventId))
@@ -55,13 +46,9 @@ public sealed class Projector
         return true;
     }
 
-    /// <summary>The current state; later events do not change it, because the tree and the id set are immutable.</summary>
     public Snapshot TakeSnapshot() => new(this.tree, this.last, this.ids);
 
-    /// <summary>
-    /// Carries on from a snapshot with the events it does not contain. Returns null if the snapshot is stale: an unseen
-    /// event belongs before its position, so the caller rebuilds from the full log.
-    /// </summary>
+    /// <returns>Null if one of the events sorts before the snapshot.</returns>
     public static Projector? TryResume(Snapshot snapshot, IEnumerable<TreeEvent> remaining)
     {
         var projector = new Projector { tree = snapshot.Tree, last = snapshot.Last, ids = snapshot.Ids };

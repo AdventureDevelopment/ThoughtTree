@@ -37,7 +37,7 @@ public static class ReferenceModel
 
     private static List<TreeEvent> Order(IEnumerable<TreeEvent> events)
     {
-        // R1: first of several events with the same event id wins.
+        // R1
         var seen = new HashSet<string>(StringComparer.Ordinal);
         var kept = new List<TreeEvent>();
         foreach (var e in events)
@@ -48,7 +48,7 @@ public static class ReferenceModel
             }
         }
 
-        // R2, R3: clock, then event id ordinal; after R1 the pair is unique, so the order is total.
+        // R2, R3
         kept.Sort((a, b) =>
         {
             var byClock = a.Clock.Value.CompareTo(b.Clock.Value);
@@ -149,7 +149,7 @@ public static class ReferenceModel
                 case ItemRestored r:
                     if (this.Existing(r, r.Item) is { } restored)
                     {
-                        restored.Deleted = false; // R8: own mark only; R9 hiding follows from ancestors
+                        restored.Deleted = false; // R8
                     }
 
                     break;
@@ -187,7 +187,7 @@ public static class ReferenceModel
 
             lines.Add(top.ToString());
 
-            // R18, R19: grouped by item id ordinal, the group without item last; stable sort keeps replay order inside a group.
+            // R18, R19: the sort is stable, so replay order stays inside a group.
             var ordered = this.reports
                 .OrderBy(r => r.Item is null ? 1 : 0)
                 .ThenBy(r => r.Item ?? "", StringComparer.Ordinal)
@@ -279,7 +279,7 @@ public static class ReferenceModel
         {
             var siblings = this.SiblingsOf(parent);
 
-            // R10, R11: after the named sibling if it is under the same parent (deleted ones count), else first.
+            // R10, R11
             var index = after is null ? -1 : siblings.IndexOf(after);
             siblings.Insert(index + 1, id);
         }
@@ -315,7 +315,7 @@ public static class ReferenceModel
 
         private bool IsVisible(Node node)
         {
-            // R9: not deleted and no deleted ancestor.
+            // R9
             for (var current = node; ; current = this.items[current.Parent])
             {
                 if (current.Deleted)

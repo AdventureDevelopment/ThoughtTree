@@ -4,10 +4,7 @@ using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Specs.Clock;
 
-/// <summary>
-/// How a device stamps its events and how every device puts events in the same order (ADR-014, INV-8).
-/// Time comes in as a value; the Domain never reads a clock itself (ADR-034).
-/// </summary>
+/// <summary>How a device stamps its events and how every device orders them (ADR-014, INV-8).</summary>
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-014")]
 public class EventOrderSpecs
