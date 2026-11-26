@@ -5,6 +5,7 @@ namespace ThoughtTree.Domain.Properties.Outline;
 
 /// <summary>Printing an event, an item or a tree never shows titles or notes, so logs and error messages carry no content.</summary>
 [Trait("Intent", "Secure")]
+[Trait("ADR", "ADR-089")]
 public sealed class PrintingRules
 {
     private const string SecretTitle = "secret-title";
