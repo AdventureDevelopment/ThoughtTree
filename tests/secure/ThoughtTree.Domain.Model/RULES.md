@@ -36,6 +36,15 @@ The reference model replays a log by exactly these rules and nothing else. Each 
 18. Reports are grouped by item; reports without a known item form their own group (card 9).
 19. Groups are ordered by item id, text ordinal, the group without item last; inside a group, reports follow the agreed event order.
 
+## Details (confirmed by the owner 2026-11-26)
+
+20. A move that fails several checks gets one report, from the first failing check in this order: unknown item, unknown parent, unknown `afterItemId` (including the item itself), cycle.
+21. A new item with both an unknown parent and an unknown `afterItemId` gets both reports, unknown parent first.
+22. A repeated event id (rule 1) is dropped without a report; intake reports a different content under a known id (INV-13).
+23. A deleted item counts as existing when it is named as parent or `afterItemId` (ADR-004, ADR-005 tombstones).
+24. A move to the place the item already has is applied, without a report.
+25. A new item that names itself as its parent has an unknown parent (rule 12).
+
 ## Not in the model
 
 - Clock stamping (ADR-014, INV-8): checked by its own property, not by replay.
