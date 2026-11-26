@@ -37,13 +37,13 @@ public sealed record Tree
     public Item? Find(ItemId id) => this.Items.GetValueOrDefault(id);
 
     /// <summary>Items not deleted and without a deleted ancestor, in outline order.</summary>
-    public IReadOnlyList<(int Depth, Item Item)> VisibleOutline()
+    public IReadOnlyList<(Depth Depth, Item Item)> VisibleOutline()
     {
-        var result = new List<(int, Item)>();
-        Walk(this.TopLevelOrder, 0);
+        var result = new List<(Depth, Item)>();
+        Walk(this.TopLevelOrder, Depth.TopLevel);
         return result;
 
-        void Walk(IReadOnlyList<ItemId> ids, int depth)
+        void Walk(IReadOnlyList<ItemId> ids, Depth depth)
         {
             foreach (var id in ids)
             {
@@ -54,14 +54,14 @@ public sealed record Tree
                 }
 
                 result.Add((depth, item));
-                Walk(this.ChildrenOf(id), depth + 1);
+                Walk(this.ChildrenOf(id), depth.Below());
             }
         }
     }
 
     /// <summary>The visible titles as an indented outline.</summary>
     public string ToOutline() =>
-        string.Join('\n', this.VisibleOutline().Select(entry => new string(' ', entry.Depth * 2) + "- " + entry.Item.Title));
+        string.Join('\n', this.VisibleOutline().Select(entry => new string(' ', entry.Depth.Levels * 2) + "- " + entry.Item.Title));
 
     public override string ToString() => $"Tree with {this.Items.Count} items";
 
