@@ -251,12 +251,15 @@ Neutral: options with consequences and risks, no recommendation.
 - (a) Keep the implicit conversion from `string`. No change; specs and generators stay short. Risk: any string becomes stored text without a visible step, and a `null` string throws at a line that shows no call.
 - (b) Make the conversion explicit (`(Title)"x"` or `new Title("x")`). Normalisation is visible at every boundary. Cost: about 30 call sites in specs and tests change (protected), spec lines get longer.
 - (c) Keep it implicit only in test helpers (`Log` takes strings and converts), explicit in the Domain API. Production code shows the step, specs stay readable. Cost: `Log` and a few hand-built events change (protected).
+- **Decided by the owner, 2026-11-26: (b)**, explicit everywhere; the implicit conversion is removed; the owner approves the protected call-site changes.
 
 **Card 2: names of the id properties on events and reports (C8)**
 - (a) Keep `Item`, `Parent`, `After`. No change. Risk: `Item` means a type and an id property at once; the C# names differ from ADR-063's serialised field names `itemId`, `afterItemId`.
 - (b) Rename to `ItemId`, `ParentId`, `AfterItemId`. Matches ADR-063 and `EventId`. Cost: 41 uses including specs and the reference model (protected); best done before the export format (step 3) fixes names.
+- **Decided by the owner, 2026-11-26: (b)**, rename to `ItemId`, `ParentId`, `AfterItemId`, including specs and the reference model; the owner approves.
 
 **Card 3: ADR ids in scenario titles (S1)**
 - (a) Drop the `ADR_0xx_` prefixes; ADR ids only in traits, as AGENTS.md section 4a says. Cost: renames 10 scenarios (protected); test names in CI history change.
 - (b) Keep them and allow ADR prefixes in AGENTS.md section 4a. No spec change; the convention then needs a rule for when to add one, or it stays mixed.
 - (c) Leave as is. No cost; the mix remains and H4 cannot check titles strictly.
+- **Decided by the owner, 2026-11-26: (a)**, drop the prefixes; the owner approves the renames.
