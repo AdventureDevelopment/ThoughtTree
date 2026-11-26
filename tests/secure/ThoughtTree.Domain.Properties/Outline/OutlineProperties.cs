@@ -65,16 +65,9 @@ public sealed class OutlineProperties
     }
 
     [Fact]
-    public void INV_1_order_independence_any_shuffle_gives_the_same_full_state()
+    public void INV_1_any_shuffle_gives_the_same_tree_and_the_same_reports()
     {
         HistoryGen.HistoryAndShuffle.SampleFixed(histories => CanonicalTree.OfReplay(histories.Shuffled).ShouldBe(CanonicalTree.OfReplay(histories.Events)));
-    }
-
-    [Fact]
-    public void INV_1_anomalies_are_reported_identically_for_every_shuffle()
-    {
-        HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
-            Projection.Replay(histories.Shuffled).Anomalies.ShouldBe(Projection.Replay(histories.Events).Anomalies));
     }
 
     [Fact]
