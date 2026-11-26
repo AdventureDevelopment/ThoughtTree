@@ -242,7 +242,8 @@ TL;DR: an independent review of everything the branch adds over `main` in `src/`
 - Done now: S8, S9, S10, S11, S12, T11 and C4 (`Title.Text`, `Note.Text`).
 - With the next spec change (`docs/plan/next-work.md` item 2): S3, S4, S5, S6, S7.
 - S2 waits for the decision on doc comments (`docs/plan/next-work.md` item 5).
-- Still open: T5, T9.
+- T5: the repeated property is deleted and the one above it renamed `INV_1_any_shuffle_gives_the_same_tree_and_the_same_reports`, since the canonical text holds every report.
+- Still open: T9.
 
 ## Overlap with the domain-core review
 

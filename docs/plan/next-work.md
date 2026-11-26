@@ -8,8 +8,7 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
 1. **Rest of the clean-code review** (`docs/reviews/2026-11-26-clean-code.md`): its refactoring order is done except
    H1, which waits for item 5. Left outside that order, not protected: C10 (`Tree.Anomalies` sorts on every read), T4
    (one naming form for securing tests), T7 (the hard-case counter), H3 (one public type per file), H4 (spec
-   conventions as a rule). Needs the owner first: T5 (remove a repeated gate test) and T9 (which ADR, if any, the
-   printing rule secures).
+   conventions as a rule). Needs the owner first: T9 (which ADR, if any, the printing rule secures).
 2. **Open findings for the next spec and property change** (`docs/reviews/2026-11-26-domain-core.md`, rows marked "Next
    spec change" and "Next property change"), together with S3 to S7 of `docs/reviews/2026-11-26-clean-code.md` (one
    spec helper, one tree renderer, scenarios in the class of their topic, the snapshot class name, Given/When/Then in
