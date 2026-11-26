@@ -19,49 +19,22 @@ public sealed class OutlineProperties
     [Fact]
     public void Generated_histories_hit_the_hard_cases()
     {
-        var reported = new Dictionary<AnomalyKind, int>();
-        int sameClock = 0, equalClocksAcrossDevices = 0, farAhead = 0, deleteThenRestore = 0, total = 0;
+        var samples = new List<(TreeEvent[] History, IReadOnlyList<Anomaly> Reports)>();
         HistoryGen.History.SampleFixed(history =>
         {
-            total++;
             history.Select(treeEvent => treeEvent.EventId).Distinct().Count().ShouldBe(history.Length);
-            var anomalies = Projection.Replay(history).Anomalies;
-            if (history.GroupBy(treeEvent => (treeEvent.Clock, treeEvent.DeviceId)).Any(onOneClockAndDevice => onOneClockAndDevice.Count() > 1))
-            {
-                sameClock++;
-            }
-
-            foreach (var kind in anomalies.Select(report => report.Kind).Distinct())
-            {
-                reported[kind] = reported.GetValueOrDefault(kind) + 1;
-            }
-
             history.Select(treeEvent => treeEvent.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(HistoryGen.Devices.Count);
-            if (history.GroupBy(treeEvent => treeEvent.Clock).Any(onOneClock => onOneClock.Select(treeEvent => treeEvent.DeviceId).Distinct().Count() > 1))
-            {
-                equalClocksAcrossDevices++;
-            }
-
-            if (history.Any(treeEvent => treeEvent.Clock.Value > 1_000_000_000_000))
-            {
-                farAhead++;
-            }
-
-            if (history.OfType<ItemRestored>().Any(restored => history.OfType<ItemDeleted>().Any(deleted => deleted.ItemId == restored.ItemId)))
-            {
-                deleteThenRestore++;
-            }
+            samples.Add((history, Projection.Replay(history).Anomalies));
         }, 500);
 
-        sameClock.ShouldBeGreaterThan(total / 10);
+        samples.Count(sample => HasTwoEventsOnOneClockOfOneDevice(sample.History)).ShouldBeGreaterThan(samples.Count / 10);
+        samples.Count(sample => HasOneClockOnTwoDevices(sample.History)).ShouldBeGreaterThan(samples.Count / 4);
+        samples.Count(sample => HasAClockFarAhead(sample.History)).ShouldBeGreaterThan(samples.Count / 4);
+        samples.Count(sample => RestoresADeletedItem(sample.History)).ShouldBeGreaterThan(samples.Count / 4);
         foreach (var kind in Enum.GetValues<AnomalyKind>())
         {
-            reported.GetValueOrDefault(kind).ShouldBeGreaterThan(total / 10, kind.ToString());
+            samples.Count(sample => sample.Reports.Any(report => report.Kind == kind)).ShouldBeGreaterThan(samples.Count / 10, kind.ToString());
         }
-
-        equalClocksAcrossDevices.ShouldBeGreaterThan(total / 4);
-        farAhead.ShouldBeGreaterThan(total / 4);
-        deleteThenRestore.ShouldBeGreaterThan(total / 4);
     }
 
     [Fact]
@@ -212,4 +185,15 @@ public sealed class OutlineProperties
         HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
             CanonicalTree.OfReplay(histories.Shuffled).ShouldBe(ReferenceModel.ReplayToCanonicalText(histories.Shuffled)));
     }
+
+    private static bool HasTwoEventsOnOneClockOfOneDevice(TreeEvent[] history) =>
+        history.GroupBy(treeEvent => (treeEvent.Clock, treeEvent.DeviceId)).Any(onOneClockAndDevice => onOneClockAndDevice.Count() > 1);
+
+    private static bool HasOneClockOnTwoDevices(TreeEvent[] history) =>
+        history.GroupBy(treeEvent => treeEvent.Clock).Any(onOneClock => onOneClock.Select(treeEvent => treeEvent.DeviceId).Distinct().Count() > 1);
+
+    private static bool HasAClockFarAhead(TreeEvent[] history) => history.Any(treeEvent => treeEvent.Clock.Value > 1_000_000_000_000);
+
+    private static bool RestoresADeletedItem(TreeEvent[] history) =>
+        history.OfType<ItemRestored>().Any(restored => history.OfType<ItemDeleted>().Any(deleted => deleted.ItemId == restored.ItemId));
 }
