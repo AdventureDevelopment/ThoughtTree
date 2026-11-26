@@ -9,10 +9,10 @@ namespace ThoughtTree.Domain.Specs.Clock;
 [Trait("ADR", "ADR-014")]
 public sealed class EventOrderSpecs
 {
-    private static DateTimeOffset At(long milliseconds) => DateTimeOffset.FromUnixTimeMilliseconds(milliseconds);
-
     private const string DeviceA = "3f2a0000-0000-0000-0000-000000000001";
     private const string DeviceB = "aa000000-0000-0000-0000-000000000002";
+
+    private static DateTimeOffset At(long milliseconds) => DateTimeOffset.FromUnixTimeMilliseconds(milliseconds);
 
     [Scenario]
     public void INV_8_A_new_event_gets_the_current_time_when_the_log_is_older()

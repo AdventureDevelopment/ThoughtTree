@@ -14,9 +14,9 @@ internal static class TreeText
 
         void Walk(IReadOnlyList<ItemId> ids, int depth)
         {
-            foreach (ItemId id in ids)
+            foreach (var id in ids)
             {
-                Item item = tree.Find(id)!;
+                var item = tree.Find(id)!;
                 lines.Add($"{depth} {id} parent={item.Parent?.ToString() ?? "-"} {(item.Deleted ? "deleted" : "live")} '{item.Title}' '{item.Note}'");
                 Walk(tree.ChildrenOf(id), depth + 1);
             }

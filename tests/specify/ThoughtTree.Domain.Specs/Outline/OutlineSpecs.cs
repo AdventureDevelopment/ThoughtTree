@@ -206,7 +206,7 @@ public sealed class OutlineSpecs
             .x(() =>
             {
                 a = new Log(DeviceA).Create(1, "x", "X").Create(3, "y", "Y", after: "x").Move(6, "y", "x").Delete(8, "x");
-                b = new Log(DeviceB).Create(2, "z", "Z", after: "x").Rename(4, "x", "X2").Note(5, "z", "memo").Restore(9, "x");
+                b = new Log(DeviceB).Create(2, "z", "Z", after: "x").Rename(4, "x", "X2").ChangeNote(5, "z", "memo").Restore(9, "x");
             });
 
         "When the events are replayed in arrival order and in reverse"

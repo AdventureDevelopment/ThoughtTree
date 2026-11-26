@@ -28,7 +28,7 @@ public sealed class TextNormalisationSpecs
         Tree tree = default!;
 
         "Given a log that creates an item and gives it the note 'Caf\u00E9' typed as 'e' followed by a combining accent"
-            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "Menu").Note(2, "n", "Cafe\u0301").Events));
+            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "Menu").ChangeNote(2, "n", "Cafe\u0301").Events));
 
         "Then the note holds the composed letter"
             .x(() => NoteOf(tree, "n").ShouldBe("Caf\u00E9"));
@@ -64,7 +64,7 @@ public sealed class TextNormalisationSpecs
         Tree tree = default!;
 
         "Given a log that gives an item a note with a line break of each kind between its words"
-            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "List").Note(2, "n", AllLineBreaks).Events));
+            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "List").ChangeNote(2, "n", AllLineBreaks).Events));
 
         "Then each line break is one line feed, a carriage return with a line feed counting as one"
             .x(() => NoteOf(tree, "n").ShouldBe("one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine"));
@@ -101,13 +101,13 @@ public sealed class TextNormalisationSpecs
         Tree tree = default!;
 
         "Given a log that gives an item a note that starts with the second half of a character pair without the first"
-            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "Menu").Note(2, "n", "\uDC00one").Events));
+            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "Menu").ChangeNote(2, "n", "\uDC00one").Events));
 
         "Then the note holds the replacement character in its place"
             .x(() => NoteOf(tree, "n").ShouldBe("\uFFFDone"));
     }
 
-    private static string TitleOf(Tree tree, string item) => tree.Find(Log.Id(item))!.Title.ToString()!;
+    private static string TitleOf(Tree tree, string item) => tree.Find(Log.Id(item))!.Title.Text;
 
-    private static string NoteOf(Tree tree, string item) => tree.Find(Log.Id(item))!.Note.ToString()!;
+    private static string NoteOf(Tree tree, string item) => tree.Find(Log.Id(item))!.Note.Text;
 }

@@ -12,6 +12,8 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
 
     public static ItemId Id(string name) => new(name);
 
+    private static ItemId? OptionalId(string? name) => name is null ? null : Id(name);
+
     private (EventId EventId, DeviceId Device, EventClock Clock, ActionId Action) Next(long time)
     {
         this.count++;
@@ -20,45 +22,45 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
 
     public Log Create(long time, string item, string title, string? parent = null, string? after = null)
     {
-        var h = this.Next(time);
-        this.Events.Add(new ItemCreated(h.EventId, h.Device, h.Clock, h.Action, Id(item),
-            parent is null ? null : Id(parent), after is null ? null : Id(after), new Title(title)));
+        var header = this.Next(time);
+        this.Events.Add(new ItemCreated(header.EventId, header.Device, header.Clock, header.Action, Id(item),
+            OptionalId(parent), OptionalId(after), new Title(title)));
         return this;
     }
 
     public Log Rename(long time, string item, string title)
     {
-        var h = this.Next(time);
-        this.Events.Add(new ItemTitleChanged(h.EventId, h.Device, h.Clock, h.Action, Id(item), new Title(title)));
+        var header = this.Next(time);
+        this.Events.Add(new ItemTitleChanged(header.EventId, header.Device, header.Clock, header.Action, Id(item), new Title(title)));
         return this;
     }
 
-    public Log Note(long time, string item, string note)
+    public Log ChangeNote(long time, string item, string note)
     {
-        var h = this.Next(time);
-        this.Events.Add(new ItemNoteChanged(h.EventId, h.Device, h.Clock, h.Action, Id(item), new Note(note)));
+        var header = this.Next(time);
+        this.Events.Add(new ItemNoteChanged(header.EventId, header.Device, header.Clock, header.Action, Id(item), new Note(note)));
         return this;
     }
 
     public Log Move(long time, string item, string? parent, string? after = null)
     {
-        var h = this.Next(time);
-        this.Events.Add(new ItemMoved(h.EventId, h.Device, h.Clock, h.Action, Id(item),
-            parent is null ? null : Id(parent), after is null ? null : Id(after)));
+        var header = this.Next(time);
+        this.Events.Add(new ItemMoved(header.EventId, header.Device, header.Clock, header.Action, Id(item),
+            OptionalId(parent), OptionalId(after)));
         return this;
     }
 
     public Log Delete(long time, string item)
     {
-        var h = this.Next(time);
-        this.Events.Add(new ItemDeleted(h.EventId, h.Device, h.Clock, h.Action, Id(item)));
+        var header = this.Next(time);
+        this.Events.Add(new ItemDeleted(header.EventId, header.Device, header.Clock, header.Action, Id(item)));
         return this;
     }
 
     public Log Restore(long time, string item)
     {
-        var h = this.Next(time);
-        this.Events.Add(new ItemRestored(h.EventId, h.Device, h.Clock, h.Action, Id(item)));
+        var header = this.Next(time);
+        this.Events.Add(new ItemRestored(header.EventId, header.Device, header.Clock, header.Action, Id(item)));
         return this;
     }
 }
