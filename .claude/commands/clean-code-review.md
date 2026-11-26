@@ -14,7 +14,8 @@ commits of the last finished work item. Send the reviewer this brief, with the s
   of tests and specifications and their rules (AGENTS.md section 4a, ADR-054, ADR-035); refactoring opportunities
   ordered by value and risk; other ideas that make the code easier to maintain.
 - Form your own findings first. Only then read the earlier files in `docs/reviews/` and mark each repeat as
-  "known (file, finding id)" instead of writing it again.
+  "known (file, finding id)" instead of writing it again. For each known kind, propose the check (architecture rule,
+  analyzer or `.editorconfig` setting) that would catch it from now on, or one short rule for AGENTS.md if no check can.
 - Write `docs/reviews/<date>-<topic>.md` in the style of `docs/reviews/2026-11-26-clean-code.md`: TL;DR, how the review
   ran, refactoring order, then per finding an id, `file:line`, what, why, fix, effort (S, M, L) and protected path
   (yes or no); findings that need an owner decision end as neutral cards (options with consequences and risks, no
