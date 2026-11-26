@@ -2,11 +2,6 @@
 # Protected files wait for the owner-approved rename in docs/plan/next-work.md. Remove a line once the file is renamed;
 # NameRules fails on a listed file that no longer has a one-letter name.
 
-src/ThoughtTree.Domain/Outline/EventKey.cs
-src/ThoughtTree.Domain/Outline/NormalisedText.cs
-src/ThoughtTree.Domain/Outline/Projection.cs
-src/ThoughtTree.Domain/Outline/Projector.cs
-src/ThoughtTree.Domain/Outline/Tree.cs
 tests/secure/ThoughtTree.Architecture.Rules/BannedApis/BannedApiAnalyzerRunner.cs
 tests/secure/ThoughtTree.Architecture.Rules/BannedApis/BannedApiRules.cs
 tests/secure/ThoughtTree.Architecture.Rules/Dependencies/ProjectReferenceRules.cs

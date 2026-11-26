@@ -25,38 +25,38 @@ public sealed record Projector
 
     private ImmutableList<Checkpoint> Checkpoints { get; init; }
 
-    public Projector Add(TreeEvent e) => this.AddRange([e]);
+    public Projector Add(TreeEvent treeEvent) => this.AddRange([treeEvent]);
 
     /// <summary>Rebuilds once, from the earliest new event, however many of the events arrive late.</summary>
     public Projector AddRange(IEnumerable<TreeEvent> events)
     {
-        var newEvents = events.DistinctBy(e => e.EventId).Where(e => !this.Ids.Contains(e.EventId)).Order(EventKey.AgreedOrder).ToList();
+        var newEvents = events.DistinctBy(treeEvent => treeEvent.EventId).Where(treeEvent => !this.Ids.Contains(treeEvent.EventId)).Order(EventKey.AgreedOrder).ToList();
         if (newEvents.Count == 0)
         {
             return this;
         }
 
         var applied = this.AppliedInAgreedOrder;
-        foreach (var e in newEvents)
+        foreach (var treeEvent in newEvents)
         {
-            applied = applied.Insert(~applied.BinarySearch(e, EventKey.AgreedOrder), e);
+            applied = applied.Insert(~applied.BinarySearch(treeEvent, EventKey.AgreedOrder), treeEvent);
         }
 
         var earliestNew = applied.BinarySearch(newEvents[0], EventKey.AgreedOrder);
         var allArriveAfterEverythingApplied = earliestNew == this.AppliedInAgreedOrder.Count;
         var withEvents = this with
         {
-            Ids = this.Ids.Union(newEvents.Select(e => e.EventId)),
+            Ids = this.Ids.Union(newEvents.Select(treeEvent => treeEvent.EventId)),
             AppliedInAgreedOrder = applied,
         };
 
         return allArriveAfterEverythingApplied
             ? withEvents.ApplyFrom(earliestNew, this.Tree)
-            : withEvents.RewindTo(this.Checkpoints.FindLast(c => c.Position <= earliestNew)!);
+            : withEvents.RewindTo(this.Checkpoints.FindLast(kept => kept.Position <= earliestNew)!);
     }
 
     private Projector RewindTo(Checkpoint checkpoint) =>
-        (this with { Checkpoints = this.Checkpoints.RemoveAll(c => c.Position > checkpoint.Position) })
+        (this with { Checkpoints = this.Checkpoints.RemoveAll(later => later.Position > checkpoint.Position) })
             .ApplyFrom(checkpoint.Position, checkpoint.Tree);
 
     private Projector ApplyFrom(int position, Tree tree)

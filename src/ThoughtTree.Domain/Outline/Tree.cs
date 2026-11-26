@@ -20,7 +20,7 @@ public sealed record Tree
 
     /// <summary>Grouped by item id, those without an item last; agreed order inside a group (model rules 18, 19).</summary>
     public IReadOnlyList<Anomaly> Anomalies =>
-        [.. this.Reported.OrderBy(a => a.ItemId is null).ThenBy(a => a.ItemId?.Value, StringComparer.Ordinal)];
+        [.. this.Reported.OrderBy(report => report.ItemId is null).ThenBy(report => report.ItemId?.Value, StringComparer.Ordinal)];
 
     /// <summary>In agreed order.</summary>
     private ImmutableList<Anomaly> Reported { get; init; } = [];
@@ -61,20 +61,20 @@ public sealed record Tree
 
     /// <summary>The visible titles as an indented outline.</summary>
     public string ToOutline() =>
-        string.Join('\n', this.VisibleOutline().Select(e => new string(' ', e.Depth * 2) + "- " + e.Item.Title));
+        string.Join('\n', this.VisibleOutline().Select(entry => new string(' ', entry.Depth * 2) + "- " + entry.Item.Title));
 
     public override string ToString() => $"Tree with {this.Items.Count} items";
 
     internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
 
-    internal Tree WithAnomaly(AnomalyKind kind, TreeEvent e, ItemId? item) =>
-        this with { Reported = this.Reported.Add(new Anomaly(kind, e.EventId, item)) };
+    internal Tree WithAnomaly(AnomalyKind kind, TreeEvent treeEvent, ItemId? item) =>
+        this with { Reported = this.Reported.Add(new Anomaly(kind, treeEvent.EventId, item)) };
 
     internal bool IsSameOrDescendant(ItemId candidate, ItemId ancestor)
     {
-        for (ItemId? current = candidate; current is { } c; current = this.Items[c].Parent)
+        for (ItemId? current = candidate; current is { } id; current = this.Items[id].Parent)
         {
-            if (c == ancestor)
+            if (id == ancestor)
             {
                 return true;
             }
@@ -83,9 +83,9 @@ public sealed record Tree
         return false;
     }
 
-    internal bool IsUnknownParent(ItemId? parent) => parent is { } p && !this.Items.ContainsKey(p);
+    internal bool IsUnknownParent(ItemId? parent) => parent is { } parentId && !this.Items.ContainsKey(parentId);
 
-    internal bool IsUnusableAfter(ItemId? after, ItemId item) => after is { } a && (a == item || !this.Items.ContainsKey(a));
+    internal bool IsUnusableAfter(ItemId? after, ItemId item) => after is { } afterId && (afterId == item || !this.Items.ContainsKey(afterId));
 
     internal Tree RemoveChild(ItemId id)
     {
@@ -120,18 +120,18 @@ public sealed record Tree
     private ItemId? PreviousOf(ItemId id) => this.PreviousSibling.TryGetValue(id, out var previous) ? previous : null;
 
     private ItemId? FirstOf(ItemId? parent) =>
-        parent is { } p ? (this.FirstChild.TryGetValue(p, out var first) ? first : null) : this.FirstTopLevel;
+        parent is { } parentId ? (this.FirstChild.TryGetValue(parentId, out var first) ? first : null) : this.FirstTopLevel;
 
     private Tree LinkAfter(ItemId item, ItemId? next) =>
-        this with { NextSibling = next is { } n ? this.NextSibling.SetItem(item, n) : this.NextSibling.Remove(item) };
+        this with { NextSibling = next is { } nextId ? this.NextSibling.SetItem(item, nextId) : this.NextSibling.Remove(item) };
 
     private Tree LinkBefore(ItemId item, ItemId? previous) =>
-        this with { PreviousSibling = previous is { } p ? this.PreviousSibling.SetItem(item, p) : this.PreviousSibling.Remove(item) };
+        this with { PreviousSibling = previous is { } previousId ? this.PreviousSibling.SetItem(item, previousId) : this.PreviousSibling.Remove(item) };
 
     private Tree WithFirst(ItemId? parent, ItemId? first) => parent switch
     {
         null => this with { FirstTopLevel = first },
-        { } p => this with { FirstChild = first is { } f ? this.FirstChild.SetItem(p, f) : this.FirstChild.Remove(p) },
+        { } parentId => this with { FirstChild = first is { } firstId ? this.FirstChild.SetItem(parentId, firstId) : this.FirstChild.Remove(parentId) },
     };
 
     private List<ItemId> SiblingsFrom(ItemId? first)

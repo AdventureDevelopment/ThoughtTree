@@ -32,16 +32,16 @@ internal static class NormalisedText
         }
 
         var result = new StringBuilder(text.Length);
-        for (var i = 0; i < text.Length; i++)
+        for (var index = 0; index < text.Length; index++)
         {
-            if (char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1]))
+            if (char.IsHighSurrogate(text[index]) && index + 1 < text.Length && char.IsLowSurrogate(text[index + 1]))
             {
-                result.Append(text[i]).Append(text[i + 1]);
-                i++;
+                result.Append(text[index]).Append(text[index + 1]);
+                index++;
             }
             else
             {
-                result.Append(char.IsSurrogate(text[i]) ? Replacement : text[i]);
+                result.Append(char.IsSurrogate(text[index]) ? Replacement : text[index]);
             }
         }
 
@@ -56,18 +56,18 @@ internal static class NormalisedText
         }
 
         var result = new StringBuilder(text.Length);
-        for (var i = 0; i < text.Length; i++)
+        for (var index = 0; index < text.Length; index++)
         {
-            if (!AnyLineBreak.Contains(text[i]))
+            if (!AnyLineBreak.Contains(text[index]))
             {
-                result.Append(text[i]);
+                result.Append(text[index]);
                 continue;
             }
 
             result.Append(lineBreak);
-            if (text[i] == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
+            if (text[index] == '\r' && index + 1 < text.Length && text[index + 1] == '\n')
             {
-                i++;
+                index++;
             }
         }
 
