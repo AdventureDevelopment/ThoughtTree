@@ -13,7 +13,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 [Trait("ADR", "ADR-046")]
 public sealed partial class PullRequestIsolationRules
 {
-    // merge_group runs the queued pull request's code before it is merged (re-review N-M2).
+    // GitHub runs merge_group on the queued pull request's code before it is merged.
     private static readonly string[] PullRequestEvents = ["pull_request", "pull_request_target", "pull_request_review", "pull_request_review_comment", "issue_comment", "merge_group"];
 
     private const string ForkFilter = "github.event.workflow_run.head_repository.full_name == github.repository";
@@ -99,7 +99,6 @@ public sealed partial class PullRequestIsolationRules
         previewJobs.ShouldAllBe(j => j.Workflow.Triggers.All(t => t == "workflow_run" || t == "schedule" || t == "workflow_dispatch"));
     }
 
-    // Samples for the parser: every way of writing a pull request trigger and an id-token grant is found.
     [Theory]
     [InlineData("on: pull_request\njobs:\n  a:\n    permissions:\n      id-token: write\n")]
     [InlineData("on: [push, pull_request]\njobs:\n  a:\n    permissions: write-all\n")]
@@ -214,8 +213,7 @@ public sealed partial class PullRequestIsolationRules
             yield return $"{job}: id-token: write";
         }
 
-        // A called reusable workflow runs with the caller's trigger; follow local calls to any depth. Remote calls
-        // are refused by Every_job_with_an_openid_connect_token_runs_in_an_environment_and_calls_no_remote_workflow.
+        // GitHub runs a called reusable workflow with the caller's trigger.
         if (job.Calls is { } called && called.StartsWith("./", StringComparison.Ordinal) && visited.Add(called))
         {
             var target = Repository.PathOf(called[2..].Split('/'));

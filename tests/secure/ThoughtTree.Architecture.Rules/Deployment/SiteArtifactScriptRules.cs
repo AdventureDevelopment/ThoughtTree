@@ -36,9 +36,9 @@ public sealed class SiteArtifactScriptRules
         process.ExitCode.ShouldBe(0, log);
         log.ShouldContain("\nOK");
 
-        // Removing tests must not make the run pass vacuously: 48 tests on 2026-11-19 (third review N3-L2).
+        const int TestsOn20261119 = 48;
         var ran = System.Text.RegularExpressions.Regex.Match(log, @"Ran (\d+) tests?");
         ran.Success.ShouldBeTrue(log);
-        int.Parse(ran.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture).ShouldBeGreaterThanOrEqualTo(48, "tests of site_artifact.py were removed");
+        int.Parse(ran.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture).ShouldBeGreaterThanOrEqualTo(TestsOn20261119, "tests of site_artifact.py were removed");
     }
 }

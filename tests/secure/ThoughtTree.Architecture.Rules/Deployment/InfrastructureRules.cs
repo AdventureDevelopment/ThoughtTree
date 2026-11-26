@@ -74,8 +74,7 @@ public sealed partial class InfrastructureRules
     [Fact]
     public void No_expression_is_expanded_inside_a_shell_script()
     {
-        // ${{ }} in run: is pasted into the script before the shell sees it, so text from a branch name, title,
-        // input or event becomes code. Values go through env: and are read as shell variables.
+        // GitHub pastes ${{ }} into run: before the shell starts, so text from a branch name or title becomes code.
         var offenders = Workflow.All()
             .SelectMany(w => w.Jobs)
             .SelectMany(j => j.Steps.Where(s => s.Run?.Contains("${{", StringComparison.Ordinal) == true).Select(_ => j.ToString()))
@@ -141,8 +140,6 @@ public sealed partial class InfrastructureRules
     [Fact]
     public void Every_site_stays_on_the_free_plan()
     {
-        // Re-review N-L4: staticSites/write would allow another plan; every deployment re-applies main.bicep, which
-        // fixes the plan to Free in the template itself, not through a parameter.
         var main = File.ReadAllText(Repository.PathOf("infra", "main.bicep"));
         FreeSku().IsMatch(main).ShouldBeTrue("main.bicep sets sku name and tier to the literal 'Free'");
         SkuLine().Count(main).ShouldBe(1, "one sku block");
@@ -180,7 +177,7 @@ public sealed partial class InfrastructureRules
         offenders.ShouldBeEmpty("ADR-046: resources come only from the Bicep templates in infra/");
     }
 
-    // Samples assembled from pieces, so that this file does not look like a workflow that breaks the rules.
+    // Pieces joined, so that the repository scans do not find these samples in this file.
     [Theory]
     [InlineData("token: ${{ " + "secrets.AZURE_TOKEN }}")]
     [InlineData("  " + "secrets: inherit")]

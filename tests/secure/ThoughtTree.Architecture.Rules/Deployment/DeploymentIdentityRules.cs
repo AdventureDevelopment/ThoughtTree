@@ -13,16 +13,14 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 [Trait("ADR", "ADR-046")]
 public sealed partial class DeploymentIdentityRules
 {
-    // Built-in roles that can write federated credentials or role assignments: Owner, Contributor,
-    // User Access Administrator, Role Based Access Control Administrator, Managed Identity Contributor.
-    private static readonly string[] PrivilegedBuiltInRoles =
-    [
-        "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
-        "b24988ac-6180-42a0-ab88-20f7382dd24c",
-        "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9",
-        "f58310d9-a9f6-439a-9e8d-f62e7b41a168",
-        "e40ec5ca-96e0-45a2-b4ff-59039f2c2b59",
-    ];
+    private static readonly Dictionary<string, string> BuiltInRolesThatCanWriteCredentialsOrRoleAssignments = new()
+    {
+        ["Owner"] = "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
+        ["Contributor"] = "b24988ac-6180-42a0-ab88-20f7382dd24c",
+        ["User Access Administrator"] = "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9",
+        ["Role Based Access Control Administrator"] = "f58310d9-a9f6-439a-9e8d-f62e7b41a168",
+        ["Managed Identity Contributor"] = "e40ec5ca-96e0-45a2-b4ff-59039f2c2b59",
+    };
 
     private static readonly HashSet<string> AllowedActions = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -43,7 +41,7 @@ public sealed partial class DeploymentIdentityRules
     public void No_template_assigns_a_built_in_role_that_can_change_sign_in_or_access()
     {
         var offenders = Templates
-            .SelectMany(f => PrivilegedBuiltInRoles.Where(id => File.ReadAllText(f).Contains(id, StringComparison.OrdinalIgnoreCase)).Select(id => $"{Repository.Relative(f)}: {id}"))
+            .SelectMany(f => BuiltInRolesThatCanWriteCredentialsOrRoleAssignments.Values.Where(id => File.ReadAllText(f).Contains(id, StringComparison.OrdinalIgnoreCase)).Select(id => $"{Repository.Relative(f)}: {id}"))
             .ToList();
 
         offenders.ShouldBeEmpty("Owner, Contributor and the access administrator roles can add federated credentials or role assignments; use the custom role");

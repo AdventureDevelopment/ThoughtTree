@@ -67,9 +67,6 @@ public sealed partial class DeployToolRules
     [Fact]
     public void Every_locked_licence_is_on_the_adr_050_list_or_approved_by_the_owner()
     {
-        // ADR-050: a licence outside the list, or none at all, needs a human decision. Re-review N-L2 recorded them;
-        // third review N3-L1: the rule requires the decision itself, ties the deploy client's approval to its pin,
-        // and catches a recorded licence that differs from the lock file.
         LicenceProblems(LockText, RecordText, PinText).ShouldBeEmpty("ADR-050: every licence outside the list needs the owner's dated approval in eng/deploy/licences.json");
     }
 
@@ -156,12 +153,11 @@ public sealed partial class DeployToolRules
             problems.AddRange(DecisionProblems(name, entry));
         }
 
-        // The deploy client's approval covers the pinned build only: a new pin needs a new decision.
-        var client = "StaticSitesClient@" + pin.RootElement.GetProperty("buildId").GetString();
+        var approvalCoversOnlyThePinnedClient = "StaticSitesClient@" + pin.RootElement.GetProperty("buildId").GetString();
         var binaries = record.RootElement.GetProperty("binaries").EnumerateObject().ToList();
-        if (binaries.Count != 1 || binaries[0].Name != client)
+        if (binaries.Count != 1 || binaries[0].Name != approvalCoversOnlyThePinnedClient)
         {
-            problems.Add($"binaries must record exactly {client}, the build pinned in eng/deploy/deploy-client.json; found {string.Join(", ", binaries.Select(b => b.Name))}");
+            problems.Add($"binaries must record exactly {approvalCoversOnlyThePinnedClient}, the build pinned in eng/deploy/deploy-client.json; found {string.Join(", ", binaries.Select(b => b.Name))}");
         }
 
         problems.AddRange(binaries.SelectMany(b => DecisionProblems(b.Name, b.Value)));
@@ -213,9 +209,8 @@ public sealed partial class DeployToolRules
     }
 
     [Fact]
-    public void The_sign_in_puts_no_token_on_a_command_line()
+    public void The_sign_in_puts_no_token_on_a_command_line_where_other_processes_can_read_it()
     {
-        // First review L3, re-review: argv of every process is readable by the job's other processes in /proc.
         var code = Code(Repository.PathOf("eng", "deploy", "azure-sign-in.sh"));
 
         SecretOnCommandLine().Matches(code).Select(m => m.Value)

@@ -38,7 +38,7 @@ public sealed partial class SuppressionRules
         }
     }
 
-    // The samples are assembled from pieces so that this file does not contain a suppression itself.
+    // Pieces joined, so that the repository scans do not find these samples in this file.
     [Theory]
     [InlineData("A.cs", "#" + "pragma warning disable RS0030")]
     [InlineData("A.cs", "  #  " + "pragma warning disable")]

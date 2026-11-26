@@ -17,10 +17,9 @@ public sealed class BannedApiRules
     private const string Concurrency = "BannedSymbols.Concurrency.txt";
     private const string Domain = "BannedSymbols.Domain.txt";
 
-    /// <summary>One snippet per banned symbol: code that uses exactly that symbol.</summary>
-    private static readonly Dictionary<string, string> Snippets = new()
+    /// <summary>Snippets for time and randomness (ADR-034).</summary>
+    private static readonly Dictionary<string, string> TimeAndRandomnessSnippets = new()
     {
-        // ADR-034
         ["P:System.DateTime.Now"] = "_ = DateTime.Now;",
         ["P:System.DateTime.UtcNow"] = "_ = DateTime.UtcNow;",
         ["P:System.DateTime.Today"] = "_ = DateTime.Today;",
@@ -36,8 +35,11 @@ public sealed class BannedApiRules
         ["M:System.Random.#ctor(System.Int32)"] = "_ = new Random(42);",
         ["P:System.Random.Shared"] = "_ = Random.Shared.Next();",
         ["T:System.Security.Cryptography.RandomNumberGenerator"] = "_ = System.Security.Cryptography.RandomNumberGenerator.GetInt32(10);",
+    };
 
-        // ADR-039
+    /// <summary>Snippets for threads, timers and delays without a TimeProvider (ADR-039).</summary>
+    private static readonly Dictionary<string, string> ConcurrencySnippets = new()
+    {
         ["T:System.Threading.Thread"] = "_ = Thread.CurrentThread;",
         ["M:System.Threading.Tasks.Task.Run(System.Action)"] = "_ = Task.Run(() => { });",
         ["M:System.Threading.Tasks.Task.Run(System.Action,System.Threading.CancellationToken)"] = "_ = Task.Run(() => { }, CancellationToken.None);",
@@ -61,8 +63,11 @@ public sealed class BannedApiRules
         ["M:System.Threading.Tasks.Task.WaitAsync(System.TimeSpan,System.Threading.CancellationToken)"] = "_ = Task.CompletedTask.WaitAsync(TimeSpan.Zero, CancellationToken.None);",
         ["M:System.Threading.CancellationTokenSource.#ctor(System.TimeSpan)"] = "using var source = new CancellationTokenSource(TimeSpan.Zero);",
         ["M:System.Threading.CancellationTokenSource.#ctor(System.Int32)"] = "using var source = new CancellationTokenSource(1);",
+    };
 
-        // ADR-027
+    /// <summary>Snippets for I/O, browser and async APIs the Domain must not use (ADR-027).</summary>
+    private static readonly Dictionary<string, string> DomainSnippets = new()
+    {
         ["N:System.IO"] = "using var stream = new System.IO.MemoryStream();",
         ["N:System.Net"] = "using var client = new System.Net.Http.HttpClient();",
         ["N:System.Runtime.InteropServices.JavaScript"] = "static void Use(System.Runtime.InteropServices.JavaScript.JSObject js) => _ = js.GetPropertyAsString(\"x\"); Use(null!);",
@@ -75,6 +80,10 @@ public sealed class BannedApiRules
         ["T:System.Threading.Tasks.ValueTask`1"] = "_ = new ValueTask<int>(1);",
         ["T:System.Collections.Generic.IAsyncEnumerable`1"] = "static void Use(IAsyncEnumerable<int> items) => _ = items.GetAsyncEnumerator(); Use(null!);",
     };
+
+    /// <summary>One snippet per banned symbol: code that uses exactly that symbol.</summary>
+    private static readonly Dictionary<string, string> Snippets =
+        new([.. TimeAndRandomnessSnippets, .. ConcurrencySnippets, .. DomainSnippets]);
 
     [Theory]
     [Trait("ADR", "ADR-034")]

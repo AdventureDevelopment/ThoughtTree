@@ -125,9 +125,10 @@ public sealed class VerifyLineRules(ITestOutputHelper output)
             foreach (var file in files.Split('\n', StringSplitOptions.RemoveEmptyEntries))
             {
                 var source = Repository.PathOf(file);
-                if (!File.Exists(source))
+                var deletedInTheWorkingTree = !File.Exists(source);
+                if (deletedInTheWorkingTree)
                 {
-                    continue; // deleted in the working tree
+                    continue;
                 }
 
                 var destination = Path.Combine(target, file);

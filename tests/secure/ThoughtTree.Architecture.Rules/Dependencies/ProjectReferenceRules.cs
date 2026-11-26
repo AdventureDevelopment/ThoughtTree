@@ -97,9 +97,8 @@ public sealed class ProjectReferenceRules
 
     [Fact]
     [Trait("ADR", "ADR-053")]
-    public void Transitive_project_references_are_switched_off_for_source_projects()
+    public void Transitive_project_references_are_off_so_client_cannot_reach_domain_through_client_app()
     {
-        // Without this, Client could compile against Domain through Client.App (the UI references Application only).
         File.ReadAllText(Repository.PathOf("src", "Directory.Build.props"))
             .ShouldContain("<DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>");
     }

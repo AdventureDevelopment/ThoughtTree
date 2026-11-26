@@ -11,6 +11,7 @@
 
 # Approved places for analyzer and architecture rule suppressions (ADR-042, owner decision 2026-11-17)
 /eng/approved-suppressions.txt               @ProductOwnerRole
+/eng/approved-comments.txt                  @ProductOwnerRole
 
 # Documentation, including all ADRs and the invariant catalogue
 /docs/                                       @ProductOwnerRole

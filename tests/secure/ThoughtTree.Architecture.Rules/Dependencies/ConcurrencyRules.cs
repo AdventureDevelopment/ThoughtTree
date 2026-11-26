@@ -18,10 +18,17 @@ public sealed class ConcurrencyRules
     private const string ForbiddenTypes =
         @"^(System\.Threading\.(Thread|ThreadPool|Timer|Tasks\.Parallel|Tasks\.TaskFactory(`1)?)|System\.Timers\.Timer)$";
 
-    // Task.Run (all overloads), Task.Factory, and Task.Delay / WaitAsync / CancellationTokenSource without a TimeProvider.
+    private const string TaskRunOrFactory = @"Run(<.*>)?\(.*\)|get_Factory\(\)";
+
+    private const string DelayOrWaitWithoutTimeProvider =
+        @"Delay\((System\.Int32|System\.TimeSpan)(,System\.Threading\.CancellationToken)?\)|WaitAsync\(System\.TimeSpan(,System\.Threading\.CancellationToken)?\)";
+
+    private const string CancellationTokenSourceWithoutTimeProvider =
+        @"System\.Threading\.CancellationTokenSource::\.ctor\((System\.Int32|System\.TimeSpan)\)$";
+
     private const string ForbiddenMethods =
-        @"System\.Threading\.Tasks\.Task(`1)?::(Run(<.*>)?\(.*\)|get_Factory\(\)|Delay\((System\.Int32|System\.TimeSpan)(,System\.Threading\.CancellationToken)?\)|WaitAsync\(System\.TimeSpan(,System\.Threading\.CancellationToken)?\))$"
-        + @"|System\.Threading\.CancellationTokenSource::\.ctor\((System\.Int32|System\.TimeSpan)\)$";
+        @"System\.Threading\.Tasks\.Task(`1)?::(" + TaskRunOrFactory + "|" + DelayOrWaitWithoutTimeProvider + ")$"
+        + "|" + CancellationTokenSourceWithoutTimeProvider;
 
     private static ArchUnitNET.Fluent.Syntax.Elements.Types.GivenTypesConjunction TypesOutsideHosting() =>
         Types().That().ResideInAssembly(Load(DomainProject), Load(ContractsProject), Load(ClientAppProject), Load(ServerCoreProject))

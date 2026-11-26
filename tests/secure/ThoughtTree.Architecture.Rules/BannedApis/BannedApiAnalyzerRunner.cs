@@ -43,7 +43,7 @@ internal static class BannedApiAnalyzerRunner
         var directory = Path.Combine(AppContext.BaseDirectory, "BannedApiAnalyzer");
         var analyzers = Directory.GetFiles(directory, "*.dll")
             .Select(Assembly.LoadFrom)
-            .SelectMany(LoadableTypes)
+            .SelectMany(TypesLoadableWithoutRoslynWorkspaces)
             .Where(t => !t.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(t))
             .Where(t => t.GetCustomAttributes<DiagnosticAnalyzerAttribute>().Any(a => a.Languages.Contains(LanguageNames.CSharp)))
             .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t)!)
@@ -53,8 +53,7 @@ internal static class BannedApiAnalyzerRunner
         return analyzers;
     }
 
-    // The analyzer assemblies also hold code fixes, which need Roslyn Workspaces; only the analyzers are used here.
-    private static IEnumerable<Type> LoadableTypes(Assembly assembly)
+    private static IEnumerable<Type> TypesLoadableWithoutRoslynWorkspaces(Assembly assembly)
     {
         try
         {
@@ -68,8 +67,6 @@ internal static class BannedApiAnalyzerRunner
 
     private static ImmutableArray<MetadataReference> LoadReferences()
     {
-        // The test runs on Microsoft.NETCore.App and Microsoft.AspNetCore.App (through the Server reference),
-        // so the platform assemblies include Microsoft.JSInterop for the interop snippets.
         var platform = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator);
         platform.ShouldContain(p => Path.GetFileName(p) == "Microsoft.JSInterop.dll");
         return [.. platform.Select(p => MetadataReference.CreateFromFile(p))];
