@@ -9,6 +9,8 @@ namespace ThoughtTree.Domain.Specs.Clock;
 [Trait("ADR", "ADR-014")]
 public sealed class EventOrderSpecs
 {
+    private static DateTimeOffset At(long milliseconds) => DateTimeOffset.FromUnixTimeMilliseconds(milliseconds);
+
     private const string DeviceA = "3f2a0000-0000-0000-0000-000000000001";
     private const string DeviceB = "aa000000-0000-0000-0000-000000000002";
 
@@ -21,7 +23,7 @@ public sealed class EventOrderSpecs
             .x(() => { });
 
         "When the device writes a new event"
-            .x(() => stamp = HybridClock.Next(now: 10_000, highestInLog: new EventClock(9_000)));
+            .x(() => stamp = HybridClock.Next(now: At(10_000), highestInLog: new EventClock(9_000)));
 
         "Then the event carries the current time"
             .x(() => stamp.ShouldBe(new EventClock(10_000)));
@@ -37,10 +39,10 @@ public sealed class EventOrderSpecs
             .x(() => { });
 
         "When the device writes a new event"
-            .x(() => sameTime = HybridClock.Next(now: 10_000, highestInLog: new EventClock(10_000)));
+            .x(() => sameTime = HybridClock.Next(now: At(10_000), highestInLog: new EventClock(10_000)));
 
         "And it writes one while the log holds an event from a clock three days ahead"
-            .x(() => ahead = HybridClock.Next(now: 10_000, highestInLog: new EventClock(10_000 + 259_200_000)));
+            .x(() => ahead = HybridClock.Next(now: At(10_000), highestInLog: new EventClock(10_000 + 259_200_000)));
 
         "Then the new event comes one after the logged one"
             .x(() => sameTime.ShouldBe(new EventClock(10_001)));
@@ -58,7 +60,7 @@ public sealed class EventOrderSpecs
             .x(() => { });
 
         "When the device writes its first event"
-            .x(() => stamp = HybridClock.Next(now: 5, highestInLog: null));
+            .x(() => stamp = HybridClock.Next(now: At(5), highestInLog: null));
 
         "Then the event carries the current time"
             .x(() => stamp.ShouldBe(new EventClock(5)));

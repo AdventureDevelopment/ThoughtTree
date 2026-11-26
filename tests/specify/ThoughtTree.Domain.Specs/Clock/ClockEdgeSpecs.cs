@@ -8,13 +8,15 @@ namespace ThoughtTree.Domain.Specs.Clock;
 [Trait("ADR", "ADR-014")]
 public sealed class ClockEdgeSpecs
 {
+    private static DateTimeOffset At(long milliseconds) => DateTimeOffset.FromUnixTimeMilliseconds(milliseconds);
+
     [Scenario]
     public void INV_8_At_the_largest_clock_a_new_event_takes_that_clock_instead_of_failing()
     {
         EventClock stamp = default!;
 
         "When a device writes while its log holds an event with the largest possible clock"
-            .x(() => stamp = HybridClock.Next(now: 100, highestInLog: new EventClock(long.MaxValue)));
+            .x(() => stamp = HybridClock.Next(now: At(100), highestInLog: new EventClock(long.MaxValue)));
 
         "Then the new event takes the largest clock, and its event id orders it"
             .x(() => stamp.ShouldBe(new EventClock(long.MaxValue)));
