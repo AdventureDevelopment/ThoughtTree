@@ -28,24 +28,34 @@ public sealed record Projector
 
     private ImmutableList<Checkpoint> Checkpoints { get; init; }
 
-    public Projector Add(TreeEvent e)
+    public Projector Add(TreeEvent e) => this.AddRange([e]);
+
+    /// <summary>Rebuilds once, from the earliest new event, however many of the events arrive late.</summary>
+    public Projector AddRange(IEnumerable<TreeEvent> events)
     {
-        if (this.Ids.Contains(e.EventId))
+        var newEvents = events.DistinctBy(e => e.EventId).Where(e => !this.Ids.Contains(e.EventId)).Order(AgreedOrder).ToList();
+        if (newEvents.Count == 0)
         {
             return this;
         }
 
-        var position = ~this.AppliedInAgreedOrder.BinarySearch(e, AgreedOrder);
-        var arrivesAfterEverythingApplied = position == this.AppliedInAgreedOrder.Count;
-        var withEvent = this with
+        var applied = this.AppliedInAgreedOrder;
+        foreach (var e in newEvents)
         {
-            Ids = this.Ids.Add(e.EventId),
-            AppliedInAgreedOrder = this.AppliedInAgreedOrder.Insert(position, e),
+            applied = applied.Insert(~applied.BinarySearch(e, AgreedOrder), e);
+        }
+
+        var earliestNew = applied.BinarySearch(newEvents[0], AgreedOrder);
+        var allArriveAfterEverythingApplied = earliestNew == this.AppliedInAgreedOrder.Count;
+        var withEvents = this with
+        {
+            Ids = this.Ids.Union(newEvents.Select(e => e.EventId)),
+            AppliedInAgreedOrder = applied,
         };
 
-        return arrivesAfterEverythingApplied
-            ? withEvent.ApplyFrom(position, this.Tree)
-            : withEvent.RewindTo(this.Checkpoints.FindLast(c => c.Position <= position)!);
+        return allArriveAfterEverythingApplied
+            ? withEvents.ApplyFrom(earliestNew, this.Tree)
+            : withEvents.RewindTo(this.Checkpoints.FindLast(c => c.Position <= earliestNew)!);
     }
 
     internal static Projector WithCheckpointInterval(int events) => new(events);

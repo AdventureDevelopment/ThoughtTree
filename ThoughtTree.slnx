@@ -10,6 +10,7 @@
   <Folder Name="/tests/" />
   <Folder Name="/tests/secure/">
     <Project Path="tests/secure/ThoughtTree.Architecture.Rules/ThoughtTree.Architecture.Rules.csproj" />
+    <Project Path="tests/secure/ThoughtTree.Domain.Budgets/ThoughtTree.Domain.Budgets.csproj" />
     <Project Path="tests/secure/ThoughtTree.Domain.Model/ThoughtTree.Domain.Model.csproj" />
     <Project Path="tests/secure/ThoughtTree.Domain.Properties/ThoughtTree.Domain.Properties.csproj" />
   </Folder>

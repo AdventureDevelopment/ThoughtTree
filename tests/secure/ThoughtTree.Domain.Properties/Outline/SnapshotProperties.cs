@@ -51,6 +51,25 @@ public sealed class SnapshotProperties
     }
 
     [Fact]
+    public void INV_7_events_added_in_batches_of_any_size_and_order_equal_a_full_replay()
+    {
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[1, 8].List[1, 10], EmptyProjectors).SampleFixed(x =>
+        {
+            var (history, batchSizes, empty) = x;
+            var projector = empty;
+            var remaining = history.Shuffled.AsEnumerable();
+            for (var i = 0; remaining.Any(); i++)
+            {
+                var size = batchSizes[i % batchSizes.Count];
+                projector = projector.AddRange(remaining.Take(size));
+                remaining = remaining.Skip(size);
+            }
+
+            CanonicalTree.Render(projector.Tree).ShouldBe(State(history.Events));
+        });
+    }
+
+    [Fact]
     public void A_projector_keeps_one_checkpoint_per_interval_of_applied_events_whatever_the_arrival_order()
     {
         Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[1, 4]).SampleFixed(x =>

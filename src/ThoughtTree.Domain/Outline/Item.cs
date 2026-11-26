@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 namespace ThoughtTree.Domain.Outline;
 
 /// <summary>One item of the tree, deleted items included (ADR-005).</summary>
@@ -22,9 +20,6 @@ public sealed record Item
 
     public ItemId? Parent { get; private init; }
 
-    /// <summary>In order, deleted ones included (ADR-004).</summary>
-    public ImmutableList<ItemId> Children { get; private init; } = [];
-
     public override string ToString() => $"Item {this.Id}";
 
     internal Item WithTitle(string title) => this with { Title = title };
@@ -34,6 +29,4 @@ public sealed record Item
     internal Item WithDeleted(bool deleted) => this with { Deleted = deleted };
 
     internal Item WithParent(ItemId? parent) => this with { Parent = parent };
-
-    internal Item WithChildren(ImmutableList<ItemId> children) => this with { Children = children };
 }

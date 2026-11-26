@@ -110,4 +110,30 @@ public sealed class SnapshotSpecs
         "Then the kept projector still shows the old title"
             .x(() => kept.Tree.ToOutline().ShouldBe("- A"));
     }
+
+    [Scenario]
+    public void INV_7_A_batch_of_late_events_from_a_sync_takes_its_place_in_the_agreed_order()
+    {
+        Log laptop = default!;
+        Log phone = default!;
+        Projector projector = default!;
+
+        "Given a projector that has applied the laptop's events up to clock 9"
+            .x(() =>
+            {
+                laptop = new Log().Create(1, "a", "A").Create(3, "b", "B", after: "a").Rename(9, "a", "A from the laptop");
+                projector = laptop.Events.Aggregate(Projector.Empty, (p, e) => p.Add(e));
+            });
+
+        "When the phone syncs its events with clocks 2, 4 and 6 as one batch"
+            .x(() =>
+            {
+                phone = new Log("b0000000-0000-0000-0000-000000000002")
+                    .Create(2, "c", "C").Move(4, "b", "c").Rename(6, "a", "A from the phone");
+                projector = projector.AddRange(phone.Events);
+            });
+
+        "Then the tree is the tree of a full replay of both logs"
+            .x(() => TreeText.Full(projector.Tree).ShouldBe(TreeText.Full(Projection.Replay([.. laptop.Events, .. phone.Events]))));
+    }
 }

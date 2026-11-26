@@ -84,7 +84,7 @@ jobs:
             echo "These parts of the push gate do not run yet; nothing below is checked."
             echo "- UI specifications in Chromium, WebKit and Firefox: from the client shell (foundation step 4)."
             echo "- End-to-end smoke set in Chromium (release 1: scenarios 2, 6, 7 and 8): from the client shell (foundation step 4)."
-            echo "- Download size budget and complexity checks: from the first published client and Domain code."
+            echo "- Download size budget: from the first published client. (Complexity checks run with the securing tests: tests/secure/ThoughtTree.Domain.Budgets.)"
             echo "- Licence check over the resolved dependency graph (ADR-050): not implemented yet."
             echo "- Static Web Apps preview per pull request: not part of this gate; preview-build.yml builds it without credentials and preview-deploy.yml deploys it from main, once the owner has done the setup in infra/README.md."
             echo "- Self-hosted container test: from the first server release (ADR-074)."

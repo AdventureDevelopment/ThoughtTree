@@ -10,7 +10,13 @@ public sealed record Tree
 
     internal ImmutableDictionary<ItemId, Item> Items { get; private init; } = ImmutableDictionary<ItemId, Item>.Empty;
 
-    internal ImmutableList<ItemId> TopLevel { get; private init; } = [];
+    private ItemId? FirstTopLevel { get; init; }
+
+    private ImmutableDictionary<ItemId, ItemId> FirstChild { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
+
+    private ImmutableDictionary<ItemId, ItemId> NextSibling { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
+
+    private ImmutableDictionary<ItemId, ItemId> PreviousSibling { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
 
     /// <summary>Grouped by item id, those without an item last; replay order inside a group (model rules 18, 19).</summary>
     public IReadOnlyList<Anomaly> Anomalies =>
@@ -23,10 +29,10 @@ public sealed record Tree
     public IReadOnlyCollection<Item> AllItems => new ItemCollection(this.Items);
 
     /// <summary>Deleted items included.</summary>
-    public IReadOnlyList<ItemId> TopLevelOrder => this.TopLevel;
+    public IReadOnlyList<ItemId> TopLevelOrder => this.SiblingsFrom(this.FirstTopLevel);
 
     /// <summary>Deleted items included.</summary>
-    public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => this.Items[id].Children;
+    public IReadOnlyList<ItemId> ChildrenOf(ItemId id) => this.SiblingsFrom(this.FirstChild.TryGetValue(id, out var first) ? first : null);
 
     public Item? Find(ItemId id) => this.Items.GetValueOrDefault(id);
 
@@ -34,7 +40,7 @@ public sealed record Tree
     public IReadOnlyList<(int Depth, Item Item)> VisibleOutline()
     {
         var result = new List<(int, Item)>();
-        Walk(this.TopLevel, 0);
+        Walk(this.TopLevelOrder, 0);
         return result;
 
         void Walk(IReadOnlyList<ItemId> ids, int depth)
@@ -48,7 +54,7 @@ public sealed record Tree
                 }
 
                 result.Add((depth, item));
-                Walk(item.Children, depth + 1);
+                Walk(this.ChildrenOf(id), depth + 1);
             }
         }
     }
@@ -79,31 +85,55 @@ public sealed record Tree
 
     internal Tree RemoveChild(ItemId? parent, ItemId id)
     {
-        if (parent is { } p)
+        var previous = this.PreviousSibling.TryGetValue(id, out var p) ? p : (ItemId?)null;
+        var next = this.NextSibling.TryGetValue(id, out var n) ? n : (ItemId?)null;
+        var tree = this with
         {
-            var holder = this.Items[p];
-            return this.WithItem(holder.WithChildren(holder.Children.Remove(id)));
-        }
+            NextSibling = this.NextSibling.Remove(id),
+            PreviousSibling = this.PreviousSibling.Remove(id),
+        };
 
-        return this with { TopLevel = this.TopLevel.Remove(id) };
+        tree = previous is { } before ? tree.LinkAfter(before, next) : tree.WithFirst(parent, next);
+        return next is { } following ? tree.LinkBefore(following, previous) : tree;
     }
 
     internal Tree InsertChild(ItemId? parent, ItemId id, ItemId? after)
     {
-        if (parent is { } p)
+        var afterIsASibling = after is { } a && this.Items[a].Parent == parent;
+        if (afterIsASibling)
         {
-            var holder = this.Items[p];
-            return this.WithItem(holder.WithChildren(holder.Children.Insert(PositionAfter(holder.Children, after), id)));
+            var before = after!.Value;
+            var next = this.NextSibling.TryGetValue(before, out var n) ? n : (ItemId?)null;
+            var linked = this.LinkAfter(before, id).LinkBefore(id, before).LinkAfter(id, next);
+            return next is { } following ? linked.LinkBefore(following, id) : linked;
         }
 
-        return this with { TopLevel = this.TopLevel.Insert(PositionAfter(this.TopLevel, after), id) };
+        var first = parent is { } p ? (this.FirstChild.TryGetValue(p, out var f) ? f : (ItemId?)null) : this.FirstTopLevel;
+        var asFirst = this.WithFirst(parent, id).LinkAfter(id, first);
+        return first is { } oldFirst ? asFirst.LinkBefore(oldFirst, id) : asFirst;
     }
 
-    private static int PositionAfter(ImmutableList<ItemId> siblings, ItemId? after)
+    private Tree LinkAfter(ItemId item, ItemId? next) =>
+        this with { NextSibling = next is { } n ? this.NextSibling.SetItem(item, n) : this.NextSibling.Remove(item) };
+
+    private Tree LinkBefore(ItemId item, ItemId? previous) =>
+        this with { PreviousSibling = previous is { } p ? this.PreviousSibling.SetItem(item, p) : this.PreviousSibling.Remove(item) };
+
+    private Tree WithFirst(ItemId? parent, ItemId? first) => parent switch
     {
-        var at = after is { } a ? siblings.IndexOf(a) : -1;
-        var afterIsASibling = at >= 0;
-        return afterIsASibling ? at + 1 : 0;
+        null => this with { FirstTopLevel = first },
+        { } p => this with { FirstChild = first is { } f ? this.FirstChild.SetItem(p, f) : this.FirstChild.Remove(p) },
+    };
+
+    private List<ItemId> SiblingsFrom(ItemId? first)
+    {
+        var siblings = new List<ItemId>();
+        for (var current = first; current is { } id; current = this.NextSibling.TryGetValue(id, out var n) ? n : null)
+        {
+            siblings.Add(id);
+        }
+
+        return siblings;
     }
 
     private sealed class ItemCollection(ImmutableDictionary<ItemId, Item> items) : IReadOnlyCollection<Item>
