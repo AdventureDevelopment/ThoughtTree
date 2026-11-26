@@ -72,9 +72,9 @@ public sealed class TextProperties
     {
         RawText.SampleFixed(raw =>
         {
-            var breaks = raw.Replace("\r\n", "\n", StringComparison.Ordinal).Count(c => LineBreaks.Contains(c));
-            new Title(raw).Value.Count(c => c == ' ').ShouldBe(raw.Count(c => c == ' ') + breaks);
-            new Note(raw).Value.Count(c => c == '\n').ShouldBe(breaks);
+            var breaks = raw.Replace("\r\n", "\n", StringComparison.Ordinal).Count(character => LineBreaks.Contains(character));
+            new Title(raw).Value.Count(character => character == ' ').ShouldBe(raw.Count(character => character == ' ') + breaks);
+            new Note(raw).Value.Count(character => character == '\n').ShouldBe(breaks);
         });
     }
 
@@ -92,7 +92,7 @@ public sealed class TextProperties
                 new ItemTitleChanged(id, device, clock, action, item, new Title(raw)).Title.ShouldNotBeNull().Value,
                 new ItemNoteChanged(id, device, clock, action, item, new Note(raw)).Note.ShouldNotBeNull().Value,
             };
-            texts.ShouldAllBe(t => t.IsNormalized(NormalizationForm.FormC));
+            texts.ShouldAllBe(text => text.IsNormalized(NormalizationForm.FormC));
             texts[0].ShouldBe(texts[2]);
             texts[1].ShouldBe(texts[3]);
         });
@@ -103,11 +103,11 @@ public sealed class TextProperties
     {
         RawText.SampleFixed(raw =>
         {
-            var replacements = raw.Count(c => c == '\uFFFD') + UnpairedSurrogates(raw);
+            var replacements = raw.Count(character => character == '\uFFFD') + UnpairedSurrogates(raw);
             foreach (var text in new[] { new Title(raw).Value, new Note(raw).Value })
             {
                 UnpairedSurrogates(text).ShouldBe(0);
-                text.Count(c => c == '\uFFFD').ShouldBe(replacements);
+                text.Count(character => character == '\uFFFD').ShouldBe(replacements);
             }
         });
     }
@@ -115,13 +115,13 @@ public sealed class TextProperties
     private static int UnpairedSurrogates(string text)
     {
         var unpaired = 0;
-        for (var i = 0; i < text.Length; i++)
+        for (var index = 0; index < text.Length; index++)
         {
-            if (char.IsSurrogatePair(text, i))
+            if (char.IsSurrogatePair(text, index))
             {
-                i++;
+                index++;
             }
-            else if (char.IsSurrogate(text[i]))
+            else if (char.IsSurrogate(text[index]))
             {
                 unpaired++;
             }
@@ -131,5 +131,5 @@ public sealed class TextProperties
     }
 
     private static Gen<string> TextOf(string[] pieces) =>
-        Gen.Int[0, pieces.Length - 1].Array[0, 24].Select(picks => string.Concat(picks.Select(p => pieces[p])));
+        Gen.Int[0, pieces.Length - 1].Array[0, 24].Select(picks => string.Concat(picks.Select(pick => pieces[pick])));
 }

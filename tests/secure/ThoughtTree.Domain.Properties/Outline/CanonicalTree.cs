@@ -12,18 +12,18 @@ public static class CanonicalTree
     public static string Render(Tree tree)
     {
         var lines = new List<string> { $"items {tree.AllItems.Count}" };
-        foreach (var item in tree.AllItems.OrderBy(i => i.Id.Value, StringComparer.Ordinal))
+        foreach (var item in tree.AllItems.OrderBy(item => item.Id.Value, StringComparer.Ordinal))
         {
-            var siblings = item.Parent is { } p ? tree.ChildrenOf(p) : tree.TopLevelOrder;
-            lines.Add($"item {Quote(item.Id.Value)} parent {(item.Parent is { } q ? Quote(q.Value) : "none")} " +
+            var siblings = item.Parent is { } parent ? tree.ChildrenOf(parent) : tree.TopLevelOrder;
+            lines.Add($"item {Quote(item.Id.Value)} parent {(item.Parent is { } parentId ? Quote(parentId.Value) : "none")} " +
                 $"position {IndexOf(siblings, item.Id)} deleted {Bool(item.Deleted)} visible {Bool(IsVisible(tree, item))} " +
                 $"title {Quote(item.Title.Value)} note {Quote(item.Note.Value)}");
         }
 
         lines.Add(string.Concat(tree.TopLevelOrder.Select(id => " " + Quote(id.Value)).Prepend("top")));
         lines.Add($"reports {tree.Anomalies.Count}");
-        lines.AddRange(tree.Anomalies.Select(a =>
-            $"report {KindName(a.Kind)} event {Quote(a.EventId.Value)} item {(a.ItemId is { } i ? Quote(i.Value) : "none")}"));
+        lines.AddRange(tree.Anomalies.Select(report =>
+            $"report {KindName(report.Kind)} event {Quote(report.EventId.Value)} item {(report.ItemId is { } reportedItem ? Quote(reportedItem.Value) : "none")}"));
         return string.Join('\n', lines);
     }
 
@@ -40,11 +40,11 @@ public static class CanonicalTree
 
     private static int IndexOf(IReadOnlyList<ItemId> ids, ItemId id)
     {
-        for (var i = 0; i < ids.Count; i++)
+        for (var index = 0; index < ids.Count; index++)
         {
-            if (ids[i] == id)
+            if (ids[index] == id)
             {
-                return i;
+                return index;
             }
         }
 
@@ -53,7 +53,7 @@ public static class CanonicalTree
 
     private static bool IsVisible(Tree tree, Item item)
     {
-        for (Item? current = item; current is not null; current = current.Parent is { } p ? tree.Find(p) : null)
+        for (Item? current = item; current is not null; current = current.Parent is { } parent ? tree.Find(parent) : null)
         {
             if (current.Deleted)
             {
@@ -66,20 +66,20 @@ public static class CanonicalTree
 
     private static string Bool(bool value) => value ? "true" : "false";
 
-    private static string Quote(string s)
+    private static string Quote(string text)
     {
-        var sb = new StringBuilder("\"");
-        foreach (var ch in s)
+        var builder = new StringBuilder("\"");
+        foreach (var character in text)
         {
-            _ = ch switch
+            _ = character switch
             {
-                '"' => sb.Append("\\\""),
-                '\\' => sb.Append("\\\\"),
-                >= ' ' and <= '~' => sb.Append(ch),
-                _ => sb.Append("\\u").Append(((int)ch).ToString("X4", CultureInfo.InvariantCulture)),
+                '"' => builder.Append("\\\""),
+                '\\' => builder.Append("\\\\"),
+                >= ' ' and <= '~' => builder.Append(character),
+                _ => builder.Append("\\u").Append(((int)character).ToString("X4", CultureInfo.InvariantCulture)),
             };
         }
 
-        return sb.Append('"').ToString();
+        return builder.Append('"').ToString();
     }
 }

@@ -11,21 +11,21 @@ internal static class Deterministic
 
     private const int ShrinkIterations = 20_000;
 
-    public static void SampleFixed<T>(this Gen<T> gen, Action<T> assert, int iterations = Iterations)
+    public static void SampleFixed<T>(this Gen<T> generator, Action<T> assert, int iterations = Iterations)
     {
         // CsCheck's seed: fixes only the first iteration, so each iteration gets a seed of its own.
         var master = PCG.Parse(MasterSeed);
-        for (var i = 0; i < iterations; i++)
+        for (var iteration = 0; iteration < iterations; iteration++)
         {
             var seed = new PCG(master.Stream, master.Next64()).ToString();
             try
             {
-                gen.Sample(assert, seed: seed, iter: 1, threads: 1);
+                generator.Sample(assert, seed: seed, iter: 1, threads: 1);
             }
             catch (CsCheckException)
             {
                 // The first iteration replays the failure; the rest are random and only make the counterexample smaller.
-                gen.Sample(assert, seed: seed, iter: ShrinkIterations, threads: 1);
+                generator.Sample(assert, seed: seed, iter: ShrinkIterations, threads: 1);
                 throw;
             }
         }

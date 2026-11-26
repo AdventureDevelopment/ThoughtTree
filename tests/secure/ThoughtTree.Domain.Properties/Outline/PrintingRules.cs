@@ -21,8 +21,8 @@ public sealed class PrintingRules
         ];
         var tree = Projection.Replay(events);
 
-        string[] printed = [.. events.Select(e => e.ToString()), tree.Find(new ItemId("n"))!.ToString(), tree.ToString()];
+        string[] printed = [.. events.Select(treeEvent => treeEvent.ToString()), tree.Find(new ItemId("n"))!.ToString(), tree.ToString()];
 
-        printed.ShouldAllBe(p => !p.Contains(SecretTitle) && !p.Contains(SecretNote));
+        printed.ShouldAllBe(text => !text.Contains(SecretTitle) && !text.Contains(SecretNote));
     }
 }

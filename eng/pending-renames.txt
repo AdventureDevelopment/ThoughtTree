@@ -27,17 +27,7 @@ tests/secure/ThoughtTree.Architecture.Rules/Support/ProjectFile.cs
 tests/secure/ThoughtTree.Architecture.Rules/Support/Repository.cs
 tests/secure/ThoughtTree.Architecture.Rules/Support/SourceArchitecture.cs
 tests/secure/ThoughtTree.Architecture.Rules/Support/Workflow.cs
-tests/secure/ThoughtTree.Domain.Budgets/Outline/ReferenceHistories.cs
-tests/secure/ThoughtTree.Domain.Budgets/Outline/ReplayBudgets.cs
 tests/secure/ThoughtTree.Domain.Model/ModelContract.cs
-tests/secure/ThoughtTree.Domain.Properties/Clock/ClockProperties.cs
-tests/secure/ThoughtTree.Domain.Properties/Generators/HistoryGen.cs
-tests/secure/ThoughtTree.Domain.Properties/Outline/CanonicalTree.cs
-tests/secure/ThoughtTree.Domain.Properties/Outline/OutlineProperties.cs
-tests/secure/ThoughtTree.Domain.Properties/Outline/PrintingRules.cs
-tests/secure/ThoughtTree.Domain.Properties/Outline/SnapshotProperties.cs
-tests/secure/ThoughtTree.Domain.Properties/Outline/TextProperties.cs
-tests/secure/ThoughtTree.Domain.Properties/Support/Deterministic.cs
 tests/specify/ThoughtTree.Domain.Specs/Clock/ClockEdgeSpecs.cs
 tests/specify/ThoughtTree.Domain.Specs/Clock/EventOrderSpecs.cs
 tests/specify/ThoughtTree.Domain.Specs/Outline/Log.cs

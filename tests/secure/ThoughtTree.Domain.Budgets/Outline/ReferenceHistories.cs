@@ -13,27 +13,27 @@ internal static class ReferenceHistories
     {
         var log = new List<TreeEvent>(events);
         var created = 0;
-        for (var i = 0; i < events; i++)
+        for (var index = 0; index < events; index++)
         {
-            var clock = new EventClock(i + 1);
-            var kind = i % 20;
+            var clock = new EventClock(index + 1);
+            var kind = index % 20;
             if (created < 2 || kind < 13)
             {
                 var parent = created == 0 ? (ItemId?)null : ItemNumber((created - 1) / 10);
-                log.Add(new ItemCreated(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(created), parent, null, new Title($"t{i}")));
+                log.Add(new ItemCreated(EventNumber(index), Laptop, clock, ActionNumber(index), ItemNumber(created), parent, null, new Title($"t{index}")));
                 created++;
             }
             else if (kind < 17)
             {
-                log.Add(new ItemTitleChanged(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(i * 7919 % created), new Title($"r{i}")));
+                log.Add(new ItemTitleChanged(EventNumber(index), Laptop, clock, ActionNumber(index), ItemNumber(index * 7919 % created), new Title($"r{index}")));
             }
             else if (kind < 19)
             {
-                log.Add(new ItemMoved(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(i * 7919 % created), ItemNumber(i * 104729 % created), null));
+                log.Add(new ItemMoved(EventNumber(index), Laptop, clock, ActionNumber(index), ItemNumber(index * 7919 % created), ItemNumber(index * 104729 % created), null));
             }
             else
             {
-                log.Add(new ItemDeleted(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(i * 7919 % created)));
+                log.Add(new ItemDeleted(EventNumber(index), Laptop, clock, ActionNumber(index), ItemNumber(index * 7919 % created)));
             }
         }
 
@@ -46,10 +46,10 @@ internal static class ReferenceHistories
         {
             new ItemCreated(EventNumber(0), Laptop, new EventClock(1), ActionNumber(0), ItemNumber(0), null, null, new Title("inbox")),
         };
-        for (var i = 1; i < events; i++)
+        for (var index = 1; index < events; index++)
         {
-            var after = i == 1 ? (ItemId?)null : ItemNumber(i - 1);
-            log.Add(new ItemCreated(EventNumber(i), Laptop, new EventClock(i + 1), ActionNumber(i), ItemNumber(i), ItemNumber(0), after, new Title($"t{i}")));
+            var after = index == 1 ? (ItemId?)null : ItemNumber(index - 1);
+            log.Add(new ItemCreated(EventNumber(index), Laptop, new EventClock(index + 1), ActionNumber(index), ItemNumber(index), ItemNumber(0), after, new Title($"t{index}")));
         }
 
         return log;
@@ -59,14 +59,14 @@ internal static class ReferenceHistories
     {
         var applied = BranchingTree(events - (events / 10));
         var late = Enumerable.Range(0, events / 10)
-            .Select(i => (TreeEvent)new ItemTitleChanged(EventNumber(events + i), Phone, new EventClock((i * 9) + 1), ActionNumber(events + i), ItemNumber(0), new Title($"p{i}")))
+            .Select(index => (TreeEvent)new ItemTitleChanged(EventNumber(events + index), Phone, new EventClock((index * 9) + 1), ActionNumber(events + index), ItemNumber(0), new Title($"p{index}")))
             .ToList();
         return (applied, late);
     }
 
-    private static ItemId ItemNumber(int n) => new($"c0000000-0000-0000-0000-{n:D12}");
+    private static ItemId ItemNumber(int number) => new($"c0000000-0000-0000-0000-{number:D12}");
 
-    private static EventId EventNumber(int n) => new($"e0000000-0000-0000-0000-{n:D12}");
+    private static EventId EventNumber(int number) => new($"e0000000-0000-0000-0000-{number:D12}");
 
-    private static ActionId ActionNumber(int n) => new($"d0000000-0000-0000-0000-{n:D12}");
+    private static ActionId ActionNumber(int number) => new($"d0000000-0000-0000-0000-{number:D12}");
 }

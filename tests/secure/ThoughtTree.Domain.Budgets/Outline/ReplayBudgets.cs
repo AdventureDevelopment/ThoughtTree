@@ -15,33 +15,33 @@ public sealed class ReplayBudgets
 
     [Fact]
     public void PF6_a_full_replay_grows_about_linearly() =>
-        AssertLinear(n =>
+        AssertLinear(size =>
         {
-            var history = ReferenceHistories.BranchingTree(n);
+            var history = ReferenceHistories.BranchingTree(size);
             return () => Projection.Replay(history);
         });
 
     [Fact]
     public void PF6_items_added_one_after_another_under_one_parent_grow_about_linearly() =>
-        AssertLinear(n =>
+        AssertLinear(size =>
         {
-            var history = ReferenceHistories.WideParent(n);
+            var history = ReferenceHistories.WideParent(size);
             return () => Projection.Replay(history);
         });
 
     [Fact]
     public void PF6_a_projector_taking_events_one_at_a_time_grows_about_linearly() =>
-        AssertLinear(n =>
+        AssertLinear(size =>
         {
-            var history = ReferenceHistories.BranchingTree(n);
-            return () => _ = history.Aggregate(Projector.Empty, (p, e) => p.Add(e));
+            var history = ReferenceHistories.BranchingTree(size);
+            return () => _ = history.Aggregate(Projector.Empty, (projectorSoFar, treeEvent) => projectorSoFar.Add(treeEvent));
         });
 
     [Fact]
     public void PF6_a_sync_batch_of_late_events_grows_about_linearly() =>
-        AssertLinear(n =>
+        AssertLinear(size =>
         {
-            var (applied, late) = ReferenceHistories.SyncAfterOfflineWork(n);
+            var (applied, late) = ReferenceHistories.SyncAfterOfflineWork(size);
             var before = Projector.Empty.AddRange(applied);
             return () => _ = before.AddRange(late);
         });

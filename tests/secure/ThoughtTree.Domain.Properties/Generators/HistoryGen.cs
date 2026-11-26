@@ -68,14 +68,14 @@ public static class HistoryGen
         Gen.Select(
             Gen.Int[2, ItemPool],
             Gen.Select(CreateDraft(0), CreateDraft(1), CreateDraft(2), CreateDraft(3), CreateDraft(4), CreateDraft(5),
-                (a, b, c, d, e, f) => new[] { a, b, c, d, e, f }),
+                (first, second, third, fourth, fifth, sixth) => new[] { first, second, third, fourth, fifth, sixth }),
             Gen.Int[0, ItemPool - 1].SelectMany(CreateDraft).List[0, 2],
             DraftGen.List[0, 14],
-            (n, creates, duplicateCreates, others) => Build(creates.Take(n).Concat(duplicateCreates).Concat(others).ToList()));
+            (itemCount, creates, duplicateCreates, others) => Build(creates.Take(itemCount).Concat(duplicateCreates).Concat(others).ToList()));
 
     /// <summary>A history and the same history in one random order (INV-1).</summary>
     public static Gen<(TreeEvent[] Events, TreeEvent[] Shuffled)> HistoryAndShuffle { get; } =
-        History.SelectMany(h => Gen.Shuffle(h), (h, s) => (h, s));
+        History.SelectMany(history => Gen.Shuffle(history), (history, shuffled) => (history, shuffled));
 
     private static TreeEvent[] Build(List<Draft> drafts)
     {
@@ -84,18 +84,18 @@ public static class HistoryGen
         EventId EventId() => new($"e0000000-0000-0000-0000-{result.Count * ScrambleStep % ScrambleModulus:D12}");
         ActionId Action() => new($"c0000000-0000-0000-0000-{result.Count:D12}");
 
-        foreach (Draft d in drafts)
+        foreach (Draft draft in drafts)
         {
-            var device = new DeviceId(Devices[d.Device]);
-            var clock = new EventClock(d.Time);
-            ItemId item = Item(d.Item);
-            var title = new Title($"t{d.Text}{RawTexts[d.Text % RawTexts.Length]}");
-            var note = new Note($"n{d.Text}{RawTexts[(d.Text + 1) % RawTexts.Length]}");
-            switch (d.Kind)
+            var device = new DeviceId(Devices[draft.Device]);
+            var clock = new EventClock(draft.Time);
+            ItemId item = Item(draft.Item);
+            var title = new Title($"t{draft.Text}{RawTexts[draft.Text % RawTexts.Length]}");
+            var note = new Note($"n{draft.Text}{RawTexts[(draft.Text + 1) % RawTexts.Length]}");
+            switch (draft.Kind)
             {
                 case Kind.Create:
-                    result.Add(new ItemCreated(EventId(), device, clock, Action(), item, Ref(d.Parent), Ref(d.After),
-                        d.Text == TextWithoutTitleOrNote ? null : title, d.Text == TextWithoutTitleOrNote ? null : note));
+                    result.Add(new ItemCreated(EventId(), device, clock, Action(), item, Ref(draft.Parent), Ref(draft.After),
+                        draft.Text == TextWithoutTitleOrNote ? null : title, draft.Text == TextWithoutTitleOrNote ? null : note));
                     break;
                 case Kind.Title:
                     result.Add(new ItemTitleChanged(EventId(), device, clock, Action(), item, title));
@@ -104,7 +104,7 @@ public static class HistoryGen
                     result.Add(new ItemNoteChanged(EventId(), device, clock, Action(), item, note));
                     break;
                 case Kind.Move:
-                    result.Add(new ItemMoved(EventId(), device, clock, Action(), item, Ref(d.Parent), Ref(d.After)));
+                    result.Add(new ItemMoved(EventId(), device, clock, Action(), item, Ref(draft.Parent), Ref(draft.After)));
                     break;
                 case Kind.Delete:
                     result.Add(new ItemDeleted(EventId(), device, clock, Action(), item));
@@ -112,7 +112,7 @@ public static class HistoryGen
                 case Kind.UnknownType:
                     result.Add(new FutureEvent(EventId(), device, clock, Action()));
                     break;
-                case Kind.MissingText when MissesTitle(d.Text):
+                case Kind.MissingText when MissesTitle(draft.Text):
                     result.Add(new ItemTitleChanged(EventId(), device, clock, Action(), item, null));
                     break;
                 case Kind.MissingText:

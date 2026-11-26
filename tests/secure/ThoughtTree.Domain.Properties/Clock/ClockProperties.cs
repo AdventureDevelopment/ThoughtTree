@@ -24,7 +24,7 @@ public sealed class ClockProperties
             long? highest = null;
             foreach (var (write, time) in steps)
             {
-                var stamp = write ? HybridClock.Next(DateTimeOffset.FromUnixTimeMilliseconds(time), highest is { } h ? new EventClock(h) : null).Value : time;
+                var stamp = write ? HybridClock.Next(DateTimeOffset.FromUnixTimeMilliseconds(time), highest is { } highestKnown ? new EventClock(highestKnown) : null).Value : time;
                 if (write)
                 {
                     var expected = highest switch

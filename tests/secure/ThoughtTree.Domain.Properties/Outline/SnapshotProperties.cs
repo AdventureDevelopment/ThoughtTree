@@ -17,14 +17,14 @@ public sealed class SnapshotProperties
     [Fact]
     public void INV_7_events_applied_one_at_a_time_in_any_arrival_order_equal_a_full_replay_at_every_step()
     {
-        Gen.Select(HistoryGen.HistoryAndShuffle, EmptyProjectors).SampleFixed(x =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, EmptyProjectors).SampleFixed(sample =>
         {
-            var (history, projector) = x;
+            var (history, projector) = sample;
             var arrived = new List<TreeEvent>();
-            foreach (var e in history.Shuffled)
+            foreach (var treeEvent in history.Shuffled)
             {
-                projector = projector.Add(e);
-                arrived.Add(e);
+                projector = projector.Add(treeEvent);
+                arrived.Add(treeEvent);
                 CanonicalTree.Render(projector.Tree).ShouldBe(CanonicalTree.OfReplay(arrived));
             }
         });
@@ -33,15 +33,15 @@ public sealed class SnapshotProperties
     [Fact]
     public void INV_6_a_projector_kept_after_any_subset_plus_the_rest_in_any_order_equals_a_full_replay()
     {
-        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Bool.List[1, 60], EmptyProjectors).SampleFixed(x =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Bool.List[1, 60], EmptyProjectors).SampleFixed(sample =>
         {
-            var (history, keptSubset, empty) = x;
-            var inKept = history.Shuffled.Where((_, i) => keptSubset[i % keptSubset.Count]).ToList();
-            var kept = inKept.Aggregate(empty, (p, e) => p.Add(e));
+            var (history, keptSubset, empty) = sample;
+            var inKept = history.Shuffled.Where((_, index) => keptSubset[index % keptSubset.Count]).ToList();
+            var kept = inKept.Aggregate(empty, (projectorSoFar, treeEvent) => projectorSoFar.Add(treeEvent));
             var keptBefore = CanonicalTree.Render(kept.Tree);
 
             var rest = history.Shuffled.Except(inKept).Concat(history.Shuffled.Take(2));
-            var resumed = rest.Aggregate(kept, (p, e) => p.Add(e));
+            var resumed = rest.Aggregate(kept, (projectorSoFar, treeEvent) => projectorSoFar.Add(treeEvent));
 
             CanonicalTree.Render(resumed.Tree).ShouldBe(CanonicalTree.OfReplay(history.Events));
             CanonicalTree.Render(kept.Tree).ShouldBe(keptBefore);
@@ -51,14 +51,14 @@ public sealed class SnapshotProperties
     [Fact]
     public void INV_7_events_added_in_batches_of_any_size_and_order_equal_a_full_replay()
     {
-        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[1, 8].List[1, 10], EmptyProjectors).SampleFixed(x =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[1, 8].List[1, 10], EmptyProjectors).SampleFixed(sample =>
         {
-            var (history, batchSizes, empty) = x;
+            var (history, batchSizes, empty) = sample;
             var projector = empty;
             var remaining = history.Shuffled.AsEnumerable();
-            for (var i = 0; remaining.Any(); i++)
+            for (var batch = 0; remaining.Any(); batch++)
             {
-                var size = batchSizes[i % batchSizes.Count];
+                var size = batchSizes[batch % batchSizes.Count];
                 projector = projector.AddRange(remaining.Take(size));
                 remaining = remaining.Skip(size);
             }
@@ -70,11 +70,11 @@ public sealed class SnapshotProperties
     [Fact]
     public void A_projector_keeps_one_checkpoint_per_interval_of_applied_events_whatever_the_arrival_order()
     {
-        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[1, 4]).SampleFixed(x =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[1, 4]).SampleFixed(sample =>
         {
-            var (history, interval) = x;
-            var projector = history.Shuffled.Aggregate(Projector.WithCheckpointInterval(interval), (p, e) => p.Add(e));
-            var applied = history.Shuffled.DistinctBy(e => e.EventId).Count();
+            var (history, interval) = sample;
+            var projector = history.Shuffled.Aggregate(Projector.WithCheckpointInterval(interval), (projectorSoFar, treeEvent) => projectorSoFar.Add(treeEvent));
+            var applied = history.Shuffled.DistinctBy(treeEvent => treeEvent.EventId).Count();
 
             projector.CheckpointCount.ShouldBe((applied / interval) + 1);
         });

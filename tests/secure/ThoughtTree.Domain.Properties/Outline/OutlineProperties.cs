@@ -21,33 +21,33 @@ public sealed class OutlineProperties
     {
         var reported = new Dictionary<AnomalyKind, int>();
         int sameClock = 0, equalClocksAcrossDevices = 0, farAhead = 0, deleteThenRestore = 0, total = 0;
-        HistoryGen.History.SampleFixed(h =>
+        HistoryGen.History.SampleFixed(history =>
         {
             total++;
-            h.Select(e => e.EventId).Distinct().Count().ShouldBe(h.Length);
-            var anomalies = Projection.Replay(h).Anomalies;
-            if (h.GroupBy(e => (e.Clock, e.DeviceId)).Any(g => g.Count() > 1))
+            history.Select(treeEvent => treeEvent.EventId).Distinct().Count().ShouldBe(history.Length);
+            var anomalies = Projection.Replay(history).Anomalies;
+            if (history.GroupBy(treeEvent => (treeEvent.Clock, treeEvent.DeviceId)).Any(onOneClockAndDevice => onOneClockAndDevice.Count() > 1))
             {
                 sameClock++;
             }
 
-            foreach (var kind in anomalies.Select(a => a.Kind).Distinct())
+            foreach (var kind in anomalies.Select(report => report.Kind).Distinct())
             {
                 reported[kind] = reported.GetValueOrDefault(kind) + 1;
             }
 
-            h.Select(e => e.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(HistoryGen.Devices.Count);
-            if (h.GroupBy(e => e.Clock).Any(g => g.Select(e => e.DeviceId).Distinct().Count() > 1))
+            history.Select(treeEvent => treeEvent.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(HistoryGen.Devices.Count);
+            if (history.GroupBy(treeEvent => treeEvent.Clock).Any(onOneClock => onOneClock.Select(treeEvent => treeEvent.DeviceId).Distinct().Count() > 1))
             {
                 equalClocksAcrossDevices++;
             }
 
-            if (h.Any(e => e.Clock.Value > 1_000_000_000_000))
+            if (history.Any(treeEvent => treeEvent.Clock.Value > 1_000_000_000_000))
             {
                 farAhead++;
             }
 
-            if (h.OfType<ItemRestored>().Any(r => h.OfType<ItemDeleted>().Any(d => d.ItemId == r.ItemId)))
+            if (history.OfType<ItemRestored>().Any(restored => history.OfType<ItemDeleted>().Any(deleted => deleted.ItemId == restored.ItemId)))
             {
                 deleteThenRestore++;
             }
@@ -67,60 +67,60 @@ public sealed class OutlineProperties
     [Fact]
     public void INV_1_order_independence_any_shuffle_gives_the_same_full_state()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t => CanonicalTree.OfReplay(t.Shuffled).ShouldBe(CanonicalTree.OfReplay(t.Events)));
+        HistoryGen.HistoryAndShuffle.SampleFixed(histories => CanonicalTree.OfReplay(histories.Shuffled).ShouldBe(CanonicalTree.OfReplay(histories.Events)));
     }
 
     [Fact]
     public void INV_1_anomalies_are_reported_identically_for_every_shuffle()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
-            Projection.Replay(t.Shuffled).Anomalies.ShouldBe(Projection.Replay(t.Events).Anomalies));
+        HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
+            Projection.Replay(histories.Shuffled).Anomalies.ShouldBe(Projection.Replay(histories.Events).Anomalies));
     }
 
     [Fact]
     public void INV_2_duplicates_are_harmless()
     {
-        Gen.Select(HistoryGen.History, Gen.Int[0, 7].List[0, 12], (h, picks) =>
+        Gen.Select(HistoryGen.History, Gen.Int[0, 7].List[0, 12], (history, picks) =>
         {
-            var withDuplicates = h.ToList();
-            foreach (var p in picks)
+            var withDuplicates = history.ToList();
+            foreach (var pick in picks)
             {
-                TreeEvent e = h[p % h.Length];
-                withDuplicates.Insert((p * 7) % (withDuplicates.Count + 1), e);
+                TreeEvent duplicate = history[pick % history.Length];
+                withDuplicates.Insert((pick * 7) % (withDuplicates.Count + 1), duplicate);
             }
 
-            return (h, withDuplicates);
-        }).SampleFixed(t => CanonicalTree.OfReplay(t.withDuplicates).ShouldBe(CanonicalTree.OfReplay(t.h)));
+            return (history, withDuplicates);
+        }).SampleFixed(histories => CanonicalTree.OfReplay(histories.withDuplicates).ShouldBe(CanonicalTree.OfReplay(histories.history)));
     }
 
     private static readonly Gen<(TreeEvent[] All, List<TreeEvent> A, List<TreeEvent> B, List<TreeEvent> C)> ThreeLogs =
         Gen.Select(HistoryGen.History, Gen.Int[0, 5].List[0, 40], (all, assign) =>
         {
-            var (a, b, c) = SplitIntoThreeOverlappingLogs(all, assign);
-            return (all, a, b, c);
+            var (firstLog, secondLog, thirdLog) = SplitIntoThreeOverlappingLogs(all, assign);
+            return (all, firstLog, secondLog, thirdLog);
         });
 
     [Fact]
     public void INV_3_merge_is_union_in_any_split_and_grouping()
     {
-        ThreeLogs.SampleFixed(t =>
+        ThreeLogs.SampleFixed(logs =>
         {
-            var expected = CanonicalTree.OfReplay(t.All);
-            CanonicalTree.OfReplay(t.A.Concat(t.B).Concat(t.C)).ShouldBe(expected);
-            CanonicalTree.OfReplay(t.A.Concat(t.B.Concat(t.C))).ShouldBe(expected);
-            CanonicalTree.OfReplay(t.C.Concat(t.B).Concat(t.A)).ShouldBe(expected);
-            CanonicalTree.OfReplay(t.B.Concat(t.A).Concat(t.C).Concat(t.A)).ShouldBe(expected);
-            CanonicalTree.OfReplay(t.A.Concat(t.B).Concat(t.C).Concat(t.C)).ShouldBe(expected);
+            var expected = CanonicalTree.OfReplay(logs.All);
+            CanonicalTree.OfReplay(logs.A.Concat(logs.B).Concat(logs.C)).ShouldBe(expected);
+            CanonicalTree.OfReplay(logs.A.Concat(logs.B.Concat(logs.C))).ShouldBe(expected);
+            CanonicalTree.OfReplay(logs.C.Concat(logs.B).Concat(logs.A)).ShouldBe(expected);
+            CanonicalTree.OfReplay(logs.B.Concat(logs.A).Concat(logs.C).Concat(logs.A)).ShouldBe(expected);
+            CanonicalTree.OfReplay(logs.A.Concat(logs.B).Concat(logs.C).Concat(logs.C)).ShouldBe(expected);
         });
     }
 
     [Fact]
     public void INV_3_a_device_receiving_the_other_logs_event_by_event_ends_with_the_full_tree()
     {
-        ThreeLogs.SampleFixed(t =>
+        ThreeLogs.SampleFixed(logs =>
         {
-            var projector = t.A.Concat(t.B).Concat(t.C).Aggregate(Projector.Empty, (p, e) => p.Add(e));
-            CanonicalTree.Render(projector.Tree).ShouldBe(CanonicalTree.OfReplay(t.All));
+            var projector = logs.A.Concat(logs.B).Concat(logs.C).Aggregate(Projector.Empty, (projectorSoFar, treeEvent) => projectorSoFar.Add(treeEvent));
+            CanonicalTree.Render(projector.Tree).ShouldBe(CanonicalTree.OfReplay(logs.All));
         });
     }
 
@@ -129,24 +129,24 @@ public sealed class OutlineProperties
     {
         int AssignmentOf(int index) => assign.Count == 0 ? 0 : assign[index % assign.Count];
         bool IsInLog(int assignment, int log) => assignment % 3 == log || (assignment >= 3 && (assignment - 2) % 3 == log);
-        List<TreeEvent> LogOf(int log) => [.. all.Where((_, i) => IsInLog(AssignmentOf(i), log))];
+        List<TreeEvent> LogOf(int log) => [.. all.Where((_, index) => IsInLog(AssignmentOf(index), log))];
 
-        List<TreeEvent> a = LogOf(0), b = LogOf(1), c = LogOf(2);
-        var inNoLog = all.Except(a.Concat(b).Concat(c));
-        a.AddRange(inNoLog);
-        return (a, b, c);
+        List<TreeEvent> firstLog = LogOf(0), secondLog = LogOf(1), thirdLog = LogOf(2);
+        var inNoLog = all.Except(firstLog.Concat(secondLog).Concat(thirdLog));
+        firstLog.AddRange(inNoLog);
+        return (firstLog, secondLog, thirdLog);
     }
 
     [Fact]
     public void INV_4_every_parent_exists_and_no_parent_chain_is_a_cycle()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
         {
-            var items = Projection.Replay(t.Shuffled).AllItems.ToDictionary(i => i.Id);
+            var items = Projection.Replay(histories.Shuffled).AllItems.ToDictionary(item => item.Id);
             foreach (Item item in items.Values)
             {
                 var steps = 0;
-                for (ItemId? p = item.Parent; p is { } id; p = items[id].Parent)
+                for (ItemId? ancestor = item.Parent; ancestor is { } id; ancestor = items[id].Parent)
                 {
                     items.ContainsKey(id).ShouldBeTrue();
                     steps++;
@@ -159,11 +159,11 @@ public sealed class OutlineProperties
     [Fact]
     public void INV_4_every_item_is_in_exactly_one_sibling_list_the_one_of_its_parent()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
         {
-            Tree tree = Projection.Replay(t.Shuffled);
-            var items = tree.AllItems.ToDictionary(i => i.Id);
-            List<ItemId> listed = [.. tree.TopLevelOrder, .. items.Values.SelectMany(i => tree.ChildrenOf(i.Id))];
+            Tree tree = Projection.Replay(histories.Shuffled);
+            var items = tree.AllItems.ToDictionary(item => item.Id);
+            List<ItemId> listed = [.. tree.TopLevelOrder, .. items.Values.SelectMany(item => tree.ChildrenOf(item.Id))];
 
             listed.Count.ShouldBe(items.Count);
             listed.Distinct().Count().ShouldBe(items.Count);
@@ -178,20 +178,20 @@ public sealed class OutlineProperties
     [Fact]
     public void INV_4_every_visible_item_is_reachable_from_top_level_once()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
         {
-            Tree tree = Projection.Replay(t.Shuffled);
-            var items = tree.AllItems.ToDictionary(i => i.Id);
-            var outline = tree.VisibleOutline().Select(e => e.Item.Id).ToList();
+            Tree tree = Projection.Replay(histories.Shuffled);
+            var items = tree.AllItems.ToDictionary(item => item.Id);
+            var outline = tree.VisibleOutline().Select(row => row.Item.Id).ToList();
 
             outline.Distinct().Count().ShouldBe(outline.Count);
-            outline.ToHashSet().SetEquals(items.Values.Where(i => !IsHidden(i)).Select(i => i.Id)).ShouldBeTrue();
+            outline.ToHashSet().SetEquals(items.Values.Where(item => !IsHidden(item)).Select(item => item.Id)).ShouldBeTrue();
 
-            bool IsHidden(Item i)
+            bool IsHidden(Item item)
             {
-                for (Item? c = i; c is not null; c = c.Parent is { } p ? items[p] : null)
+                for (Item? ancestor = item; ancestor is not null; ancestor = ancestor.Parent is { } parent ? items[parent] : null)
                 {
-                    if (c.Deleted)
+                    if (ancestor.Deleted)
                     {
                         return true;
                     }
@@ -205,10 +205,10 @@ public sealed class OutlineProperties
     [Fact]
     public void INV_5_nothing_lost_every_created_item_is_in_the_projection()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
         {
-            var created = t.Shuffled.OfType<ItemCreated>().Select(c => c.ItemId).ToHashSet();
-            var present = Projection.Replay(t.Shuffled).AllItems.Select(i => i.Id).ToHashSet();
+            var created = histories.Shuffled.OfType<ItemCreated>().Select(createdEvent => createdEvent.ItemId).ToHashSet();
+            var present = Projection.Replay(histories.Shuffled).AllItems.Select(item => item.Id).ToHashSet();
             present.SetEquals(created).ShouldBeTrue();
         });
     }
@@ -216,7 +216,7 @@ public sealed class OutlineProperties
     [Fact]
     public void Projection_equals_the_reference_model_on_every_history()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
-            CanonicalTree.OfReplay(t.Shuffled).ShouldBe(ReferenceModel.ReplayToCanonicalText(t.Shuffled)));
+        HistoryGen.HistoryAndShuffle.SampleFixed(histories =>
+            CanonicalTree.OfReplay(histories.Shuffled).ShouldBe(ReferenceModel.ReplayToCanonicalText(histories.Shuffled)));
     }
 }
