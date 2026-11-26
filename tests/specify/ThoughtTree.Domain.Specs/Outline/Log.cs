@@ -12,7 +12,6 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
 
     public static ItemId Id(string name) => new(name);
 
-    // An event id is device plus count: two logs in one scenario need different devices.
     private (string EventId, string Device, EventClock Clock, string Action) Next(long time)
     {
         this.count++;

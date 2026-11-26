@@ -6,7 +6,7 @@ namespace ThoughtTree.Domain.Specs.Clock;
 
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-014")]
-public class ClockEdgeSpecs
+public sealed class ClockEdgeSpecs
 {
     [Scenario]
     public void INV_8_At_the_largest_clock_a_new_event_takes_that_clock_instead_of_failing()

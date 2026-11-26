@@ -7,7 +7,7 @@ namespace ThoughtTree.Domain.Specs.Outline;
 /// <summary>A missing title or note leaves the item as it is (ADR-016).</summary>
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-016")]
-public class MissingTextSpecs
+public sealed class MissingTextSpecs
 {
     private const string Device = "a0000000-0000-0000-0000-000000000001";
 

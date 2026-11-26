@@ -8,7 +8,7 @@ namespace ThoughtTree.Domain.Properties.Outline;
 /// <summary>INV-6 (snapshot equivalence) and INV-7 (incremental equals full) over generated histories.</summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-002")]
-public class SnapshotProperties
+public sealed class SnapshotProperties
 {
     private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));
 
@@ -88,8 +88,8 @@ public class SnapshotProperties
         Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Bool.List[1, 60], Gen.Int[0, 60], (t, mask, cut) => (t, mask, cut)).SampleFixed(x =>
         {
             List<TreeEvent> sorted = Sorted(x.t.Events);
-            // Half of the cases are a prefix of the order (never stale), half an arbitrary subset (usually stale).
-            var inSnapshot = x.cut % 2 == 0
+            var prefixOfTheOrderSoNeverStale = x.cut % 2 == 0;
+            var inSnapshot = prefixOfTheOrderSoNeverStale
                 ? sorted.Take(x.cut % (sorted.Count + 1)).ToList()
                 : sorted.Where((_, i) => x.mask[i % x.mask.Count]).ToList();
             var projector = new Projector();

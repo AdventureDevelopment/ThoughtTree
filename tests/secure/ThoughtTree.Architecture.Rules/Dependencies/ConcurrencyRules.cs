@@ -13,7 +13,7 @@ namespace ThoughtTree.Architecture.Rules.Dependencies;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-039")]
-public class ConcurrencyRules
+public sealed class ConcurrencyRules
 {
     private const string ForbiddenTypes =
         @"^(System\.Threading\.(Thread|ThreadPool|Timer|Tasks\.Parallel|Tasks\.TaskFactory(`1)?)|System\.Timers\.Timer)$";

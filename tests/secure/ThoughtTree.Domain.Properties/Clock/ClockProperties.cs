@@ -7,7 +7,7 @@ namespace ThoughtTree.Domain.Properties.Clock;
 /// <summary>INV-8 over generated device histories: wall time jumping back and forth, and clocks received from other devices.</summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-014")]
-public class ClockProperties
+public sealed class ClockProperties
 {
     private static readonly Gen<(bool DeviceWrites, long WallTimeOrReceivedClock)> Step = Gen.Select(
         Gen.Bool,
@@ -24,7 +24,6 @@ public class ClockProperties
                 var stamp = write ? HybridClock.Next(time, highest is { } h ? new EventClock(h) : null).Value : time;
                 if (write)
                 {
-                    // ADR-014
                     var expected = highest switch
                     {
                         null => time,

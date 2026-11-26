@@ -29,9 +29,10 @@ public sealed class Projector
     /// <returns>False if the event sorts before those applied; nothing changed then.</returns>
     public bool TryAdd(TreeEvent e)
     {
-        if (this.ids.Contains(e.EventId))
+        var alreadyApplied = this.ids.Contains(e.EventId);
+        if (alreadyApplied)
         {
-            return true; // INV-2
+            return true;
         }
 
         var key = EventKey.Of(e);

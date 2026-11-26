@@ -5,7 +5,7 @@ namespace ThoughtTree.Domain.Specs.Outline;
 
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-002")]
-public class SnapshotSpecs
+public sealed class SnapshotSpecs
 {
     [Scenario]
     public void INV_7_Events_that_arrive_in_order_are_applied_one_at_a_time()

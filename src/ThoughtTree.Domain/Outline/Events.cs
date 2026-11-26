@@ -11,7 +11,6 @@ public readonly record struct ItemId(string Value)
 /// <summary>An immutable fact about a tree (ADR-002).</summary>
 public abstract record TreeEvent(string EventId, string DeviceId, EventClock Clock, string ActionId)
 {
-    // Sealed, or every event record would print its titles and notes into logs.
     public sealed override string ToString() => $"{this.GetType().Name} {this.EventId}";
 }
 

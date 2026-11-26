@@ -7,7 +7,7 @@ namespace ThoughtTree.Domain.Specs.Clock;
 /// <summary>How a device stamps its events and how every device orders them (ADR-014, INV-8).</summary>
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-014")]
-public class EventOrderSpecs
+public sealed class EventOrderSpecs
 {
     private const string DeviceA = "3f2a0000-0000-0000-0000-000000000001";
     private const string DeviceB = "aa000000-0000-0000-0000-000000000002";

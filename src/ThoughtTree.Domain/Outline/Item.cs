@@ -25,7 +25,6 @@ public sealed record Item
     /// <summary>In order, deleted ones included (ADR-004).</summary>
     public ImmutableList<ItemId> Children { get; private init; } = [];
 
-    // A record prints every property; titles and notes must stay out of logs.
     public override string ToString() => $"Item {this.Id}";
 
     internal Item WithTitle(string title) => this with { Title = title };

@@ -6,7 +6,7 @@ namespace ThoughtTree.Architecture.Rules.Harness;
 /// <summary>ADR-075: xUnit v2 and LambdaTale 2.9.x, versions only in Directory.Packages.props, no other spec library.</summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-075")]
-public class TestToolchainRules
+public sealed class TestToolchainRules
 {
     private static readonly string[] OtherSpecLibraries =
         ["SpecFlow", "Reqnroll", "LightBDD", "Xbehave", "TestStack.BDDfy", "Gherkin", "NSpec", "Machine.Specifications"];

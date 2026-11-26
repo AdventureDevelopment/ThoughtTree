@@ -8,7 +8,7 @@ namespace ThoughtTree.Architecture.Rules.Dependencies;
 
 /// <summary>Type-level dependency and namespace rules over the compiled source assemblies (ArchUnitNET).</summary>
 [Trait("Intent", "Secure")]
-public class TypeDependencyRules
+public sealed class TypeDependencyRules
 {
     private const string BrowserInterop = @"^(Microsoft\.JSInterop|System\.Runtime\.InteropServices\.JavaScript)\.";
     private const string AspNetCore = @"^Microsoft\.AspNetCore\.";

@@ -57,7 +57,6 @@ public sealed record Tree
     public string ToOutline() =>
         string.Join('\n', this.VisibleOutline().Select(e => new string(' ', e.Depth * 2) + "- " + e.Item.Title));
 
-    // A record prints every property; titles and notes must stay out of logs.
     public override string ToString() => $"Tree with {this.Items.Count} items";
 
     internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
@@ -89,18 +88,22 @@ public sealed record Tree
         return this with { TopLevel = this.TopLevel.Remove(id) };
     }
 
-    // ADR-004: IndexOf gives -1 for a non-sibling, so such an item lands first.
     internal Tree InsertChild(ItemId? parent, ItemId id, ItemId? after)
     {
         if (parent is { } p)
         {
             var holder = this.Items[p];
-            var index = after is { } a ? holder.Children.IndexOf(a) + 1 : 0;
-            return this.WithItem(holder.WithChildren(holder.Children.Insert(index, id)));
+            return this.WithItem(holder.WithChildren(holder.Children.Insert(PositionAfter(holder.Children, after), id)));
         }
 
-        var topIndex = after is { } t ? this.TopLevel.IndexOf(t) + 1 : 0;
-        return this with { TopLevel = this.TopLevel.Insert(topIndex, id) };
+        return this with { TopLevel = this.TopLevel.Insert(PositionAfter(this.TopLevel, after), id) };
+    }
+
+    private static int PositionAfter(ImmutableList<ItemId> siblings, ItemId? after)
+    {
+        var at = after is { } a ? siblings.IndexOf(a) : -1;
+        var afterIsASibling = at >= 0;
+        return afterIsASibling ? at + 1 : 0;
     }
 
     private sealed class ItemCollection(ImmutableDictionary<ItemId, Item> items) : IReadOnlyCollection<Item>

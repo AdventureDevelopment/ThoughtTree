@@ -11,7 +11,7 @@ namespace ThoughtTree.Architecture.Rules.BannedApis;
 /// Domain_types_depend_on_nothing_outside_domain also covers declarations.
 /// </summary>
 [Trait("Intent", "Secure")]
-public class BannedApiRules
+public sealed class BannedApiRules
 {
     private const string Common = "BannedSymbols.txt";
     private const string Concurrency = "BannedSymbols.Concurrency.txt";

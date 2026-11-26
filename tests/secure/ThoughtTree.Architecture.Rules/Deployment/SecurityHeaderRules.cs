@@ -13,7 +13,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-045")]
-public class SecurityHeaderRules
+public sealed class SecurityHeaderRules
 {
     private const string ImportMapPlaceholder = "'{importmap-hash}'";
 

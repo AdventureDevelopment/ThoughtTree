@@ -9,7 +9,7 @@ namespace ThoughtTree.Domain.Specs.Outline;
 [Trait("ADR", "ADR-005")]
 [Trait("ADR", "ADR-014")]
 [Trait("ADR", "ADR-023")]
-public class OutlineSpecs
+public sealed class OutlineSpecs
 {
     private const string DeviceA = "a0000000-0000-0000-0000-000000000001";
     private const string DeviceB = "b0000000-0000-0000-0000-000000000002";

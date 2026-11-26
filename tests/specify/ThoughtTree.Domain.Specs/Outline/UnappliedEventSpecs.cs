@@ -9,7 +9,7 @@ namespace ThoughtTree.Domain.Specs.Outline;
 [Trait("ADR", "ADR-004")]
 [Trait("ADR", "ADR-016")]
 [Trait("ADR", "ADR-023")]
-public class UnappliedEventSpecs
+public sealed class UnappliedEventSpecs
 {
     private static IEnumerable<(AnomalyKind Kind, ItemId? Item)> Reports(Tree tree) =>
         tree.Anomalies.Select(a => (a.Kind, a.Item));

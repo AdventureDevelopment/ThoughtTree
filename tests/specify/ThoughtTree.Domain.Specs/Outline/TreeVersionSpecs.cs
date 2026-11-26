@@ -5,7 +5,7 @@ namespace ThoughtTree.Domain.Specs.Outline;
 
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-002")]
-public class TreeVersionSpecs
+public sealed class TreeVersionSpecs
 {
     [Scenario]
     public void A_tree_a_caller_holds_does_not_change_when_the_projector_goes_on()

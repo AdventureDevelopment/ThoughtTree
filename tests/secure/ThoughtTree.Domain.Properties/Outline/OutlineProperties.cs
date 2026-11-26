@@ -14,7 +14,7 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-014")]
 [Trait("ADR", "ADR-016")]
 [Trait("ADR", "ADR-023")]
-public class OutlineProperties
+public sealed class OutlineProperties
 {
     private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));
 
@@ -95,63 +95,77 @@ public class OutlineProperties
         }).SampleFixed(t => State(t.withDuplicates).ShouldBe(State(t.h)));
     }
 
+    private static readonly Gen<(TreeEvent[] All, List<TreeEvent> A, List<TreeEvent> B, List<TreeEvent> C)> ThreeLogs =
+        Gen.Select(HistoryGen.History, Gen.Int[0, 5].List[0, 40], (all, assign) =>
+        {
+            var (a, b, c) = SplitIntoThreeOverlappingLogs(all, assign);
+            return (all, a, b, c);
+        });
+
     [Fact]
     public void INV_3_merge_is_union_in_any_split_and_grouping()
     {
-        // Each event goes to log A, B or C, some to two (overlap, as after a partial sync).
-        Gen.Select(HistoryGen.History, Gen.Int[0, 5].List[0, 40], (h, assign) =>
-            (h, assign)).SampleFixed(t =>
+        ThreeLogs.SampleFixed(t =>
         {
-            TreeEvent[] all = t.h;
-            List<TreeEvent> LogOf(int device) => all
-                .Where((_, i) => (t.assign.Count == 0 ? 0 : t.assign[i % t.assign.Count]) is var a &&
-                    (a % 3 == device || (a >= 3 && (a - 3 + 1) % 3 == device)))
-                .ToList();
-            List<TreeEvent> a = LogOf(0), b = LogOf(1), c = LogOf(2);
-            // Events that landed in no log are put in A so the union is the whole history.
-            a.AddRange(all.Except(a.Concat(b).Concat(c)));
-
-            var expected = State(all);
-            State(a.Concat(b).Concat(c)).ShouldBe(expected);
-            State(a.Concat(b.Concat(c))).ShouldBe(expected);
-            State(c.Concat(b).Concat(a)).ShouldBe(expected);
-            State(b.Concat(a).Concat(c).Concat(a)).ShouldBe(expected);
-            State(a.Concat(b).Concat(c).Concat(c)).ShouldBe(expected);
-
-            // A device holding A receives B and C one event at a time.
-            var held = new List<TreeEvent>(a);
-            var projector = new Projector();
-            foreach (var e in a.OrderBy(EventKey.Of, EventKey.Comparer))
-            {
-                projector.TryAdd(e).ShouldBeTrue();
-            }
-
-            foreach (var e in b.Concat(c))
-            {
-                held.Add(e);
-                if (!projector.TryAdd(e))
-                {
-                    projector = new Projector();
-                    foreach (var x in held.DistinctBy(x => x.EventId).OrderBy(EventKey.Of, EventKey.Comparer))
-                    {
-                        projector.TryAdd(x).ShouldBeTrue();
-                    }
-                }
-            }
-
-            CanonicalTree.Render(projector.Tree).ShouldBe(expected);
+            var expected = State(t.All);
+            State(t.A.Concat(t.B).Concat(t.C)).ShouldBe(expected);
+            State(t.A.Concat(t.B.Concat(t.C))).ShouldBe(expected);
+            State(t.C.Concat(t.B).Concat(t.A)).ShouldBe(expected);
+            State(t.B.Concat(t.A).Concat(t.C).Concat(t.A)).ShouldBe(expected);
+            State(t.A.Concat(t.B).Concat(t.C).Concat(t.C)).ShouldBe(expected);
         });
     }
 
     [Fact]
-    public void INV_4_tree_shape_one_parent_no_cycles_every_visible_item_reachable()
+    public void INV_3_a_device_receiving_the_other_logs_event_by_event_ends_with_the_full_tree()
+    {
+        ThreeLogs.SampleFixed(t =>
+        {
+            var held = new List<TreeEvent>(t.A);
+            var projector = ProjectorOf(held);
+            foreach (var arriving in t.B.Concat(t.C))
+            {
+                held.Add(arriving);
+                if (!projector.TryAdd(arriving))
+                {
+                    projector = ProjectorOf(held);
+                }
+            }
+
+            CanonicalTree.Render(projector.Tree).ShouldBe(State(t.All));
+        });
+    }
+
+    private static Projector ProjectorOf(IEnumerable<TreeEvent> log)
+    {
+        var projector = new Projector();
+        foreach (var e in log.DistinctBy(e => e.EventId).OrderBy(EventKey.Of, EventKey.Comparer))
+        {
+            projector.TryAdd(e).ShouldBeTrue();
+        }
+
+        return projector;
+    }
+
+    private static (List<TreeEvent> A, List<TreeEvent> B, List<TreeEvent> C) SplitIntoThreeOverlappingLogs(
+        TreeEvent[] all, List<int> assign)
+    {
+        int AssignmentOf(int index) => assign.Count == 0 ? 0 : assign[index % assign.Count];
+        bool IsInLog(int assignment, int log) => assignment % 3 == log || (assignment >= 3 && (assignment - 2) % 3 == log);
+        List<TreeEvent> LogOf(int log) => [.. all.Where((_, i) => IsInLog(AssignmentOf(i), log))];
+
+        List<TreeEvent> a = LogOf(0), b = LogOf(1), c = LogOf(2);
+        var inNoLog = all.Except(a.Concat(b).Concat(c));
+        a.AddRange(inNoLog);
+        return (a, b, c);
+    }
+
+    [Fact]
+    public void INV_4_every_parent_exists_and_no_parent_chain_is_a_cycle()
     {
         HistoryGen.HistoryAndShuffle.SampleFixed(t =>
         {
-            Tree tree = Projection.Replay(t.Shuffled);
-            var items = tree.AllItems.ToDictionary(i => i.Id);
-
-            // INV-4: one parent, no cycle
+            var items = Projection.Replay(t.Shuffled).AllItems.ToDictionary(i => i.Id);
             foreach (Item item in items.Values)
             {
                 var steps = 0;
@@ -161,35 +175,39 @@ public class OutlineProperties
                     (++steps).ShouldBeLessThanOrEqualTo(items.Count);
                 }
             }
+        });
+    }
 
-            // INV-4: in exactly one sibling list
-            var listed = new List<ItemId>();
-            listed.AddRange(tree.TopLevelOrder);
-            foreach (Item item in items.Values)
-            {
-                listed.AddRange(tree.ChildrenOf(item.Id));
-            }
+    [Fact]
+    public void INV_4_every_item_is_in_exactly_one_sibling_list_the_one_of_its_parent()
+    {
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        {
+            Tree tree = Projection.Replay(t.Shuffled);
+            var items = tree.AllItems.ToDictionary(i => i.Id);
+            List<ItemId> listed = [.. tree.TopLevelOrder, .. items.Values.SelectMany(i => tree.ChildrenOf(i.Id))];
 
             listed.Count.ShouldBe(items.Count);
             listed.Distinct().Count().ShouldBe(items.Count);
-            foreach (ItemId id in tree.TopLevelOrder)
-            {
-                items[id].Parent.ShouldBeNull();
-            }
-
+            tree.TopLevelOrder.ShouldAllBe(id => items[id].Parent == null);
             foreach (Item item in items.Values)
             {
-                foreach (ItemId child in tree.ChildrenOf(item.Id))
-                {
-                    items[child].Parent.ShouldBe(item.Id);
-                }
+                tree.ChildrenOf(item.Id).ShouldAllBe(child => items[child].Parent == item.Id);
             }
+        });
+    }
 
-            // INV-4: every visible item reachable
+    [Fact]
+    public void INV_4_every_visible_item_is_reachable_from_top_level_once()
+    {
+        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        {
+            Tree tree = Projection.Replay(t.Shuffled);
+            var items = tree.AllItems.ToDictionary(i => i.Id);
             var outline = tree.VisibleOutline().Select(e => e.Item.Id).ToList();
+
             outline.Distinct().Count().ShouldBe(outline.Count);
-            var expectedVisible = items.Values.Where(i => !IsHidden(i)).Select(i => i.Id).ToHashSet();
-            outline.ToHashSet().SetEquals(expectedVisible).ShouldBeTrue();
+            outline.ToHashSet().SetEquals(items.Values.Where(i => !IsHidden(i)).Select(i => i.Id)).ShouldBeTrue();
 
             bool IsHidden(Item i)
             {

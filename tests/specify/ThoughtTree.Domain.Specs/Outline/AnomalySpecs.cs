@@ -8,7 +8,7 @@ namespace ThoughtTree.Domain.Specs.Outline;
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-005")]
 [Trait("ADR", "ADR-014")]
-public class AnomalySpecs
+public sealed class AnomalySpecs
 {
     private const string Device = "a0000000-0000-0000-0000-000000000001";
 

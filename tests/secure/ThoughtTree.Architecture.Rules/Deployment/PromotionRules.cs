@@ -10,7 +10,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public class PromotionRules
+public sealed class PromotionRules
 {
     private static Workflow Production => Workflow.Load(Repository.PathOf(".github", "workflows", "deploy-production.yml"));
 

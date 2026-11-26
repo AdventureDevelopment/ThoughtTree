@@ -21,9 +21,12 @@ public static class HistoryGen
     private static ItemId? Ref(int index) => index < 0 ? null : Item(index);
 
     private static readonly long[] Times = [1, 1, 2, 2, 3, 3, 4, 10, 4_000_000_000_000, long.MaxValue - 1];
-    // Item 6 is never created: an unknown id.
-    private static readonly int[] Afters = [-1, -1, 0, 0, 0, 1, 2, 3, 4, 5, 6];
-    private static readonly int[] Parents = [-1, -1, 0, 0, 1, 1, 2, 3, 4, 5, 6];
+    private const int NeverCreated = ItemPool;
+    private static readonly int[] Afters = [-1, -1, 0, 0, 0, 1, 2, 3, 4, 5, NeverCreated];
+    private static readonly int[] Parents = [-1, -1, 0, 0, 1, 1, 2, 3, 4, 5, NeverCreated];
+
+    private const int ScrambleStep = 7919;
+    private const int ScrambleModulus = 10007;
 
     private enum Kind
     {
@@ -80,8 +83,7 @@ public static class HistoryGen
     {
         var result = new List<TreeEvent>();
 
-        // 7919 and 10007 are prime: scrambled, yet unique below 10007 events, so ties apply in varied orders.
-        string EventId() => $"e0000000-0000-0000-0000-{result.Count * 7919 % 10007:D12}";
+        string EventId() => $"e0000000-0000-0000-0000-{result.Count * ScrambleStep % ScrambleModulus:D12}";
         string Action() => $"c0000000-0000-0000-0000-{result.Count:D12}";
 
         foreach (Draft d in drafts)

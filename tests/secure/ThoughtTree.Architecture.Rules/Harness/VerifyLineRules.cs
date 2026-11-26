@@ -13,7 +13,7 @@ namespace ThoughtTree.Architecture.Rules.Harness;
 /// exist (foundation stage 1). The report goes to the test output and to verify-report.md next to the test assembly.
 /// </summary>
 [Trait("Intent", "Secure")]
-public class VerifyLineRules(ITestOutputHelper output)
+public sealed class VerifyLineRules(ITestOutputHelper output)
 {
     [Fact]
     public void Verify_blocks_can_be_read()

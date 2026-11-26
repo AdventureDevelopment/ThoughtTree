@@ -8,7 +8,7 @@ namespace ThoughtTree.Architecture.Rules.Dependencies;
 /// so these rules read the project files; the type-level rules are in <see cref="TypeDependencyRules"/>.
 /// </summary>
 [Trait("Intent", "Secure")]
-public class ProjectReferenceRules
+public sealed class ProjectReferenceRules
 {
     private static readonly IReadOnlyList<ProjectFile> Sources = ProjectFile.All("src");
 

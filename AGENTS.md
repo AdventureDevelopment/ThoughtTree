@@ -78,7 +78,7 @@ using Xunit;
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-005")]
 [Trait("ADR", "ADR-059")]
-public class DeleteAndUndoSpecs
+public sealed class DeleteAndUndoSpecs
 {
     [Scenario]
     public void Undoing_a_delete_brings_the_item_back_with_its_children()
@@ -119,7 +119,7 @@ public class Device { /* AddItem, Delete, Undo, Tree, Log */ }
 
 Owner decision 2026-11-25 (rules 1 to 9 confirmed by the owner, with revisions to 6 and 9), adapted from the SoloAdventure project. Same form as section 4: when the trigger occurs, do the action. Rules marked "build" are in `.editorconfig` at `warning`, so a breach fails the build [ADR-042].
 
-- **If you are about to write a comment:** first try a better name or a spec. Write the comment only if neither can say it: an ADR, `INV-n` or `D-n` id, or a non-obvious gotcha. One line. Never restate the code; never retell a design decision, because the ADR owns the why.
+- **If you are about to write a comment:** express it in code instead: a name, an extracted method or variable, or a test. Write a comment only for behaviour outside our code that no name can show (for example a library quirk or how GitHub runs a workflow), one line. Ids belong in summaries, traits and commit messages, never in inline comments; the one exception is the reference model, whose `R-n` markers map it to its `RULES.md`. Every inline comment is listed in `eng/approved-comments.txt`; `CommentRules` in the architecture rules fails the branch check on any other.
 - **If you are about to write prose** (comment, doc, pull request text, commit message): lead with the point and cut what the reader does not need to act.
 - **If you are about to add a type, field or abstraction:** name what needs it today. If nothing does, do not add it.
 - **If you are about to add a public type:** give it a `/// <summary>` of one sentence, role plus the ADR id where one applies. Give a member one only if its name does not say it.

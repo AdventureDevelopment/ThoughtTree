@@ -11,7 +11,7 @@ public static class HybridClock
             return new EventClock(now);
         }
 
-        // ADR-014: no overflow at the largest value.
-        return highest.Value == long.MaxValue ? highest : new EventClock(highest.Value + 1);
+        var largestClockReached = highest.Value == long.MaxValue;
+        return largestClockReached ? highest : new EventClock(highest.Value + 1);
     }
 }

@@ -5,10 +5,8 @@ public static class Projection
 {
     public static Tree Replay(IEnumerable<TreeEvent> events)
     {
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-
         var ordered = events
-            .Where(e => seen.Add(e.EventId)) // INV-2
+            .DistinctBy(e => e.EventId, StringComparer.Ordinal)
             .OrderBy(EventKey.Of, EventKey.Comparer)
             .ToList();
 
@@ -28,13 +26,13 @@ public static class Projection
             case ItemCreated c when tree.Items.ContainsKey(c.Item):
                 return tree.WithAnomaly(AnomalyKind.DuplicateCreate, e, c.Item);
             case ItemCreated c:
-                return Create(tree, c);
+                return CreateWithFallbackPlace(tree, c);
             case ItemTitleChanged t when tree.Items.TryGetValue(t.Item, out var item):
-                return t.Title is null ? tree : tree.WithItem(item.WithTitle(t.Title)); // ADR-016
+                return t.Title is null ? tree : tree.WithItem(item.WithTitle(t.Title));
             case ItemNoteChanged n when tree.Items.TryGetValue(n.Item, out var item):
                 return n.Note is null ? tree : tree.WithItem(item.WithNote(n.Note));
             case ItemMoved m when tree.Items.ContainsKey(m.Item):
-                return Move(tree, m);
+                return MoveUnlessImpossible(tree, m);
             case ItemDeleted d when tree.Items.TryGetValue(d.Item, out var item):
                 return tree.WithItem(item.WithDeleted(true));
             case ItemRestored r when tree.Items.TryGetValue(r.Item, out var item):
@@ -54,8 +52,7 @@ public static class Projection
         }
     }
 
-    // ADR-004 rule 5
-    private static Tree Create(Tree tree, ItemCreated c)
+    private static Tree CreateWithFallbackPlace(Tree tree, ItemCreated c)
     {
         var parent = c.Parent;
         if (parent is { } p && !tree.Items.ContainsKey(p))
@@ -75,8 +72,7 @@ public static class Projection
         return tree.InsertChild(parent, c.Item, after);
     }
 
-    // ADR-004 rule 4, ADR-023 rule 3
-    private static Tree Move(Tree tree, ItemMoved m)
+    private static Tree MoveUnlessImpossible(Tree tree, ItemMoved m)
     {
         if (m.Parent is { } p && !tree.Items.ContainsKey(p))
         {

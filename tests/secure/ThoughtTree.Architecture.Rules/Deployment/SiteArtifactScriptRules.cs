@@ -11,7 +11,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public class SiteArtifactScriptRules
+public sealed class SiteArtifactScriptRules
 {
     [Fact]
     public async Task The_artifact_checks_of_site_artifact_py_hold()
