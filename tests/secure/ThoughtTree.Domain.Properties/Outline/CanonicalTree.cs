@@ -7,6 +7,8 @@ namespace ThoughtTree.Domain.Properties.Outline;
 /// <summary>Renders a <see cref="Tree"/> in the reference model's canonical text, so the two compare as strings.</summary>
 public static class CanonicalTree
 {
+    public static string OfReplay(IEnumerable<TreeEvent> events) => Render(Projection.Replay(events));
+
     public static string Render(Tree tree)
     {
         var lines = new List<string> { $"items {tree.AllItems.Count}" };
@@ -64,13 +66,8 @@ public static class CanonicalTree
 
     private static string Bool(bool value) => value ? "true" : "false";
 
-    private static string Quote(string? s)
+    private static string Quote(string s)
     {
-        if (s is null)
-        {
-            return "null";
-        }
-
         var sb = new StringBuilder("\"");
         foreach (var ch in s)
         {

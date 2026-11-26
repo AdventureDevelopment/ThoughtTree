@@ -14,20 +14,18 @@ public sealed class SnapshotProperties
         Gen.Const(Projector.Empty),
         Gen.Int[1, 4].Select(Projector.WithCheckpointInterval));
 
-    private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));
-
     [Fact]
     public void INV_7_events_applied_one_at_a_time_in_any_arrival_order_equal_a_full_replay_at_every_step()
     {
         Gen.Select(HistoryGen.HistoryAndShuffle, EmptyProjectors).SampleFixed(x =>
         {
-            var projector = x.Item2;
+            var (history, projector) = x;
             var arrived = new List<TreeEvent>();
-            foreach (var e in x.Item1.Shuffled)
+            foreach (var e in history.Shuffled)
             {
                 projector = projector.Add(e);
                 arrived.Add(e);
-                CanonicalTree.Render(projector.Tree).ShouldBe(State(arrived));
+                CanonicalTree.Render(projector.Tree).ShouldBe(CanonicalTree.OfReplay(arrived));
             }
         });
     }
@@ -45,7 +43,7 @@ public sealed class SnapshotProperties
             var rest = history.Shuffled.Except(inKept).Concat(history.Shuffled.Take(2));
             var resumed = rest.Aggregate(kept, (p, e) => p.Add(e));
 
-            CanonicalTree.Render(resumed.Tree).ShouldBe(State(history.Events));
+            CanonicalTree.Render(resumed.Tree).ShouldBe(CanonicalTree.OfReplay(history.Events));
             CanonicalTree.Render(kept.Tree).ShouldBe(keptBefore);
         });
     }
@@ -65,7 +63,7 @@ public sealed class SnapshotProperties
                 remaining = remaining.Skip(size);
             }
 
-            CanonicalTree.Render(projector.Tree).ShouldBe(State(history.Events));
+            CanonicalTree.Render(projector.Tree).ShouldBe(CanonicalTree.OfReplay(history.Events));
         });
     }
 

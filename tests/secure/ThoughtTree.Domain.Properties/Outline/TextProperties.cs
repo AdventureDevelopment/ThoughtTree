@@ -12,8 +12,6 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-029")]
 public sealed class TextProperties
 {
-    private static readonly SearchValues<char> LineBreaks = SearchValues.Create(['\r', '\n', '\u0085', '\u2028', '\u2029', '\u000B', '\u000C']);
-
     private static readonly string[] Pieces =
     [
         "a", "e", "A", " ", "\u0301", "\u0308", "\u00E9", "\u212B", "\u1100", "\u1161", "\uAC00",
@@ -23,6 +21,8 @@ public sealed class TextProperties
     ];
 
     private static readonly string[] LineBreakPieces = ["\r", "\n", "\r\n", "\u0085", "\u2028", "\u2029", "\u000B", "\u000C"];
+
+    private static readonly SearchValues<char> LineBreaks = SearchValues.Create(string.Concat(LineBreakPieces));
 
     private static readonly Gen<string> RawText = Gen.OneOf(TextOf(Pieces), TextOf(LineBreakPieces));
 
@@ -87,10 +87,10 @@ public sealed class TextProperties
             var created = new ItemCreated(id, device, clock, action, item, null, null, new Title(raw), new Note(raw));
             var texts = new[]
             {
-                created.Title!.Value.Value,
-                created.Note!.Value.Value,
-                new ItemTitleChanged(id, device, clock, action, item, new Title(raw)).Title!.Value.Value,
-                new ItemNoteChanged(id, device, clock, action, item, new Note(raw)).Note!.Value.Value,
+                created.Title.ShouldNotBeNull().Value,
+                created.Note.ShouldNotBeNull().Value,
+                new ItemTitleChanged(id, device, clock, action, item, new Title(raw)).Title.ShouldNotBeNull().Value,
+                new ItemNoteChanged(id, device, clock, action, item, new Note(raw)).Note.ShouldNotBeNull().Value,
             };
             texts.ShouldAllBe(t => t.IsNormalized(NormalizationForm.FormC));
             texts[0].ShouldBe(texts[2]);

@@ -16,8 +16,6 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("ADR", "ADR-023")]
 public sealed class OutlineProperties
 {
-    private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));
-
     [Fact]
     public void Generated_histories_hit_the_hard_cases()
     {
@@ -38,7 +36,7 @@ public sealed class OutlineProperties
                 reported[kind] = reported.GetValueOrDefault(kind) + 1;
             }
 
-            h.Select(e => e.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(3);
+            h.Select(e => e.DeviceId).Distinct().Count().ShouldBeLessThanOrEqualTo(HistoryGen.Devices.Count);
             if (h.GroupBy(e => e.Clock).Any(g => g.Select(e => e.DeviceId).Distinct().Count() > 1))
             {
                 equalClocksAcrossDevices++;
@@ -69,7 +67,7 @@ public sealed class OutlineProperties
     [Fact]
     public void INV_1_order_independence_any_shuffle_gives_the_same_full_state()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t => State(t.Shuffled).ShouldBe(State(t.Events)));
+        HistoryGen.HistoryAndShuffle.SampleFixed(t => CanonicalTree.OfReplay(t.Shuffled).ShouldBe(CanonicalTree.OfReplay(t.Events)));
     }
 
     [Fact]
@@ -92,7 +90,7 @@ public sealed class OutlineProperties
             }
 
             return (h, withDuplicates);
-        }).SampleFixed(t => State(t.withDuplicates).ShouldBe(State(t.h)));
+        }).SampleFixed(t => CanonicalTree.OfReplay(t.withDuplicates).ShouldBe(CanonicalTree.OfReplay(t.h)));
     }
 
     private static readonly Gen<(TreeEvent[] All, List<TreeEvent> A, List<TreeEvent> B, List<TreeEvent> C)> ThreeLogs =
@@ -107,12 +105,12 @@ public sealed class OutlineProperties
     {
         ThreeLogs.SampleFixed(t =>
         {
-            var expected = State(t.All);
-            State(t.A.Concat(t.B).Concat(t.C)).ShouldBe(expected);
-            State(t.A.Concat(t.B.Concat(t.C))).ShouldBe(expected);
-            State(t.C.Concat(t.B).Concat(t.A)).ShouldBe(expected);
-            State(t.B.Concat(t.A).Concat(t.C).Concat(t.A)).ShouldBe(expected);
-            State(t.A.Concat(t.B).Concat(t.C).Concat(t.C)).ShouldBe(expected);
+            var expected = CanonicalTree.OfReplay(t.All);
+            CanonicalTree.OfReplay(t.A.Concat(t.B).Concat(t.C)).ShouldBe(expected);
+            CanonicalTree.OfReplay(t.A.Concat(t.B.Concat(t.C))).ShouldBe(expected);
+            CanonicalTree.OfReplay(t.C.Concat(t.B).Concat(t.A)).ShouldBe(expected);
+            CanonicalTree.OfReplay(t.B.Concat(t.A).Concat(t.C).Concat(t.A)).ShouldBe(expected);
+            CanonicalTree.OfReplay(t.A.Concat(t.B).Concat(t.C).Concat(t.C)).ShouldBe(expected);
         });
     }
 
@@ -122,7 +120,7 @@ public sealed class OutlineProperties
         ThreeLogs.SampleFixed(t =>
         {
             var projector = t.A.Concat(t.B).Concat(t.C).Aggregate(Projector.Empty, (p, e) => p.Add(e));
-            CanonicalTree.Render(projector.Tree).ShouldBe(State(t.All));
+            CanonicalTree.Render(projector.Tree).ShouldBe(CanonicalTree.OfReplay(t.All));
         });
     }
 
@@ -151,7 +149,8 @@ public sealed class OutlineProperties
                 for (ItemId? p = item.Parent; p is { } id; p = items[id].Parent)
                 {
                     items.ContainsKey(id).ShouldBeTrue();
-                    (++steps).ShouldBeLessThanOrEqualTo(items.Count);
+                    steps++;
+                    steps.ShouldBeLessThanOrEqualTo(items.Count);
                 }
             }
         });
@@ -218,6 +217,6 @@ public sealed class OutlineProperties
     public void Projection_equals_the_reference_model_on_every_history()
     {
         HistoryGen.HistoryAndShuffle.SampleFixed(t =>
-            State(t.Shuffled).ShouldBe(ReferenceModel.ReplayToCanonicalText(t.Shuffled)));
+            CanonicalTree.OfReplay(t.Shuffled).ShouldBe(ReferenceModel.ReplayToCanonicalText(t.Shuffled)));
     }
 }
