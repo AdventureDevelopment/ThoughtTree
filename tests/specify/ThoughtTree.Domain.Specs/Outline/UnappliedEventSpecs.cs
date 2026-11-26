@@ -15,7 +15,7 @@ public sealed class UnappliedEventSpecs
         tree.Anomalies.Select(a => (a.Kind, a.ItemId));
 
     [Scenario]
-    public void ADR_023_A_move_into_the_items_own_subtree_is_not_applied_and_is_reported()
+    public void A_move_into_the_items_own_subtree_is_not_applied_and_is_reported()
     {
         Tree tree = default!;
 
@@ -35,7 +35,7 @@ public sealed class UnappliedEventSpecs
     }
 
     [Scenario]
-    public void ADR_004_A_move_to_a_parent_that_does_not_exist_is_not_applied_and_is_reported()
+    public void A_move_to_a_parent_that_does_not_exist_is_not_applied_and_is_reported()
     {
         Tree tree = default!;
 
@@ -51,7 +51,7 @@ public sealed class UnappliedEventSpecs
     }
 
     [Scenario]
-    public void ADR_004_A_move_after_a_sibling_that_does_not_exist_is_not_applied_and_is_reported()
+    public void A_move_after_a_sibling_that_does_not_exist_is_not_applied_and_is_reported()
     {
         Tree tree = default!;
 
@@ -67,7 +67,7 @@ public sealed class UnappliedEventSpecs
     }
 
     [Scenario]
-    public void ADR_004_A_move_after_the_item_itself_is_not_applied_and_is_reported()
+    public void A_move_after_the_item_itself_is_not_applied_and_is_reported()
     {
         Tree tree = default!;
 
@@ -83,7 +83,7 @@ public sealed class UnappliedEventSpecs
     }
 
     [Scenario]
-    public void ADR_004_A_new_item_under_a_parent_that_does_not_exist_goes_to_top_level_and_is_reported()
+    public void A_new_item_under_a_parent_that_does_not_exist_goes_to_top_level_and_is_reported()
     {
         Tree tree = default!;
 
@@ -98,7 +98,7 @@ public sealed class UnappliedEventSpecs
     }
 
     [Scenario]
-    public void ADR_004_A_new_item_after_a_sibling_that_does_not_exist_goes_first_and_is_reported()
+    public void A_new_item_after_a_sibling_that_does_not_exist_goes_first_and_is_reported()
     {
         Tree tree = default!;
 
@@ -114,7 +114,7 @@ public sealed class UnappliedEventSpecs
     }
 
     [Scenario]
-    public void ADR_004_A_sibling_under_another_parent_places_the_item_first_without_a_report()
+    public void A_sibling_under_another_parent_places_the_item_first_without_a_report()
     {
         Tree tree = default!;
 
@@ -131,7 +131,7 @@ public sealed class UnappliedEventSpecs
     }
 
     [Scenario]
-    public void ADR_016_An_event_of_an_unknown_type_is_skipped_and_reported()
+    public void An_event_of_an_unknown_type_is_skipped_and_reported()
     {
         Tree tree = default!;
 

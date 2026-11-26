@@ -130,7 +130,7 @@ public sealed class OutlineSpecs
     }
 
     [Scenario]
-    public void ADR_005_A_deleted_item_is_hidden_with_its_children_but_kept()
+    public void A_deleted_item_is_hidden_with_its_children_but_kept()
     {
         Log log = default!;
         Tree tree = default!;
@@ -152,7 +152,7 @@ public sealed class OutlineSpecs
     }
 
     [Scenario]
-    public void ADR_005_A_restored_item_returns_with_its_children()
+    public void A_restored_item_returns_with_its_children()
     {
         Log log = default!;
         Tree tree = default!;
