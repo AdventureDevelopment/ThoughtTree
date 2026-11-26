@@ -45,6 +45,8 @@ public sealed class PrimitiveRules
             $"{typeof(SampleWithPrimitives).FullName}.Count",
             $"{typeof(SampleWithPrimitives).FullName}.Find(text)",
             $"{typeof(SampleWithPrimitives).FullName}.Find:result",
+            $"{typeof(SampleWithPrimitives).FullName}.Rows:result",
+            $"{typeof(SampleWithPrimitives).FullName}.Sizes",
         ], ignoreOrder: true);
         PrimitivesIn(typeof(SampleValue)).ShouldBeEmpty();
     }
@@ -59,30 +61,35 @@ public sealed class PrimitiveRules
         const BindingFlags declaredPublic = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
         foreach (var constructor in type.GetConstructors(declaredPublic))
         {
-            foreach (var parameter in constructor.GetParameters().Where(candidate => Primitives.Contains(candidate.ParameterType)))
+            foreach (var parameter in constructor.GetParameters().Where(candidate => HoldsPrimitive(candidate.ParameterType)))
             {
                 yield return $"{type.FullName}.ctor({parameter.Name})";
             }
         }
 
-        foreach (var property in type.GetProperties(declaredPublic).Where(candidate => Primitives.Contains(candidate.PropertyType)))
+        foreach (var property in type.GetProperties(declaredPublic).Where(candidate => HoldsPrimitive(candidate.PropertyType)))
         {
             yield return $"{type.FullName}.{property.Name}";
         }
 
         foreach (var method in type.GetMethods(declaredPublic).Where(candidate => !candidate.IsSpecialName && !GeneratedMembers.Contains(candidate.Name)))
         {
-            foreach (var parameter in method.GetParameters().Where(candidate => Primitives.Contains(candidate.ParameterType)))
+            foreach (var parameter in method.GetParameters().Where(candidate => HoldsPrimitive(candidate.ParameterType)))
             {
                 yield return $"{type.FullName}.{method.Name}({parameter.Name})";
             }
 
-            if (Primitives.Contains(method.ReturnType))
+            if (HoldsPrimitive(method.ReturnType))
             {
                 yield return $"{type.FullName}.{method.Name}:result";
             }
         }
     }
+
+    private static bool HoldsPrimitive(Type type) =>
+        Primitives.Contains(type)
+        || (type.IsArray && HoldsPrimitive(type.GetElementType()!))
+        || (type.IsGenericType && type.GetGenericArguments().Any(HoldsPrimitive));
 
     private static bool IsSingleValueType(Type type) =>
         type.IsValueType && type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Length == 1;
@@ -99,6 +106,10 @@ public sealed class PrimitiveRules
         public string Find(string text) => name + text;
 
         public SampleValue Wrap() => new(name);
+
+        public IReadOnlyList<int> Sizes => [name.Length];
+
+        public IReadOnlyList<(SampleValue Value, long Position)> Rows() => [(new SampleValue(name), 0)];
     }
 
     public readonly record struct SampleValue(string Value);
