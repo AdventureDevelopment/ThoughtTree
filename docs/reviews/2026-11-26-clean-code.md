@@ -110,7 +110,6 @@ TL;DR: an independent review of everything the branch adds over `main` in `src/`
 **S2 · `Outline/OutlineSpecs.cs:12`, `Outline/SnapshotSpecs.cs:8`, `Outline/TreeVersionSpecs.cs:8`, `Clock/ClockEdgeSpecs.cs:9`**
 - What: public spec classes without a `/// <summary>`, which AGENTS.md section 4b asks for on every public type; the other spec classes have one.
 - Fix: add a one-sentence summary with the ADR id. Effort: S. Protected: yes. See H1 for a check.
-- **Decided by the owner, 2026-11-26:** spec classes need no summary; the traits carry intent and ADR ids, the class name says the behaviour. Summaries are dropped and names made descriptive when a spec class is next edited (AGENTS.md section 4a). S2 is void; H1 and H4 check summaries on `src/` types only.
 
 **S3 · `Outline/Log.cs:7`, `Outline/AnomalySpecs.cs:13-19`, `Outline/MissingTextSpecs.cs:12, 25-27, 46`, `Outline/UnappliedEventSpecs.cs:143, 160, 172`, `Clock/EventOrderSpecs.cs:14-15, 101-102`, `Outline/SnapshotSpecs.cs:44, 108, 131`, `Outline/TreeVersionSpecs.cs:29, 54`**
 - What: device ids are string literals in seven files (`"a0000000-…01"` four times, `"b0000000-…02"` five times); four classes build events by hand because `Log` cannot set an event id, leave out a title or note, or write an unknown event type; `FutureEvent` is declared here and again in `HistoryGen`.

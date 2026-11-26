@@ -71,7 +71,7 @@ Rules read as trigger and action, the way hooks do: when the trigger occurs, do 
 
 - Package `bbv.LambdaTale` 2.9.x (2.9.306 at 2026-11-15; depends on `xunit.core` 2.9.x, so the test projects use xUnit v2). Owner decision: xUnit v2 throughout until LambdaTale supports xUnit v3 [ADR-075, docs/architecture.md section 8]. Source: https://www.nuget.org/packages/bbv.LambdaTale and https://github.com/bbvch/LambdaTale.
 - Syntax verified against the README: `[Scenario]` on the method, `using LambdaTale;`, steps as `"Given ...".x(() => ...)`, async steps as `.x(async () => ...)`. Share state through variables declared in the scenario method. Do not use anything not in the README (for example `[Example]`) without checking the docs first.
-- Location: `tests/specify/ThoughtTree.<Project>.Specs/<Feature>/...Specs.cs`, feature folder named after the glossary [ADR-054]. Tag the class `[Trait("Intent", "Specify")]`, plus `[Trait("ADR", "ADR-0xx")]` for each ADR it secures; name `INV-n` or `D-n` in the scenario title. A spec class has no `/// <summary>`: the traits carry the intent and the ADR ids, and the class name says the behaviour it covers (owner decision 2026-11-26). When you edit an existing spec class, drop its summary and give the class a descriptive name if it has none.
+- Location: `tests/specify/ThoughtTree.<Project>.Specs/<Feature>/...Specs.cs`, feature folder named after the glossary [ADR-054]. Tag the class `[Trait("Intent", "Specify")]`, plus `[Trait("ADR", "ADR-0xx")]` for each ADR it secures; name `INV-n` or `D-n` in the scenario title.
 
 ```csharp
 // placeholder types: not implemented yet
@@ -127,7 +127,7 @@ Owner decision 2026-11-25 (rules 1 to 9 confirmed by the owner, with revisions t
 - **If you are about to write prose** (comment, doc, pull request text, commit message): lead with the point and cut what the reader does not need to act.
 - **If you are about to add a type, field or abstraction:** name what needs it today. If nothing does, do not add it.
 - **If you are about to give a parameter, property or return value a built-in type** (`string`, `long`, `int`, `bool`) in the Domain or the application layer: if it carries more meaning than the type (an id, a point in time, a unit, an outcome), give it its own type. `PrimitiveRules` in the architecture rules fails the branch check on a public `string`, `long` or `int` that is not listed in `eng/approved-primitives.txt`.
-- **If you are about to add a public type:** give it a `/// <summary>` of one sentence, role plus the ADR id where one applies; spec classes are the exception (section 4a). Give a member one only if its name does not say it.
+- **If you are about to add a public type:** give it a `/// <summary>` of one sentence, role plus the ADR id where one applies. Give a member one only if its name does not say it.
 - **If you are about to declare a class or record:** make it `sealed`, unless it is designed for inheritance.
 - **If you are about to write a block, a member or a call on `this`:** use braces for every block and an explicit accessibility on every member (build), and write `this.` before every instance member (build). Use an expression body only when the member fits on one line (preference, not checked by the build).
 - **If you are about to declare a local variable:** use `var` when the type is built-in or clear from the right-hand side (build).
