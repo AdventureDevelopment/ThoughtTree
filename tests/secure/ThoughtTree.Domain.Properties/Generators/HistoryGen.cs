@@ -92,8 +92,8 @@ public static class HistoryGen
             var device = new DeviceId(Devices[d.Device]);
             var clock = new EventClock(d.Time);
             ItemId item = Item(d.Item);
-            var title = $"t{d.Text}{RawTexts[d.Text % RawTexts.Length]}";
-            var note = $"n{d.Text}{RawTexts[(d.Text + 1) % RawTexts.Length]}";
+            var title = new Title($"t{d.Text}{RawTexts[d.Text % RawTexts.Length]}");
+            var note = new Note($"n{d.Text}{RawTexts[(d.Text + 1) % RawTexts.Length]}");
             switch (d.Kind)
             {
                 case Kind.Create:

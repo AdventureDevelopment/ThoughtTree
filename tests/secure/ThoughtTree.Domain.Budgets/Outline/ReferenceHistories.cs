@@ -20,12 +20,12 @@ internal static class ReferenceHistories
             if (created < 2 || kind < 13)
             {
                 var parent = created == 0 ? (ItemId?)null : ItemNumber((created - 1) / 10);
-                log.Add(new ItemCreated(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(created), parent, null, $"t{i}"));
+                log.Add(new ItemCreated(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(created), parent, null, new Title($"t{i}")));
                 created++;
             }
             else if (kind < 17)
             {
-                log.Add(new ItemTitleChanged(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(i * 7919 % created), $"r{i}"));
+                log.Add(new ItemTitleChanged(EventNumber(i), Laptop, clock, ActionNumber(i), ItemNumber(i * 7919 % created), new Title($"r{i}")));
             }
             else if (kind < 19)
             {
@@ -44,12 +44,12 @@ internal static class ReferenceHistories
     {
         var log = new List<TreeEvent>(events)
         {
-            new ItemCreated(EventNumber(0), Laptop, new EventClock(1), ActionNumber(0), ItemNumber(0), null, null, "inbox"),
+            new ItemCreated(EventNumber(0), Laptop, new EventClock(1), ActionNumber(0), ItemNumber(0), null, null, new Title("inbox")),
         };
         for (var i = 1; i < events; i++)
         {
             var after = i == 1 ? (ItemId?)null : ItemNumber(i - 1);
-            log.Add(new ItemCreated(EventNumber(i), Laptop, new EventClock(i + 1), ActionNumber(i), ItemNumber(i), ItemNumber(0), after, $"t{i}"));
+            log.Add(new ItemCreated(EventNumber(i), Laptop, new EventClock(i + 1), ActionNumber(i), ItemNumber(i), ItemNumber(0), after, new Title($"t{i}")));
         }
 
         return log;
@@ -59,7 +59,7 @@ internal static class ReferenceHistories
     {
         var applied = BranchingTree(events - (events / 10));
         var late = Enumerable.Range(0, events / 10)
-            .Select(i => (TreeEvent)new ItemTitleChanged(EventNumber(events + i), Phone, new EventClock((i * 9) + 1), ActionNumber(events + i), ItemNumber(0), $"p{i}"))
+            .Select(i => (TreeEvent)new ItemTitleChanged(EventNumber(events + i), Phone, new EventClock((i * 9) + 1), ActionNumber(events + i), ItemNumber(0), new Title($"p{i}")))
             .ToList();
         return (applied, late);
     }

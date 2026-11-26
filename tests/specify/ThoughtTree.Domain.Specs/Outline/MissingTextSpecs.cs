@@ -22,7 +22,7 @@ public sealed class MissingTextSpecs
         "When the tree is rebuilt from a log that then changes its title and its note without giving a value"
             .x(() => tree = Projection.Replay(
             [
-                new ItemCreated(new EventId("e1"), new DeviceId(Device), new EventClock(1), new ActionId("a1"), new ItemId("n"), null, null, "Ideas", "memo"),
+                new ItemCreated(new EventId("e1"), new DeviceId(Device), new EventClock(1), new ActionId("a1"), new ItemId("n"), null, null, new Title("Ideas"), new Note("memo")),
                 new ItemTitleChanged(new EventId("e2"), new DeviceId(Device), new EventClock(2), new ActionId("a2"), new ItemId("n"), null!),
                 new ItemNoteChanged(new EventId("e3"), new DeviceId(Device), new EventClock(3), new ActionId("a3"), new ItemId("n"), null!),
             ]));
@@ -30,8 +30,8 @@ public sealed class MissingTextSpecs
         "Then the title and the note are unchanged"
             .x(() =>
             {
-                tree.Find(new ItemId("n"))!.Title.ShouldBe("Ideas");
-                tree.Find(new ItemId("n"))!.Note.ShouldBe("memo");
+                tree.Find(new ItemId("n"))!.Title.ShouldBe(new Title("Ideas"));
+                tree.Find(new ItemId("n"))!.Note.ShouldBe(new Note("memo"));
             });
     }
 
@@ -49,8 +49,8 @@ public sealed class MissingTextSpecs
         "Then its title and note are empty text"
             .x(() =>
             {
-                tree.Find(new ItemId("n"))!.Title.ShouldBe("");
-                tree.Find(new ItemId("n"))!.Note.ShouldBe("");
+                tree.Find(new ItemId("n"))!.Title.ShouldBe(new Title(""));
+                tree.Find(new ItemId("n"))!.Note.ShouldBe(new Note(""));
             });
     }
 }

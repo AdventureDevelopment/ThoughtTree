@@ -7,22 +7,22 @@ namespace ThoughtTree.Domain.Properties.Outline;
 [Trait("Intent", "Secure")]
 public sealed class PrintingRules
 {
-    private const string Title = "secret-title";
-    private const string Note = "secret-note";
+    private const string SecretTitle = "secret-title";
+    private const string SecretNote = "secret-note";
 
     [Fact]
     public void Events_items_and_trees_print_without_titles_or_notes()
     {
         TreeEvent[] events =
         [
-            new ItemCreated(new EventId("e1"), new DeviceId("d"), new EventClock(1), new ActionId("a1"), new ItemId("n"), null, null, Title, Note),
-            new ItemTitleChanged(new EventId("e2"), new DeviceId("d"), new EventClock(2), new ActionId("a2"), new ItemId("n"), Title),
-            new ItemNoteChanged(new EventId("e3"), new DeviceId("d"), new EventClock(3), new ActionId("a3"), new ItemId("n"), Note),
+            new ItemCreated(new EventId("e1"), new DeviceId("d"), new EventClock(1), new ActionId("a1"), new ItemId("n"), null, null, new Title(SecretTitle), new Note(SecretNote)),
+            new ItemTitleChanged(new EventId("e2"), new DeviceId("d"), new EventClock(2), new ActionId("a2"), new ItemId("n"), new Title(SecretTitle)),
+            new ItemNoteChanged(new EventId("e3"), new DeviceId("d"), new EventClock(3), new ActionId("a3"), new ItemId("n"), new Note(SecretNote)),
         ];
         var tree = Projection.Replay(events);
 
         string[] printed = [.. events.Select(e => e.ToString()), tree.Find(new ItemId("n"))!.ToString(), tree.ToString()];
 
-        printed.ShouldAllBe(p => !p.Contains(Title) && !p.Contains(Note));
+        printed.ShouldAllBe(p => !p.Contains(SecretTitle) && !p.Contains(SecretNote));
     }
 }

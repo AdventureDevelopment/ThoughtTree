@@ -22,21 +22,21 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
     {
         var h = this.Next(time);
         this.Events.Add(new ItemCreated(h.EventId, h.Device, h.Clock, h.Action, Id(item),
-            parent is null ? null : Id(parent), after is null ? null : Id(after), title));
+            parent is null ? null : Id(parent), after is null ? null : Id(after), new Title(title)));
         return this;
     }
 
     public Log Rename(long time, string item, string title)
     {
         var h = this.Next(time);
-        this.Events.Add(new ItemTitleChanged(h.EventId, h.Device, h.Clock, h.Action, Id(item), title));
+        this.Events.Add(new ItemTitleChanged(h.EventId, h.Device, h.Clock, h.Action, Id(item), new Title(title)));
         return this;
     }
 
     public Log Note(long time, string item, string note)
     {
         var h = this.Next(time);
-        this.Events.Add(new ItemNoteChanged(h.EventId, h.Device, h.Clock, h.Action, Id(item), note));
+        this.Events.Add(new ItemNoteChanged(h.EventId, h.Device, h.Clock, h.Action, Id(item), new Note(note)));
         return this;
     }
 

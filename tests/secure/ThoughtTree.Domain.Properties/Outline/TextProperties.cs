@@ -84,13 +84,13 @@ public sealed class TextProperties
         RawText.SampleFixed(raw =>
         {
             var (id, device, clock, action, item) = (new EventId("e"), new DeviceId("d"), new EventClock(1), new ActionId("a"), new ItemId("n"));
-            var created = new ItemCreated(id, device, clock, action, item, null, null, raw, raw);
+            var created = new ItemCreated(id, device, clock, action, item, null, null, new Title(raw), new Note(raw));
             var texts = new[]
             {
                 created.Title!.Value.Value,
                 created.Note!.Value.Value,
-                new ItemTitleChanged(id, device, clock, action, item, raw).Title!.Value.Value,
-                new ItemNoteChanged(id, device, clock, action, item, raw).Note!.Value.Value,
+                new ItemTitleChanged(id, device, clock, action, item, new Title(raw)).Title!.Value.Value,
+                new ItemNoteChanged(id, device, clock, action, item, new Note(raw)).Note!.Value.Value,
             };
             texts.ShouldAllBe(t => t.IsNormalized(NormalizationForm.FormC));
             texts[0].ShouldBe(texts[2]);

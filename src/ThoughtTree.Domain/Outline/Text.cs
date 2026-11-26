@@ -15,8 +15,6 @@ public readonly record struct Title
 
     public string Value => this.value ?? "";
 
-    public static implicit operator Title(string value) => new(value);
-
     public bool Equals(Title other) => string.Equals(this.Value, other.Value, StringComparison.Ordinal);
 
     public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(this.Value);
@@ -35,8 +33,6 @@ public readonly record struct Note
     }
 
     public string Value => this.value ?? "";
-
-    public static implicit operator Note(string value) => new(value);
 
     public bool Equals(Note other) => string.Equals(this.Value, other.Value, StringComparison.Ordinal);
 
