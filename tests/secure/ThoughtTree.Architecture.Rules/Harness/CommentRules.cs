@@ -10,7 +10,7 @@ namespace ThoughtTree.Architecture.Rules.Harness;
 public sealed partial class CommentRules
 {
     private const string ApprovedList = "eng/approved-comments.txt";
-    private const string ReferenceModel = "tests/secure/ThoughtTree.Domain.Model/ModelContract.cs";
+    private const string ReferenceModel = "tests/secure/ThoughtTree.Domain.Model/ReferenceModel.cs";
 
     [Fact]
     public void Every_inline_comment_is_approved()

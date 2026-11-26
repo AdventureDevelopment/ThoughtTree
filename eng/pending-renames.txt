@@ -2,7 +2,7 @@
 # Protected files wait for the owner-approved rename in docs/plan/next-work.md. Remove a line once the file is renamed;
 # NameRules fails on a listed file that no longer has a one-letter name.
 
-tests/secure/ThoughtTree.Domain.Model/ModelContract.cs
+tests/secure/ThoughtTree.Domain.Model/ReferenceModel.cs
 tests/specify/ThoughtTree.Domain.Specs/Clock/ClockEdgeSpecs.cs
 tests/specify/ThoughtTree.Domain.Specs/Clock/EventOrderSpecs.cs
 tests/specify/ThoughtTree.Domain.Specs/Outline/Log.cs

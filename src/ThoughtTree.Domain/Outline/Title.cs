@@ -11,11 +11,11 @@ public readonly record struct Title
         this.value = NormalisedText.ForTitle(value);
     }
 
-    public string Value => this.value ?? "";
+    public string Text => this.value ?? "";
 
-    public bool Equals(Title other) => string.Equals(this.Value, other.Value, StringComparison.Ordinal);
+    public bool Equals(Title other) => string.Equals(this.Text, other.Text, StringComparison.Ordinal);
 
-    public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(this.Value);
+    public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(this.Text);
 
-    public override string ToString() => this.Value;
+    public override string ToString() => this.Text;
 }

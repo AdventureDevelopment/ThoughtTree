@@ -22,7 +22,6 @@ namespace ThoughtTree.Domain.Model;
 /// </remarks>
 public static partial class ReferenceModel
 {
-
     public static string ReplayToCanonicalText(IEnumerable<TreeEvent> events)
     {
         ArgumentNullException.ThrowIfNull(events);
@@ -139,14 +138,14 @@ public static partial class ReferenceModel
                 case ItemTitleChanged t:
                     if (this.Existing(t, t.ItemId) is { } titled && t.Title is { } title)
                     {
-                        titled.Title = TitleText(title.Value); // R7, R9
+                        titled.Title = TitleText(title.Text); // R7, R9
                     }
 
                     break;
                 case ItemNoteChanged n:
                     if (this.Existing(n, n.ItemId) is { } noted && n.Note is { } note)
                     {
-                        noted.Note = NoteText(note.Value); // R7, R9
+                        noted.Note = NoteText(note.Text); // R7, R9
                     }
 
                     break;
@@ -240,7 +239,7 @@ public static partial class ReferenceModel
             }
 
             // R4
-            this.items[id] = new Node { Id = id, Parent = parent, Title = TitleText(c.Title?.Value ?? ""), Note = NoteText(c.Note?.Value ?? "") };
+            this.items[id] = new Node { Id = id, Parent = parent, Title = TitleText(c.Title?.Text ?? ""), Note = NoteText(c.Note?.Text ?? "") };
             this.Place(id, parent, after);
         }
 

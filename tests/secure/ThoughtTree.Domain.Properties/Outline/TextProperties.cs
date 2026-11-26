@@ -38,7 +38,7 @@ public sealed class TextProperties
     {
         RawText.SampleFixed(raw =>
         {
-            var title = new Title(raw).Value;
+            var title = new Title(raw).Text;
             title.IsNormalized(NormalizationForm.FormC).ShouldBeTrue();
             title.AsSpan().ContainsAny(LineBreaks).ShouldBeFalse();
         });
@@ -49,7 +49,7 @@ public sealed class TextProperties
     {
         RawText.SampleFixed(raw =>
         {
-            var note = new Note(raw).Value;
+            var note = new Note(raw).Text;
             note.IsNormalized(NormalizationForm.FormC).ShouldBeTrue();
             note.Replace("\n", "", StringComparison.Ordinal).AsSpan().ContainsAny(LineBreaks).ShouldBeFalse();
         });
@@ -62,8 +62,8 @@ public sealed class TextProperties
         {
             var title = new Title(raw);
             var note = new Note(raw);
-            new Title(title.Value).Value.ShouldBe(title.Value);
-            new Note(note.Value).Value.ShouldBe(note.Value);
+            new Title(title.Text).Text.ShouldBe(title.Text);
+            new Note(note.Text).Text.ShouldBe(note.Text);
         });
     }
 
@@ -73,8 +73,8 @@ public sealed class TextProperties
         RawText.SampleFixed(raw =>
         {
             var breaks = raw.Replace("\r\n", "\n", StringComparison.Ordinal).Count(character => LineBreaks.Contains(character));
-            new Title(raw).Value.Count(character => character == ' ').ShouldBe(raw.Count(character => character == ' ') + breaks);
-            new Note(raw).Value.Count(character => character == '\n').ShouldBe(breaks);
+            new Title(raw).Text.Count(character => character == ' ').ShouldBe(raw.Count(character => character == ' ') + breaks);
+            new Note(raw).Text.Count(character => character == '\n').ShouldBe(breaks);
         });
     }
 
@@ -87,10 +87,10 @@ public sealed class TextProperties
             var created = new ItemCreated(id, device, clock, action, item, null, null, new Title(raw), new Note(raw));
             var texts = new[]
             {
-                created.Title.ShouldNotBeNull().Value,
-                created.Note.ShouldNotBeNull().Value,
-                new ItemTitleChanged(id, device, clock, action, item, new Title(raw)).Title.ShouldNotBeNull().Value,
-                new ItemNoteChanged(id, device, clock, action, item, new Note(raw)).Note.ShouldNotBeNull().Value,
+                created.Title.ShouldNotBeNull().Text,
+                created.Note.ShouldNotBeNull().Text,
+                new ItemTitleChanged(id, device, clock, action, item, new Title(raw)).Title.ShouldNotBeNull().Text,
+                new ItemNoteChanged(id, device, clock, action, item, new Note(raw)).Note.ShouldNotBeNull().Text,
             };
             texts.ShouldAllBe(text => text.IsNormalized(NormalizationForm.FormC));
             texts[0].ShouldBe(texts[2]);
@@ -104,7 +104,7 @@ public sealed class TextProperties
         RawText.SampleFixed(raw =>
         {
             var replacements = raw.Count(character => character == '\uFFFD') + UnpairedSurrogates(raw);
-            foreach (var text in new[] { new Title(raw).Value, new Note(raw).Value })
+            foreach (var text in new[] { new Title(raw).Text, new Note(raw).Text })
             {
                 UnpairedSurrogates(text).ShouldBe(0);
                 text.Count(character => character == '\uFFFD').ShouldBe(replacements);
