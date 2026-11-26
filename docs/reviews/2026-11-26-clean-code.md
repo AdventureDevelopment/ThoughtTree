@@ -220,6 +220,7 @@ TL;DR: an independent review of everything the branch adds over `main` in `src/`
 - What: the rule does not look inside generic arguments or tuples, so `Tree.VisibleOutline()` returns `IReadOnlyList<(int Depth, Item Item)>` with a bare `int` unnoticed; it ignores `bool` (`Item.Deleted`).
 - Fix: walk generic arguments and tuple element types; decide whether `bool` counts (AGENTS.md lists it among the built-in types to wrap).
 - Effort: S. Protected: no (the approved list in `eng/` is owner-reviewed).
+- **Decided by the owner, 2026-11-26:** the rule walks generic arguments, tuples and arrays; the depth gets its own type `Depth`. `bool` is not wrapped but replaced: a stored or passed `bool` becomes a state type, one per independent dimension, and questions computed on demand stay `bool` methods (AGENTS.md section 4b). `Item.Deleted` becomes `Lifecycle` in the protected sweep (`docs/plan/next-work.md`).
 
 **H3 · repository-wide**
 - What: no check that a file holds one public type named after the file (C5, T11).

@@ -1,6 +1,7 @@
-# Approved bare string, long or int in public members of the Domain and the application layer (AGENTS.md section 4b).
+# Approved bare string, long, int or stored bool in public members of the Domain and the application layer (AGENTS.md section 4b).
 # PrimitiveRules in tests/secure/ThoughtTree.Architecture.Rules fails on any other, and on a listed one that no longer
 # exists. A value with more meaning than its type (an id, a point in time, a unit, an outcome) gets its own type first.
 # Format: the member as PrimitiveRules names it, then "#" and the reason. Changes need the owner's review (CODEOWNERS).
 
 ThoughtTree.Domain.Outline.Tree.ToOutline:result            # test-only rendering; moves out of the Domain with the next spec change
+ThoughtTree.Domain.Outline.Item.Deleted                     # becomes the state Lifecycle in the protected sweep, docs/plan/next-work.md

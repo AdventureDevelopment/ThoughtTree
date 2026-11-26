@@ -23,4 +23,7 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
 6. **One approved sweep over the protected test files** (owner, 2026-11-26): write out the one-letter names in
    `tests/specify/**` and the reference model (the files left in `eng/pending-renames.txt`, AGENTS.md section 4b),
    together with the protected findings of `docs/reviews/2026-11-26-clean-code.md` the owner approves on its card C
-   (S2 waits for item 5). Needs the owner's approval of the list before it starts (ADR-035).
+   (S2 waits for item 5), and `Item.Deleted` becoming the state `Lifecycle { Live, Deleted }` with `Deleted()` and
+   `Restored()` instead of `WithDeleted(bool)` (AGENTS.md section 4b; its line in `eng/approved-primitives.txt` goes
+   with it). The owner can imagine `Archived` as a further `Lifecycle` value: that needs its own events and an ADR
+   first. Needs the owner's approval of the list before it starts (ADR-035).
