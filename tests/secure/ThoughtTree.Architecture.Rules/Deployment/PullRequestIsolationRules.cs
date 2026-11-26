@@ -11,7 +11,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public partial class PullRequestIsolationRules
+public sealed partial class PullRequestIsolationRules
 {
     // merge_group runs the queued pull request's code before it is merged (re-review N-M2).
     private static readonly string[] PullRequestEvents = ["pull_request", "pull_request_target", "pull_request_review", "pull_request_review_comment", "issue_comment", "merge_group"];

@@ -9,7 +9,7 @@ namespace ThoughtTree.Architecture.Rules.Harness;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-042")]
-public partial class SuppressionRules
+public sealed partial class SuppressionRules
 {
     private static readonly string[] ScannedPatterns = ["*.cs", "*.razor", "*.csproj", "*.props", "*.targets", ".editorconfig", "*.globalconfig"];
 

@@ -4,7 +4,7 @@ using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Model;
 
-/// <summary>Naive reference replay of an event log into canonical text, the referee for the real projection (ADR-035).</summary>
+/// <summary>Naive reference replay of an event log into canonical text, by the rules in RULES.md (R-n), the referee for the real projection (ADR-035).</summary>
 /// <remarks>
 /// Canonical text: lines joined by "\n", no trailing newline.
 /// <code>
@@ -21,7 +21,6 @@ namespace ThoughtTree.Domain.Model;
 /// </remarks>
 public static class ReferenceModel
 {
-    // Follows the approved rule list of 2026-11-26 in RULES.md next to this file; R-n is its rule n.
 
     public static string ReplayToCanonicalText(IEnumerable<TreeEvent> events)
     {

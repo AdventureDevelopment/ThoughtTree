@@ -14,7 +14,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
 [Trait("ADR", "ADR-050")]
-public partial class DeployToolRules
+public sealed partial class DeployToolRules
 {
     private static IReadOnlyList<string> ScriptsAndWorkflows =>
         Workflow.Files().Concat(Repository.Files(Path.Combine("eng", "deploy"), "*.sh")).ToList();

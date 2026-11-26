@@ -10,7 +10,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public partial class InfrastructureRules
+public sealed partial class InfrastructureRules
 {
     private static IReadOnlyList<string> Workflows => Workflow.Files();
 

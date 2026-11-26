@@ -6,7 +6,7 @@ namespace ThoughtTree.Architecture.Rules.Harness;
 /// <summary>ADR-054: tests are placed by intent, projects are named by kind, every test carries its Intent trait.</summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-054")]
-public partial class TestPlacementRules
+public sealed partial class TestPlacementRules
 {
     private static readonly Dictionary<string, string> IntentByFolder = new()
     {

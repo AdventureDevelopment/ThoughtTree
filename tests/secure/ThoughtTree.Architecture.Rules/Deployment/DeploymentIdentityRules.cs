@@ -11,7 +11,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public partial class DeploymentIdentityRules
+public sealed partial class DeploymentIdentityRules
 {
     // Built-in roles that can write federated credentials or role assignments: Owner, Contributor,
     // User Access Administrator, Role Based Access Control Administrator, Managed Identity Contributor.

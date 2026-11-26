@@ -13,7 +13,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public partial class PreviewPruneRules
+public sealed partial class PreviewPruneRules
 {
     private const string KnownAction = "'Microsoft.Web/locations/staticSitesOperationStatuses/read'";
 
