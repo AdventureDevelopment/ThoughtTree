@@ -164,7 +164,7 @@ Run from the repository root; every command was run when it was written down. Do
 | Compile the Bicep templates [ADR-046] | `bicep build infra/main.bicep`, `bicep build infra/bootstrap/bootstrap.bicep`, `bicep build-params infra/test.bicepparam`, `bicep build-params infra/production.bicepparam`, `bicep build-params infra/preview.bicepparam` (standalone Bicep CLI; on GitHub the workflow `infra-check.yml` runs the same with `az bicep`, outside the gate because it downloads the Bicep CLI) |
 | Branch check | `eng/branch-check.sh` (the steps of `.github/workflows/checks.yml`; writes the verify report to `tests/secure/ThoughtTree.Architecture.Rules/bin/Release/net10.0/verify-report.md`) |
 | Push gate | `eng/branch-check.sh`, then the protected-data diffs in `.github/workflows/push-gate.yml`; its other parts are not in place yet (listed in that file) |
-| Mutation tests (changed Domain code) | `TODO(step: Domain core, foundation step 2a)` |
+| Mutation tests (changed Domain code) | `dotnet tool restore`, then in `src/ThoughtTree.Domain`: `dotnet stryker --since:origin/main` (changed code; config in `stryker-config.json` there, fails below 80 %), or `dotnet stryker` for all Domain code (about 2 minutes) |
 | UI specifications | `TODO(step: client shell, foundation step 4)` |
 
 ## 7. When unsure

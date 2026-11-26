@@ -1,0 +1,10 @@
+{
+  "stryker-config": {
+    "test-projects": [
+      "../../tests/specify/ThoughtTree.Domain.Specs/ThoughtTree.Domain.Specs.csproj",
+      "../../tests/secure/ThoughtTree.Domain.Properties/ThoughtTree.Domain.Properties.csproj"
+    ],
+    "thresholds": { "high": 90, "low": 80, "break": 80 },
+    "reporters": [ "cleartext", "progress", "json", "html" ]
+  }
+}
