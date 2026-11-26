@@ -121,30 +121,9 @@ public sealed class OutlineProperties
     {
         ThreeLogs.SampleFixed(t =>
         {
-            var held = new List<TreeEvent>(t.A);
-            var projector = ProjectorOf(held);
-            foreach (var arriving in t.B.Concat(t.C))
-            {
-                held.Add(arriving);
-                if (!projector.TryAdd(arriving))
-                {
-                    projector = ProjectorOf(held);
-                }
-            }
-
+            var projector = t.A.Concat(t.B).Concat(t.C).Aggregate(Projector.Empty, (p, e) => p.Add(e));
             CanonicalTree.Render(projector.Tree).ShouldBe(State(t.All));
         });
-    }
-
-    private static Projector ProjectorOf(IEnumerable<TreeEvent> log)
-    {
-        var projector = new Projector();
-        foreach (var e in log.DistinctBy(e => e.EventId).OrderBy(EventKey.Of, EventKey.Comparer))
-        {
-            projector.TryAdd(e).ShouldBeTrue();
-        }
-
-        return projector;
     }
 
     private static (List<TreeEvent> A, List<TreeEvent> B, List<TreeEvent> C) SplitIntoThreeOverlappingLogs(

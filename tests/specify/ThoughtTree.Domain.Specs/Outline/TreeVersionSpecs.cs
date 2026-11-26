@@ -18,12 +18,7 @@ public sealed class TreeVersionSpecs
             .x(() =>
             {
                 var log = new Log().Create(1, "a", "A").Create(2, "b", "B", parent: "a");
-                projector = new Projector();
-                foreach (var e in log.Events)
-                {
-                    projector.TryAdd(e);
-                }
-
+                projector = log.Events.Aggregate(Projector.Empty, (p, e) => p.Add(e));
                 held = projector.Tree;
                 before = TreeText.Full(held);
             });
@@ -33,10 +28,7 @@ public sealed class TreeVersionSpecs
             {
                 var more = new Log("b0000000-0000-0000-0000-000000000002")
                     .Rename(3, "a", "Renamed").Move(4, "b", null).Delete(5, "a").Rename(6, "missing", "x");
-                foreach (var e in more.Events)
-                {
-                    projector.TryAdd(e);
-                }
+                projector = more.Events.Aggregate(projector, (p, e) => p.Add(e));
             });
 
         "Then the kept tree still shows the earlier state, and the projector's tree shows the new one"
@@ -50,30 +42,22 @@ public sealed class TreeVersionSpecs
     }
 
     [Scenario]
-    public void Two_snapshots_of_one_projector_are_independent_versions()
+    public void Two_kept_projectors_of_one_history_are_independent_versions()
     {
-        Projector projector = default!;
-        Snapshot first = default!;
-        Snapshot second = default!;
+        Projector first = default!;
+        Projector second = default!;
 
-        "Given a snapshot, then one more event, then a second snapshot"
-            .x(() =>
-            {
-                projector = new Projector();
-                projector.TryAdd(new Log().Create(1, "a", "A").Events[0]);
-                first = projector.TakeSnapshot();
-                projector.TryAdd(new Log("b0000000-0000-0000-0000-000000000002").Create(2, "b", "B").Events[0]);
-                second = projector.TakeSnapshot();
-            });
+        "Given a projector kept after one event"
+            .x(() => first = Projector.Empty.Add(new Log().Create(1, "a", "A").Events[0]));
 
-        "When each is resumed without further events"
-            .x(() => { });
+        "When the app keeps a second one after one more event"
+            .x(() => second = first.Add(new Log("b0000000-0000-0000-0000-000000000002").Create(2, "b", "B").Events[0]));
 
         "Then the first shows one item and the second shows two"
             .x(() =>
             {
-                Projector.TryResume(first, [])!.Tree.ToOutline().ShouldBe("- A");
-                Projector.TryResume(second, [])!.Tree.ToOutline().ShouldBe("- B\n- A");
+                first.Tree.ToOutline().ShouldBe("- A");
+                second.Tree.ToOutline().ShouldBe("- B\n- A");
             });
     }
 }

@@ -2,66 +2,75 @@ using System.Collections.Immutable;
 
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>The state of a projector at one point of the replay, a cache that can be thrown away (ADR-002).</summary>
-public sealed class Snapshot
+/// <summary>Applies events one at a time, in any arrival order, as an immutable value that can be kept (ADR-002, INV-6, INV-7).</summary>
+public sealed record Projector
 {
-    internal Snapshot(Tree tree, EventKey? last, ImmutableHashSet<EventId> ids)
+    private const int DefaultCheckpointInterval = 1000;
+
+    private static readonly IComparer<TreeEvent> AgreedOrder =
+        Comparer<TreeEvent>.Create(static (a, b) => EventKey.Comparer.Compare(EventKey.Of(a), EventKey.Of(b)));
+
+    private Projector(int checkpointInterval)
     {
-        this.Tree = tree;
-        this.Last = last;
-        this.Ids = ids;
+        this.CheckpointInterval = checkpointInterval;
+        this.Checkpoints = [new Checkpoint(0, Tree.Empty)];
     }
 
-    internal Tree Tree { get; }
-    internal EventKey? Last { get; }
-    internal ImmutableHashSet<EventId> Ids { get; }
-}
+    public static Projector Empty { get; } = new(DefaultCheckpointInterval);
 
-/// <summary>Applies events one at a time (INV-6, INV-7).</summary>
-public sealed class Projector
-{
-    private ImmutableHashSet<EventId> ids = [];
-    private EventKey? last;
-    private Tree tree = Tree.Empty;
+    public Tree Tree { get; private init; } = Tree.Empty;
 
-    public Tree Tree => this.tree;
+    private int CheckpointInterval { get; init; }
 
-    /// <returns>False if the event sorts before those applied; nothing changed then.</returns>
-    public bool TryAdd(TreeEvent e)
+    private ImmutableHashSet<EventId> Ids { get; init; } = [];
+
+    private ImmutableList<TreeEvent> AppliedInAgreedOrder { get; init; } = [];
+
+    private ImmutableList<Checkpoint> Checkpoints { get; init; }
+
+    public Projector Add(TreeEvent e)
     {
-        var alreadyApplied = this.ids.Contains(e.EventId);
-        if (alreadyApplied)
+        if (this.Ids.Contains(e.EventId))
         {
-            return true;
+            return this;
         }
 
-        var key = EventKey.Of(e);
-        if (this.last is { } last && EventKey.Comparer.Compare(key, last) < 0)
+        var position = ~this.AppliedInAgreedOrder.BinarySearch(e, AgreedOrder);
+        var arrivesAfterEverythingApplied = position == this.AppliedInAgreedOrder.Count;
+        var withEvent = this with
         {
-            return false;
-        }
+            Ids = this.Ids.Add(e.EventId),
+            AppliedInAgreedOrder = this.AppliedInAgreedOrder.Insert(position, e),
+        };
 
-        this.ids = this.ids.Add(e.EventId);
-        this.last = key;
-        this.tree = Projection.Apply(this.tree, e);
-        return true;
+        return arrivesAfterEverythingApplied
+            ? withEvent.ApplyFrom(position, this.Tree)
+            : withEvent.RewindTo(this.Checkpoints.FindLast(c => c.Position <= position)!);
     }
 
-    public Snapshot TakeSnapshot() => new(this.tree, this.last, this.ids);
+    internal static Projector WithCheckpointInterval(int events) => new(events);
 
-    /// <returns>Null if one of the events sorts before the snapshot.</returns>
-    public static Projector? TryResume(Snapshot snapshot, IEnumerable<TreeEvent> remaining)
+    internal int CheckpointCount => this.Checkpoints.Count;
+
+    private Projector RewindTo(Checkpoint checkpoint) =>
+        (this with { Checkpoints = this.Checkpoints.RemoveAll(c => c.Position > checkpoint.Position) })
+            .ApplyFrom(checkpoint.Position, checkpoint.Tree);
+
+    private Projector ApplyFrom(int position, Tree tree)
     {
-        var projector = new Projector { tree = snapshot.Tree, last = snapshot.Last, ids = snapshot.Ids };
-
-        foreach (var e in remaining.OrderBy(EventKey.Of, EventKey.Comparer))
+        var checkpoints = this.Checkpoints;
+        for (var next = position; next < this.AppliedInAgreedOrder.Count; next++)
         {
-            if (!projector.TryAdd(e))
+            tree = Projection.Apply(tree, this.AppliedInAgreedOrder[next]);
+            var applied = next + 1;
+            if (applied % this.CheckpointInterval == 0)
             {
-                return null;
+                checkpoints = checkpoints.Add(new Checkpoint(applied, tree));
             }
         }
 
-        return projector;
+        return this with { Tree = tree, Checkpoints = checkpoints };
     }
+
+    private sealed record Checkpoint(int Position, Tree Tree);
 }

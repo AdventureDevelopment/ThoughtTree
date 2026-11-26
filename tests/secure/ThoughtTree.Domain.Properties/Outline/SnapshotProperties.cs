@@ -1,124 +1,65 @@
 using CsCheck;
-using ThoughtTree.Domain.Properties.Support;
 using ThoughtTree.Domain.Outline;
 using ThoughtTree.Domain.Properties.Generators;
+using ThoughtTree.Domain.Properties.Support;
 
 namespace ThoughtTree.Domain.Properties.Outline;
 
-/// <summary>INV-6 (snapshot equivalence) and INV-7 (incremental equals full) over generated histories.</summary>
+/// <summary>INV-6 (a kept projector plus the rest equals a full replay) and INV-7 (incremental equals full) over generated histories.</summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-002")]
 public sealed class SnapshotProperties
 {
+    private static readonly Gen<Projector> EmptyProjectors = Gen.OneOf(
+        Gen.Const(Projector.Empty),
+        Gen.Int[1, 4].Select(Projector.WithCheckpointInterval));
+
     private static string State(IEnumerable<TreeEvent> events) => CanonicalTree.Render(Projection.Replay(events));
 
-    private static List<TreeEvent> Sorted(IEnumerable<TreeEvent> events) =>
-        events.DistinctBy(e => e.EventId).OrderBy(EventKey.Of, EventKey.Comparer).ToList();
-
     [Fact]
-    public void INV_7_events_applied_one_at_a_time_in_order_equal_a_full_replay_at_every_step()
+    public void INV_7_events_applied_one_at_a_time_in_any_arrival_order_equal_a_full_replay_at_every_step()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, EmptyProjectors).SampleFixed(x =>
         {
-            var projector = new Projector();
-            var applied = new List<TreeEvent>();
-            foreach (TreeEvent e in Sorted(t.Shuffled))
+            var projector = x.Item2;
+            var arrived = new List<TreeEvent>();
+            foreach (var e in x.Item1.Shuffled)
             {
-                projector.TryAdd(e).ShouldBeTrue();
-                applied.Add(e);
-                CanonicalTree.Render(projector.Tree).ShouldBe(State(applied));
+                projector = projector.Add(e);
+                arrived.Add(e);
+                CanonicalTree.Render(projector.Tree).ShouldBe(State(arrived));
             }
         });
     }
 
     [Fact]
-    public void INV_7_whatever_the_projector_accepts_from_any_arrival_order_equals_a_full_replay_of_those_events()
+    public void INV_6_a_projector_kept_after_any_subset_plus_the_rest_in_any_order_equals_a_full_replay()
     {
-        HistoryGen.HistoryAndShuffle.SampleFixed(t =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Bool.List[1, 60], EmptyProjectors).SampleFixed(x =>
         {
-            var projector = new Projector();
-            var accepted = new List<TreeEvent>();
-            foreach (TreeEvent e in t.Shuffled)
-            {
-                var before = CanonicalTree.Render(projector.Tree);
-                if (projector.TryAdd(e))
-                {
-                    accepted.Add(e);
-                }
-                else
-                {
-                    CanonicalTree.Render(projector.Tree).ShouldBe(before);
-                }
+            var (history, keptSubset, empty) = x;
+            var inKept = history.Shuffled.Where((_, i) => keptSubset[i % keptSubset.Count]).ToList();
+            var kept = inKept.Aggregate(empty, (p, e) => p.Add(e));
+            var keptBefore = CanonicalTree.Render(kept.Tree);
 
-                CanonicalTree.Render(projector.Tree).ShouldBe(State(accepted));
-            }
+            var rest = history.Shuffled.Except(inKept).Concat(history.Shuffled.Take(2));
+            var resumed = rest.Aggregate(kept, (p, e) => p.Add(e));
 
-            State(t.Shuffled).ShouldBe(State(t.Events));
+            CanonicalTree.Render(resumed.Tree).ShouldBe(State(history.Events));
+            CanonicalTree.Render(kept.Tree).ShouldBe(keptBefore);
         });
     }
 
     [Fact]
-    public void INV_6_a_snapshot_of_any_prefix_plus_the_remaining_events_equals_a_full_replay()
+    public void A_projector_keeps_one_checkpoint_per_interval_of_applied_events_whatever_the_arrival_order()
     {
-        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[0, 60], (t, cut) => (t, cut)).SampleFixed(x =>
+        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Int[1, 4]).SampleFixed(x =>
         {
-            List<TreeEvent> sorted = Sorted(x.t.Events);
-            var k = sorted.Count == 0 ? 0 : x.cut % (sorted.Count + 1);
-            var projector = new Projector();
-            foreach (TreeEvent e in sorted.Take(k))
-            {
-                projector.TryAdd(e);
-            }
+            var (history, interval) = x;
+            var projector = history.Shuffled.Aggregate(Projector.WithCheckpointInterval(interval), (p, e) => p.Add(e));
+            var applied = history.Shuffled.DistinctBy(e => e.EventId).Count();
 
-            Snapshot snapshot = projector.TakeSnapshot();
-            var prefix = sorted.Take(k).Select(e => e.EventId).ToHashSet();
-
-            var remaining = x.t.Shuffled.Where(e => !prefix.Contains(e.EventId)).Concat(x.t.Shuffled.Take(2)).ToList();
-
-            var resumed = Projector.TryResume(snapshot, remaining);
-            resumed.ShouldNotBeNull();
-            CanonicalTree.Render(resumed.Tree).ShouldBe(State(x.t.Events));
+            projector.CheckpointCount.ShouldBe((applied / interval) + 1);
         });
-    }
-
-    [Fact]
-    public void INV_6_a_snapshot_of_any_subset_resumes_to_the_full_replay_or_is_refused_as_stale()
-    {
-        int staleCount = 0, freshCount = 0;
-        Gen.Select(HistoryGen.HistoryAndShuffle, Gen.Bool.List[1, 60], Gen.Int[0, 60], (t, mask, cut) => (t, mask, cut)).SampleFixed(x =>
-        {
-            List<TreeEvent> sorted = Sorted(x.t.Events);
-            var prefixOfTheOrderSoNeverStale = x.cut % 2 == 0;
-            var inSnapshot = prefixOfTheOrderSoNeverStale
-                ? sorted.Take(x.cut % (sorted.Count + 1)).ToList()
-                : sorted.Where((_, i) => x.mask[i % x.mask.Count]).ToList();
-            var projector = new Projector();
-            foreach (TreeEvent e in inSnapshot)
-            {
-                projector.TryAdd(e);
-            }
-
-            var ids = inSnapshot.Select(e => e.EventId).ToHashSet();
-            var remaining = x.t.Shuffled.Where(e => !ids.Contains(e.EventId)).ToList();
-            var resumed = Projector.TryResume(projector.TakeSnapshot(), remaining);
-
-            var stale = inSnapshot.Count > 0 && remaining.Any(e =>
-                EventKey.Comparer.Compare(EventKey.Of(e), EventKey.Of(inSnapshot[^1])) < 0);
-
-            if (stale)
-            {
-                staleCount++;
-                resumed.ShouldBeNull();
-            }
-            else
-            {
-                freshCount++;
-                resumed.ShouldNotBeNull();
-                CanonicalTree.Render(resumed.Tree).ShouldBe(State(x.t.Events));
-            }
-        });
-
-        staleCount.ShouldBeGreaterThan(Deterministic.Iterations / 10);
-        freshCount.ShouldBeGreaterThan(Deterministic.Iterations / 10);
     }
 }
