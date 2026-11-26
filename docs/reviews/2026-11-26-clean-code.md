@@ -243,7 +243,7 @@ TL;DR: an independent review of everything the branch adds over `main` in `src/`
 - With the next spec change (`docs/plan/next-work.md` item 2): S3, S4, S5, S6, S7.
 - S2 waits for the decision on doc comments (`docs/plan/next-work.md` item 5).
 - T5: the repeated property is deleted and the one above it renamed `INV_1_any_shuffle_gives_the_same_tree_and_the_same_reports`, since the canonical text holds every report.
-- T9: option (c), a new ADR; ADR-089 is proposed (status `Proposed`) for the owner to accept or reject. `PrintingRules` gets its trait once the ADR is accepted.
+- T9: option (c), a new ADR; ADR-089 accepted by the owner, `PrintingRules` carries its trait.
 
 ## Overlap with the domain-core review
 

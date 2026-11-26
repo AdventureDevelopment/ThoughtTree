@@ -1,10 +1,10 @@
 # ADR-089: No user content in printed output
 
-id: ADR-089 · status: Proposed · kind: constraint
+id: ADR-089 · status: Accepted · kind: constraint
 
 applies_to: `src/**`
 
-Proposed by an agent 2026-11-26 for the owner's decision (clean-code review T9, option c); amends no ADR.
+Proposed by an agent 2026-11-26 (clean-code review T9, option c), accepted by the owner 2026-11-26; amends no ADR.
 
 - **MUST NOT** put user content into text that code prints: `ToString()`, exception messages, log and console output. User content is titles, notes and every other text the user typed, such as names of trees, tags, relation types and views, and device labels
 - **MUST** override `ToString()` (or `PrintMembers`) on every record that holds user content, because the compiler-generated one prints every property
