@@ -19,11 +19,9 @@ public sealed record Tree
     private ImmutableDictionary<ItemId, ItemId> PreviousSibling { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
 
     /// <summary>Grouped by item id, those without an item last; agreed order inside a group (model rules 18, 19).</summary>
-    public IReadOnlyList<Anomaly> Anomalies =>
-        [.. this.Reported.OrderBy(report => report.ItemId is null).ThenBy(report => report.ItemId?.Value, StringComparer.Ordinal)];
+    public IReadOnlyList<Anomaly> Anomalies => this.Reports;
 
-    /// <summary>In agreed order.</summary>
-    private ImmutableList<Anomaly> Reported { get; init; } = [];
+    private ImmutableList<Anomaly> Reports { get; init; } = [];
 
     /// <summary>Deleted items included (INV-5).</summary>
     public IReadOnlyCollection<Item> AllItems => new ItemCollection(this.Items);
@@ -68,7 +66,7 @@ public sealed record Tree
     internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
 
     internal Tree WithAnomaly(AnomalyKind kind, TreeEvent treeEvent, ItemId? item) =>
-        this with { Reported = this.Reported.Add(new Anomaly(kind, treeEvent.EventId, item)) };
+        this with { Reports = this.Reports.Insert(this.EndOfReportGroup(item), new Anomaly(kind, treeEvent.EventId, item)) };
 
     internal bool IsSameOrDescendant(ItemId candidate, ItemId ancestor)
     {
@@ -114,6 +112,33 @@ public sealed record Tree
         var asFirst = this.WithFirst(parent, id).LinkAfter(id, first);
         return first is { } oldFirst ? asFirst.LinkBefore(oldFirst, id) : asFirst;
     }
+
+    private int EndOfReportGroup(ItemId? item)
+    {
+        var (low, high) = (0, this.Reports.Count);
+        while (low < high)
+        {
+            var middle = (low + high) / 2;
+            if (CompareReportGroups(this.Reports[middle].ItemId, item) <= 0)
+            {
+                low = middle + 1;
+            }
+            else
+            {
+                high = middle;
+            }
+        }
+
+        return low;
+    }
+
+    private static int CompareReportGroups(ItemId? first, ItemId? second) => (first, second) switch
+    {
+        (null, null) => 0,
+        (null, { }) => 1,
+        ({ }, null) => -1,
+        ({ } firstId, { } secondId) => string.CompareOrdinal(firstId.Value, secondId.Value),
+    };
 
     private ItemId? NextOf(ItemId id) => this.NextSibling.TryGetValue(id, out var next) ? next : null;
 
