@@ -21,7 +21,7 @@ public static class CanonicalTree
         lines.Add(string.Concat(tree.TopLevelOrder.Select(id => " " + Quote(id.Value)).Prepend("top")));
         lines.Add($"reports {tree.Anomalies.Count}");
         lines.AddRange(tree.Anomalies.Select(a =>
-            $"report {KindName(a.Kind)} event {Quote(a.EventId)} item {(a.Item is { } i ? Quote(i.Value) : "none")}"));
+            $"report {KindName(a.Kind)} event {Quote(a.EventId.Value)} item {(a.Item is { } i ? Quote(i.Value) : "none")}"));
         return string.Join('\n', lines);
     }
 

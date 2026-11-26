@@ -83,12 +83,12 @@ public static class HistoryGen
     {
         var result = new List<TreeEvent>();
 
-        string EventId() => $"e0000000-0000-0000-0000-{result.Count * ScrambleStep % ScrambleModulus:D12}";
-        string Action() => $"c0000000-0000-0000-0000-{result.Count:D12}";
+        EventId EventId() => new($"e0000000-0000-0000-0000-{result.Count * ScrambleStep % ScrambleModulus:D12}");
+        ActionId Action() => new($"c0000000-0000-0000-0000-{result.Count:D12}");
 
         foreach (Draft d in drafts)
         {
-            var device = Devices[d.Device];
+            var device = new DeviceId(Devices[d.Device]);
             var clock = new EventClock(d.Time);
             ItemId item = Item(d.Item);
             var title = $"t{d.Text}";
@@ -133,6 +133,6 @@ public static class HistoryGen
     }
 
     /// <summary>An event type this app does not know, as from a newer app version (ADR-016).</summary>
-    public sealed record FutureEvent(string EventId, string DeviceId, EventClock Clock, string ActionId)
+    public sealed record FutureEvent(EventId EventId, DeviceId DeviceId, EventClock Clock, ActionId ActionId)
         : TreeEvent(EventId, DeviceId, Clock, ActionId);
 }

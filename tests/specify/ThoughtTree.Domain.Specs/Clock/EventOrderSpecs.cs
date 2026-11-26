@@ -75,17 +75,17 @@ public sealed class EventOrderSpecs
         "Given events with equal and different clocks"
             .x(() =>
             {
-                events.Add(new EventKey(new EventClock(8), "e1"));
-                events.Add(new EventKey(new EventClock(7), "e3"));
-                events.Add(new EventKey(new EventClock(7), "e2"));
-                events.Add(new EventKey(new EventClock(6), "e4"));
+                events.Add(new EventKey(new EventClock(8), new EventId("e1")));
+                events.Add(new EventKey(new EventClock(7), new EventId("e3")));
+                events.Add(new EventKey(new EventClock(7), new EventId("e2")));
+                events.Add(new EventKey(new EventClock(6), new EventId("e4")));
             });
 
         "When the events are put in the agreed order"
             .x(() => ordered = events.Order(EventKey.Comparer).ToList());
 
         "Then they run by clock, then by event id"
-            .x(() => ordered.Select(k => k.EventId).ShouldBe(["e4", "e2", "e3", "e1"]));
+            .x(() => ordered.Select(k => k.EventId.Value).ShouldBe(["e4", "e2", "e3", "e1"]));
     }
 
     [Scenario]
@@ -98,8 +98,8 @@ public sealed class EventOrderSpecs
         "Given an event of device B with event id 'e1' and one of device A with 'e2', both at the same clock"
             .x(() =>
             {
-                fromB = new ItemDeleted("e1", DeviceB, new EventClock(7), "action", new ItemId("n"));
-                fromA = new ItemDeleted("e2", DeviceA, new EventClock(7), "action", new ItemId("n"));
+                fromB = new ItemDeleted(new EventId("e1"), new DeviceId(DeviceB), new EventClock(7), new ActionId("action"), new ItemId("n"));
+                fromA = new ItemDeleted(new EventId("e2"), new DeviceId(DeviceA), new EventClock(7), new ActionId("action"), new ItemId("n"));
             });
 
         "When the events are put in the agreed order"

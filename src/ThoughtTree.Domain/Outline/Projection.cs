@@ -6,7 +6,7 @@ public static class Projection
     public static Tree Replay(IEnumerable<TreeEvent> events)
     {
         var ordered = events
-            .DistinctBy(e => e.EventId, StringComparer.Ordinal)
+            .DistinctBy(e => e.EventId)
             .OrderBy(EventKey.Of, EventKey.Comparer)
             .ToList();
 

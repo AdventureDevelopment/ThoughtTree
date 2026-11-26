@@ -140,7 +140,7 @@ public sealed class UnappliedEventSpecs
 
         "When the tree is rebuilt"
             .x(() => tree = Projection.Replay([.. new Log().Create(1, "a", "A").Events,
-                new FutureEvent("e-future", "a0000000-0000-0000-0000-000000000001", new EventClock(2), "action-f")]));
+                new FutureEvent(new EventId("e-future"), new DeviceId("a0000000-0000-0000-0000-000000000001"), new EventClock(2), new ActionId("action-f"))]));
 
         "Then the tree is unchanged"
             .x(() => tree.ToOutline().ShouldBe("- A"));
@@ -157,7 +157,7 @@ public sealed class UnappliedEventSpecs
         "When the tree is rebuilt from a log with problems for items 'b' and 'a', in that order, and one unknown event"
             .x(() => tree = Projection.Replay([.. new Log().Create(1, "a", "A").Create(2, "b", "B")
                 .Move(3, "b", "ghost").Move(4, "a", "ghost").Move(5, "b", null, after: "ghost").Events,
-                new FutureEvent("e-future", "a0000000-0000-0000-0000-000000000001", new EventClock(6), "action-f")]));
+                new FutureEvent(new EventId("e-future"), new DeviceId("a0000000-0000-0000-0000-000000000001"), new EventClock(6), new ActionId("action-f"))]));
 
         "Then the reports for 'a' come first, then those for 'b' in replay order, then the one without an item"
             .x(() => Reports(tree).ShouldBe(
@@ -169,6 +169,6 @@ public sealed class UnappliedEventSpecs
             ]));
     }
 
-    private sealed record FutureEvent(string EventId, string DeviceId, EventClock Clock, string ActionId)
+    private sealed record FutureEvent(EventId EventId, DeviceId DeviceId, EventClock Clock, ActionId ActionId)
         : TreeEvent(EventId, DeviceId, Clock, ActionId);
 }

@@ -5,7 +5,7 @@ namespace ThoughtTree.Domain.Outline;
 /// <summary>The state of a projector at one point of the replay, a cache that can be thrown away (ADR-002).</summary>
 public sealed class Snapshot
 {
-    internal Snapshot(Tree tree, EventKey? last, ImmutableHashSet<string> ids)
+    internal Snapshot(Tree tree, EventKey? last, ImmutableHashSet<EventId> ids)
     {
         this.Tree = tree;
         this.Last = last;
@@ -14,13 +14,13 @@ public sealed class Snapshot
 
     internal Tree Tree { get; }
     internal EventKey? Last { get; }
-    internal ImmutableHashSet<string> Ids { get; }
+    internal ImmutableHashSet<EventId> Ids { get; }
 }
 
 /// <summary>Applies events one at a time (INV-6, INV-7).</summary>
 public sealed class Projector
 {
-    private ImmutableHashSet<string> ids = ImmutableHashSet.Create<string>(StringComparer.Ordinal);
+    private ImmutableHashSet<EventId> ids = [];
     private EventKey? last;
     private Tree tree = Tree.Empty;
 

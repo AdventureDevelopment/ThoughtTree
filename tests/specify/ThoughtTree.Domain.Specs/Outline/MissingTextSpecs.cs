@@ -22,9 +22,9 @@ public sealed class MissingTextSpecs
         "When the tree is rebuilt from a log that then changes its title and its note without giving a value"
             .x(() => tree = Projection.Replay(
             [
-                new ItemCreated("e1", Device, new EventClock(1), "a1", new ItemId("n"), null, null, "Ideas", "memo"),
-                new ItemTitleChanged("e2", Device, new EventClock(2), "a2", new ItemId("n"), null!),
-                new ItemNoteChanged("e3", Device, new EventClock(3), "a3", new ItemId("n"), null!),
+                new ItemCreated(new EventId("e1"), new DeviceId(Device), new EventClock(1), new ActionId("a1"), new ItemId("n"), null, null, "Ideas", "memo"),
+                new ItemTitleChanged(new EventId("e2"), new DeviceId(Device), new EventClock(2), new ActionId("a2"), new ItemId("n"), null!),
+                new ItemNoteChanged(new EventId("e3"), new DeviceId(Device), new EventClock(3), new ActionId("a3"), new ItemId("n"), null!),
             ]));
 
         "Then the title and the note are unchanged"
@@ -43,7 +43,7 @@ public sealed class MissingTextSpecs
         "When the tree is rebuilt from a log that creates an item without a title and without a note"
             .x(() => tree = Projection.Replay(
             [
-                new ItemCreated("e1", Device, new EventClock(1), "a1", new ItemId("n"), null, null, null!, null!),
+                new ItemCreated(new EventId("e1"), new DeviceId(Device), new EventClock(1), new ActionId("a1"), new ItemId("n"), null, null, null!, null!),
             ]));
 
         "Then its title and note are empty text"

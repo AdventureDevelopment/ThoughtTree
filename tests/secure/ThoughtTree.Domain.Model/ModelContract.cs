@@ -41,7 +41,7 @@ public static class ReferenceModel
         var kept = new List<TreeEvent>();
         foreach (var e in events)
         {
-            if (seen.Add(e.EventId))
+            if (seen.Add(e.EventId.Value))
             {
                 kept.Add(e);
             }
@@ -51,7 +51,7 @@ public static class ReferenceModel
         kept.Sort((a, b) =>
         {
             var byClock = a.Clock.Value.CompareTo(b.Clock.Value);
-            return byClock != 0 ? byClock : string.CompareOrdinal(a.EventId, b.EventId);
+            return byClock != 0 ? byClock : string.CompareOrdinal(a.EventId.Value, b.EventId.Value);
         });
         return kept;
     }
@@ -153,7 +153,7 @@ public static class ReferenceModel
 
                     break;
                 default:
-                    this.reports.Add(new Report("unknown-event-type", e.EventId, null)); // R16
+                    this.reports.Add(new Report("unknown-event-type", e.EventId.Value, null)); // R16
                     break;
             }
         }
@@ -206,21 +206,21 @@ public static class ReferenceModel
             var id = c.Item.Value;
             if (this.items.ContainsKey(id))
             {
-                this.reports.Add(new Report("duplicate-create", c.EventId, id)); // R5
+                this.reports.Add(new Report("duplicate-create", c.EventId.Value, id)); // R5
                 return;
             }
 
             var parent = IdOrNone(c.Parent);
             if (parent is not null && !this.items.ContainsKey(parent))
             {
-                this.reports.Add(new Report("unknown-parent", c.EventId, id)); // R12
+                this.reports.Add(new Report("unknown-parent", c.EventId.Value, id)); // R12
                 parent = null;
             }
 
             var after = IdOrNone(c.After);
             if (after is not null && (after == id || !this.items.ContainsKey(after)))
             {
-                this.reports.Add(new Report("unknown-after", c.EventId, id)); // R13
+                this.reports.Add(new Report("unknown-after", c.EventId.Value, id)); // R13
                 after = null;
             }
 
@@ -242,19 +242,19 @@ public static class ReferenceModel
             var after = IdOrNone(m.After);
             if (parent is not null && !this.items.ContainsKey(parent))
             {
-                this.reports.Add(new Report("unknown-parent", m.EventId, id)); // R14
+                this.reports.Add(new Report("unknown-parent", m.EventId.Value, id)); // R14
                 return;
             }
 
             if (after is not null && (after == id || !this.items.ContainsKey(after)))
             {
-                this.reports.Add(new Report("unknown-after", m.EventId, id)); // R14
+                this.reports.Add(new Report("unknown-after", m.EventId.Value, id)); // R14
                 return;
             }
 
             if (parent is not null && this.IsSelfOrDescendant(parent, id))
             {
-                this.reports.Add(new Report("cycle", m.EventId, id)); // R15
+                this.reports.Add(new Report("cycle", m.EventId.Value, id)); // R15
                 return;
             }
 
@@ -270,7 +270,7 @@ public static class ReferenceModel
                 return node;
             }
 
-            this.reports.Add(new Report("unknown-item", e.EventId, item.Value)); // R6
+            this.reports.Add(new Report("unknown-item", e.EventId.Value, item.Value)); // R6
             return null;
         }
 

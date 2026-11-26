@@ -26,7 +26,7 @@ public sealed class ClockEdgeSpecs
     public void Event_ids_are_compared_as_text_ordinal()
     {
         var clock = new EventClock(1);
-        static EventKey Key(EventClock c, string id) => new(c, id);
+        static EventKey Key(EventClock c, string id) => new(c, new EventId(id));
 
         "Then a digit sorts before a letter, as in ordinal order"
             .x(() => EventKey.Comparer.Compare(

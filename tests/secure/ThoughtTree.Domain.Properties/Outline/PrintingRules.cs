@@ -15,9 +15,9 @@ public sealed class PrintingRules
     {
         TreeEvent[] events =
         [
-            new ItemCreated("e1", "d", new EventClock(1), "a1", new ItemId("n"), null, null, Title, Note),
-            new ItemTitleChanged("e2", "d", new EventClock(2), "a2", new ItemId("n"), Title),
-            new ItemNoteChanged("e3", "d", new EventClock(3), "a3", new ItemId("n"), Note),
+            new ItemCreated(new EventId("e1"), new DeviceId("d"), new EventClock(1), new ActionId("a1"), new ItemId("n"), null, null, Title, Note),
+            new ItemTitleChanged(new EventId("e2"), new DeviceId("d"), new EventClock(2), new ActionId("a2"), new ItemId("n"), Title),
+            new ItemNoteChanged(new EventId("e3"), new DeviceId("d"), new EventClock(3), new ActionId("a3"), new ItemId("n"), Note),
         ];
         var tree = Projection.Replay(events);
 

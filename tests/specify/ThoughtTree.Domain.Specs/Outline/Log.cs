@@ -12,10 +12,10 @@ internal sealed class Log(string device = "a0000000-0000-0000-0000-000000000001"
 
     public static ItemId Id(string name) => new(name);
 
-    private (string EventId, string Device, EventClock Clock, string Action) Next(long time)
+    private (EventId EventId, DeviceId Device, EventClock Clock, ActionId Action) Next(long time)
     {
         this.count++;
-        return ($"{device}-{this.count}", device, new EventClock(time), $"action-{this.count}");
+        return (new EventId($"{device}-{this.count}"), new DeviceId(device), new EventClock(time), new ActionId($"action-{this.count}"));
     }
 
     public Log Create(long time, string item, string title, string? parent = null, string? after = null)
