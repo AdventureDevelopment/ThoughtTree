@@ -23,7 +23,7 @@ public static class HistoryGen
     private static readonly long[] Times = [1, 1, 2, 2, 3, 3, 4, 10, 4_000_000_000_000, long.MaxValue - 1];
     private const int NeverCreated = ItemPool;
     private static readonly int[] Afters = [-1, -1, 0, 0, 0, 1, 2, 3, 4, 5, NeverCreated];
-    private static readonly string[] RawTexts = ["", " Cafe\u0301", " one\r\ntwo", " one\n\rtwo\u2028three", " a\u000Bb\u000Cc\u0085d\u2029e", " \u00C5\u212B"];
+    private static readonly string[] RawTexts = ["", " Cafe\u0301", " one\r\ntwo", " one\n\rtwo\u2028three", " a\u000Bb\u000Cc\u0085d\u2029e", " \u00C5\u212B", " x\uD800y\uDC00\uD83D\uDC4D"];
     private static readonly int[] Parents = [-1, -1, 0, 0, 1, 1, 2, 3, 4, 5, NeverCreated];
 
     private const int ScrambleStep = 7919;

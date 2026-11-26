@@ -83,6 +83,30 @@ public sealed class TextNormalisationSpecs
             .x(() => TitleOf(tree, "n").ShouldBe(family));
     }
 
+    [Scenario]
+    public void INV_11_A_broken_character_in_a_title_becomes_the_replacement_character()
+    {
+        Tree tree = default!;
+
+        "Given a log that creates an item whose title has half of a character pair with its other half missing"
+            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "one\uD800two").Events));
+
+        "Then the title holds the replacement character in its place"
+            .x(() => TitleOf(tree, "n").ShouldBe("one\uFFFDtwo"));
+    }
+
+    [Scenario]
+    public void INV_11_A_broken_character_in_a_note_becomes_the_replacement_character()
+    {
+        Tree tree = default!;
+
+        "Given a log that gives an item a note that starts with the second half of a character pair without the first"
+            .x(() => tree = Projection.Replay(new Log().Create(1, "n", "Menu").Note(2, "n", "\uDC00one").Events));
+
+        "Then the note holds the replacement character in its place"
+            .x(() => NoteOf(tree, "n").ShouldBe("\uFFFDone"));
+    }
+
     private static string TitleOf(Tree tree, string item) => tree.Find(Log.Id(item))!.Title.ToString()!;
 
     private static string NoteOf(Tree tree, string item) => tree.Find(Log.Id(item))!.Note.ToString()!;

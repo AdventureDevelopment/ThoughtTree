@@ -60,16 +60,19 @@ public static partial class ReferenceModel
     private static string? IdOrNone(ItemId? id) =>
         id is null || string.IsNullOrEmpty(id.Value.Value) ? null : id.Value.Value;
 
-    // R26
+    // R26, R27
     private static string TitleText(string text) =>
-        LineBreak().Replace(text, " ").Normalize(NormalizationForm.FormC);
+        LineBreak().Replace(UnpairedSurrogate().Replace(text, "\uFFFD"), " ").Normalize(NormalizationForm.FormC);
 
-    // R26
+    // R26, R27
     private static string NoteText(string text) =>
-        LineBreak().Replace(text, "\n").Normalize(NormalizationForm.FormC);
+        LineBreak().Replace(UnpairedSurrogate().Replace(text, "\uFFFD"), "\n").Normalize(NormalizationForm.FormC);
 
     [GeneratedRegex("\r\n|[\r\n\u0085\u2028\u2029\v\f]", RegexOptions.CultureInvariant)]
     private static partial Regex LineBreak();
+
+    [GeneratedRegex("[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]", RegexOptions.CultureInvariant)]
+    private static partial Regex UnpairedSurrogate();
 
     private static string Quote(string? s)
     {

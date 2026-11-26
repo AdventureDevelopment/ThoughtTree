@@ -48,6 +48,7 @@ The reference model replays a log by exactly these rules and nothing else. Each 
 ## Text (owner decisions 2026-11-26, INV-11)
 
 26. Every title and note is replayed in Unicode NFC; in a title each line break becomes one space, in a note one line feed. The line breaks are CR LF (counted as one), CR, LF, U+0085, U+2028, U+2029, vertical tab and form feed (ADR-029; architecture.md section 9, "Text normalisation details (INV-11)").
+27. Before rule 26, each unpaired UTF-16 surrogate in a title or note becomes U+FFFD; text is never rejected for it (owner 2026-11-26; architecture.md section 9, "Unpaired surrogates in text").
 
 ## Not in the model
 
