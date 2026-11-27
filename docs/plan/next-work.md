@@ -34,8 +34,8 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
    check) and S2 (spec summaries) depend on it.
 7. **One approved sweep over the protected test files** (owner, 2026-11-26): write out the one-letter names in
    `tests/specify/**` and the reference model (the files left in `eng/pending-renames.txt`, AGENTS.md section 4b), and
-   turn `Item.Deleted` into the state `Lifecycle` (`{ Live, Archived }` if the open decision "Archive, content and
-   erasure" is taken, else `{ Live, Deleted }`), changed through one method per value instead of
+   turn `Item.Deleted` into the state `Lifecycle { Live, Archived }` (owner, 2026-11-27; the event types are renamed
+   with the ADR of the open decision "Archive, content and erasure"), changed through one method per value instead of
    `WithDeleted(bool)` (AGENTS.md section 4b; its line in `eng/approved-primitives.txt` goes with it). In the reference
    model also (owner, 2026-11-26): `sb` written out, `IdOrNone` without `id.Value.Value`, `Quote` without its unreachable
    `null` branch, the `Report` field `Item` named `ItemId`; better names only, no restructuring towards the Domain's
