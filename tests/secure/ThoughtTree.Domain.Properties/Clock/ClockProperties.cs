@@ -1,6 +1,6 @@
 using CsCheck;
-using ThoughtTree.Domain.Properties.Support;
 using ThoughtTree.Domain.Clock;
+using ThoughtTree.Domain.Properties.Support;
 
 namespace ThoughtTree.Domain.Properties.Clock;
 

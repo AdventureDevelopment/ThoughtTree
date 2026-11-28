@@ -1,8 +1,8 @@
 using CsCheck;
-using ThoughtTree.Domain.Properties.Support;
 using ThoughtTree.Domain.Model;
 using ThoughtTree.Domain.Outline;
 using ThoughtTree.Domain.Properties.Generators;
+using ThoughtTree.Domain.Properties.Support;
 
 namespace ThoughtTree.Domain.Properties.Outline;
 
