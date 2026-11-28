@@ -1,0 +1,47 @@
+@* Spike 2 page: runs one scenario per load and shows the top level of the tree; text not loaded yet shows as "…". *@
+<main data-testid="spike-root">
+    <p data-testid="status">@_runner.Status (@_runner.Progress)</p>
+    @if (_runner.Projection != null && _showTree)
+    {
+        <ul data-testid="top-level">
+            @foreach (var item in _runner.Projection.VisibleTopLevel().Take(50))
+            {
+                <li>@(item.Title ?? "…")</li>
+            }
+        </ul>
+    }
+    @if (_json != null)
+    {
+        <button data-testid="save-results" @onclick="Save">Save results</button>
+        <pre data-testid="result" class="result">@_json</pre>
+    }
+</main>
+
+@inject NavigationManager Navigation
+
+@code {
+    private readonly Runner _runner = new();
+    private bool _showTree;
+    private string? _json;
+    private bool _started;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _started) return;
+        _started = true;
+        await Js.Load(Navigation.BaseUri);
+        Js.Mark("app-ready");
+        double appReady = Js.Now();
+        string? error = null;
+        try
+        {
+            await _runner.RunAsync(async () => { _showTree = _showTree || _runner.Status == "tree visible"; StateHasChanged(); await Task.Yield(); });
+        }
+        catch (Exception ex) { error = ex.ToString(); _runner.Status = "error"; }
+        _json = await _runner.FinishAsync(appReady, error);
+        StateHasChanged();
+        if (Js.Query("device") == "1") await Js.DeviceHandOff(_json);
+    }
+
+    private void Save() => Js.Download(_json!, $"spike2-{_runner.Result["scenario"]}.json");
+}

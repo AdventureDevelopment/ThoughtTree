@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spike 2 on this device</title>
+  <link rel="stylesheet" href="spike.css" />
+  <script type="module" src="device.js"></script>
+</head>
+<body>
+  <h1>Spike 2: content blobs and replay speed</h1>
+  <p class="hint">Test data only; nothing leaves this device unless you save or share the result file. Steps: docs/spikes/spike-2-report.md, section "Owner runs on the devices".</p>
+  <p class="status" data-testid="device-status" id="status">loading</p>
+
+  <h2>1. This device</h2>
+  <label>Device model (model only, no names) <input id="model" data-testid="model" placeholder="for example Fairphone 5" /></label>
+  <label>Kind <select id="kind" data-testid="kind"><option value="phone">phone</option><option value="tablet">tablet</option></select></label>
+  <p id="env" class="hint"></p>
+  <button id="persist" data-testid="persist">Keep test data (persistent storage)</button>
+
+  <h2>2. Prepare the test data</h2>
+  <p class="hint">Generates spike 1's 100,000-event dataset on this device and stores it three times: today's format, content blobs with blocks carrying the text, and content blobs with separate blocks. About 400 MB and a few minutes; leave the page in front.</p>
+  <p id="data" class="hint"></p>
+  <button id="prepare" data-testid="prepare">Prepare test data</button>
+
+  <h2>3. Timing series</h2>
+  <p class="hint">Six cases, one page load each, in a shuffled order per round, after one warm-up round.</p>
+  <label>Rounds <select id="runs" data-testid="runs"><option value="3">3 (quick, about 10 minutes)</option><option value="10" selected>10 (as on the desktop, about 30 minutes)</option></select></label>
+  <button id="start" data-testid="start">Start</button>
+  <button id="resume" data-testid="resume">Continue</button>
+  <button id="skip" data-testid="skip">Skip the current run</button>
+  <button id="stop" data-testid="stop">Stop</button>
+
+  <h2>4. Results</h2>
+  <div id="results" data-testid="results"></div>
+  <button id="save" data-testid="save">Save the result file</button>
+  <button id="share" data-testid="share">Share the result file</button>
+  <button id="clear" data-testid="clear">Delete results on this device</button>
+</body>
+</html>
