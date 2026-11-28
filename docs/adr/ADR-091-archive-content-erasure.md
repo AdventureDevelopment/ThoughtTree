@@ -16,7 +16,7 @@ Amends ADR-005 (archived instead of deleted; erased content is removed), ADR-006
 - **MUST** archive, in the update flow of ADR-085 (D-181), each exported tree in the old format before the update, so devices still on the old version learn it; the updated app, which cannot read the old format, shows the old trees as ADR-085 says
 - **MUST** keep "Remove from this device" local: it writes no event and is offered for live and archived trees
 - **MUST** offer the tutorial tree "Remove from this device" in place of deleting it, saying that it is removed from this device only and comes back with "Show the tutorial again"
-- **MUST** archive the merged tag item of a tag merge (ADR-082, `tag.joined`) by an `item.lifecycle-changed` written in the same action (ADR-067)
+- **MUST** archive the merged tag item of a tag merge (ADR-082, `tag.joined`) by an `item.lifecycle-changed` written in the same action (ADR-067); the restore view does not list it, only undoing the merge (ADR-059) brings it back
 - **MUST** decide a concurrent archive and restore of the same item or tree by the agreed event order, without conflict marking (as ADR-083 does for relations)
 - **MUST** keep the text a person typed out of events, in content blobs: item titles and notes, relation notes, reverse names of relation types, view names and query words, device labels and user names; events keep ids, clocks and structure
 - **MUST** give each event that carries text one content blob holding all of that event's text, with an id derived from the event's id, its own nonce and padding (ADR-087's buckets), encrypted with the tree key (ADR-073); plaintext only the blob id, `KeyId` and nonce
