@@ -1,17 +1,21 @@
+using System.Collections.Immutable;
 using ThoughtTree.Domain.Outline;
 
 namespace ThoughtTree.Domain.Budgets.Outline;
 
 /// <summary>
-/// PF6: ten times more events take about ten times as long, never quadratically more. Only the ratio between 10,000 and
-/// 100,000 events and between 1,000 and 10,000 is checked, so the machine's speed does not matter (architecture.md section 8).
+/// PF6: ten times more events grow the time about as much as ten times more entries grow it for an immutable dictionary,
+/// the structure the tree is built on, and never quadratically more. The reference runs alternately with each workload,
+/// so the machine's speed, its caches and the depth of the structure cancel out (architecture.md section 8).
 /// </summary>
 [Trait("Intent", "Secure")]
 public sealed class ReplayBudgets
 {
-    private const double MostGrowthPerTenfold = 25;
+    private const double MostGrowthAgainstReference = 3;
 
-    private const int Runs = 3;
+    private const int WarmUpRuns = 2;
+
+    private const int Runs = 5;
 
     [Fact]
     public void PF6_a_full_replay_grows_about_linearly() =>
@@ -48,22 +52,56 @@ public sealed class ReplayBudgets
 
     private static void AssertLinear(Func<int, Action> workloadOfSize)
     {
-        var small = FastestRun(workloadOfSize(1_000));
-        var medium = FastestRun(workloadOfSize(10_000));
-        (medium / small).ShouldBeLessThan(MostGrowthPerTenfold, $"1,000 to 10,000 events: {small:F1} ms to {medium:F1} ms");
+        var small = Measure(1_000, workloadOfSize);
+        var medium = Measure(10_000, workloadOfSize);
+        AssertGrowth(small, medium, "1,000 to 10,000 events");
 
-        var large = FastestRun(workloadOfSize(100_000));
-        (large / medium).ShouldBeLessThan(MostGrowthPerTenfold, $"10,000 to 100,000 events: {medium:F1} ms to {large:F1} ms");
+        var large = Measure(100_000, workloadOfSize);
+        AssertGrowth(medium, large, "10,000 to 100,000 events");
     }
 
-    private static double FastestRun(Action workload)
+    private static void AssertGrowth(Timing smaller, Timing larger, string sizes)
     {
-        workload();
-        return Enumerable.Range(0, Runs).Min(_ =>
-        {
-            var start = TimeProvider.System.GetTimestamp();
-            workload();
-            return TimeProvider.System.GetElapsedTime(start).TotalMilliseconds;
-        });
+        var growth = larger.Workload / smaller.Workload;
+        var referenceGrowth = larger.Reference / smaller.Reference;
+        (growth / referenceGrowth).ShouldBeLessThan(
+            MostGrowthAgainstReference,
+            $"{sizes}: {smaller.Workload:F1} ms to {larger.Workload:F1} ms ({growth:F1} times); reference {smaller.Reference:F1} ms to {larger.Reference:F1} ms ({referenceGrowth:F1} times)");
     }
+
+    private static Timing Measure(int size, Func<int, Action> workloadOfSize)
+    {
+        var workload = workloadOfSize(size);
+        var reference = DictionaryOfItemIds(size);
+        for (var run = 0; run < WarmUpRuns; run++)
+        {
+            workload();
+            reference();
+        }
+
+        var fastest = new Timing(double.MaxValue, double.MaxValue);
+        for (var run = 0; run < Runs; run++)
+        {
+            fastest = new Timing(Math.Min(fastest.Workload, Time(workload)), Math.Min(fastest.Reference, Time(reference)));
+        }
+
+        return fastest;
+    }
+
+    private static Action DictionaryOfItemIds(int size)
+    {
+        var ids = Enumerable.Range(0, size).Select(index => new ItemId($"c0000000-0000-0000-0000-{index:D12}")).ToList();
+        return () => _ = ids.Aggregate(ImmutableDictionary<ItemId, int>.Empty, (dictionary, id) => dictionary.SetItem(id, 0));
+    }
+
+    private static double Time(Action workload)
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        var start = TimeProvider.System.GetTimestamp();
+        workload();
+        return TimeProvider.System.GetElapsedTime(start).TotalMilliseconds;
+    }
+
+    private sealed record Timing(double Workload, double Reference);
 }

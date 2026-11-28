@@ -28,14 +28,11 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
    content), after the open decisions "Archive, content and erasure" (spike 2), which changes what "content" means, and "Identity
    and signed events" (spike 3), which adds a signature to the wrapper;
    `docs/architecture.md` section 9 ("Release 1 scope", decision 7) and the invariant catalogue in section 8.
-6. **Flaky growth budget** (found with INV-11, 2026-11-26): `PF6_a_sync_batch_of_late_events_grows_about_linearly` in
-   `tests/secure/ThoughtTree.Domain.Budgets` fails in about half of the runs in a cloud worker container, also on commit
-   `8741775` before INV-11; make the ratio check stable without weakening it (ADR-035).
-7. **Decide where doc comments stay** (owner, 2026-11-26, after the clean-code review): the owner wants code readable at
+6. **Decide where doc comments stay** (owner, 2026-11-26, after the clean-code review): the owner wants code readable at
    first glance and finds summaries clutter. Open: summaries in spec classes, secure tests and `src/`; what carries the
    ADR and INV links instead (traits, an attribute, `applies_to`); timing open. The clean-code review's H1 (summary
    check) and S2 (spec summaries) depend on it.
-8. **One approved sweep over the protected test files** (owner, 2026-11-26): write out the one-letter names in
+7. **One approved sweep over the protected test files** (owner, 2026-11-26): write out the one-letter names in
    `tests/specify/**` and the reference model (the files left in `eng/pending-renames.txt`, AGENTS.md section 4b), and
    turn `Item.Deleted` into the state `Lifecycle { Live, Archived }` (owner, 2026-11-27; the event types are renamed
    with the ADR of the open decision "Archive, content and erasure"), changed through one method per value instead of
@@ -43,10 +40,10 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
    model also (owner, 2026-11-26): `sb` written out, `IdOrNone` without `id.Value.Value`, `Quote` without its unreachable
    `null` branch, the `Report` field `Item` named `ItemId`; better names only, no restructuring towards the Domain's
    code, so the referee stays independent (ADR-035). Needs the owner's approval before it starts (ADR-035).
-9. **Sketch: archived trees page** (owner, 2026-11-28; open decision "Archive, content and erasure" in
+8. **Sketch: archived trees page** (owner, 2026-11-28; open decision "Archive, content and erasure" in
    `docs/architecture.md` section 9): More › Trees › Archived trees…, with restoring a tree (ADR-064). Before release 1,
    not needed for the first preview deployment.
-10. **Sketch: restore view** (open decision "Archive, content and erasure" in
-    `docs/architecture.md` section 9, ADR-091; found by the independent review, 2026-11-28): the list of archived items
-    with Restore and Erase permanently (ADR-064). Before release 1, not needed for the first preview deployment; the question
-    before erasing needs no sketch (owner, 2026-11-28).
+9. **Sketch: restore view** (open decision "Archive, content and erasure" in
+   `docs/architecture.md` section 9, ADR-091; found by the independent review, 2026-11-28): the list of archived items
+   with Restore and Erase permanently (ADR-064). Before release 1, not needed for the first preview deployment; the question
+   before erasing needs no sketch (owner, 2026-11-28).

@@ -174,7 +174,7 @@ Run from the repository root; every command was run when it was written down. Do
 | Branch check | `eng/branch-check.sh` (the steps of `.github/workflows/checks.yml`; writes the verify report to `tests/secure/ThoughtTree.Architecture.Rules/bin/Release/net10.0/verify-report.md`) |
 | Push gate | `eng/branch-check.sh`, then the protected-data diffs in `.github/workflows/push-gate.yml`; its other parts are not in place yet (listed in that file) |
 | Mutation tests (changed Domain code) | `dotnet tool restore`, then in `src/ThoughtTree.Domain`: `dotnet stryker --since:origin/main` (changed code; config in `stryker-config.json` there, fails below 80 %), or `dotnet stryker` for all Domain code (about 2 minutes) |
-| Complexity checks (PF6: replay, wide parent, projector, sync batch at 1,000, 10,000 and 100,000 events) | `dotnet test tests/secure/ThoughtTree.Domain.Budgets` (about 20 seconds; only growth ratios are checked) |
+| Complexity checks (PF6: replay, wide parent, projector, sync batch at 1,000, 10,000 and 100,000 events) | `dotnet test tests/secure/ThoughtTree.Domain.Budgets` (about 40 seconds; only growth against a reference is checked) |
 | UI specifications | `TODO(step: client shell, foundation step 4)` |
 
 ## 7. When unsure
