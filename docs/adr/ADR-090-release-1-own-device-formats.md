@@ -4,7 +4,7 @@ id: ADR-090 · status: Proposed · kind: bet ([bet card](bets.md#adr-090))
 
 applies_to: `src/ThoughtTree.Client*/**`, `src/ThoughtTree.Domain/**`, `src/ThoughtTree.Contracts/**`
 
-Amends ADR-074 (sharing's formats and Domain rules in release 1; its why); owner decision 2026-11-28 (option S2, release 1 scope decision 2 in [architecture.md](../architecture.md) section 9).
+Amends ADR-074 (sharing's formats and Domain rules in release 1; its why) and ADR-011 (its rules on the sharing code and on private or shared are fixed when sharing is built); owner decision 2026-11-28 (option S2, release 1 scope decision 2 in [architecture.md](../architecture.md) section 9).
 
 - **MUST** write in release 1 the final stored formats a tree on one user's own devices needs: envelope version 1, payload wrapper, pairing code, export file, readable formats, local store layout; later releases only add event types, fields and code format versions (ADR-016)
 - **MUST** keep `device.joined` with user identity, `user.name-changed` and `device.label-changed` in release 1, because own devices use them

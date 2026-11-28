@@ -148,3 +148,14 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** New event types, fields and a new code format version are enough to add sharing later; the door check before each release 1 format catches what would block it.
 - **Signal:** The door checks recorded in ADRs and open decisions (how many answer "closes a door"); feedback issues asking to share a tree and their category; no data is collected.
 - **Review when:** work on sharing starts · a door check answers "closes a door" · the first feedback issue asks for sharing.
+
+<a id="adr-091"></a>
+
+## ADR-091: Archive is everyday, erase is final; content lives apart from structure
+
+**TL;DR:** We bet that keeping typed text in content blobs apart from events costs little enough in replay and sync to make real erasure possible.
+
+- **Outcome:** Users can archive without loss and erase text for good on every device that syncs, without any stored event changing.
+- **Assumption:** Replay with content blobs stays within spike 2's decision rule on the phone (about 10 to 20 % of today's format), or "structure first, text on demand" is acceptable as a UX choice.
+- **Signal:** Spike 2's measurements on the owner's phone and tablet; later, performance reports (numbers only, ADR-051); no data is collected.
+- **Review when:** spike 2's phone numbers miss the decision rule · a performance report shows replay or sync with blobs above the load budgets · erasure is asked for on something that is not content (for example ids).
