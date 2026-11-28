@@ -5,15 +5,11 @@ The queue of work items, first item next. It only orders the work and points to 
 decisions in `docs/architecture.md` section 9. When an item is done, remove it; add new work you find, with its source
 (AGENTS.md section 4).
 
-1. **Spike 2: content blobs and replay speed** (owner, 2026-11-27; open decision "Archive, content and erasure" in
-   `docs/architecture.md` section 9). In `spikes/`, reusing spike 1's harness, 100,000 events on the owner's phone and
-   tablet (Chrome, Firefox, Safari), measure: (1) today's format as baseline, replay from local blocks (ADR-086); (2)
-   events and content blobs, local blocks carrying the text; (3) separate event and blob blocks joined in replay; (4)
-   structure first, text of visible items on demand (time until the tree shows, until text shows); (5) erasing one
-   item: delete its blobs and rebuild the affected blocks; (6) writing a sync batch of 1,000 events with and without
-   blobs. Decision rule, set before measuring: blobs go ahead if (2) or (3) stays within about 10 to 20 % of (1) on the
-   phone; otherwise (4) decides, as a UX question for the owner. The agent builds the spike and a desktop run; the
-   device runs need the owner.
+1. **Decide on spike 2's results** (`docs/spikes/spike-2-report.md`, desktop measured 2026-11-28; ADR-091 bet card).
+   Desktop: (2) +1 %, (3) +5 % against (1); phone and tablet estimated from spike 1 at +1 to +9 % and +5 to +13 %, inside
+   the decision rule. For the owner: accept the estimate or run 3 rounds on the Fairphone 5 in Chrome (report section 5);
+   layout (2) or (3) (the report recommends (3): erasing 3 to 4 times cheaper); the cost of padding blobs to ADR-087's
+   buckets (stored size +30 %, text +310 %, sync batch +53 %); whether Safari must be measured.
 2. **Spike 3: signed events** (owner, 2026-11-28; open decision "Identity and signed events" in `docs/architecture.md`
    section 9). Can run alongside spike 2, reusing spike 1's harness. Measure on the owner's phone and tablet (Chrome,
    Firefox, Safari): (1) Web Crypto support for Ed25519 and ECDSA P-256 with a non-extractable private key; (2) replay of
