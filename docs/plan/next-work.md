@@ -18,7 +18,7 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
    section 9). Can run alongside spike 2, reusing spike 1's harness. Measure on the owner's phone and tablet (Chrome,
    Firefox, Safari): (1) Web Crypto support for Ed25519 and ECDSA P-256 with a non-extractable private key; (2) replay of
    100,000 events with a signature check per event and per content blob, against spike 1's baseline; (3) signing a sync
-   batch of 1,000 events; (4) the pairing code with a vouching token for the new device, against the QR size of ADR-087.
+   batch of 1,000 events; (4) the pairing code with a single-use, expiring vouching token for the new device, against the QR size of ADR-087.
    The agent builds the spike and a desktop run; the device runs need the owner.
 3. **Rest of the clean-code review** (`docs/reviews/2026-11-26-clean-code.md`): its refactoring order is done except
    H1, which waits for "Decide where doc comments stay". Left outside that order, not protected: T4 (one naming form for securing tests), H3 (one
