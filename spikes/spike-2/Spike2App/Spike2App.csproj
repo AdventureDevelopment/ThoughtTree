@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- AOT by default: the owner chose AOT for release 1 (architecture.md, "Blazor AOT compilation and spike"). -->
+    <SpikeBuild Condition="'$(SpikeBuild)' == ''">aot</SpikeBuild>
+    <RunAOTCompilation Condition="'$(SpikeBuild)' == 'aot'">true</RunAOTCompilation>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="SpikeBuild" Value="$(SpikeBuild)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.15" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reuses spike 1 unchanged: event types, seeded random source and the dataset generator. -->
+    <ProjectReference Include="../../spike-1/SpikeCore/SpikeCore.csproj" />
+    <Compile Include="../../spike-1/DatasetGenerator/EventLogBuilder.cs" Link="Generator/EventLogBuilder.cs" />
+    <Compile Include="../../spike-1/DatasetGenerator/TextSource.cs" Link="Generator/TextSource.cs" />
+  </ItemGroup>
+
+</Project>

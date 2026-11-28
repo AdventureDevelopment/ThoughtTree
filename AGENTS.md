@@ -49,7 +49,10 @@ Read this first. Rules carry their ADR id in brackets; the ADR has the detail an
 Rules read as trigger and action, the way hooks do: when the trigger occurs, do the action.
 
 - **When you start a change:** work in small steps. Write the specification first (`tests/specify`), then the code, then securing tests [architecture.md section 8, harness principle 10].
+- **When the tests are green, before the commit:** refactor until the change reads at first glance (goal of section 4b). Check names, extract methods, give values with a meaning their own type, remove comments; then run the inner loop again.
+- **When you add or change a check, rule, workflow, script, build setting or harness helper:** keep it reusable for the next project (owner goal, architecture.md section 9, "Reusable setup"): no term from `eng/domain-terms.txt`, project-specific data in its own file, and the file listed in `eng/reusable-setup.txt`. `ReusableSetupRules` in the architecture rules fails the branch check on a domain term in a listed file.
 - **When you finish a work item or find new work:** update `docs/plan/next-work.md` in the same commit: remove the item you finished, add new work with its source. The queue only orders and points to where things are decided; it does not repeat them. `/coordinator` (`.claude/commands/coordinator.md`) works through it with one worker session per item.
+- **When a work item is finished:** before the next item, the coordinator runs `/clean-code-review` (`.claude/commands/clean-code-review.md`) on it: one independent reviewer session writes `docs/reviews/<date>-<topic>.md`, the owner decides its cards, and the decisions go into the review file and, if work is left, one item "Act on the review" in `docs/plan/next-work.md`. A kind of finding that comes back in a later review becomes a check (architecture rule, analyzer or `.editorconfig` setting) where one can catch it, otherwise one short rule in this file, not another finding.
 - **When you write a test:** choose its intent: Specify (acceptance criteria, written first), Secure (properties, invariants, formats, simulation, architecture and component rules, budgets) or Confirm (end-to-end, deployment, manual) [ADR-054]. Tag the intent with `[Trait("Intent", ...)]` [ADR-054].
 - **When a test secures an ADR:** tag it with `[Trait("ADR", "ADR-0xx")]`; `dotnet test --filter "ADR=ADR-0xx"` must match at least one test [ADR-035, docs/adr/README.md].
 - **When a test checks an invariant:** name its `INV-n` in the test. **When you write a UI specification:** name its UX decision `D-n` [architecture.md section 8, ADR-064].
@@ -61,7 +64,7 @@ Rules read as trigger and action, the way hooks do: when the trigger occurs, do 
 - **When you write a commit message:** the first line is the TL;DR, imperative, up to 72 characters, `<prefix>: <outcome>`; prefixes `spec` (`tests/specify`), `feat`, `fix`, `test` (securing tests), `refactor`, `build` (project setup, CI, `infra/`), `docs`, `chore`. The body is technical and plain: what changed and how, naming the ADR, `INV-n` and `D-n` ids touched; a reason only where it is not obvious. The attribution line added by the tooling is the last line.
 - **When you write a pull request description:** follow `.github/pull_request_template.md`, with a one-line TL;DR first, then a short paragraph with the intent and the why; do not list the changes (the diff and the commit messages show them); the attribution line added by the tooling comes last.
 - **When you change `docs/**`, `README.md` or this file:** before editing, read the whole row or section you change and its neighbours. After editing, search `docs/`, `README.md` and this file for every term the change touches, and name in the commit body each hit you updated and each you left unchanged on purpose. Before opening the pull request, let a second agent that does not know your reasoning read the full diff for contradictions between ADRs, `architecture.md` and this file.
-- **When you open a pull request:** use `.github/pull_request_template.md`. Protected paths (`tests/specify/**`, `tests/data/**`, reference model, `*.verified.*`, `docs/**`, `eng/approved-suppressions.txt`, `.github/CODEOWNERS`, the reviewer workflow and prompt, secrets) need the owner's review of the latest push [ADR-035]. `AGENTS.md`, `CLAUDE.md` and the rest of `.github/**` you may change yourself: once the independent reviewer agent exists they merge on its approval, until then the owner reviews them too. ADRs stay the owner's to change; you may only propose one with status `Proposed`.
+- **When you open a pull request:** use `.github/pull_request_template.md`. Protected paths (`tests/specify/**`, `tests/data/**`, reference model, `*.verified.*`, `docs/**`, `eng/approved-suppressions.txt`, `eng/approved-comments.txt`, `eng/approved-primitives.txt`, `.github/CODEOWNERS`, the reviewer workflow and prompt, secrets) need the owner's review of the latest push [ADR-035]. `AGENTS.md`, `CLAUDE.md` and the rest of `.github/**` you may change yourself: once the independent reviewer agent exists they merge on its approval, until then the owner reviews them too. ADRs stay the owner's to change; you may only propose one with status `Proposed`.
 - **When you change the UI:** first read the UX principles, terms and decisions for the screen [ADR-064]. Fill the template's UI checklist (principles, terms, tokens only, sketch linked, screenshots, keyboard paths; accessible names, roles and live-region announcements checked by specs and component rules). Attach phone and tablet screenshots (light and dark), the sketch link and the preview link [ADR-064]. Use the terms of the glossary [ADR-063].
 
 ## 4a. Writing specs with LambdaTale
@@ -79,7 +82,7 @@ using Xunit;
 [Trait("Intent", "Specify")]
 [Trait("ADR", "ADR-005")]
 [Trait("ADR", "ADR-059")]
-public class DeleteAndUndoSpecs
+public sealed class DeleteAndUndoSpecs
 {
     [Scenario]
     public void Undoing_a_delete_brings_the_item_back_with_its_children()
@@ -116,6 +119,25 @@ public class Device { /* AddItem, Delete, Undo, Tree, Log */ }
 - Add specs freely; never edit or delete an existing spec without the owner's approval [ADR-035, ADR-054].
 - Time, ids and randomness come from the fakes [ADR-034]; a spec is deterministic.
 
+## 4b. Code style
+
+Goal (owner, 2026-11-26): code is readable at first glance; wherever a reader's eye stops and wonders, the code is not done. Follow these rules when you generate code, not only when you refactor; the refactoring step before each commit (section 4) checks the change against this goal. The owner reads most work on a phone and looks at code only in reviews at a workstation, so the refactoring step and the clean-code review hold the goal in between. Where doc comments stay is open (`docs/plan/next-work.md`); until it is decided, the summary rule below stands.
+
+Owner decision 2026-11-25 (rules 1 to 9 confirmed by the owner, with revisions to 6 and 9), adapted from the SoloAdventure project. Same form as section 4: when the trigger occurs, do the action. Rules marked "build" are in `.editorconfig` at `warning`, so a breach fails the build [ADR-042].
+
+- **If you are about to write a comment:** express it in code instead: a name, an extracted method or variable, or a test. Write a comment only for behaviour outside our code that no name can show (for example a library quirk or how GitHub runs a workflow), one line. Ids belong in summaries, traits and commit messages, never in inline comments; the one exception is the reference model, whose `R-n` markers map it to its `RULES.md`. Every inline comment is listed in `eng/approved-comments.txt`; `CommentRules` in the architecture rules fails the branch check on any other.
+- **If you are about to write prose** (comment, doc, pull request text, commit message): lead with the point and cut what the reader does not need to act.
+- **If you are about to add a type, field or abstraction:** name what needs it today. If nothing does, do not add it.
+- **If you are about to give a parameter, property or return value a built-in type** (`string`, `long`, `int`) in the Domain or the application layer: if it carries more meaning than the type (an id, a point in time, a unit, an outcome), give it its own type.
+- **If you are about to store or pass a `bool`** in the Domain or the application layer: model it as a state type instead (owner decision 2026-11-26), one per independent dimension (`Lifecycle { Live, Archived }`, never a combined enum), holding only the thing's own facts; derived facts such as "visible" are computed, and device-only state such as "collapsed" stays out of Domain types. A call passes no `true` or `false`: give it a state or two methods. A question computed on demand answers with `bool` as a method (`IsSameOrDescendant(...)`), not a property. Branch on a state with a switch expression without a `_` catch-all, so a new value fails the build where it is not handled. Which state values exist follows from events and an ADR, not from the code. `PrimitiveRules` in the architecture rules fails the branch check on a public `string`, `long` or `int`, and on a public `bool` property or parameter, that is not listed in `eng/approved-primitives.txt`.
+- **If you are about to add a public type:** give it a `/// <summary>` of one sentence, role plus the ADR id where one applies. Give a member one only if its name does not say it.
+- **If you are about to declare a class or record:** make it `sealed`, unless it is designed for inheritance.
+- **If you are about to write a block, a member or a call on `this`:** use braces for every block and an explicit accessibility on every member (build), and write `this.` before every instance member (build). Use an expression body only when the member fits on one line (preference, not checked by the build).
+- **If you are about to declare a local variable:** use `var` when the type is built-in or clear from the right-hand side (build).
+- **If you are about to name a variable, parameter or lambda parameter:** write the name out after its role (`itemEvent`, `index`, `builder`), never one letter and never an abbreviation; `event` is a keyword, so name the kind of event. Name length costs nothing in the download. Type parameters keep the .NET convention (`T`, `TKey`); a discard stays `_`. `NameRules` in the architecture rules fails the branch check on a one-letter name outside the files listed in `eng/pending-renames.txt`.
+- **If you are about to add a Domain type that holds state:** make it an immutable record (`private init`), and change it through methods that return a copy. Collections inside such a type are persistent (`System.Collections.Immutable`), so a copy shares what did not change; `Item` and `Tree` follow this.
+- **If you are about to declare a field:** a private instance field is camelCase without a prefix (build) and is always reached through `this.`; a constant or static field is PascalCase (build).
+
 ## 5. Project layout
 
 The six projects exist as a skeleton without business code (foundation stage 1, architecture.md section 9); the solution is `ThoughtTree.slnx`. The layout [ADR-054, architecture.md section 5]:
@@ -151,7 +173,8 @@ Run from the repository root; every command was run when it was written down. Do
 | Compile the Bicep templates [ADR-046] | `bicep build infra/main.bicep`, `bicep build infra/bootstrap/bootstrap.bicep`, `bicep build-params infra/test.bicepparam`, `bicep build-params infra/production.bicepparam`, `bicep build-params infra/preview.bicepparam` (standalone Bicep CLI; on GitHub the workflow `infra-check.yml` runs the same with `az bicep`, outside the gate because it downloads the Bicep CLI) |
 | Branch check | `eng/branch-check.sh` (the steps of `.github/workflows/checks.yml`; writes the verify report to `tests/secure/ThoughtTree.Architecture.Rules/bin/Release/net10.0/verify-report.md`) |
 | Push gate | `eng/branch-check.sh`, then the protected-data diffs in `.github/workflows/push-gate.yml`; its other parts are not in place yet (listed in that file) |
-| Mutation tests (changed Domain code) | `TODO(step: Domain core, foundation step 2a)` |
+| Mutation tests (changed Domain code) | `dotnet tool restore`, then in `src/ThoughtTree.Domain`: `dotnet stryker --since:origin/main` (changed code; config in `stryker-config.json` there, fails below 80 %), or `dotnet stryker` for all Domain code (about 2 minutes) |
+| Complexity checks (PF6: replay, wide parent, projector, sync batch at 1,000, 10,000 and 100,000 events) | `dotnet test tests/secure/ThoughtTree.Domain.Budgets` (about 40 seconds; only growth against a reference is checked) |
 | UI specifications | `TODO(step: client shell, foundation step 4)` |
 
 ## 7. When unsure

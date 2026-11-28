@@ -8,17 +8,17 @@ namespace ThoughtTree.Architecture.Rules.Dependencies;
 /// so these rules read the project files; the type-level rules are in <see cref="TypeDependencyRules"/>.
 /// </summary>
 [Trait("Intent", "Secure")]
-public class ProjectReferenceRules
+public sealed class ProjectReferenceRules
 {
     private static readonly IReadOnlyList<ProjectFile> Sources = ProjectFile.All("src");
 
-    private static ProjectFile Source(string name) => Sources.Single(p => p.Name == name);
+    private static ProjectFile Source(string name) => Sources.Single(project => project.Name == name);
 
     [Fact]
     [Trait("ADR", "ADR-054")]
     public void Source_folder_holds_exactly_the_six_projects()
     {
-        Sources.Select(p => p.Name).Order(StringComparer.Ordinal)
+        Sources.Select(project => project.Name).Order(StringComparer.Ordinal)
             .ShouldBe(All.Order(StringComparer.Ordinal), "ADR-054: a further project needs a real boundary and an ADR change");
 
         foreach (var project in Sources)
@@ -32,8 +32,8 @@ public class ProjectReferenceRules
     public void No_project_is_a_shared_or_common_project()
     {
         var offenders = ProjectFile.All("src").Concat(ProjectFile.All("tests"))
-            .Select(p => p.Name)
-            .Where(n => n.Contains("Shared", StringComparison.OrdinalIgnoreCase) || n.Contains("Common", StringComparison.OrdinalIgnoreCase));
+            .Select(project => project.Name)
+            .Where(name => name.Contains("Shared", StringComparison.OrdinalIgnoreCase) || name.Contains("Common", StringComparison.OrdinalIgnoreCase));
 
         offenders.ShouldBeEmpty("ADR-054: no Shared or Common projects");
     }
@@ -79,8 +79,8 @@ public class ProjectReferenceRules
         var core = Source(ServerCoreProject);
 
         core.Sdk.ShouldBe("Microsoft.NET.Sdk", "ADR-040: Server.Core is a plain library");
-        core.FrameworkReferences.ShouldNotContain(r => r.StartsWith("Microsoft.AspNetCore", StringComparison.Ordinal));
-        core.PackageReferences.ShouldNotContain(r => r.StartsWith("Microsoft.AspNetCore", StringComparison.Ordinal));
+        core.FrameworkReferences.ShouldNotContain(reference => reference.StartsWith("Microsoft.AspNetCore", StringComparison.Ordinal));
+        core.PackageReferences.ShouldNotContain(reference => reference.StartsWith("Microsoft.AspNetCore", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -91,15 +91,14 @@ public class ProjectReferenceRules
 
         app.Sdk.ShouldBe("Microsoft.NET.Sdk", "ADR-041: Client.App has no Razor and no browser dependencies");
         app.FrameworkReferences.ShouldBeEmpty();
-        app.PackageReferences.ShouldNotContain(r =>
-            r.StartsWith("Microsoft.AspNetCore", StringComparison.Ordinal) || r.StartsWith("Microsoft.JSInterop", StringComparison.Ordinal));
+        app.PackageReferences.ShouldNotContain(reference =>
+            reference.StartsWith("Microsoft.AspNetCore", StringComparison.Ordinal) || reference.StartsWith("Microsoft.JSInterop", StringComparison.Ordinal));
     }
 
     [Fact]
     [Trait("ADR", "ADR-053")]
-    public void Transitive_project_references_are_switched_off_for_source_projects()
+    public void Transitive_project_references_are_off_so_client_cannot_reach_domain_through_client_app()
     {
-        // Without this, Client could compile against Domain through Client.App (the UI references Application only).
         File.ReadAllText(Repository.PathOf("src", "Directory.Build.props"))
             .ShouldContain("<DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>");
     }

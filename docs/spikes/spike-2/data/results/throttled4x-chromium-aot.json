@@ -1,0 +1,4627 @@
+{
+ "spike": 2,
+ "device": "desktop Chromium with CPU throttling 4x (phone fallback, unverified)",
+ "browser": "chromium",
+ "browserVersion": "158.0.8127.36",
+ "build": "aot",
+ "throttle": 4,
+ "gitCommit": "902db7fcac405d2a942318fff4b99e493bc52f94+dirty",
+ "machine": {
+  "os": "Linux 6.18.44-fc-v880 x64",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.30GHz",
+  "cpuCount": 4,
+  "memoryGB": 16
+ },
+ "runProtocol": "headless Chromium, persistent profile, warm page loads (HTTP cache), one warm-up round, then 10 rounds with the scenarios in seeded order",
+ "setup": null,
+ "series": [
+  {
+   "scenario": "replay1",
+   "samples": [
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 4974.9,
+     "treeVisibleMs": 6399.8,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71769395,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1401.6,
+     "phases": {
+      "copyMs": 112,
+      "parseMs": 3382.9,
+      "applyMs": 505.5
+     },
+     "jsPhases": {
+      "openMs": 4,
+      "readMs": 494.2,
+      "decryptMs": 222.7,
+      "joinMs": 127.6
+     },
+     "storage": {
+      "usage": 519564471,
+      "quota": 11256982711,
+      "usageDetails": {
+       "indexedDB": 519564471
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 5291.1,
+     "treeVisibleMs": 6789.6,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71763767,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1474.1,
+     "phases": {
+      "copyMs": 119.2,
+      "parseMs": 3577.4,
+      "applyMs": 547.2
+     },
+     "jsPhases": {
+      "openMs": 4.5,
+      "readMs": 520.3,
+      "decryptMs": 232.6,
+      "joinMs": 135.4
+     },
+     "storage": {
+      "usage": 506355692,
+      "quota": 11243773932,
+      "usageDetails": {
+       "indexedDB": 506355692
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 5239.1,
+     "treeVisibleMs": 6845.5,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71763399,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1577.3,
+     "phases": {
+      "copyMs": 119.7,
+      "parseMs": 3596.1,
+      "applyMs": 523.9
+     },
+     "jsPhases": {
+      "openMs": 5.8,
+      "readMs": 523,
+      "decryptMs": 218.7,
+      "joinMs": 125.9
+     },
+     "storage": {
+      "usage": 506355692,
+      "quota": 11243773932,
+      "usageDetails": {
+       "indexedDB": 506355692
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 4724.9,
+     "treeVisibleMs": 6196.7,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71751919,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1445.2,
+     "phases": {
+      "copyMs": 106.7,
+      "parseMs": 3250.1,
+      "applyMs": 470
+     },
+     "jsPhases": {
+      "openMs": 5,
+      "readMs": 430.6,
+      "decryptMs": 197.3,
+      "joinMs": 136.7
+     },
+     "storage": {
+      "usage": 500748650,
+      "quota": 11238166890,
+      "usageDetails": {
+       "indexedDB": 500748650
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 4809.7,
+     "treeVisibleMs": 6140.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71755467,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1309.8,
+     "phases": {
+      "copyMs": 102.1,
+      "parseMs": 3353.5,
+      "applyMs": 481.1
+     },
+     "jsPhases": {
+      "openMs": 4.5,
+      "readMs": 422.5,
+      "decryptMs": 198.7,
+      "joinMs": 122.1
+     },
+     "storage": {
+      "usage": 501836787,
+      "quota": 11239255027,
+      "usageDetails": {
+       "indexedDB": 501836787
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 4583.7,
+     "treeVisibleMs": 5891,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71754651,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1285.9,
+     "phases": {
+      "copyMs": 98.6,
+      "parseMs": 3200.9,
+      "applyMs": 409.8
+     },
+     "jsPhases": {
+      "openMs": 4.3,
+      "readMs": 440.2,
+      "decryptMs": 195.4,
+      "joinMs": 122
+     },
+     "storage": {
+      "usage": 499993503,
+      "quota": 11237411743,
+      "usageDetails": {
+       "indexedDB": 499993503
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 4900.6,
+     "treeVisibleMs": 6207.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71751271,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1288.1,
+     "phases": {
+      "copyMs": 92.6,
+      "parseMs": 3489.8,
+      "applyMs": 441
+     },
+     "jsPhases": {
+      "openMs": 3.9,
+      "readMs": 431.4,
+      "decryptMs": 200.9,
+      "joinMs": 121.8
+     },
+     "storage": {
+      "usage": 500869001,
+      "quota": 11238287241,
+      "usageDetails": {
+       "indexedDB": 500869001
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 4780.6,
+     "treeVisibleMs": 6169,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71751683,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1365.8,
+     "phases": {
+      "copyMs": 105.5,
+      "parseMs": 3327.3,
+      "applyMs": 461.8
+     },
+     "jsPhases": {
+      "openMs": 4.3,
+      "readMs": 464.3,
+      "decryptMs": 192.1,
+      "joinMs": 120.5
+     },
+     "storage": {
+      "usage": 507936941,
+      "quota": 11245355181,
+      "usageDetails": {
+       "indexedDB": 507936941
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 5203.7,
+     "treeVisibleMs": 6740.7,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 71743367,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1508.3,
+     "phases": {
+      "copyMs": 120.7,
+      "parseMs": 3515.6,
+      "applyMs": 542.6
+     },
+     "jsPhases": {
+      "openMs": 4.8,
+      "readMs": 505.8,
+      "decryptMs": 225.2,
+      "joinMs": 134.6
+     },
+     "storage": {
+      "usage": 503718307,
+      "quota": 11241136547,
+      "usageDetails": {
+       "indexedDB": 503718307
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay1",
+     "build": "aot",
+     "replayMs": 4835,
+     "treeVisibleMs": 6184.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 77029185,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1326.8,
+     "phases": {
+      "copyMs": 89.6,
+      "parseMs": 3466.9,
+      "applyMs": 403.1
+     },
+     "jsPhases": {
+      "openMs": 3.3,
+      "readMs": 446.3,
+      "decryptMs": 182,
+      "joinMs": 146.3
+     },
+     "storage": {
+      "usage": 520579715,
+      "quota": 11257997955,
+      "usageDetails": {
+       "indexedDB": 520579715
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    }
+   ],
+   "summary": {
+    "appReadyMs": {
+     "n": 10,
+     "median": 1383.7,
+     "p95": 1577.3,
+     "min": 1285.9,
+     "max": 1577.3
+    },
+    "environment.deviceMemory": {
+     "n": 10,
+     "median": 16,
+     "p95": 16,
+     "min": 16,
+     "max": 16
+    },
+    "environment.hardwareConcurrency": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "eventsApplied": {
+     "n": 10,
+     "median": 100000,
+     "p95": 100000,
+     "min": 100000,
+     "max": 100000
+    },
+    "items": {
+     "n": 10,
+     "median": 10000,
+     "p95": 10000,
+     "min": 10000,
+     "max": 10000
+    },
+    "jsPhases.decryptMs": {
+     "n": 10,
+     "median": 199.8,
+     "p95": 232.6,
+     "min": 182,
+     "max": 232.6
+    },
+    "jsPhases.joinMs": {
+     "n": 10,
+     "median": 126.75,
+     "p95": 146.3,
+     "min": 120.5,
+     "max": 146.3
+    },
+    "jsPhases.openMs": {
+     "n": 10,
+     "median": 4.4,
+     "p95": 5.8,
+     "min": 3.3,
+     "max": 5.8
+    },
+    "jsPhases.readMs": {
+     "n": 10,
+     "median": 455.3,
+     "p95": 523,
+     "min": 422.5,
+     "max": 523
+    },
+    "memoryAfterTree.jsHeapUsed": {
+     "n": 10,
+     "median": 71755059,
+     "p95": 77029185,
+     "min": 71743367,
+     "max": 77029185
+    },
+    "memoryAfterTree.wasmMemory": {
+     "n": 10,
+     "median": 173670400,
+     "p95": 173670400,
+     "min": 173670400,
+     "max": 173670400
+    },
+    "phases.applyMs": {
+     "n": 10,
+     "median": 475.55,
+     "p95": 547.2,
+     "min": 403.1,
+     "max": 547.2
+    },
+    "phases.copyMs": {
+     "n": 10,
+     "median": 106.1,
+     "p95": 120.7,
+     "min": 89.6,
+     "max": 120.7
+    },
+    "phases.parseMs": {
+     "n": 10,
+     "median": 3424.9,
+     "p95": 3596.1,
+     "min": 3200.9,
+     "max": 3596.1
+    },
+    "replayMs": {
+     "n": 10,
+     "median": 4867.8,
+     "p95": 5291.1,
+     "min": 4583.7,
+     "max": 5291.1
+    },
+    "storage.quota": {
+     "n": 10,
+     "median": 11242455239.5,
+     "p95": 11257997955,
+     "min": 11237411743,
+     "max": 11257997955
+    },
+    "storage.usage": {
+     "n": 10,
+     "median": 505036999.5,
+     "p95": 520579715,
+     "min": 499993503,
+     "max": 520579715
+    },
+    "storage.usageDetails.indexedDB": {
+     "n": 10,
+     "median": 505036999.5,
+     "p95": 520579715,
+     "min": 499993503,
+     "max": 520579715
+    },
+    "treeVisibleMs": {
+     "n": 10,
+     "median": 6202,
+     "p95": 6845.5,
+     "min": 5891,
+     "max": 6845.5
+    }
+   }
+  },
+  {
+   "scenario": "replay2",
+   "samples": [
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5385.1,
+     "treeVisibleMs": 6881.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 78260522,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1470.3,
+     "phases": {
+      "copyMs": 123.1,
+      "parseMs": 3639.7,
+      "applyMs": 639.2
+     },
+     "jsPhases": {
+      "openMs": 4.5,
+      "readMs": 466.2,
+      "decryptMs": 237.2,
+      "joinMs": 129.8
+     },
+     "storage": {
+      "usage": 519564471,
+      "quota": 11256982711,
+      "usageDetails": {
+       "indexedDB": 519564471
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5295.6,
+     "treeVisibleMs": 6797.7,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 67438240,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1479.9,
+     "phases": {
+      "copyMs": 126.6,
+      "parseMs": 3628.3,
+      "applyMs": 597.2
+     },
+     "jsPhases": {
+      "openMs": 4.7,
+      "readMs": 458.6,
+      "decryptMs": 216.4,
+      "joinMs": 131.2
+     },
+     "storage": {
+      "usage": 506355692,
+      "quota": 11243773932,
+      "usageDetails": {
+       "indexedDB": 506355692
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5679.9,
+     "treeVisibleMs": 7285.6,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 40269172,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1575.1,
+     "phases": {
+      "copyMs": 147,
+      "parseMs": 3823.7,
+      "applyMs": 657.8
+     },
+     "jsPhases": {
+      "openMs": 5,
+      "readMs": 521.2,
+      "decryptMs": 235.9,
+      "joinMs": 135.3
+     },
+     "storage": {
+      "usage": 503320811,
+      "quota": 11240739051,
+      "usageDetails": {
+       "indexedDB": 503320811
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5700.2,
+     "treeVisibleMs": 7277,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 40265588,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1546.7,
+     "phases": {
+      "copyMs": 142.6,
+      "parseMs": 3849.9,
+      "applyMs": 665.2
+     },
+     "jsPhases": {
+      "openMs": 6.9,
+      "readMs": 507.7,
+      "decryptMs": 235.8,
+      "joinMs": 133
+     },
+     "storage": {
+      "usage": 496230393,
+      "quota": 11233648633,
+      "usageDetails": {
+       "indexedDB": 496230393
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5105.6,
+     "treeVisibleMs": 6446.8,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 56528318,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1320.1,
+     "phases": {
+      "copyMs": 104.9,
+      "parseMs": 3636.6,
+      "applyMs": 531.1
+     },
+     "jsPhases": {
+      "openMs": 4.8,
+      "readMs": 389.6,
+      "decryptMs": 195.7,
+      "joinMs": 115.3
+     },
+     "storage": {
+      "usage": 497781594,
+      "quota": 11235199834,
+      "usageDetails": {
+       "indexedDB": 497781594
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5224.6,
+     "treeVisibleMs": 6802.9,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 72710919,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1554.3,
+     "phases": {
+      "copyMs": 109.2,
+      "parseMs": 3622.1,
+      "applyMs": 583.4
+     },
+     "jsPhases": {
+      "openMs": 3.8,
+      "readMs": 462.7,
+      "decryptMs": 204.4,
+      "joinMs": 122.8
+     },
+     "storage": {
+      "usage": 499993503,
+      "quota": 11237411743,
+      "usageDetails": {
+       "indexedDB": 499993503
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5029.9,
+     "treeVisibleMs": 6341.8,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 40257732,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1288,
+     "phases": {
+      "copyMs": 93.6,
+      "parseMs": 3640.4,
+      "applyMs": 499.7
+     },
+     "jsPhases": {
+      "openMs": 3.7,
+      "readMs": 401,
+      "decryptMs": 172.1,
+      "joinMs": 109.2
+     },
+     "storage": {
+      "usage": 500869001,
+      "quota": 11238287241,
+      "usageDetails": {
+       "indexedDB": 500869001
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5116.4,
+     "treeVisibleMs": 6537.2,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 72702233,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1387.1,
+     "phases": {
+      "copyMs": 111.6,
+      "parseMs": 3554.7,
+      "applyMs": 563.5
+     },
+     "jsPhases": {
+      "openMs": 4.1,
+      "readMs": 419.5,
+      "decryptMs": 192.7,
+      "joinMs": 125.6
+     },
+     "storage": {
+      "usage": 507936941,
+      "quota": 11245355181,
+      "usageDetails": {
+       "indexedDB": 507936941
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5280.9,
+     "treeVisibleMs": 6826,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 72699445,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1519.5,
+     "phases": {
+      "copyMs": 103.3,
+      "parseMs": 3735.9,
+      "applyMs": 562.7
+     },
+     "jsPhases": {
+      "openMs": 5.1,
+      "readMs": 398,
+      "decryptMs": 209.1,
+      "joinMs": 122
+     },
+     "storage": {
+      "usage": 520579715,
+      "quota": 11257997955,
+      "usageDetails": {
+       "indexedDB": 520579715
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay2",
+     "build": "aot",
+     "replayMs": 5392.9,
+     "treeVisibleMs": 6874.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 78240682,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1457.2,
+     "phases": {
+      "copyMs": 117.4,
+      "parseMs": 3664.8,
+      "applyMs": 623.3
+     },
+     "jsPhases": {
+      "openMs": 4.5,
+      "readMs": 476.5,
+      "decryptMs": 223.2,
+      "joinMs": 140.3
+     },
+     "storage": {
+      "usage": 518257049,
+      "quota": 11255675289,
+      "usageDetails": {
+       "indexedDB": 518257049
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    }
+   ],
+   "summary": {
+    "appReadyMs": {
+     "n": 10,
+     "median": 1475.1,
+     "p95": 1575.1,
+     "min": 1288,
+     "max": 1575.1
+    },
+    "environment.deviceMemory": {
+     "n": 10,
+     "median": 16,
+     "p95": 16,
+     "min": 16,
+     "max": 16
+    },
+    "environment.hardwareConcurrency": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "eventsApplied": {
+     "n": 10,
+     "median": 100000,
+     "p95": 100000,
+     "min": 100000,
+     "max": 100000
+    },
+    "items": {
+     "n": 10,
+     "median": 10000,
+     "p95": 10000,
+     "min": 10000,
+     "max": 10000
+    },
+    "jsPhases.decryptMs": {
+     "n": 10,
+     "median": 212.75,
+     "p95": 237.2,
+     "min": 172.1,
+     "max": 237.2
+    },
+    "jsPhases.joinMs": {
+     "n": 10,
+     "median": 127.7,
+     "p95": 140.3,
+     "min": 109.2,
+     "max": 140.3
+    },
+    "jsPhases.openMs": {
+     "n": 10,
+     "median": 4.6,
+     "p95": 6.9,
+     "min": 3.7,
+     "max": 6.9
+    },
+    "jsPhases.readMs": {
+     "n": 10,
+     "median": 460.65,
+     "p95": 521.2,
+     "min": 389.6,
+     "max": 521.2
+    },
+    "memoryAfterTree.jsHeapUsed": {
+     "n": 10,
+     "median": 70068842.5,
+     "p95": 78260522,
+     "min": 40257732,
+     "max": 78260522
+    },
+    "memoryAfterTree.wasmMemory": {
+     "n": 10,
+     "median": 173670400,
+     "p95": 173670400,
+     "min": 173670400,
+     "max": 173670400
+    },
+    "phases.applyMs": {
+     "n": 10,
+     "median": 590.3,
+     "p95": 665.2,
+     "min": 499.7,
+     "max": 665.2
+    },
+    "phases.copyMs": {
+     "n": 10,
+     "median": 114.5,
+     "p95": 147,
+     "min": 93.6,
+     "max": 147
+    },
+    "phases.parseMs": {
+     "n": 10,
+     "median": 3640.05,
+     "p95": 3849.9,
+     "min": 3554.7,
+     "max": 3849.9
+    },
+    "replayMs": {
+     "n": 10,
+     "median": 5288.25,
+     "p95": 5700.2,
+     "min": 5029.9,
+     "max": 5700.2
+    },
+    "storage.quota": {
+     "n": 10,
+     "median": 11242256491.5,
+     "p95": 11257997955,
+     "min": 11233648633,
+     "max": 11257997955
+    },
+    "storage.usage": {
+     "n": 10,
+     "median": 504838251.5,
+     "p95": 520579715,
+     "min": 496230393,
+     "max": 520579715
+    },
+    "storage.usageDetails.indexedDB": {
+     "n": 10,
+     "median": 504838251.5,
+     "p95": 520579715,
+     "min": 496230393,
+     "max": 520579715
+    },
+    "treeVisibleMs": {
+     "n": 10,
+     "median": 6814.45,
+     "p95": 7285.6,
+     "min": 6341.8,
+     "max": 7285.6
+    }
+   }
+  },
+  {
+   "scenario": "replay3",
+   "samples": [
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5685.6,
+     "treeVisibleMs": 7162.1,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 24904916,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1437,
+     "phases": {
+      "copyMs": 176.7,
+      "parseMs": 3628.2,
+      "joinApplyMs": 774.5
+     },
+     "jsPhases": {
+      "openMs": 5.6,
+      "readMs": 566.9,
+      "decryptMs": 232.2,
+      "joinMs": 140.2
+     },
+     "storage": {
+      "usage": 519564471,
+      "quota": 11256982711,
+      "usageDetails": {
+       "indexedDB": 519564471
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5959.6,
+     "treeVisibleMs": 7739.1,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 81768256,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1751.1,
+     "phases": {
+      "copyMs": 193.5,
+      "parseMs": 3808.6,
+      "joinApplyMs": 855
+     },
+     "jsPhases": {
+      "openMs": 4.4,
+      "readMs": 548,
+      "decryptMs": 253.3,
+      "joinMs": 150.9
+     },
+     "storage": {
+      "usage": 495157030,
+      "quota": 11232575270,
+      "usageDetails": {
+       "indexedDB": 495157030
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5804.4,
+     "treeVisibleMs": 7350.4,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 77408858,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1520,
+     "phases": {
+      "copyMs": 188.4,
+      "parseMs": 3693,
+      "joinApplyMs": 837.1
+     },
+     "jsPhases": {
+      "openMs": 4.1,
+      "readMs": 505.9,
+      "decryptMs": 264.1,
+      "joinMs": 144.5
+     },
+     "storage": {
+      "usage": 503320811,
+      "quota": 11240739051,
+      "usageDetails": {
+       "indexedDB": 503320811
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5529.8,
+     "treeVisibleMs": 7142.5,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 77550810,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1587,
+     "phases": {
+      "copyMs": 186,
+      "parseMs": 3598.6,
+      "joinApplyMs": 734.2
+     },
+     "jsPhases": {
+      "openMs": 4.3,
+      "readMs": 505,
+      "decryptMs": 228.8,
+      "joinMs": 132.1
+     },
+     "storage": {
+      "usage": 496230393,
+      "quota": 11233648633,
+      "usageDetails": {
+       "indexedDB": 496230393
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5252.3,
+     "treeVisibleMs": 6688.1,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 81740144,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1407.8,
+     "phases": {
+      "copyMs": 160.8,
+      "parseMs": 3484.6,
+      "joinApplyMs": 641.6
+     },
+     "jsPhases": {
+      "openMs": 3.5,
+      "readMs": 459.6,
+      "decryptMs": 229.4,
+      "joinMs": 137
+     },
+     "storage": {
+      "usage": 497781594,
+      "quota": 11235199834,
+      "usageDetails": {
+       "indexedDB": 497781594
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5580.4,
+     "treeVisibleMs": 7012,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 93286940,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1407.4,
+     "phases": {
+      "copyMs": 240.6,
+      "parseMs": 3658.8,
+      "joinApplyMs": 699.4
+     },
+     "jsPhases": {
+      "openMs": 5.4,
+      "readMs": 483.1,
+      "decryptMs": 221.2,
+      "joinMs": 139.8
+     },
+     "storage": {
+      "usage": 499993503,
+      "quota": 11237411743,
+      "usageDetails": {
+       "indexedDB": 499993503
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5309.9,
+     "treeVisibleMs": 6671.7,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 81757383,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1339,
+     "phases": {
+      "copyMs": 168.3,
+      "parseMs": 3527.7,
+      "joinApplyMs": 676.7
+     },
+     "jsPhases": {
+      "openMs": 3.3,
+      "readMs": 471.4,
+      "decryptMs": 205.1,
+      "joinMs": 136.8
+     },
+     "storage": {
+      "usage": 500869001,
+      "quota": 11238287241,
+      "usageDetails": {
+       "indexedDB": 500869001
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5200.8,
+     "treeVisibleMs": 6621.9,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 77399978,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1398.4,
+     "phases": {
+      "copyMs": 159.6,
+      "parseMs": 3462.4,
+      "joinApplyMs": 632.3
+     },
+     "jsPhases": {
+      "openMs": 3.4,
+      "readMs": 472,
+      "decryptMs": 202.1,
+      "joinMs": 127.2
+     },
+     "storage": {
+      "usage": 507936941,
+      "quota": 11245355181,
+      "usageDetails": {
+       "indexedDB": 507936941
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5183.4,
+     "treeVisibleMs": 6529.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 81755180,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1321,
+     "phases": {
+      "copyMs": 158.4,
+      "parseMs": 3483.8,
+      "joinApplyMs": 632
+     },
+     "jsPhases": {
+      "openMs": 5.1,
+      "readMs": 453.9,
+      "decryptMs": 204.8,
+      "joinMs": 123.8
+     },
+     "storage": {
+      "usage": 509844541,
+      "quota": 11247262781,
+      "usageDetails": {
+       "indexedDB": 509844541
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "replay3",
+     "build": "aot",
+     "replayMs": 5478.6,
+     "treeVisibleMs": 6874.6,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 81607488,
+      "wasmMemory": 173670400
+     },
+     "checksumOk": true,
+     "appReadyMs": 1376.3,
+     "phases": {
+      "copyMs": 160.4,
+      "parseMs": 3733.3,
+      "joinApplyMs": 635.8
+     },
+     "jsPhases": {
+      "openMs": 3.4,
+      "readMs": 492.4,
+      "decryptMs": 193.2,
+      "joinMs": 126.9
+     },
+     "storage": {
+      "usage": 520579715,
+      "quota": 11257997955,
+      "usageDetails": {
+       "indexedDB": 520579715
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    }
+   ],
+   "summary": {
+    "appReadyMs": {
+     "n": 10,
+     "median": 1407.6,
+     "p95": 1751.1,
+     "min": 1321,
+     "max": 1751.1
+    },
+    "environment.deviceMemory": {
+     "n": 10,
+     "median": 16,
+     "p95": 16,
+     "min": 16,
+     "max": 16
+    },
+    "environment.hardwareConcurrency": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "eventsApplied": {
+     "n": 10,
+     "median": 100000,
+     "p95": 100000,
+     "min": 100000,
+     "max": 100000
+    },
+    "items": {
+     "n": 10,
+     "median": 10000,
+     "p95": 10000,
+     "min": 10000,
+     "max": 10000
+    },
+    "jsPhases.decryptMs": {
+     "n": 10,
+     "median": 225,
+     "p95": 264.1,
+     "min": 193.2,
+     "max": 264.1
+    },
+    "jsPhases.joinMs": {
+     "n": 10,
+     "median": 136.9,
+     "p95": 150.9,
+     "min": 123.8,
+     "max": 150.9
+    },
+    "jsPhases.openMs": {
+     "n": 10,
+     "median": 4.2,
+     "p95": 5.6,
+     "min": 3.3,
+     "max": 5.6
+    },
+    "jsPhases.readMs": {
+     "n": 10,
+     "median": 487.75,
+     "p95": 566.9,
+     "min": 453.9,
+     "max": 566.9
+    },
+    "memoryAfterTree.jsHeapUsed": {
+     "n": 10,
+     "median": 81673816,
+     "p95": 93286940,
+     "min": 24904916,
+     "max": 93286940
+    },
+    "memoryAfterTree.wasmMemory": {
+     "n": 10,
+     "median": 173670400,
+     "p95": 173670400,
+     "min": 173670400,
+     "max": 173670400
+    },
+    "phases.copyMs": {
+     "n": 10,
+     "median": 172.5,
+     "p95": 240.6,
+     "min": 158.4,
+     "max": 240.6
+    },
+    "phases.joinApplyMs": {
+     "n": 10,
+     "median": 688.05,
+     "p95": 855,
+     "min": 632,
+     "max": 855
+    },
+    "phases.parseMs": {
+     "n": 10,
+     "median": 3613.4,
+     "p95": 3808.6,
+     "min": 3462.4,
+     "max": 3808.6
+    },
+    "replayMs": {
+     "n": 10,
+     "median": 5504.2,
+     "p95": 5959.6,
+     "min": 5183.4,
+     "max": 5959.6
+    },
+    "storage.quota": {
+     "n": 10,
+     "median": 11239513146,
+     "p95": 11257997955,
+     "min": 11232575270,
+     "max": 11257997955
+    },
+    "storage.usage": {
+     "n": 10,
+     "median": 502094906,
+     "p95": 520579715,
+     "min": 495157030,
+     "max": 520579715
+    },
+    "storage.usageDetails.indexedDB": {
+     "n": 10,
+     "median": 502094906,
+     "p95": 520579715,
+     "min": 495157030,
+     "max": 520579715
+    },
+    "treeVisibleMs": {
+     "n": 10,
+     "median": 6943.3,
+     "p95": 7739.1,
+     "min": 6529.3,
+     "max": 7739.1
+    }
+   }
+  },
+  {
+   "scenario": "structure4",
+   "samples": [
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4307.5,
+     "treeVisibleMs": 5804.9,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 20441747,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4307.5,
+     "textMs": 4349.6,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5524.2,
+     "checksumOk": true,
+     "appReadyMs": 1472.5,
+     "phases": {
+      "copyMs": 82.6,
+      "parseMs": 2821.1,
+      "applyMs": 586.1,
+      "visibleTextMs": 29.4,
+      "backgroundTextMs": 1173.8
+     },
+     "jsPhases": {
+      "openMs": 5.4,
+      "readMs": 696.8,
+      "decryptMs": 219.5,
+      "joinMs": 132.9,
+      "blobReadMs": 15.7,
+      "blobDecryptMs": 3.2
+     },
+     "storage": {
+      "usage": 496308925,
+      "quota": 11233727165,
+      "usageDetails": {
+       "indexedDB": 496308925
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4600.9,
+     "treeVisibleMs": 6184.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 20432207,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4600.9,
+     "textMs": 4648,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5764.4,
+     "checksumOk": true,
+     "appReadyMs": 1553,
+     "phases": {
+      "copyMs": 90.4,
+      "parseMs": 2997.5,
+      "applyMs": 639.8,
+      "visibleTextMs": 33.9,
+      "backgroundTextMs": 1116.1
+     },
+     "jsPhases": {
+      "openMs": 4.6,
+      "readMs": 690.4,
+      "decryptMs": 233.1,
+      "joinMs": 148.5,
+      "blobReadMs": 19.1,
+      "blobDecryptMs": 4.1
+     },
+     "storage": {
+      "usage": 506355692,
+      "quota": 11243773932,
+      "usageDetails": {
+       "indexedDB": 506355692
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4633.3,
+     "treeVisibleMs": 6206.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 20436619,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4633.3,
+     "textMs": 4670.7,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5914.5,
+     "checksumOk": true,
+     "appReadyMs": 1541.6,
+     "phases": {
+      "copyMs": 88.2,
+      "parseMs": 3037.8,
+      "applyMs": 604.1,
+      "visibleTextMs": 24.4,
+      "backgroundTextMs": 1243
+     },
+     "jsPhases": {
+      "openMs": 4.9,
+      "readMs": 747.6,
+      "decryptMs": 240,
+      "joinMs": 142.7,
+      "blobReadMs": 10,
+      "blobDecryptMs": 4.2
+     },
+     "storage": {
+      "usage": 503320811,
+      "quota": 11240739051,
+      "usageDetails": {
+       "indexedDB": 503320811
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4559.1,
+     "treeVisibleMs": 6166.1,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 20427403,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4559.1,
+     "textMs": 4624.8,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5755.4,
+     "checksumOk": true,
+     "appReadyMs": 1577.3,
+     "phases": {
+      "copyMs": 87.8,
+      "parseMs": 2935,
+      "applyMs": 704.6,
+      "visibleTextMs": 52,
+      "backgroundTextMs": 1130.3
+     },
+     "jsPhases": {
+      "openMs": 5,
+      "readMs": 664,
+      "decryptMs": 227.5,
+      "joinMs": 147.9,
+      "blobReadMs": 34,
+      "blobDecryptMs": 4.7
+     },
+     "storage": {
+      "usage": 496230393,
+      "quota": 11233648633,
+      "usageDetails": {
+       "indexedDB": 496230393
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4225.2,
+     "treeVisibleMs": 5630.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 33181826,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4225.2,
+     "textMs": 4264.2,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5286,
+     "checksumOk": true,
+     "appReadyMs": 1383.1,
+     "phases": {
+      "copyMs": 75.9,
+      "parseMs": 2881,
+      "applyMs": 539.4,
+      "visibleTextMs": 27.2,
+      "backgroundTextMs": 1021.6
+     },
+     "jsPhases": {
+      "openMs": 3.4,
+      "readMs": 577.1,
+      "decryptMs": 205.6,
+      "joinMs": 131.7,
+      "blobReadMs": 14.9,
+      "blobDecryptMs": 3.3
+     },
+     "storage": {
+      "usage": 497781594,
+      "quota": 11235199834,
+      "usageDetails": {
+       "indexedDB": 497781594
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4227.8,
+     "treeVisibleMs": 5610.9,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 41737571,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4227.8,
+     "textMs": 4269.1,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5324.9,
+     "checksumOk": true,
+     "appReadyMs": 1359.5,
+     "phases": {
+      "copyMs": 76.1,
+      "parseMs": 2864.6,
+      "applyMs": 552.4,
+      "visibleTextMs": 29.8,
+      "backgroundTextMs": 1054.6
+     },
+     "jsPhases": {
+      "openMs": 4.4,
+      "readMs": 588.2,
+      "decryptMs": 208.5,
+      "joinMs": 132.4,
+      "blobReadMs": 15.7,
+      "blobDecryptMs": 3.8
+     },
+     "storage": {
+      "usage": 499993503,
+      "quota": 11237411743,
+      "usageDetails": {
+       "indexedDB": 499993503
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4430.7,
+     "treeVisibleMs": 5833.8,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 50222298,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4430.7,
+     "textMs": 4482.1,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5552.3,
+     "checksumOk": true,
+     "appReadyMs": 1354.8,
+     "phases": {
+      "copyMs": 72.8,
+      "parseMs": 3061.6,
+      "applyMs": 545.1,
+      "visibleTextMs": 33.9,
+      "backgroundTextMs": 1068.4
+     },
+     "jsPhases": {
+      "openMs": 5.5,
+      "readMs": 619.6,
+      "decryptMs": 214.5,
+      "joinMs": 118.8,
+      "blobReadMs": 20.4,
+      "blobDecryptMs": 5.9
+     },
+     "storage": {
+      "usage": 500869001,
+      "quota": 11238287241,
+      "usageDetails": {
+       "indexedDB": 500869001
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4287.4,
+     "treeVisibleMs": 5653.9,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 20426803,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4287.4,
+     "textMs": 4328.1,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5387.9,
+     "checksumOk": true,
+     "appReadyMs": 1338.6,
+     "phases": {
+      "copyMs": 79,
+      "parseMs": 2901.3,
+      "applyMs": 551.3,
+      "visibleTextMs": 29.5,
+      "backgroundTextMs": 1058
+     },
+     "jsPhases": {
+      "openMs": 5.1,
+      "readMs": 615.4,
+      "decryptMs": 203,
+      "joinMs": 128.1,
+      "blobReadMs": 17.8,
+      "blobDecryptMs": 3.1
+     },
+     "storage": {
+      "usage": 507936941,
+      "quota": 11245355181,
+      "usageDetails": {
+       "indexedDB": 507936941
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4300.5,
+     "treeVisibleMs": 5645.3,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 33175658,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4300.5,
+     "textMs": 4346.3,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5462.8,
+     "checksumOk": true,
+     "appReadyMs": 1319.4,
+     "phases": {
+      "copyMs": 83.7,
+      "parseMs": 2845.6,
+      "applyMs": 594.4,
+      "visibleTextMs": 33.4,
+      "backgroundTextMs": 1116.5
+     },
+     "jsPhases": {
+      "openMs": 7.9,
+      "readMs": 625.2,
+      "decryptMs": 210.5,
+      "joinMs": 133,
+      "blobReadMs": 19.3,
+      "blobDecryptMs": 4.2
+     },
+     "storage": {
+      "usage": 509844541,
+      "quota": 11247262781,
+      "usageDetails": {
+       "indexedDB": 509844541
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "structure4",
+     "build": "aot",
+     "replayMs": 4514.4,
+     "treeVisibleMs": 6033,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 41731795,
+      "wasmMemory": 144703488
+     },
+     "structureMs": 4514.4,
+     "textMs": 4563.6,
+     "visibleItems": 50,
+     "visibleBlobs": 85,
+     "visibleBlobsFound": 85,
+     "visibleTitlesShown": 50,
+     "allTextMs": 5669.8,
+     "checksumOk": true,
+     "appReadyMs": 1489.1,
+     "phases": {
+      "copyMs": 85.2,
+      "parseMs": 2917.8,
+      "applyMs": 646.2,
+      "visibleTextMs": 36.4,
+      "backgroundTextMs": 1104.7
+     },
+     "jsPhases": {
+      "openMs": 5.5,
+      "readMs": 682.7,
+      "decryptMs": 229.4,
+      "joinMs": 149.5,
+      "blobReadMs": 20.6,
+      "blobDecryptMs": 3.7
+     },
+     "storage": {
+      "usage": 518257049,
+      "quota": 11255675289,
+      "usageDetails": {
+       "indexedDB": 518257049
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    }
+   ],
+   "summary": {
+    "allTextMs": {
+     "n": 10,
+     "median": 5538.25,
+     "p95": 5914.5,
+     "min": 5286,
+     "max": 5914.5
+    },
+    "appReadyMs": {
+     "n": 10,
+     "median": 1427.8,
+     "p95": 1577.3,
+     "min": 1319.4,
+     "max": 1577.3
+    },
+    "environment.deviceMemory": {
+     "n": 10,
+     "median": 16,
+     "p95": 16,
+     "min": 16,
+     "max": 16
+    },
+    "environment.hardwareConcurrency": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "eventsApplied": {
+     "n": 10,
+     "median": 100000,
+     "p95": 100000,
+     "min": 100000,
+     "max": 100000
+    },
+    "items": {
+     "n": 10,
+     "median": 10000,
+     "p95": 10000,
+     "min": 10000,
+     "max": 10000
+    },
+    "jsPhases.blobDecryptMs": {
+     "n": 10,
+     "median": 3.95,
+     "p95": 5.9,
+     "min": 3.1,
+     "max": 5.9
+    },
+    "jsPhases.blobReadMs": {
+     "n": 10,
+     "median": 18.45,
+     "p95": 34,
+     "min": 10,
+     "max": 34
+    },
+    "jsPhases.decryptMs": {
+     "n": 10,
+     "median": 217,
+     "p95": 240,
+     "min": 203,
+     "max": 240
+    },
+    "jsPhases.joinMs": {
+     "n": 10,
+     "median": 132.95,
+     "p95": 149.5,
+     "min": 118.8,
+     "max": 149.5
+    },
+    "jsPhases.openMs": {
+     "n": 10,
+     "median": 5.05,
+     "p95": 7.9,
+     "min": 3.4,
+     "max": 7.9
+    },
+    "jsPhases.readMs": {
+     "n": 10,
+     "median": 644.6,
+     "p95": 747.6,
+     "min": 577.1,
+     "max": 747.6
+    },
+    "memoryAfterTree.jsHeapUsed": {
+     "n": 10,
+     "median": 26808702.5,
+     "p95": 50222298,
+     "min": 20426803,
+     "max": 50222298
+    },
+    "memoryAfterTree.wasmMemory": {
+     "n": 10,
+     "median": 144703488,
+     "p95": 144703488,
+     "min": 144703488,
+     "max": 144703488
+    },
+    "phases.applyMs": {
+     "n": 10,
+     "median": 590.25,
+     "p95": 704.6,
+     "min": 539.4,
+     "max": 704.6
+    },
+    "phases.backgroundTextMs": {
+     "n": 10,
+     "median": 1110.4,
+     "p95": 1243,
+     "min": 1021.6,
+     "max": 1243
+    },
+    "phases.copyMs": {
+     "n": 10,
+     "median": 83.15,
+     "p95": 90.4,
+     "min": 72.8,
+     "max": 90.4
+    },
+    "phases.parseMs": {
+     "n": 10,
+     "median": 2909.55,
+     "p95": 3061.6,
+     "min": 2821.1,
+     "max": 3061.6
+    },
+    "phases.visibleTextMs": {
+     "n": 10,
+     "median": 31.6,
+     "p95": 52,
+     "min": 24.4,
+     "max": 52
+    },
+    "replayMs": {
+     "n": 10,
+     "median": 4369.1,
+     "p95": 4633.3,
+     "min": 4225.2,
+     "max": 4633.3
+    },
+    "storage.quota": {
+     "n": 10,
+     "median": 11239513146,
+     "p95": 11255675289,
+     "min": 11233648633,
+     "max": 11255675289
+    },
+    "storage.usage": {
+     "n": 10,
+     "median": 502094906,
+     "p95": 518257049,
+     "min": 496230393,
+     "max": 518257049
+    },
+    "storage.usageDetails.indexedDB": {
+     "n": 10,
+     "median": 502094906,
+     "p95": 518257049,
+     "min": 496230393,
+     "max": 518257049
+    },
+    "structureMs": {
+     "n": 10,
+     "median": 4369.1,
+     "p95": 4633.3,
+     "min": 4225.2,
+     "max": 4633.3
+    },
+    "textMs": {
+     "n": 10,
+     "median": 4415.85,
+     "p95": 4670.7,
+     "min": 4264.2,
+     "max": 4670.7
+    },
+    "treeVisibleMs": {
+     "n": 10,
+     "median": 5819.35,
+     "p95": 6206.3,
+     "min": 5610.9,
+     "max": 6206.3
+    },
+    "visibleBlobs": {
+     "n": 10,
+     "median": 85,
+     "p95": 85,
+     "min": 85,
+     "max": 85
+    },
+    "visibleBlobsFound": {
+     "n": 10,
+     "median": 85,
+     "p95": 85,
+     "min": 85,
+     "max": 85
+    },
+    "visibleItems": {
+     "n": 10,
+     "median": 50,
+     "p95": 50,
+     "min": 50,
+     "max": 50
+    },
+    "visibleTitlesShown": {
+     "n": 10,
+     "median": 50,
+     "p95": 50,
+     "min": 50,
+     "max": 50
+    }
+   }
+  },
+  {
+   "scenario": "erase",
+   "samples": [
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4332.7,
+     "treeVisibleMs": 5811,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 45952882,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 158.3,
+       "readMs": 17.7,
+       "decryptMs": 9.6,
+       "rewriteMs": 87,
+       "encryptMs": 13.2,
+       "writeMs": 13.5,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 50.4,
+       "readMs": 6.2,
+       "decryptMs": 3.9,
+       "rewriteMs": 10.8,
+       "encryptMs": 5.2,
+       "writeMs": 17.6,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2416.8,
+       "readMs": 352.2,
+       "decryptMs": 186.6,
+       "rewriteMs": 1011,
+       "encryptMs": 342.2,
+       "writeMs": 263.6,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 697.9,
+       "readMs": 110.3,
+       "decryptMs": 48,
+       "rewriteMs": 195.5,
+       "encryptMs": 103.9,
+       "writeMs": 182.5,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1452.1,
+     "phases": {
+      "copyMs": 83,
+      "parseMs": 2889.8,
+      "applyMs": 580.2,
+      "structureReplayForEraseMs": 4312.4
+     },
+     "jsPhases": {
+      "openMs": 4.1,
+      "readMs": 392.1,
+      "decryptMs": 166.4,
+      "joinMs": 97.4,
+      "eraseReadMs": 933.9,
+      "eraseDecryptMs": 483.4,
+      "eraseEncryptMs": 464.5,
+      "eraseWriteMs": 477.2,
+      "blobReadMs": 103.1,
+      "blobDecryptMs": 1.3
+     },
+     "storage": {
+      "usage": 491984239,
+      "quota": 11229402479,
+      "usageDetails": {
+       "indexedDB": 491984239
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4707.3,
+     "treeVisibleMs": 6205.1,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 58700334,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 167.5,
+       "readMs": 22.2,
+       "decryptMs": 9.6,
+       "rewriteMs": 75.5,
+       "encryptMs": 15.7,
+       "writeMs": 23.2,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 42.2,
+       "readMs": 6.7,
+       "decryptMs": 3.1,
+       "rewriteMs": 8.5,
+       "encryptMs": 5.9,
+       "writeMs": 13.5,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2626.9,
+       "readMs": 388,
+       "decryptMs": 190.3,
+       "rewriteMs": 1122.3,
+       "encryptMs": 377.3,
+       "writeMs": 285.3,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 769.8,
+       "readMs": 129.5,
+       "decryptMs": 53.8,
+       "rewriteMs": 208.5,
+       "encryptMs": 110.3,
+       "writeMs": 193.9,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1471.9,
+     "phases": {
+      "copyMs": 89.8,
+      "parseMs": 3192.8,
+      "applyMs": 672.5,
+      "structureReplayForEraseMs": 4689.7
+     },
+     "jsPhases": {
+      "openMs": 5.5,
+      "readMs": 371.3,
+      "decryptMs": 148.4,
+      "joinMs": 101,
+      "eraseReadMs": 1053.1,
+      "eraseDecryptMs": 509.1,
+      "eraseEncryptMs": 509.2,
+      "eraseWriteMs": 515.9,
+      "blobReadMs": 131.5,
+      "blobDecryptMs": 2.6
+     },
+     "storage": {
+      "usage": 495157030,
+      "quota": 11232575270,
+      "usageDetails": {
+       "indexedDB": 495157030
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4777.9,
+     "treeVisibleMs": 6482.8,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 58688970,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 146,
+       "readMs": 14.4,
+       "decryptMs": 10,
+       "rewriteMs": 70,
+       "encryptMs": 14.2,
+       "writeMs": 17.4,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 35.8,
+       "readMs": 6.6,
+       "decryptMs": 2.2,
+       "rewriteMs": 7.6,
+       "encryptMs": 3.8,
+       "writeMs": 11.8,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2814,
+       "readMs": 412,
+       "decryptMs": 212.4,
+       "rewriteMs": 1208.6,
+       "encryptMs": 402.8,
+       "writeMs": 317.3,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 810.4,
+       "readMs": 128.1,
+       "decryptMs": 57.3,
+       "rewriteMs": 211,
+       "encryptMs": 111.6,
+       "writeMs": 231.1,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1675.4,
+     "phases": {
+      "copyMs": 96.1,
+      "parseMs": 3140.5,
+      "applyMs": 690.7,
+      "structureReplayForEraseMs": 4758.7
+     },
+     "jsPhases": {
+      "openMs": 4.1,
+      "readMs": 409.3,
+      "decryptMs": 171.3,
+      "joinMs": 113.1,
+      "eraseReadMs": 1097.1,
+      "eraseDecryptMs": 536.2,
+      "eraseEncryptMs": 532.4,
+      "eraseWriteMs": 577.6,
+      "blobReadMs": 105.9,
+      "blobDecryptMs": 1.8
+     },
+     "storage": {
+      "usage": 496230393,
+      "quota": 11233648633,
+      "usageDetails": {
+       "indexedDB": 496230393
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4346.9,
+     "treeVisibleMs": 5823,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 45952226,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 148.4,
+       "readMs": 17.2,
+       "decryptMs": 9.4,
+       "rewriteMs": 69.6,
+       "encryptMs": 13.7,
+       "writeMs": 18.6,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 34.6,
+       "readMs": 6.2,
+       "decryptMs": 2.4,
+       "rewriteMs": 7.7,
+       "encryptMs": 4.1,
+       "writeMs": 10.2,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2480.1,
+       "readMs": 368.7,
+       "decryptMs": 182.9,
+       "rewriteMs": 1107.6,
+       "encryptMs": 303.1,
+       "writeMs": 266.3,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 729.8,
+       "readMs": 119.1,
+       "decryptMs": 47.8,
+       "rewriteMs": 198,
+       "encryptMs": 106.6,
+       "writeMs": 192.2,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1452.5,
+     "phases": {
+      "copyMs": 79.2,
+      "parseMs": 2923.5,
+      "applyMs": 589.3,
+      "structureReplayForEraseMs": 4330.7
+     },
+     "jsPhases": {
+      "openMs": 3.3,
+      "readMs": 377.2,
+      "decryptMs": 149.8,
+      "joinMs": 98.8,
+      "eraseReadMs": 987.4,
+      "eraseDecryptMs": 477.1,
+      "eraseEncryptMs": 427.5,
+      "eraseWriteMs": 487.3,
+      "blobReadMs": 97.9,
+      "blobDecryptMs": 2.3
+     },
+     "storage": {
+      "usage": 496303738,
+      "quota": 11233721978,
+      "usageDetails": {
+       "indexedDB": 496303738
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4314.8,
+     "treeVisibleMs": 5701.6,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 58693152,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 162.3,
+       "readMs": 19.7,
+       "decryptMs": 11.6,
+       "rewriteMs": 74.7,
+       "encryptMs": 16.1,
+       "writeMs": 17.3,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 35.8,
+       "readMs": 7,
+       "decryptMs": 3.2,
+       "rewriteMs": 7.6,
+       "encryptMs": 4.2,
+       "writeMs": 10.2,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2434.7,
+       "readMs": 360.2,
+       "decryptMs": 171.7,
+       "rewriteMs": 1072.2,
+       "encryptMs": 340.5,
+       "writeMs": 250.2,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 699.1,
+       "readMs": 117.5,
+       "decryptMs": 46.8,
+       "rewriteMs": 205.8,
+       "encryptMs": 94.1,
+       "writeMs": 180.3,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1357.4,
+     "phases": {
+      "copyMs": 83,
+      "parseMs": 2886.5,
+      "applyMs": 605.1,
+      "structureReplayForEraseMs": 4296.8
+     },
+     "jsPhases": {
+      "openMs": 5.3,
+      "readMs": 355.7,
+      "decryptMs": 149.1,
+      "joinMs": 99.1,
+      "eraseReadMs": 972,
+      "eraseDecryptMs": 462.8,
+      "eraseEncryptMs": 454.9,
+      "eraseWriteMs": 458,
+      "blobReadMs": 119.8,
+      "blobDecryptMs": 2.5
+     },
+     "storage": {
+      "usage": 497781594,
+      "quota": 11235199834,
+      "usageDetails": {
+       "indexedDB": 497781594
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4434.3,
+     "treeVisibleMs": 6002.1,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 45947394,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 161.1,
+       "readMs": 17.8,
+       "decryptMs": 11.1,
+       "rewriteMs": 76,
+       "encryptMs": 15.9,
+       "writeMs": 19.7,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 40.1,
+       "readMs": 7.2,
+       "decryptMs": 3.4,
+       "rewriteMs": 7.9,
+       "encryptMs": 4.3,
+       "writeMs": 12.7,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2784.6,
+       "readMs": 381,
+       "decryptMs": 199.7,
+       "rewriteMs": 1213.9,
+       "encryptMs": 343.1,
+       "writeMs": 383.8,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 839.4,
+       "readMs": 136.8,
+       "decryptMs": 51.2,
+       "rewriteMs": 219.7,
+       "encryptMs": 104.4,
+       "writeMs": 257.2,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1541.8,
+     "phases": {
+      "copyMs": 88.7,
+      "parseMs": 2898.2,
+      "applyMs": 650.5,
+      "structureReplayForEraseMs": 4416.1
+     },
+     "jsPhases": {
+      "openMs": 4,
+      "readMs": 402.9,
+      "decryptMs": 161.6,
+      "joinMs": 102.2,
+      "eraseReadMs": 1081.6,
+      "eraseDecryptMs": 535.5,
+      "eraseEncryptMs": 467.7,
+      "eraseWriteMs": 673.4,
+      "blobReadMs": 90,
+      "blobDecryptMs": 2.8
+     },
+     "storage": {
+      "usage": 499993503,
+      "quota": 11237411743,
+      "usageDetails": {
+       "indexedDB": 499993503
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4329,
+     "treeVisibleMs": 5697.8,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 45945314,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 216,
+       "readMs": 16.9,
+       "decryptMs": 8.8,
+       "rewriteMs": 76.1,
+       "encryptMs": 15.3,
+       "writeMs": 76,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 39.5,
+       "readMs": 6.7,
+       "decryptMs": 3.2,
+       "rewriteMs": 7.5,
+       "encryptMs": 4.3,
+       "writeMs": 14.1,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2544.8,
+       "readMs": 421.9,
+       "decryptMs": 173,
+       "rewriteMs": 1133.2,
+       "encryptMs": 298.6,
+       "writeMs": 270.7,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 722.5,
+       "readMs": 120.4,
+       "decryptMs": 51,
+       "rewriteMs": 205.9,
+       "encryptMs": 107.4,
+       "writeMs": 177.3,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1345.9,
+     "phases": {
+      "copyMs": 78.4,
+      "parseMs": 2961.4,
+      "applyMs": 552.2,
+      "structureReplayForEraseMs": 4311
+     },
+     "jsPhases": {
+      "openMs": 5.6,
+      "readMs": 399.1,
+      "decryptMs": 146.3,
+      "joinMs": 99.2,
+      "eraseReadMs": 1023.4,
+      "eraseDecryptMs": 460.1,
+      "eraseEncryptMs": 425.6,
+      "eraseWriteMs": 538.1,
+      "blobReadMs": 97.6,
+      "blobDecryptMs": 2.5
+     },
+     "storage": {
+      "usage": 500869001,
+      "quota": 11238287241,
+      "usageDetails": {
+       "indexedDB": 500869001
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4232.1,
+     "treeVisibleMs": 5619.8,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 45943650,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 153.3,
+       "readMs": 17.5,
+       "decryptMs": 11.4,
+       "rewriteMs": 71.7,
+       "encryptMs": 13.5,
+       "writeMs": 18.6,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 36.8,
+       "readMs": 6.1,
+       "decryptMs": 2.3,
+       "rewriteMs": 7.3,
+       "encryptMs": 4.6,
+       "writeMs": 12.2,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2538.3,
+       "readMs": 358,
+       "decryptMs": 181.6,
+       "rewriteMs": 1120.8,
+       "encryptMs": 345.3,
+       "writeMs": 276.7,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 678.4,
+       "readMs": 117.6,
+       "decryptMs": 47.7,
+       "rewriteMs": 209.9,
+       "encryptMs": 98.3,
+       "writeMs": 139.5,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1364.1,
+     "phases": {
+      "copyMs": 82.5,
+      "parseMs": 2822.5,
+      "applyMs": 576.9,
+      "structureReplayForEraseMs": 4213
+     },
+     "jsPhases": {
+      "openMs": 4.1,
+      "readMs": 391.7,
+      "decryptMs": 142.8,
+      "joinMs": 98.4,
+      "eraseReadMs": 976.6,
+      "eraseDecryptMs": 483.4,
+      "eraseEncryptMs": 461.7,
+      "eraseWriteMs": 447,
+      "blobReadMs": 86.4,
+      "blobDecryptMs": 2.2
+     },
+     "storage": {
+      "usage": 507936941,
+      "quota": 11245355181,
+      "usageDetails": {
+       "indexedDB": 507936941
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4710.4,
+     "treeVisibleMs": 6216.1,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 45942530,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 176.7,
+       "readMs": 21.3,
+       "decryptMs": 11,
+       "rewriteMs": 78.8,
+       "encryptMs": 16.9,
+       "writeMs": 25.3,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 47.8,
+       "readMs": 8.5,
+       "decryptMs": 3.1,
+       "rewriteMs": 8.5,
+       "encryptMs": 4.9,
+       "writeMs": 18.8,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2780.5,
+       "readMs": 388.6,
+       "decryptMs": 215.5,
+       "rewriteMs": 1169.6,
+       "encryptMs": 427.6,
+       "writeMs": 313.5,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 902.1,
+       "readMs": 142,
+       "decryptMs": 68.9,
+       "rewriteMs": 213.4,
+       "encryptMs": 118.4,
+       "writeMs": 282.9,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1475.8,
+     "phases": {
+      "copyMs": 96.4,
+      "parseMs": 3031.9,
+      "applyMs": 721,
+      "structureReplayForEraseMs": 4687.1
+     },
+     "jsPhases": {
+      "openMs": 6.2,
+      "readMs": 452.9,
+      "decryptMs": 168.5,
+      "joinMs": 101.1,
+      "eraseReadMs": 1134.7,
+      "eraseDecryptMs": 575,
+      "eraseEncryptMs": 567.8,
+      "eraseWriteMs": 640.5,
+      "blobReadMs": 128.1,
+      "blobDecryptMs": 3
+     },
+     "storage": {
+      "usage": 503718307,
+      "quota": 11241136547,
+      "usageDetails": {
+       "indexedDB": 503718307
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "erase",
+     "build": "aot",
+     "replayMs": 4461.9,
+     "treeVisibleMs": 6028.4,
+     "items": 10000,
+     "eventsApplied": 100000,
+     "memoryAfterTree": {
+      "jsHeapUsed": 45934098,
+      "wasmMemory": 144703488
+     },
+     "erase": {
+      "L2-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 173.3,
+       "readMs": 19.6,
+       "decryptMs": 10.9,
+       "rewriteMs": 80.4,
+       "encryptMs": 16.2,
+       "writeMs": 19.9,
+       "verified": true
+      },
+      "L3-leaf": {
+       "blobs": 4,
+       "blocks": 4,
+       "eraseMs": 43.1,
+       "readMs": 10.2,
+       "decryptMs": 2.8,
+       "rewriteMs": 8.1,
+       "encryptMs": 4.5,
+       "writeMs": 12.6,
+       "verified": true
+      },
+      "L2-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 2787.2,
+       "readMs": 409.1,
+       "decryptMs": 203.2,
+       "rewriteMs": 1163.6,
+       "encryptMs": 380.1,
+       "writeMs": 379.7,
+       "verified": true
+      },
+      "L3-branch": {
+       "blobs": 693,
+       "blocks": 97,
+       "eraseMs": 798,
+       "readMs": 128.7,
+       "decryptMs": 52.1,
+       "rewriteMs": 220.3,
+       "encryptMs": 113.7,
+       "writeMs": 215.6,
+       "verified": true
+      },
+      "leafItems": 1,
+      "branchItems": 96
+     },
+     "appReadyMs": 1537.6,
+     "phases": {
+      "copyMs": 89,
+      "parseMs": 2964.8,
+      "applyMs": 609.4,
+      "structureReplayForEraseMs": 4442.7
+     },
+     "jsPhases": {
+      "openMs": 4,
+      "readMs": 415.3,
+      "decryptMs": 157.6,
+      "joinMs": 101.8,
+      "eraseReadMs": 1149.5,
+      "eraseDecryptMs": 543.9,
+      "eraseEncryptMs": 514.5,
+      "eraseWriteMs": 627.8,
+      "blobReadMs": 101.3,
+      "blobDecryptMs": 3.1
+     },
+     "storage": {
+      "usage": 511532163,
+      "quota": 11248950403,
+      "usageDetails": {
+       "indexedDB": 511532163
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    }
+   ],
+   "summary": {
+    "appReadyMs": {
+     "n": 10,
+     "median": 1462.2,
+     "p95": 1675.4,
+     "min": 1345.9,
+     "max": 1675.4
+    },
+    "environment.deviceMemory": {
+     "n": 10,
+     "median": 16,
+     "p95": 16,
+     "min": 16,
+     "max": 16
+    },
+    "environment.hardwareConcurrency": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "erase.L2-branch.blobs": {
+     "n": 10,
+     "median": 693,
+     "p95": 693,
+     "min": 693,
+     "max": 693
+    },
+    "erase.L2-branch.blocks": {
+     "n": 10,
+     "median": 97,
+     "p95": 97,
+     "min": 97,
+     "max": 97
+    },
+    "erase.L2-branch.decryptMs": {
+     "n": 10,
+     "median": 188.45,
+     "p95": 215.5,
+     "min": 171.7,
+     "max": 215.5
+    },
+    "erase.L2-branch.encryptMs": {
+     "n": 10,
+     "median": 344.2,
+     "p95": 427.6,
+     "min": 298.6,
+     "max": 427.6
+    },
+    "erase.L2-branch.eraseMs": {
+     "n": 10,
+     "median": 2585.85,
+     "p95": 2814,
+     "min": 2416.8,
+     "max": 2814
+    },
+    "erase.L2-branch.readMs": {
+     "n": 10,
+     "median": 384.5,
+     "p95": 421.9,
+     "min": 352.2,
+     "max": 421.9
+    },
+    "erase.L2-branch.rewriteMs": {
+     "n": 10,
+     "median": 1127.75,
+     "p95": 1213.9,
+     "min": 1011,
+     "max": 1213.9
+    },
+    "erase.L2-branch.writeMs": {
+     "n": 10,
+     "median": 281,
+     "p95": 383.8,
+     "min": 250.2,
+     "max": 383.8
+    },
+    "erase.L2-leaf.blobs": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "erase.L2-leaf.blocks": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "erase.L2-leaf.decryptMs": {
+     "n": 10,
+     "median": 10.45,
+     "p95": 11.6,
+     "min": 8.8,
+     "max": 11.6
+    },
+    "erase.L2-leaf.encryptMs": {
+     "n": 10,
+     "median": 15.5,
+     "p95": 16.9,
+     "min": 13.2,
+     "max": 16.9
+    },
+    "erase.L2-leaf.eraseMs": {
+     "n": 10,
+     "median": 161.7,
+     "p95": 216,
+     "min": 146,
+     "max": 216
+    },
+    "erase.L2-leaf.readMs": {
+     "n": 10,
+     "median": 17.75,
+     "p95": 22.2,
+     "min": 14.4,
+     "max": 22.2
+    },
+    "erase.L2-leaf.rewriteMs": {
+     "n": 10,
+     "median": 75.75,
+     "p95": 87,
+     "min": 69.6,
+     "max": 87
+    },
+    "erase.L2-leaf.writeMs": {
+     "n": 10,
+     "median": 19.15,
+     "p95": 76,
+     "min": 13.5,
+     "max": 76
+    },
+    "erase.L3-branch.blobs": {
+     "n": 10,
+     "median": 693,
+     "p95": 693,
+     "min": 693,
+     "max": 693
+    },
+    "erase.L3-branch.blocks": {
+     "n": 10,
+     "median": 97,
+     "p95": 97,
+     "min": 97,
+     "max": 97
+    },
+    "erase.L3-branch.decryptMs": {
+     "n": 10,
+     "median": 51.1,
+     "p95": 68.9,
+     "min": 46.8,
+     "max": 68.9
+    },
+    "erase.L3-branch.encryptMs": {
+     "n": 10,
+     "median": 107,
+     "p95": 118.4,
+     "min": 94.1,
+     "max": 118.4
+    },
+    "erase.L3-branch.eraseMs": {
+     "n": 10,
+     "median": 749.8,
+     "p95": 902.1,
+     "min": 678.4,
+     "max": 902.1
+    },
+    "erase.L3-branch.readMs": {
+     "n": 10,
+     "median": 124.25,
+     "p95": 142,
+     "min": 110.3,
+     "max": 142
+    },
+    "erase.L3-branch.rewriteMs": {
+     "n": 10,
+     "median": 209.2,
+     "p95": 220.3,
+     "min": 195.5,
+     "max": 220.3
+    },
+    "erase.L3-branch.writeMs": {
+     "n": 10,
+     "median": 193.05,
+     "p95": 282.9,
+     "min": 139.5,
+     "max": 282.9
+    },
+    "erase.L3-leaf.blobs": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "erase.L3-leaf.blocks": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "erase.L3-leaf.decryptMs": {
+     "n": 10,
+     "median": 3.1,
+     "p95": 3.9,
+     "min": 2.2,
+     "max": 3.9
+    },
+    "erase.L3-leaf.encryptMs": {
+     "n": 10,
+     "median": 4.4,
+     "p95": 5.9,
+     "min": 3.8,
+     "max": 5.9
+    },
+    "erase.L3-leaf.eraseMs": {
+     "n": 10,
+     "median": 39.8,
+     "p95": 50.4,
+     "min": 34.6,
+     "max": 50.4
+    },
+    "erase.L3-leaf.readMs": {
+     "n": 10,
+     "median": 6.7,
+     "p95": 10.2,
+     "min": 6.1,
+     "max": 10.2
+    },
+    "erase.L3-leaf.rewriteMs": {
+     "n": 10,
+     "median": 7.8,
+     "p95": 10.8,
+     "min": 7.3,
+     "max": 10.8
+    },
+    "erase.L3-leaf.writeMs": {
+     "n": 10,
+     "median": 12.65,
+     "p95": 18.8,
+     "min": 10.2,
+     "max": 18.8
+    },
+    "erase.branchItems": {
+     "n": 10,
+     "median": 96,
+     "p95": 96,
+     "min": 96,
+     "max": 96
+    },
+    "erase.leafItems": {
+     "n": 10,
+     "median": 1,
+     "p95": 1,
+     "min": 1,
+     "max": 1
+    },
+    "eventsApplied": {
+     "n": 10,
+     "median": 100000,
+     "p95": 100000,
+     "min": 100000,
+     "max": 100000
+    },
+    "items": {
+     "n": 10,
+     "median": 10000,
+     "p95": 10000,
+     "min": 10000,
+     "max": 10000
+    },
+    "jsPhases.blobDecryptMs": {
+     "n": 10,
+     "median": 2.5,
+     "p95": 3.1,
+     "min": 1.3,
+     "max": 3.1
+    },
+    "jsPhases.blobReadMs": {
+     "n": 10,
+     "median": 102.2,
+     "p95": 131.5,
+     "min": 86.4,
+     "max": 131.5
+    },
+    "jsPhases.decryptMs": {
+     "n": 10,
+     "median": 153.7,
+     "p95": 171.3,
+     "min": 142.8,
+     "max": 171.3
+    },
+    "jsPhases.eraseDecryptMs": {
+     "n": 10,
+     "median": 496.25,
+     "p95": 575,
+     "min": 460.1,
+     "max": 575
+    },
+    "jsPhases.eraseEncryptMs": {
+     "n": 10,
+     "median": 466.1,
+     "p95": 567.8,
+     "min": 425.6,
+     "max": 567.8
+    },
+    "jsPhases.eraseReadMs": {
+     "n": 10,
+     "median": 1038.25,
+     "p95": 1149.5,
+     "min": 933.9,
+     "max": 1149.5
+    },
+    "jsPhases.eraseWriteMs": {
+     "n": 10,
+     "median": 527,
+     "p95": 673.4,
+     "min": 447,
+     "max": 673.4
+    },
+    "jsPhases.joinMs": {
+     "n": 10,
+     "median": 100.1,
+     "p95": 113.1,
+     "min": 97.4,
+     "max": 113.1
+    },
+    "jsPhases.openMs": {
+     "n": 10,
+     "median": 4.1,
+     "p95": 6.2,
+     "min": 3.3,
+     "max": 6.2
+    },
+    "jsPhases.readMs": {
+     "n": 10,
+     "median": 395.6,
+     "p95": 452.9,
+     "min": 355.7,
+     "max": 452.9
+    },
+    "memoryAfterTree.jsHeapUsed": {
+     "n": 10,
+     "median": 45949810,
+     "p95": 58700334,
+     "min": 45934098,
+     "max": 58700334
+    },
+    "memoryAfterTree.wasmMemory": {
+     "n": 10,
+     "median": 144703488,
+     "p95": 144703488,
+     "min": 144703488,
+     "max": 144703488
+    },
+    "phases.applyMs": {
+     "n": 10,
+     "median": 607.25,
+     "p95": 721,
+     "min": 552.2,
+     "max": 721
+    },
+    "phases.copyMs": {
+     "n": 10,
+     "median": 85.85,
+     "p95": 96.4,
+     "min": 78.4,
+     "max": 96.4
+    },
+    "phases.parseMs": {
+     "n": 10,
+     "median": 2942.45,
+     "p95": 3192.8,
+     "min": 2822.5,
+     "max": 3192.8
+    },
+    "phases.structureReplayForEraseMs": {
+     "n": 10,
+     "median": 4373.4,
+     "p95": 4758.7,
+     "min": 4213,
+     "max": 4758.7
+    },
+    "replayMs": {
+     "n": 10,
+     "median": 4390.6,
+     "p95": 4777.9,
+     "min": 4232.1,
+     "max": 4777.9
+    },
+    "storage.quota": {
+     "n": 10,
+     "median": 11236305788.5,
+     "p95": 11248950403,
+     "min": 11229402479,
+     "max": 11248950403
+    },
+    "storage.usage": {
+     "n": 10,
+     "median": 498887548.5,
+     "p95": 511532163,
+     "min": 491984239,
+     "max": 511532163
+    },
+    "storage.usageDetails.indexedDB": {
+     "n": 10,
+     "median": 498887548.5,
+     "p95": 511532163,
+     "min": 491984239,
+     "max": 511532163
+    },
+    "treeVisibleMs": {
+     "n": 10,
+     "median": 5912.55,
+     "p95": 6482.8,
+     "min": 5619.8,
+     "max": 6482.8
+    }
+   }
+  },
+  {
+   "scenario": "sync",
+   "samples": [
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 65.2,
+       "encryptMs": 35.8,
+       "storeMs": 75.5,
+       "blockMs": 16.4,
+       "savedMs": 178.8,
+       "totalMs": 199.2
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 70.5,
+       "encryptMs": 54.6,
+       "storeMs": 116.7,
+       "blockMs": 17.9,
+       "savedMs": 259.9,
+       "totalMs": 282.9
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 74.3,
+       "encryptMs": 72.9,
+       "storeMs": 117.6,
+       "blockMs": 20.5,
+       "savedMs": 280.8,
+       "totalMs": 322
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1307,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 4.3,
+      "readMs": 6.7,
+      "decryptMs": 4.4,
+      "joinMs": 2
+     },
+     "storage": {
+      "usage": 496308925,
+      "quota": 11233727165,
+      "usageDetails": {
+       "indexedDB": 496308925
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 63.5,
+       "encryptMs": 36,
+       "storeMs": 102.7,
+       "blockMs": 21,
+       "savedMs": 203.1,
+       "totalMs": 228.4
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 74.9,
+       "encryptMs": 65.4,
+       "storeMs": 134.6,
+       "blockMs": 21.3,
+       "savedMs": 286.1,
+       "totalMs": 312.9
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 72,
+       "encryptMs": 60.9,
+       "storeMs": 141.5,
+       "blockMs": 21.9,
+       "savedMs": 289,
+       "totalMs": 316.2
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1591.2,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 10.1,
+      "readMs": 8.5,
+      "decryptMs": 4.8,
+      "joinMs": 1.8
+     },
+     "storage": {
+      "usage": 506355692,
+      "quota": 11243773932,
+      "usageDetails": {
+       "indexedDB": 506355692
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 65.3,
+       "encryptMs": 40.6,
+       "storeMs": 96.7,
+       "blockMs": 19.9,
+       "savedMs": 208.9,
+       "totalMs": 233.7
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 68.9,
+       "encryptMs": 62.2,
+       "storeMs": 133.2,
+       "blockMs": 17.1,
+       "savedMs": 273.9,
+       "totalMs": 296.3
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 73.7,
+       "encryptMs": 65.1,
+       "storeMs": 143.9,
+       "blockMs": 20.6,
+       "savedMs": 278.1,
+       "totalMs": 307.1
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1556.3,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 6,
+      "readMs": 8.4,
+      "decryptMs": 5.8,
+      "joinMs": 1.9
+     },
+     "storage": {
+      "usage": 503320811,
+      "quota": 11240739051,
+      "usageDetails": {
+       "indexedDB": 503320811
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 59.4,
+       "encryptMs": 36,
+       "storeMs": 108.7,
+       "blockMs": 20.3,
+       "savedMs": 200.5,
+       "totalMs": 234
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 82,
+       "encryptMs": 59.2,
+       "storeMs": 115.9,
+       "blockMs": 18.8,
+       "savedMs": 253,
+       "totalMs": 284.9
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 69.9,
+       "encryptMs": 58,
+       "storeMs": 114.1,
+       "blockMs": 19.5,
+       "savedMs": 246,
+       "totalMs": 287.3
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1335.6,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 3.7,
+      "readMs": 6.5,
+      "decryptMs": 4.8,
+      "joinMs": 1.9
+     },
+     "storage": {
+      "usage": 500748650,
+      "quota": 11238166890,
+      "usageDetails": {
+       "indexedDB": 500748650
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 61.6,
+       "encryptMs": 38.5,
+       "storeMs": 98.5,
+       "blockMs": 12,
+       "savedMs": 214.2,
+       "totalMs": 242.3
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 72.7,
+       "encryptMs": 61.4,
+       "storeMs": 128.8,
+       "blockMs": 13.5,
+       "savedMs": 261.5,
+       "totalMs": 281.9
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 71.6,
+       "encryptMs": 62.1,
+       "storeMs": 130.6,
+       "blockMs": 21,
+       "savedMs": 263.1,
+       "totalMs": 288
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1420.7,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 4.2,
+      "readMs": 7.3,
+      "decryptMs": 5.3,
+      "joinMs": 2.4
+     },
+     "storage": {
+      "usage": 501836787,
+      "quota": 11239255027,
+      "usageDetails": {
+       "indexedDB": 501836787
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 62.7,
+       "encryptMs": 42.4,
+       "storeMs": 96.5,
+       "blockMs": 16,
+       "savedMs": 218.8,
+       "totalMs": 239.5
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 77.9,
+       "encryptMs": 63.6,
+       "storeMs": 125.7,
+       "blockMs": 15.6,
+       "savedMs": 266.1,
+       "totalMs": 295.6
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 69.6,
+       "encryptMs": 70.4,
+       "storeMs": 125.1,
+       "blockMs": 21.5,
+       "savedMs": 283.2,
+       "totalMs": 304.1
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1327.2,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 4.2,
+      "readMs": 6.6,
+      "decryptMs": 4.6,
+      "joinMs": 1.2
+     },
+     "storage": {
+      "usage": 502963624,
+      "quota": 11240381864,
+      "usageDetails": {
+       "indexedDB": 502963624
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 62.2,
+       "encryptMs": 34.4,
+       "storeMs": 93.3,
+       "blockMs": 15.8,
+       "savedMs": 184.5,
+       "totalMs": 204.3
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 73.4,
+       "encryptMs": 57.2,
+       "storeMs": 118.3,
+       "blockMs": 15.4,
+       "savedMs": 273.2,
+       "totalMs": 302.8
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 65.3,
+       "encryptMs": 60.8,
+       "storeMs": 130.8,
+       "blockMs": 25,
+       "savedMs": 263.8,
+       "totalMs": 290
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1393.2,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 4.1,
+      "readMs": 6.3,
+      "decryptMs": 4.5,
+      "joinMs": 1.7
+     },
+     "storage": {
+      "usage": 504201872,
+      "quota": 11241620112,
+      "usageDetails": {
+       "indexedDB": 504201872
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 59.1,
+       "encryptMs": 42.4,
+       "storeMs": 90.4,
+       "blockMs": 15.2,
+       "savedMs": 187.5,
+       "totalMs": 208.8
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 79.8,
+       "encryptMs": 62.2,
+       "storeMs": 114.8,
+       "blockMs": 15.2,
+       "savedMs": 258.3,
+       "totalMs": 292.7
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 66,
+       "encryptMs": 59.1,
+       "storeMs": 131.7,
+       "blockMs": 19.9,
+       "savedMs": 257.5,
+       "totalMs": 282.1
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1282.4,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 4.4,
+      "readMs": 7.1,
+      "decryptMs": 4.4,
+      "joinMs": 2.1
+     },
+     "storage": {
+      "usage": 509844541,
+      "quota": 11247262781,
+      "usageDetails": {
+       "indexedDB": 509844541
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 69.5,
+       "encryptMs": 44.6,
+       "storeMs": 104.8,
+       "blockMs": 17.8,
+       "savedMs": 229.3,
+       "totalMs": 256.5
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 73.6,
+       "encryptMs": 61.9,
+       "storeMs": 149.4,
+       "blockMs": 19,
+       "savedMs": 294.5,
+       "totalMs": 330.8
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 65.1,
+       "encryptMs": 64.5,
+       "storeMs": 152.2,
+       "blockMs": 25,
+       "savedMs": 279.4,
+       "totalMs": 314.1
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1521.9,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 5.9,
+      "readMs": 7.4,
+      "decryptMs": 5.7,
+      "joinMs": 2
+     },
+     "storage": {
+      "usage": 520579715,
+      "quota": 11257997955,
+      "usageDetails": {
+       "indexedDB": 520579715
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    },
+    {
+     "scenario": "sync",
+     "build": "aot",
+     "sync": {
+      "A-L1": {
+       "events": 1000,
+       "blobs": 0,
+       "wireBytes": 719144,
+       "paddedBytes": 646144,
+       "serializeMs": 60.9,
+       "encryptMs": 34.3,
+       "storeMs": 88.7,
+       "blockMs": 14,
+       "savedMs": 185.2,
+       "totalMs": 204.1
+      },
+      "B-L2": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 70.6,
+       "encryptMs": 57.4,
+       "storeMs": 125.8,
+       "blockMs": 15.2,
+       "savedMs": 262.1,
+       "totalMs": 289.7
+      },
+      "B-L3": {
+       "events": 1000,
+       "blobs": 725,
+       "wireBytes": 1097701,
+       "paddedBytes": 971776,
+       "serializeMs": 68.8,
+       "encryptMs": 62.1,
+       "storeMs": 142.2,
+       "blockMs": 21.9,
+       "savedMs": 275.7,
+       "totalMs": 303
+      }
+     },
+     "syncRounds": 5,
+     "appReadyMs": 1275.8,
+     "phases": {},
+     "jsPhases": {
+      "openMs": 4.8,
+      "readMs": 6.5,
+      "decryptMs": 4.3,
+      "joinMs": 1.6
+     },
+     "storage": {
+      "usage": 518257049,
+      "quota": 11255675289,
+      "usageDetails": {
+       "indexedDB": 518257049
+      }
+     },
+     "environment": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.8127.36 Safari/537.36",
+      "deviceMemory": 16,
+      "hardwareConcurrency": 4,
+      "serviceWorkerAvailable": true
+     },
+     "dotnetVersion": ".NET 10.0.15"
+    }
+   ],
+   "summary": {
+    "appReadyMs": {
+     "n": 10,
+     "median": 1364.4,
+     "p95": 1591.2,
+     "min": 1275.8,
+     "max": 1591.2
+    },
+    "environment.deviceMemory": {
+     "n": 10,
+     "median": 16,
+     "p95": 16,
+     "min": 16,
+     "max": 16
+    },
+    "environment.hardwareConcurrency": {
+     "n": 10,
+     "median": 4,
+     "p95": 4,
+     "min": 4,
+     "max": 4
+    },
+    "jsPhases.decryptMs": {
+     "n": 10,
+     "median": 4.7,
+     "p95": 5.8,
+     "min": 4.3,
+     "max": 5.8
+    },
+    "jsPhases.joinMs": {
+     "n": 10,
+     "median": 1.9,
+     "p95": 2.4,
+     "min": 1.2,
+     "max": 2.4
+    },
+    "jsPhases.openMs": {
+     "n": 10,
+     "median": 4.35,
+     "p95": 10.1,
+     "min": 3.7,
+     "max": 10.1
+    },
+    "jsPhases.readMs": {
+     "n": 10,
+     "median": 6.9,
+     "p95": 8.5,
+     "min": 6.3,
+     "max": 8.5
+    },
+    "storage.quota": {
+     "n": 10,
+     "median": 11241179581.5,
+     "p95": 11257997955,
+     "min": 11233727165,
+     "max": 11257997955
+    },
+    "storage.usage": {
+     "n": 10,
+     "median": 503761341.5,
+     "p95": 520579715,
+     "min": 496308925,
+     "max": 520579715
+    },
+    "storage.usageDetails.indexedDB": {
+     "n": 10,
+     "median": 503761341.5,
+     "p95": 520579715,
+     "min": 496308925,
+     "max": 520579715
+    },
+    "sync.A-L1.blobs": {
+     "n": 10,
+     "median": 0,
+     "p95": 0,
+     "min": 0,
+     "max": 0
+    },
+    "sync.A-L1.blockMs": {
+     "n": 10,
+     "median": 16.2,
+     "p95": 21,
+     "min": 12,
+     "max": 21
+    },
+    "sync.A-L1.encryptMs": {
+     "n": 10,
+     "median": 37.25,
+     "p95": 44.6,
+     "min": 34.3,
+     "max": 44.6
+    },
+    "sync.A-L1.events": {
+     "n": 10,
+     "median": 1000,
+     "p95": 1000,
+     "min": 1000,
+     "max": 1000
+    },
+    "sync.A-L1.paddedBytes": {
+     "n": 10,
+     "median": 646144,
+     "p95": 646144,
+     "min": 646144,
+     "max": 646144
+    },
+    "sync.A-L1.savedMs": {
+     "n": 10,
+     "median": 201.8,
+     "p95": 229.3,
+     "min": 178.8,
+     "max": 229.3
+    },
+    "sync.A-L1.serializeMs": {
+     "n": 10,
+     "median": 62.45,
+     "p95": 69.5,
+     "min": 59.1,
+     "max": 69.5
+    },
+    "sync.A-L1.storeMs": {
+     "n": 10,
+     "median": 96.6,
+     "p95": 108.7,
+     "min": 75.5,
+     "max": 108.7
+    },
+    "sync.A-L1.totalMs": {
+     "n": 10,
+     "median": 231.05,
+     "p95": 256.5,
+     "min": 199.2,
+     "max": 256.5
+    },
+    "sync.A-L1.wireBytes": {
+     "n": 10,
+     "median": 719144,
+     "p95": 719144,
+     "min": 719144,
+     "max": 719144
+    },
+    "sync.B-L2.blobs": {
+     "n": 10,
+     "median": 725,
+     "p95": 725,
+     "min": 725,
+     "max": 725
+    },
+    "sync.B-L2.blockMs": {
+     "n": 10,
+     "median": 16.35,
+     "p95": 21.3,
+     "min": 13.5,
+     "max": 21.3
+    },
+    "sync.B-L2.encryptMs": {
+     "n": 10,
+     "median": 61.65,
+     "p95": 65.4,
+     "min": 54.6,
+     "max": 65.4
+    },
+    "sync.B-L2.events": {
+     "n": 10,
+     "median": 1000,
+     "p95": 1000,
+     "min": 1000,
+     "max": 1000
+    },
+    "sync.B-L2.paddedBytes": {
+     "n": 10,
+     "median": 971776,
+     "p95": 971776,
+     "min": 971776,
+     "max": 971776
+    },
+    "sync.B-L2.savedMs": {
+     "n": 10,
+     "median": 264.1,
+     "p95": 294.5,
+     "min": 253,
+     "max": 294.5
+    },
+    "sync.B-L2.serializeMs": {
+     "n": 10,
+     "median": 73.5,
+     "p95": 82,
+     "min": 68.9,
+     "max": 82
+    },
+    "sync.B-L2.storeMs": {
+     "n": 10,
+     "median": 125.75,
+     "p95": 149.4,
+     "min": 114.8,
+     "max": 149.4
+    },
+    "sync.B-L2.totalMs": {
+     "n": 10,
+     "median": 294.15,
+     "p95": 330.8,
+     "min": 281.9,
+     "max": 330.8
+    },
+    "sync.B-L2.wireBytes": {
+     "n": 10,
+     "median": 1097701,
+     "p95": 1097701,
+     "min": 1097701,
+     "max": 1097701
+    },
+    "sync.B-L3.blobs": {
+     "n": 10,
+     "median": 725,
+     "p95": 725,
+     "min": 725,
+     "max": 725
+    },
+    "sync.B-L3.blockMs": {
+     "n": 10,
+     "median": 21.25,
+     "p95": 25,
+     "min": 19.5,
+     "max": 25
+    },
+    "sync.B-L3.encryptMs": {
+     "n": 10,
+     "median": 62.1,
+     "p95": 72.9,
+     "min": 58,
+     "max": 72.9
+    },
+    "sync.B-L3.events": {
+     "n": 10,
+     "median": 1000,
+     "p95": 1000,
+     "min": 1000,
+     "max": 1000
+    },
+    "sync.B-L3.paddedBytes": {
+     "n": 10,
+     "median": 971776,
+     "p95": 971776,
+     "min": 971776,
+     "max": 971776
+    },
+    "sync.B-L3.savedMs": {
+     "n": 10,
+     "median": 276.9,
+     "p95": 289,
+     "min": 246,
+     "max": 289
+    },
+    "sync.B-L3.serializeMs": {
+     "n": 10,
+     "median": 69.75,
+     "p95": 74.3,
+     "min": 65.1,
+     "max": 74.3
+    },
+    "sync.B-L3.storeMs": {
+     "n": 10,
+     "median": 131.25,
+     "p95": 152.2,
+     "min": 114.1,
+     "max": 152.2
+    },
+    "sync.B-L3.totalMs": {
+     "n": 10,
+     "median": 303.55,
+     "p95": 322,
+     "min": 282.1,
+     "max": 322
+    },
+    "sync.B-L3.wireBytes": {
+     "n": 10,
+     "median": 1097701,
+     "p95": 1097701,
+     "min": 1097701,
+     "max": 1097701
+    },
+    "syncRounds": {
+     "n": 10,
+     "median": 5,
+     "p95": 5,
+     "min": 5,
+     "max": 5
+    }
+   }
+  }
+ ]
+}

@@ -27,7 +27,7 @@ internal static class BannedApiAnalyzerRunner
             References,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable));
 
-        var compileErrors = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+        var compileErrors = compilation.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToList();
         compileErrors.ShouldBeEmpty("the snippet must compile:\n" + code);
 
         var diagnostics = await compilation
@@ -35,7 +35,7 @@ internal static class BannedApiAnalyzerRunner
             .GetAnalyzerDiagnosticsAsync()
             .ConfigureAwait(false);
 
-        return [.. diagnostics.Where(d => d.Id == BannedApiDiagnosticId)];
+        return [.. diagnostics.Where(diagnostic => diagnostic.Id == BannedApiDiagnosticId)];
     }
 
     private static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers()
@@ -43,36 +43,33 @@ internal static class BannedApiAnalyzerRunner
         var directory = Path.Combine(AppContext.BaseDirectory, "BannedApiAnalyzer");
         var analyzers = Directory.GetFiles(directory, "*.dll")
             .Select(Assembly.LoadFrom)
-            .SelectMany(LoadableTypes)
-            .Where(t => !t.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(t))
-            .Where(t => t.GetCustomAttributes<DiagnosticAnalyzerAttribute>().Any(a => a.Languages.Contains(LanguageNames.CSharp)))
-            .Select(t => (DiagnosticAnalyzer)Activator.CreateInstance(t)!)
+            .SelectMany(TypesLoadableWithoutRoslynWorkspaces)
+            .Where(type => !type.IsAbstract && typeof(DiagnosticAnalyzer).IsAssignableFrom(type))
+            .Where(type => type.GetCustomAttributes<DiagnosticAnalyzerAttribute>().Any(attribute => attribute.Languages.Contains(LanguageNames.CSharp)))
+            .Select(type => (DiagnosticAnalyzer)Activator.CreateInstance(type)!)
             .ToImmutableArray();
 
         analyzers.ShouldNotBeEmpty("the banned API analyzer must be copied to " + directory);
         return analyzers;
     }
 
-    // The analyzer assemblies also hold code fixes, which need Roslyn Workspaces; only the analyzers are used here.
-    private static IEnumerable<Type> LoadableTypes(Assembly assembly)
+    private static IEnumerable<Type> TypesLoadableWithoutRoslynWorkspaces(Assembly assembly)
     {
         try
         {
             return assembly.GetTypes();
         }
-        catch (ReflectionTypeLoadException e)
+        catch (ReflectionTypeLoadException exception)
         {
-            return e.Types.OfType<Type>();
+            return exception.Types.OfType<Type>();
         }
     }
 
     private static ImmutableArray<MetadataReference> LoadReferences()
     {
-        // The test runs on Microsoft.NETCore.App and Microsoft.AspNetCore.App (through the Server reference),
-        // so the platform assemblies include Microsoft.JSInterop for the interop snippets.
         var platform = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator);
-        platform.ShouldContain(p => Path.GetFileName(p) == "Microsoft.JSInterop.dll");
-        return [.. platform.Select(p => MetadataReference.CreateFromFile(p))];
+        platform.ShouldContain(assemblyPath => Path.GetFileName(assemblyPath) == "Microsoft.JSInterop.dll");
+        return [.. platform.Select(assemblyPath => MetadataReference.CreateFromFile(assemblyPath))];
     }
 }
 

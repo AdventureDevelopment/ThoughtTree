@@ -1,0 +1,18 @@
+# Approved inline comments (AGENTS.md section 4b). CommentRules in tests/secure/ThoughtTree.Architecture.Rules fails
+# on any // or /* */ comment in src/ or tests/ that is not listed here, and on a listed one that no longer exists.
+# A comment is approved only for behaviour outside our code that no name can show; first express it in code.
+# Format: repository-relative path, " :: ", then the comment exactly as written. Doc comments (///) are not listed.
+# The reference model's rule markers (// R-n) are allowed by the rule itself. Changes need the owner's review (CODEOWNERS).
+
+# Behaviour of GitHub Actions.
+tests/secure/ThoughtTree.Architecture.Rules/Deployment/InfrastructureRules.cs :: // GitHub pastes ${{ }} into run: before the shell starts, so text from a branch name or title becomes code.
+tests/secure/ThoughtTree.Architecture.Rules/Deployment/PullRequestIsolationRules.cs :: // GitHub runs merge_group on the queued pull request's code before it is merged.
+tests/secure/ThoughtTree.Architecture.Rules/Deployment/PullRequestIsolationRules.cs :: // GitHub runs a called reusable workflow with the caller's trigger.
+
+# Behaviour of CsCheck.
+tests/secure/ThoughtTree.Domain.Properties/Support/Deterministic.cs :: // CsCheck's seed: fixes only the first iteration, so each iteration gets a seed of its own.
+tests/secure/ThoughtTree.Domain.Properties/Support/Deterministic.cs :: // The first iteration replays the failure; the rest are random and only make the counterexample smaller.
+
+# Attribute arguments must be constants, so no method name can say why the samples are split.
+tests/secure/ThoughtTree.Architecture.Rules/Deployment/InfrastructureRules.cs :: // Pieces joined, so that the repository scans do not find these samples in this file.
+tests/secure/ThoughtTree.Architecture.Rules/Harness/SuppressionRules.cs :: // Pieces joined, so that the repository scans do not find these samples in this file.

@@ -13,7 +13,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-045")]
-public class SecurityHeaderRules
+public sealed class SecurityHeaderRules
 {
     private const string ImportMapPlaceholder = "'{importmap-hash}'";
 
@@ -52,8 +52,8 @@ public class SecurityHeaderRules
 
         policy.ShouldContainKey("script-src");
         policy["script-src"].ShouldBe(["'self'", "'wasm-unsafe-eval'", ImportMapPlaceholder]);
-        policy.Values.SelectMany(v => v).ShouldNotContain("'unsafe-inline'");
-        policy.Values.SelectMany(v => v).ShouldNotContain("'unsafe-eval'");
+        policy.Values.SelectMany(sources => sources).ShouldNotContain("'unsafe-inline'");
+        policy.Values.SelectMany(sources => sources).ShouldNotContain("'unsafe-eval'");
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class SecurityHeaderRules
     {
         var allowed = new HashSet<string>(StringComparer.Ordinal) { "'self'", "'none'", "'wasm-unsafe-eval'", ImportMapPlaceholder };
 
-        Policy().SelectMany(d => d.Value.Where(s => !allowed.Contains(s)).Select(s => $"{d.Key} {s}"))
+        Policy().SelectMany(directive => directive.Value.Where(source => !allowed.Contains(source)).Select(source => $"{directive.Key} {source}"))
             .ShouldBeEmpty("ADR-045: nothing from third parties");
     }
 
@@ -82,8 +82,8 @@ public class SecurityHeaderRules
     {
         using var document = JsonDocument.Parse(ConfigText);
         var blocked = document.RootElement.GetProperty("routes").EnumerateArray()
-            .Where(r => r.TryGetProperty("statusCode", out var code) && code.GetInt32() == 404)
-            .Select(r => r.GetProperty("route").GetString())
+            .Where(route => route.TryGetProperty("statusCode", out var code) && code.GetInt32() == 404)
+            .Select(route => route.GetProperty("route").GetString())
             .ToList();
 
         blocked.ShouldContain("/.auth/login/github");
@@ -108,7 +108,7 @@ public class SecurityHeaderRules
         var problems = new List<string>();
 
         problems.AddRange(Duplicates(root, string.Empty));
-        problems.AddRange(root.EnumerateObject().Where(p => !KnownSections.Contains(p.Name)).Select(p => $"unknown section {p.Name}"));
+        problems.AddRange(root.EnumerateObject().Where(section => !KnownSections.Contains(section.Name)).Select(section => $"unknown section {section.Name}"));
         if (root.TryGetProperty("globalHeaders", out var headers))
         {
             problems.AddRange(Duplicates(headers, "globalHeaders", StringComparer.OrdinalIgnoreCase));
@@ -118,7 +118,7 @@ public class SecurityHeaderRules
         {
             foreach (var route in routes.EnumerateArray())
             {
-                problems.AddRange(route.EnumerateObject().Where(p => !KnownRouteProperties.Contains(p.Name)).Select(p => $"route {route.GetProperty("route")}: {p.Name}"));
+                problems.AddRange(route.EnumerateObject().Where(property => !KnownRouteProperties.Contains(property.Name)).Select(property => $"route {route.GetProperty("route")}: {property.Name}"));
             }
         }
 
@@ -126,19 +126,19 @@ public class SecurityHeaderRules
     }
 
     private static IEnumerable<string> Duplicates(JsonElement element, string where, StringComparer? comparer = null) =>
-        element.EnumerateObject().GroupBy(p => p.Name, comparer ?? StringComparer.Ordinal).Where(g => g.Count() > 1).Select(g => $"{where}: {g.Key} appears {g.Count()} times");
+        element.EnumerateObject().GroupBy(property => property.Name, comparer ?? StringComparer.Ordinal).Where(group => group.Count() > 1).Select(group => $"{where}: {group.Key} appears {group.Count()} times");
 
     private static Dictionary<string, string> Headers()
     {
         ConfigProblems(ConfigText).ShouldBeEmpty();
         using var document = JsonDocument.Parse(ConfigText);
         return document.RootElement.GetProperty("globalHeaders").EnumerateObject()
-            .ToDictionary(p => p.Name, p => p.Value.GetString() ?? string.Empty, StringComparer.Ordinal);
+            .ToDictionary(header => header.Name, header => header.Value.GetString() ?? string.Empty, StringComparer.Ordinal);
     }
 
     private static Dictionary<string, string[]> Policy() =>
         Headers()["Content-Security-Policy"]
             .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(d => d.Split(' ', StringSplitOptions.RemoveEmptyEntries))
-            .ToDictionary(p => p[0], p => p[1..], StringComparer.Ordinal);
+            .Select(directive => directive.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .ToDictionary(parts => parts[0], parts => parts[1..], StringComparer.Ordinal);
 }

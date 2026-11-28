@@ -19,7 +19,7 @@ internal static class Repository
         }
 
         return Directory.EnumerateFiles(start, searchPattern, SearchOption.AllDirectories)
-            .Where(f => !IsBuildOutput(f))
+            .Where(file => !IsBuildOutput(file))
             .Order(StringComparer.Ordinal)
             .ToList();
     }

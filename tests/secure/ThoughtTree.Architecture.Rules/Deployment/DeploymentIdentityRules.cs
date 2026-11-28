@@ -11,18 +11,16 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public partial class DeploymentIdentityRules
+public sealed partial class DeploymentIdentityRules
 {
-    // Built-in roles that can write federated credentials or role assignments: Owner, Contributor,
-    // User Access Administrator, Role Based Access Control Administrator, Managed Identity Contributor.
-    private static readonly string[] PrivilegedBuiltInRoles =
-    [
-        "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
-        "b24988ac-6180-42a0-ab88-20f7382dd24c",
-        "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9",
-        "f58310d9-a9f6-439a-9e8d-f62e7b41a168",
-        "e40ec5ca-96e0-45a2-b4ff-59039f2c2b59",
-    ];
+    private static readonly Dictionary<string, string> BuiltInRolesThatCanWriteCredentialsOrRoleAssignments = new()
+    {
+        ["Owner"] = "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
+        ["Contributor"] = "b24988ac-6180-42a0-ab88-20f7382dd24c",
+        ["User Access Administrator"] = "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9",
+        ["Role Based Access Control Administrator"] = "f58310d9-a9f6-439a-9e8d-f62e7b41a168",
+        ["Managed Identity Contributor"] = "e40ec5ca-96e0-45a2-b4ff-59039f2c2b59",
+    };
 
     private static readonly HashSet<string> AllowedActions = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -43,7 +41,7 @@ public partial class DeploymentIdentityRules
     public void No_template_assigns_a_built_in_role_that_can_change_sign_in_or_access()
     {
         var offenders = Templates
-            .SelectMany(f => PrivilegedBuiltInRoles.Where(id => File.ReadAllText(f).Contains(id, StringComparison.OrdinalIgnoreCase)).Select(id => $"{Repository.Relative(f)}: {id}"))
+            .SelectMany(template => BuiltInRolesThatCanWriteCredentialsOrRoleAssignments.Values.Where(id => File.ReadAllText(template).Contains(id, StringComparison.OrdinalIgnoreCase)).Select(id => $"{Repository.Relative(template)}: {id}"))
             .ToList();
 
         offenders.ShouldBeEmpty("Owner, Contributor and the access administrator roles can add federated credentials or role assignments; use the custom role");
@@ -52,17 +50,17 @@ public partial class DeploymentIdentityRules
     [Fact]
     public void Custom_roles_allow_only_the_actions_a_site_deployment_needs()
     {
-        var actions = Templates.SelectMany(f => RoleActions(File.ReadAllText(f)).Select(a => (File: Repository.Relative(f), Action: a))).ToList();
+        var actions = Templates.SelectMany(template => RoleActions(File.ReadAllText(template)).Select(action => (File: Repository.Relative(template), Action: action))).ToList();
 
         actions.ShouldNotBeEmpty("bootstrap.bicep defines the custom role 'ThoughtTree site deployer'");
-        actions.Where(a => !AllowedActions.Contains(a.Action)).Select(a => $"{a.File}: {a.Action}")
+        actions.Where(action => !AllowedActions.Contains(action.Action)).Select(action => $"{action.File}: {action.Action}")
             .ShouldBeEmpty("no Microsoft.Authorization, Microsoft.ManagedIdentity or wildcard actions for deployment identities");
     }
 
     [Fact]
     public void Identities_and_their_access_come_only_from_the_owner_run_bootstrap()
     {
-        var applied = Repository.Files("infra", "*.bicep").Where(f => !Repository.Relative(f).StartsWith("infra/bootstrap/", StringComparison.Ordinal));
+        var applied = Repository.Files("infra", "*.bicep").Where(file => !Repository.Relative(file).StartsWith("infra/bootstrap/", StringComparison.Ordinal));
         foreach (var template in applied)
         {
             var text = File.ReadAllText(template);
@@ -80,13 +78,13 @@ public partial class DeploymentIdentityRules
     {
         var modules = Modules(Bootstrap).ToList();
 
-        var identityModules = modules.Where(m => m.File == "deploy-identity.bicep").ToList();
+        var identityModules = modules.Where(module => module.File == "deploy-identity.bicep").ToList();
         identityModules.ShouldNotBeEmpty();
-        identityModules.ShouldAllBe(m => m.Scope == "identityGroup", "identities and federated credentials live in rg-thoughttree-identity");
+        identityModules.ShouldAllBe(module => module.Scope == "identityGroup", "identities and federated credentials live in rg-thoughttree-identity");
 
-        var accessModules = modules.Where(m => m.File == "site-access.bicep").ToList();
+        var accessModules = modules.Where(module => module.File == "site-access.bicep").ToList();
         accessModules.ShouldNotBeEmpty();
-        accessModules.ShouldAllBe(m => m.Scope.StartsWith("siteGroups", StringComparison.Ordinal), "role assignments only on the site groups, never on the identity group");
+        accessModules.ShouldAllBe(module => module.Scope.StartsWith("siteGroups", StringComparison.Ordinal), "role assignments only on the site groups, never on the identity group");
 
         Bootstrap.ShouldContain("name: 'rg-thoughttree-identity'");
         File.ReadAllText(Repository.PathOf("infra", "bootstrap", "deploy-identity.bicep")).ShouldNotContain("roleAssignments", customMessage: "the identity module grants no access itself");
@@ -101,10 +99,10 @@ public partial class DeploymentIdentityRules
     }
 
     private static IEnumerable<string> RoleActions(string text) =>
-        ActionsBlock().Matches(text).SelectMany(m => QuotedString().Matches(m.Groups[1].Value).Select(q => q.Groups[1].Value));
+        ActionsBlock().Matches(text).SelectMany(block => QuotedString().Matches(block.Groups[1].Value).Select(quoted => quoted.Groups[1].Value));
 
     private static IEnumerable<(string File, string Scope)> Modules(string text) =>
-        ModuleBlock().Matches(text).Select(m => (m.Groups[1].Value, m.Groups[2].Value.Trim()));
+        ModuleBlock().Matches(text).Select(block => (block.Groups[1].Value, block.Groups[2].Value.Trim()));
 
     [GeneratedRegex(@"\bactions:\s*\[(.*?)\]", RegexOptions.CultureInvariant | RegexOptions.Singleline)]
     private static partial Regex ActionsBlock();

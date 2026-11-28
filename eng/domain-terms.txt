@@ -1,0 +1,16 @@
+# Concepts of ThoughtTree's own domain. Files listed in eng/reusable-setup.txt must not use them, so they can move to
+# a repository for the next project for the next project (owner decision 2026-11-26). One term per line, matched as a whole word.
+Outline
+TreeEvent
+ItemId
+Item
+Anomaly
+Anomalies
+Projector
+Projection
+Relation
+Inbox
+Title
+Note
+Conflict
+Template

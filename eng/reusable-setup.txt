@@ -1,0 +1,19 @@
+# Files that form the reusable setup for the next project (owner decision 2026-11-26; architecture.md section 9,
+# "Reusable setup"). They stay free of the terms in eng/domain-terms.txt; project-specific data lives in separate
+# files. A line ending in "/" means every file below that folder. ReusableSetupRules checks both.
+.editorconfig
+global.json
+dotnet-tools.json
+Directory.Build.props
+Directory.Packages.props
+src/BannedSymbols.txt
+src/BannedSymbols.Concurrency.txt
+src/BannedSymbols.Domain.txt
+src/ThoughtTree.Domain/stryker-config.json
+eng/branch-check.sh
+eng/deploy/
+infra/
+.github/workflows/
+tests/secure/ThoughtTree.Architecture.Rules/
+tests/secure/ThoughtTree.Domain.Properties/Support/
+.claude/commands/

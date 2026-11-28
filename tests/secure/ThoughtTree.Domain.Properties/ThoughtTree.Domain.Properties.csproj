@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="CsCheck" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Domain\ThoughtTree.Domain.csproj" />
+    <ProjectReference Include="..\ThoughtTree.Domain.Model\ThoughtTree.Domain.Model.csproj" />
+  </ItemGroup>
+
+</Project>

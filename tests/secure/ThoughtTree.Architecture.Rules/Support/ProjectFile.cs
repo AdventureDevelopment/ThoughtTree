@@ -18,14 +18,14 @@ internal sealed record ProjectFile(
 
         IReadOnlyList<string> Includes(string element) => root
             .Descendants(element)
-            .Select(e => (string?)e.Attribute("Include") ?? string.Empty)
+            .Select(element => (string?)element.Attribute("Include") ?? string.Empty)
             .ToList();
 
         return new ProjectFile(
             System.IO.Path.GetFileNameWithoutExtension(path),
             path,
             (string?)root.Attribute("Sdk") ?? string.Empty,
-            Includes("ProjectReference").Select(r => System.IO.Path.GetFileNameWithoutExtension(r.Replace('\\', '/'))).ToList(),
+            Includes("ProjectReference").Select(reference => System.IO.Path.GetFileNameWithoutExtension(reference.Replace('\\', '/'))).ToList(),
             Includes("PackageReference"),
             Includes("FrameworkReference"));
     }

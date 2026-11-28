@@ -11,16 +11,15 @@ namespace ThoughtTree.Architecture.Rules.BannedApis;
 /// Domain_types_depend_on_nothing_outside_domain also covers declarations.
 /// </summary>
 [Trait("Intent", "Secure")]
-public class BannedApiRules
+public sealed class BannedApiRules
 {
     private const string Common = "BannedSymbols.txt";
     private const string Concurrency = "BannedSymbols.Concurrency.txt";
     private const string Domain = "BannedSymbols.Domain.txt";
 
-    /// <summary>One snippet per banned symbol: code that uses exactly that symbol.</summary>
-    private static readonly Dictionary<string, string> Snippets = new()
+    /// <summary>Snippets for time and randomness (ADR-034).</summary>
+    private static readonly Dictionary<string, string> TimeAndRandomnessSnippets = new()
     {
-        // ADR-034
         ["P:System.DateTime.Now"] = "_ = DateTime.Now;",
         ["P:System.DateTime.UtcNow"] = "_ = DateTime.UtcNow;",
         ["P:System.DateTime.Today"] = "_ = DateTime.Today;",
@@ -36,8 +35,11 @@ public class BannedApiRules
         ["M:System.Random.#ctor(System.Int32)"] = "_ = new Random(42);",
         ["P:System.Random.Shared"] = "_ = Random.Shared.Next();",
         ["T:System.Security.Cryptography.RandomNumberGenerator"] = "_ = System.Security.Cryptography.RandomNumberGenerator.GetInt32(10);",
+    };
 
-        // ADR-039
+    /// <summary>Snippets for threads, timers and delays without a TimeProvider (ADR-039).</summary>
+    private static readonly Dictionary<string, string> ConcurrencySnippets = new()
+    {
         ["T:System.Threading.Thread"] = "_ = Thread.CurrentThread;",
         ["M:System.Threading.Tasks.Task.Run(System.Action)"] = "_ = Task.Run(() => { });",
         ["M:System.Threading.Tasks.Task.Run(System.Action,System.Threading.CancellationToken)"] = "_ = Task.Run(() => { }, CancellationToken.None);",
@@ -61,8 +63,11 @@ public class BannedApiRules
         ["M:System.Threading.Tasks.Task.WaitAsync(System.TimeSpan,System.Threading.CancellationToken)"] = "_ = Task.CompletedTask.WaitAsync(TimeSpan.Zero, CancellationToken.None);",
         ["M:System.Threading.CancellationTokenSource.#ctor(System.TimeSpan)"] = "using var source = new CancellationTokenSource(TimeSpan.Zero);",
         ["M:System.Threading.CancellationTokenSource.#ctor(System.Int32)"] = "using var source = new CancellationTokenSource(1);",
+    };
 
-        // ADR-027
+    /// <summary>Snippets for I/O, browser and async APIs the Domain must not use (ADR-027).</summary>
+    private static readonly Dictionary<string, string> DomainSnippets = new()
+    {
         ["N:System.IO"] = "using var stream = new System.IO.MemoryStream();",
         ["N:System.Net"] = "using var client = new System.Net.Http.HttpClient();",
         ["N:System.Runtime.InteropServices.JavaScript"] = "static void Use(System.Runtime.InteropServices.JavaScript.JSObject js) => _ = js.GetPropertyAsString(\"x\"); Use(null!);",
@@ -75,6 +80,10 @@ public class BannedApiRules
         ["T:System.Threading.Tasks.ValueTask`1"] = "_ = new ValueTask<int>(1);",
         ["T:System.Collections.Generic.IAsyncEnumerable`1"] = "static void Use(IAsyncEnumerable<int> items) => _ = items.GetAsyncEnumerator(); Use(null!);",
     };
+
+    /// <summary>One snippet per banned symbol: code that uses exactly that symbol.</summary>
+    private static readonly Dictionary<string, string> Snippets =
+        new([.. TimeAndRandomnessSnippets, .. ConcurrencySnippets, .. DomainSnippets]);
 
     [Theory]
     [Trait("ADR", "ADR-034")]
@@ -127,7 +136,7 @@ public class BannedApiRules
     {
         var files = await MsBuild.ItemsAsync(Repository.PathOf("src", project, project + ".csproj"), "AdditionalFiles");
 
-        files.Select(Path.GetFileName).Where(f => f!.StartsWith("BannedSymbols", StringComparison.Ordinal)).Order(StringComparer.Ordinal)
+        files.Select(Path.GetFileName).Where(fileName => fileName!.StartsWith("BannedSymbols", StringComparison.Ordinal)).Order(StringComparer.Ordinal)
             .ShouldBe(expected.Order(StringComparer.Ordinal));
     }
 
@@ -144,14 +153,14 @@ public class BannedApiRules
         }
     }
 
-    public static TheoryData<string> EntriesOf(string file) => [.. Lines(file).Select(l => l.Split(';')[0].Trim())];
+    public static TheoryData<string> EntriesOf(string file) => [.. Lines(file).Select(line => line.Split(';')[0].Trim())];
 
     private static async Task EntryFires(string file, string symbol)
     {
         Snippets.TryGetValue(symbol, out var body)
             .ShouldBeTrue($"Add a snippet for '{symbol}' to BannedApiRules.Snippets that proves the entry fires.");
 
-        var line = Lines(file).Single(l => l.Split(';')[0].Trim() == symbol);
+        var line = Lines(file).Single(candidate => candidate.Split(';')[0].Trim() == symbol);
         var onlyThisEntry = new BannedSymbolFile("BannedSymbols.txt", line);
 
         var withEntry = await BannedApiDiagnosticsAsync(Wrap(body!), [onlyThisEntry]);
@@ -177,9 +186,9 @@ public class BannedApiRules
         """;
 
     private static IEnumerable<string> Lines(string file) => File.ReadAllLines(Repository.PathOf("src", file))
-        .Select(l => l.Trim())
-        .Where(l => l.Length > 0 && !l.StartsWith('#'));
+        .Select(line => line.Trim())
+        .Where(line => line.Length > 0 && !line.StartsWith('#'));
 
     private static BannedSymbolFile[] FilesOf(params string[] files) =>
-        [.. files.Select(f => BannedSymbolFile.FromDisk(Repository.PathOf("src", f)))];
+        [.. files.Select(file => BannedSymbolFile.FromDisk(Repository.PathOf("src", file)))];
 }

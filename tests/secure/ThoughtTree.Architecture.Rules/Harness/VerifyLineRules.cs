@@ -13,30 +13,30 @@ namespace ThoughtTree.Architecture.Rules.Harness;
 /// exist (foundation stage 1). The report goes to the test output and to verify-report.md next to the test assembly.
 /// </summary>
 [Trait("Intent", "Secure")]
-public class VerifyLineRules(ITestOutputHelper output)
+public sealed class VerifyLineRules(ITestOutputHelper output)
 {
     [Fact]
     public void Verify_blocks_can_be_read()
     {
         AdrVerifyLines.All.Count.ShouldBeGreaterThan(0);
-        AdrVerifyLines.All.Where(l => l.FilterAdr is not null).ShouldAllBe(l => l.FilterAdr == l.Adr, "a verify filter names its own ADR");
+        AdrVerifyLines.All.Where(verifyLine => verifyLine.FilterAdr is not null).ShouldAllBe(verifyLine => verifyLine.FilterAdr == verifyLine.Adr, "a verify filter names its own ADR");
     }
 
     [Theory]
     [MemberData(nameof(StaticLines))]
     public void Static_verify_line_holds(string adr, string command, string expected)
     {
-        var (exitCode, stdout, stderr) = CleanCopy.Run(command);
+        var (exitCode, standardOutput, standardError) = CleanCopy.Run(command);
 
         if (expected.Length > 0)
         {
-            var actual = stdout.Trim();
+            var actual = standardOutput.Trim();
             (actual == expected || actual.StartsWith(expected + " ", StringComparison.Ordinal))
-                .ShouldBeTrue($"{adr}: '{command}' printed '{actual}', expected '{expected}'. {stderr}");
+                .ShouldBeTrue($"{adr}: '{command}' printed '{actual}', expected '{expected}'. {standardError}");
         }
         else
         {
-            exitCode.ShouldBe(0, $"{adr}: '{command}' failed. {stdout}{stderr}");
+            exitCode.ShouldBe(0, $"{adr}: '{command}' failed. {standardOutput}{standardError}");
         }
     }
 
@@ -44,14 +44,14 @@ public class VerifyLineRules(ITestOutputHelper output)
     public void Report_verify_filters_without_tests()
     {
         var tagged = Repository.Files("tests", "*.cs")
-            .SelectMany(f => TestPlacementRules.AdrTrait().Matches(File.ReadAllText(f)).Select(m => m.Groups[1].Value))
+            .SelectMany(file => TestPlacementRules.AdrTrait().Matches(File.ReadAllText(file)).Select(match => match.Groups[1].Value))
             .ToHashSet();
 
-        var filters = AdrVerifyLines.All.Where(l => l.FilterAdr is not null).ToList();
-        var matched = filters.Where(l => tagged.Contains(l.FilterAdr!)).ToList();
-        var deferred = filters.Where(l => !tagged.Contains(l.FilterAdr!) && l.When is not null).ToList();
-        var missing = filters.Where(l => !tagged.Contains(l.FilterAdr!) && l.When is null).ToList();
-        var irregular = AdrVerifyLines.All.Where(l => l.When is not null && !l.HasCanonicalWhen).ToList();
+        var filters = AdrVerifyLines.All.Where(verifyLine => verifyLine.FilterAdr is not null).ToList();
+        var matched = filters.Where(verifyLine => tagged.Contains(verifyLine.FilterAdr!)).ToList();
+        var deferred = filters.Where(verifyLine => !tagged.Contains(verifyLine.FilterAdr!) && verifyLine.When is not null).ToList();
+        var missing = filters.Where(verifyLine => !tagged.Contains(verifyLine.FilterAdr!) && verifyLine.When is null).ToList();
+        var irregular = AdrVerifyLines.All.Where(verifyLine => verifyLine.When is not null && !verifyLine.HasCanonicalWhen).ToList();
 
         var report = new StringBuilder()
             .AppendLine("# Verify filters and tests")
@@ -63,7 +63,7 @@ public class VerifyLineRules(ITestOutputHelper output)
             .AppendLine()
             .AppendLine("No test yet: " + Ids(missing))
             .AppendLine()
-            .AppendLine("Deferred: " + string.Join(", ", deferred.Select(l => $"{l.Adr} ({l.When})")))
+            .AppendLine("Deferred: " + string.Join(", ", deferred.Select(verifyLine => $"{verifyLine.Adr} ({verifyLine.When})")))
             .AppendLine()
             .AppendLine("Markers not in the form `# when: <loop>` (recognised anyway):");
         foreach (var line in irregular)
@@ -91,7 +91,7 @@ public class VerifyLineRules(ITestOutputHelper output)
     public static TheoryData<string, string, string> StaticLines()
     {
         var data = new TheoryData<string, string, string>();
-        foreach (var line in AdrVerifyLines.All.Where(l => l.IsStatic))
+        foreach (var line in AdrVerifyLines.All.Where(verifyLine => verifyLine.IsStatic))
         {
             data.Add(line.Adr, line.Command, line.Command.StartsWith("! ", StringComparison.Ordinal) ? string.Empty : line.Expected ?? string.Empty);
         }
@@ -99,7 +99,7 @@ public class VerifyLineRules(ITestOutputHelper output)
         return data;
     }
 
-    private static string Ids(IEnumerable<VerifyLine> lines) => string.Join(", ", lines.Select(l => l.Adr));
+    private static string Ids(IEnumerable<VerifyLine> lines) => string.Join(", ", lines.Select(verifyLine => verifyLine.Adr));
 
     /// <summary>
     /// A copy of the tracked and untracked, not ignored files, so that build output (bin/, obj/) cannot
@@ -125,9 +125,10 @@ public class VerifyLineRules(ITestOutputHelper output)
             foreach (var file in files.Split('\n', StringSplitOptions.RemoveEmptyEntries))
             {
                 var source = Repository.PathOf(file);
-                if (!File.Exists(source))
+                var deletedInTheWorkingTree = !File.Exists(source);
+                if (deletedInTheWorkingTree)
                 {
-                    continue; // deleted in the working tree
+                    continue;
                 }
 
                 var destination = Path.Combine(target, file);
@@ -152,10 +153,10 @@ public class VerifyLineRules(ITestOutputHelper output)
             }
 
             using var process = Process.Start(start) ?? throw new InvalidOperationException(program + " did not start");
-            var stdout = process.StandardOutput.ReadToEndAsync();
-            var stderr = process.StandardError.ReadToEnd();
+            var standardOutput = process.StandardOutput.ReadToEndAsync();
+            var standardError = process.StandardError.ReadToEnd();
             process.WaitForExit();
-            return (process.ExitCode, stdout.GetAwaiter().GetResult(), stderr);
+            return (process.ExitCode, standardOutput.GetAwaiter().GetResult(), standardError);
         }
     }
 }

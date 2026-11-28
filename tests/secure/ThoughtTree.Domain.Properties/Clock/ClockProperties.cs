@@ -1,0 +1,43 @@
+using CsCheck;
+using ThoughtTree.Domain.Clock;
+using ThoughtTree.Domain.Properties.Support;
+
+namespace ThoughtTree.Domain.Properties.Clock;
+
+/// <summary>INV-8 over generated device histories: wall time jumping back and forth, and clocks received from other devices.</summary>
+[Trait("Intent", "Secure")]
+[Trait("ADR", "ADR-014")]
+public sealed class ClockProperties
+{
+    private static readonly long LatestWallTime = DateTimeOffset.MaxValue.ToUnixTimeMilliseconds();
+
+    private static readonly Gen<(bool DeviceWrites, long WallTimeOrReceivedClock)> Step = Gen.OneOf(
+        Gen.Select(Gen.OneOf(Gen.Long[0, 20], Gen.Const(4_000_000_000_000L), Gen.Const(LatestWallTime)), wallTime => (true, wallTime)),
+        Gen.Select(Gen.OneOf(Gen.Long[0, 20], Gen.Const(4_000_000_000_000L), Gen.Const(long.MaxValue - 1), Gen.Const(long.MaxValue)),
+            receivedClock => (false, receivedClock)));
+
+    [Fact]
+    public void INV_8_a_new_event_gets_exactly_the_ADR_014_clock_above_every_clock_in_the_log()
+    {
+        Step.List[1, 30].SampleFixed(steps =>
+        {
+            long? highest = null;
+            foreach (var (write, time) in steps)
+            {
+                var stamp = write ? HybridClock.Next(DateTimeOffset.FromUnixTimeMilliseconds(time), highest is { } highestKnown ? new EventClock(highestKnown) : null).Value : time;
+                if (write)
+                {
+                    var expected = highest switch
+                    {
+                        null => time,
+                        long.MaxValue => long.MaxValue,
+                        { } top => Math.Max(time, top + 1),
+                    };
+                    stamp.ShouldBe(expected);
+                }
+
+                highest = highest is { } current ? Math.Max(current, stamp) : stamp;
+            }
+        });
+    }
+}

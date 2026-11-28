@@ -1,0 +1,12 @@
+# Files with one-letter names that NameRules skips until they are renamed (AGENTS.md section 4b).
+# Protected files wait for the owner-approved rename in docs/plan/next-work.md. Remove a line once the file is renamed;
+# NameRules fails on a listed file that no longer has a one-letter name.
+
+tests/secure/ThoughtTree.Domain.Model/ReferenceModel.cs
+tests/specify/ThoughtTree.Domain.Specs/Clock/ClockEdgeSpecs.cs
+tests/specify/ThoughtTree.Domain.Specs/Clock/EventOrderSpecs.cs
+tests/specify/ThoughtTree.Domain.Specs/Outline/OutlineSpecs.cs
+tests/specify/ThoughtTree.Domain.Specs/Outline/SnapshotSpecs.cs
+tests/specify/ThoughtTree.Domain.Specs/Outline/TreeText.cs
+tests/specify/ThoughtTree.Domain.Specs/Outline/TreeVersionSpecs.cs
+tests/specify/ThoughtTree.Domain.Specs/Outline/UnappliedEventSpecs.cs

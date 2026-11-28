@@ -10,7 +10,7 @@ namespace ThoughtTree.Architecture.Rules.Deployment;
 /// </summary>
 [Trait("Intent", "Secure")]
 [Trait("ADR", "ADR-046")]
-public partial class InfrastructureRules
+public sealed partial class InfrastructureRules
 {
     private static IReadOnlyList<string> Workflows => Workflow.Files();
 
@@ -19,7 +19,7 @@ public partial class InfrastructureRules
     [Fact]
     public void Workflows_read_no_stored_secret()
     {
-        var offenders = Workflows.SelectMany(f => StoredSecrets(File.ReadAllText(f)).Select(s => $"{Repository.Relative(f)}: {s}")).ToList();
+        var offenders = Workflows.SelectMany(file => StoredSecrets(File.ReadAllText(file)).Select(secret => $"{Repository.Relative(file)}: {secret}")).ToList();
 
         offenders.ShouldBeEmpty("ADR-046: no deployment secrets are stored; only the job's own GITHUB_TOKEN may be read");
     }
@@ -29,11 +29,11 @@ public partial class InfrastructureRules
     {
         var files = Workflows.Concat(DeployScripts).ToList();
         var offenders = files
-            .SelectMany(f => PasswordSignIn().Matches(File.ReadAllText(f)).Select(m => $"{Repository.Relative(f)}: {m.Value}"))
+            .SelectMany(file => PasswordSignIn().Matches(File.ReadAllText(file)).Select(match => $"{Repository.Relative(file)}: {match.Value}"))
             .ToList();
         offenders.ShouldBeEmpty("ADR-046: sign in through OpenID Connect federation, never with a password, client secret or stored token");
 
-        foreach (var workflow in Workflows.Where(f => File.ReadAllText(f).Contains("azure-sign-in.sh", StringComparison.Ordinal)))
+        foreach (var workflow in Workflows.Where(file => File.ReadAllText(file).Contains("azure-sign-in.sh", StringComparison.Ordinal)))
         {
             var text = File.ReadAllText(workflow);
             JobLevelIdToken().IsMatch(text).ShouldBeTrue($"{Repository.Relative(workflow)}: the signing-in job needs id-token: write");
@@ -43,7 +43,7 @@ public partial class InfrastructureRules
         foreach (var workflow in Workflow.All())
         {
             Workflow.GrantsWrite(workflow.Permissions, "id-token").ShouldBeFalse($"{workflow.Name}: grant id-token: write per job, not to the whole workflow");
-            foreach (var job in workflow.Jobs.Where(j => j.Steps.Any(s => s.Run?.Contains("azure-sign-in.sh", StringComparison.Ordinal) == true)))
+            foreach (var job in workflow.Jobs.Where(candidate => candidate.Steps.Any(step => step.Run?.Contains("azure-sign-in.sh", StringComparison.Ordinal) == true)))
             {
                 job.CanRequestIdToken.ShouldBeTrue($"{job}: the signing-in job needs id-token: write");
                 job.Environment.ShouldNotBeNull($"{job}: signs in only inside a GitHub environment, whose branch rules and reviewers guard the identity");
@@ -66,7 +66,7 @@ public partial class InfrastructureRules
             workflow.Permissions.ShouldNotBeNull($"{workflow.Name}: declare top-level permissions");
             workflow.Triggers.ShouldNotContain("pull_request_target", $"{workflow.Name}: pull_request_target would hand secrets and tokens to pull request code");
             Workflow.Scalar(workflow.Permissions).ShouldNotBe("write-all", $"{workflow.Name}: no write-all");
-            workflow.Jobs.Where(j => Workflow.Scalar(Workflow.Child(j.Node, "permissions")) == "write-all").Select(j => j.ToString())
+            workflow.Jobs.Where(job => Workflow.Scalar(Workflow.Child(job.Node, "permissions")) == "write-all").Select(job => job.ToString())
                 .ShouldBeEmpty("no job gets write-all");
         }
     }
@@ -74,11 +74,10 @@ public partial class InfrastructureRules
     [Fact]
     public void No_expression_is_expanded_inside_a_shell_script()
     {
-        // ${{ }} in run: is pasted into the script before the shell sees it, so text from a branch name, title,
-        // input or event becomes code. Values go through env: and are read as shell variables.
+        // GitHub pastes ${{ }} into run: before the shell starts, so text from a branch name or title becomes code.
         var offenders = Workflow.All()
-            .SelectMany(w => w.Jobs)
-            .SelectMany(j => j.Steps.Where(s => s.Run?.Contains("${{", StringComparison.Ordinal) == true).Select(_ => j.ToString()))
+            .SelectMany(workflow => workflow.Jobs)
+            .SelectMany(job => job.Steps.Where(step => step.Run?.Contains("${{", StringComparison.Ordinal) == true).Select(_ => job.ToString()))
             .ToList();
 
         offenders.ShouldBeEmpty("pass expressions through env:, never ${{ }} inside run:");
@@ -88,7 +87,7 @@ public partial class InfrastructureRules
     public void Actions_are_pinned_to_a_commit()
     {
         var offenders = Workflows
-            .SelectMany(f => UnpinnedActions(File.ReadAllText(f)).Select(a => $"{Repository.Relative(f)}: {a}"))
+            .SelectMany(file => UnpinnedActions(File.ReadAllText(file)).Select(action => $"{Repository.Relative(file)}: {action}"))
             .ToList();
 
         offenders.ShouldBeEmpty("ADR-046: pin every action to a full commit id");
@@ -104,12 +103,12 @@ public partial class InfrastructureRules
 
         var parsed = Workflow.Load(Repository.PathOf(".github", "workflows", "deploy-production.yml"));
         parsed.Triggers.SetEquals(["workflow_dispatch"]).ShouldBeTrue("production starts only by hand: workflow_dispatch and nothing else");
-        parsed.Jobs.Where(j => j.CanRequestIdToken).ShouldAllBe(j => j.Environment == "production", "the job that signs in waits for the approval in the environment 'production'");
-        Workflow.All().Where(w => w.Name != ".github/workflows/deploy-production.yml").SelectMany(w => w.Jobs)
-            .Where(j => j.Environment == "production").Select(j => j.ToString())
+        parsed.Jobs.Where(job => job.CanRequestIdToken).ShouldAllBe(job => job.Environment == "production", "the job that signs in waits for the approval in the environment 'production'");
+        Workflow.All().Where(workflow => workflow.Name != ".github/workflows/deploy-production.yml").SelectMany(workflow => workflow.Jobs)
+            .Where(job => job.Environment == "production").Select(job => job.ToString())
             .ShouldBeEmpty("only deploy-production.yml uses the environment 'production'");
 
-        var others = Workflows.Where(f => !f.EndsWith("deploy-production.yml", StringComparison.Ordinal));
+        var others = Workflows.Where(file => !file.EndsWith("deploy-production.yml", StringComparison.Ordinal));
         foreach (var workflow in others)
         {
             var text = File.ReadAllText(workflow);
@@ -130,7 +129,7 @@ public partial class InfrastructureRules
         preview.ShouldContain("using 'main.bicep'");
         ParameterNames(production).ShouldBe(ParameterNames(test), "ADR-046: both environments set the same parameters of the same template");
         ParameterNames(preview).ShouldBe(ParameterNames(test), "ADR-046: previews use the same template and parameters");
-        Repository.Files("infra", "*.bicepparam").Select(f => Path.GetFileName(f)).Order(StringComparer.Ordinal)
+        Repository.Files("infra", "*.bicepparam").Select(file => Path.GetFileName(file)).Order(StringComparer.Ordinal)
             .ShouldBe(["preview.bicepparam", "production.bicepparam", "test.bicepparam"]);
 
         var main = File.ReadAllText(Repository.PathOf("infra", "main.bicep"));
@@ -141,12 +140,10 @@ public partial class InfrastructureRules
     [Fact]
     public void Every_site_stays_on_the_free_plan()
     {
-        // Re-review N-L4: staticSites/write would allow another plan; every deployment re-applies main.bicep, which
-        // fixes the plan to Free in the template itself, not through a parameter.
         var main = File.ReadAllText(Repository.PathOf("infra", "main.bicep"));
         FreeSku().IsMatch(main).ShouldBeTrue("main.bicep sets sku name and tier to the literal 'Free'");
         SkuLine().Count(main).ShouldBe(1, "one sku block");
-        Repository.Files("infra", "*.bicepparam").Where(f => File.ReadAllText(f).Contains("sku", StringComparison.OrdinalIgnoreCase)).Select(Repository.Relative)
+        Repository.Files("infra", "*.bicepparam").Where(file => File.ReadAllText(file).Contains("sku", StringComparison.OrdinalIgnoreCase)).Select(Repository.Relative)
             .ShouldBeEmpty("the plan is not a parameter");
     }
 
@@ -163,7 +160,7 @@ public partial class InfrastructureRules
     public void No_telemetry_or_logging_service_is_deployed()
     {
         var offenders = Repository.Files("infra", "*.bicep")
-            .Where(f => TelemetryResource().IsMatch(File.ReadAllText(f)))
+            .Where(template => TelemetryResource().IsMatch(File.ReadAllText(template)))
             .Select(Repository.Relative)
             .ToList();
 
@@ -174,13 +171,13 @@ public partial class InfrastructureRules
     public void Deploy_scripts_create_no_infrastructure_outside_the_templates()
     {
         var offenders = DeployScripts
-            .SelectMany(f => ImperativeResource().Matches(File.ReadAllText(f)).Select(m => $"{Repository.Relative(f)}: {m.Value}"))
+            .SelectMany(script => ImperativeResource().Matches(File.ReadAllText(script)).Select(match => $"{Repository.Relative(script)}: {match.Value}"))
             .ToList();
 
         offenders.ShouldBeEmpty("ADR-046: resources come only from the Bicep templates in infra/");
     }
 
-    // Samples assembled from pieces, so that this file does not look like a workflow that breaks the rules.
+    // Pieces joined, so that the repository scans do not find these samples in this file.
     [Theory]
     [InlineData("token: ${{ " + "secrets.AZURE_TOKEN }}")]
     [InlineData("  " + "secrets: inherit")]
@@ -280,22 +277,22 @@ public partial class InfrastructureRules
     }
 
     internal static IEnumerable<string> StoredSecrets(string text) =>
-        SecretReference().Matches(text).Select(m => m.Value).Where(v => !v.EndsWith(".GITHUB_TOKEN", StringComparison.Ordinal));
+        SecretReference().Matches(text).Select(match => match.Value).Where(reference => !reference.EndsWith(".GITHUB_TOKEN", StringComparison.Ordinal));
 
     internal static IEnumerable<string> UnpinnedActions(string text) =>
-        UsesLine().Matches(text).Select(m => m.Groups[1].Value)
-            .Where(a => !a.StartsWith("./", StringComparison.Ordinal) && !PinnedRef().IsMatch(a));
+        UsesLine().Matches(text).Select(match => match.Groups[1].Value)
+            .Where(action => !action.StartsWith("./", StringComparison.Ordinal) && !PinnedRef().IsMatch(action));
 
     /// <summary>Lines of a template that use environmentName for anything but its declaration, the resource name
     /// and the environment tag.</summary>
     internal static IEnumerable<string> EnvironmentNameUses(string bicep) =>
         bicep.Split('\n')
-            .Where(l => l.Contains("environmentName", StringComparison.Ordinal))
-            .Where(l => !AllowedEnvironmentNameUse().IsMatch(l))
-            .Select(l => l.Trim());
+            .Where(line => line.Contains("environmentName", StringComparison.Ordinal))
+            .Where(line => !AllowedEnvironmentNameUse().IsMatch(line))
+            .Select(line => line.Trim());
 
     private static List<string> ParameterNames(string text) =>
-        ParameterLine().Matches(text).Select(m => m.Groups[1].Value).Order(StringComparer.Ordinal).ToList();
+        ParameterLine().Matches(text).Select(match => match.Groups[1].Value).Order(StringComparer.Ordinal).ToList();
 
     [GeneratedRegex(@"secrets[ \t]*\.[ \t]*[A-Za-z_][A-Za-z0-9_]*|secrets[ \t]*\[|toJSON\([ \t]*secrets[ \t]*\)|secrets:\s*inherit", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
     private static partial Regex SecretReference();

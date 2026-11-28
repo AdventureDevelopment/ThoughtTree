@@ -137,3 +137,25 @@ Signals respect privacy (see the conventions in [README.md](README.md)). Reviews
 - **Assumption:** LambdaTale stays maintained and compatible enough with the .NET version in use; xUnit v2 keeps working and receives fixes while it is needed; moving to xUnit v3 later is a contained change in the test projects.
 - **Signal:** The owner's own look at the LambdaTale releases on nuget.org when a review trigger below is considered; no data is collected.
 - **Review when:** LambdaTale publishes a release that supports xUnit v3 · xUnit v2 stops receiving fixes, or a new .NET or Playwright version no longer works with it · the maintainers of LambdaTale archive the repository or stop answering issues · an agent or the owner needs a spec feature LambdaTale does not offer.
+
+<a id="adr-090"></a>
+
+## ADR-090: Release 1 fixes the formats own devices need
+
+**TL;DR:** We bet that sharing can be added after release 1 without breaking trees on own devices.
+
+- **Outcome:** A first release sooner, without first settling identity, trust and owner questions for shared trees.
+- **Assumption:** New event types, fields and a new code format version are enough to add sharing later; the door check before each release 1 format catches what would block it.
+- **Signal:** The door checks recorded in ADRs and open decisions (how many answer "closes a door"); feedback issues asking to share a tree and their category; no data is collected.
+- **Review when:** work on sharing starts · a door check answers "closes a door" · the first feedback issue asks for sharing.
+
+<a id="adr-091"></a>
+
+## ADR-091: Archive is everyday, erase is final; content lives apart from structure
+
+**TL;DR:** We bet that keeping typed text in content blobs apart from events costs little enough in replay and sync to make real erasure possible.
+
+- **Outcome:** Users can archive without loss and erase text for good on every device that syncs, without any stored event changing.
+- **Assumption:** Replay with content blobs stays within spike 2's decision rule on the phone (about 10 to 20 % of today's format), or "structure first, text on demand" is acceptable as a UX choice.
+- **Signal:** Spike 2's measurements on the owner's phone and tablet; later, performance reports (numbers only, ADR-051); no data is collected.
+- **Review when:** spike 2's phone numbers miss the decision rule · a performance report shows replay or sync with blobs above the load budgets · erasure is asked for on something that is not content (for example ids).

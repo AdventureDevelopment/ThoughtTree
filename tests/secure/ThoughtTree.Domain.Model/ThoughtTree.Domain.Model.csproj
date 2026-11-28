@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The reference model: a deliberately naive projection that is the referee for the real one. Protected (ADR-035). -->
+  <PropertyGroup>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Only the event types, as input. The model must not call the real projection. -->
+    <ProjectReference Include="..\..\..\src\ThoughtTree.Domain\ThoughtTree.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
