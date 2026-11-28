@@ -15,16 +15,18 @@ Amends ADR-005 (archived instead of deleted; erased content is removed), ADR-006
 - **MUST** take an archived tree out of the tree list onto More › Trees › Archived trees…, offering only Restore and Erase permanently; opening, searching or exporting needs a restore
 - **MUST** archive, in the update flow of ADR-085 (D-181), each exported tree in the old format before the update, so devices still on the old version learn it; the updated app, which cannot read the old format, shows the old trees as ADR-085 says
 - **MUST** keep "Remove from this device" local: it writes no event and is offered for live and archived trees
-- **MUST** keep the text a person typed out of events, in content blobs: item titles and notes, relation notes, reverse names of relation types, view names, device labels and user names; events keep ids, clocks and structure
+- **MUST** offer the tutorial tree "Remove from this device" in place of deleting it, saying that it is removed from this device only and comes back with "Show the tutorial again"
+- **MUST** decide a concurrent archive and restore of the same item or tree by the agreed event order, without conflict marking (as ADR-083 does for relations)
+- **MUST** keep the text a person typed out of events, in content blobs: item titles and notes, relation notes, reverse names of relation types, view names and query words, device labels and user names; events keep ids, clocks and structure
 - **MUST** give each event that carries text one content blob holding all of that event's text, with an id derived from the event's id, its own nonce and padding (ADR-087's buckets), encrypted with the tree key (ADR-073); plaintext only the blob id, `KeyId` and nonce
 - **MUST NOT** let an event's id, signature or hash cover blob content
 - **MUST** treat a blob that has not arrived as missing, never as empty, and ask in each exchange which blobs each side has
 - **MUST** keep `deviceId` and `userId` in events; only the label and name text are content
 - **MUST NOT** offer erasing a device label or user name until the identity ADR decides how (its current or every value; open decision "Identity and signed events")
-- **MUST** offer erasing only for archived items and archived trees, as "Erase permanently…", asking first; the UI names the limits: devices that are offline and files exported earlier keep the text
-- **MUST** erase all or nothing by `item.content-erased` (`itemId`) or `tree.content-erased`: every content blob of every event about the item and all its descendants (or every item of the tree), older values included, with the notes of their relations and the names of their views; only the structure stays
+- **MUST** offer erasing only for archived items and archived trees, as "Erase permanently…", asking first (a standard question that needs no sketch, owner decision 2026-11-28); the UI names the limits: devices that are offline and files exported earlier keep the text
+- **MUST** erase all or nothing by `item.content-erased` (`itemId`) or `tree.content-erased`: every content blob of every event about the item and all its descendants (or every item of the tree), older values included, with the notes of their relations and the names and query words of their views; only the structure stays
 - **MUST** delete erased blobs on every device that syncs and keep the erased marker for good, so no device takes the text back
-- **MUST NOT** restore an erased item; it stays archived and is shown as erased
+- **MUST NOT** restore an erased item; it stays archived and is shown as erased; a restore that arrives for it, also one written before the erasure was seen, is not applied and is listed like a rejected text change
 - **MUST** reject a text change for erased content, also one written before the erasure was seen: delete its blob and list it, without text, among the events the projection could not apply (D-128)
 - **MUST NOT** undo an erasure or revert it from the history (exception to ADR-059)
 - **MUST** call the everyday action "archive" and the irreversible one "erase" (German "archivieren", "endgültig löschen…"); **MUST NOT** use "delete" for either

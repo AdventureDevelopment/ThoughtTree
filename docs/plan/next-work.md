@@ -50,6 +50,7 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
 9. **Sketch: archived trees page** (owner, 2026-11-28; open decision "Archive, content and erasure" in
    `docs/architecture.md` section 9): More › Trees › Archived trees…, with restoring a tree (ADR-064). Before release 1,
    not needed for the first preview deployment.
-10. **Sketch: restore view and the question before erasing** (open decision "Archive, content and erasure" in
+10. **Sketch: restore view** (open decision "Archive, content and erasure" in
     `docs/architecture.md` section 9, ADR-091; found by the independent review, 2026-11-28): the list of archived items
-    with Restore and Erase permanently, the question before erasing with its limits (ADR-064). Timing open for the owner.
+    with Restore and Erase permanently (ADR-064). Before release 1, not needed for the first preview deployment; the question
+    before erasing needs no sketch (owner, 2026-11-28).
