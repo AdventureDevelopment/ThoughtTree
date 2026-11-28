@@ -1,0 +1,239 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ThoughtTree design tree</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: phone = one column, outline then the thought as a page (back returns); wide = outline beside the page. Paper theme tones (D-33, D-42). */
+:root{
+  --bg:#efece6;--card:#fffdf8;--fg:#2a2520;--muted:#6d645a;--line:#e3dbce;
+  --accent:#9a5e28;--accent-text:#84511f;--sel:#f3e7d5;--mark:#7a6bb0;--inbox:#3f4a52;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171512;--card:#23201b;--fg:#ece5da;--muted:#a89e90;--line:#363029;--accent:#e3a35f;--accent-text:#ecb985;--sel:#3b2e1e;--mark:#a99be0;--inbox:#9fb0bc;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171512;--card:#23201b;--fg:#ece5da;--muted:#a89e90;--line:#363029;--accent:#e3a35f;--accent-text:#ecb985;--sel:#3b2e1e;--mark:#a99be0;--inbox:#9fb0bc;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 var(--font);margin:0}
+.wrap{padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1200px;margin:0 auto}
+header{display:grid;gap:10px;margin-bottom:12px}
+h1{font-size:22px;line-height:1.25;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:14px;margin:0;max-width:70ch}
+.search{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.search:focus-visible,button:focus-visible,a:focus-visible,.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;line-height:1.2;border-radius:999px;padding:4px 10px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--card)}
+.chip small{color:inherit;opacity:.7;font-variant-numeric:tabular-nums;margin-inline-start:4px}
+.layout{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:900px){.layout{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}.layout .page{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 24px);overflow:auto}.back{display:none}}
+@media (max-width:899px){.layout.paged .outline{display:none}.layout:not(.paged) .page{display:none}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;min-width:0}
+.outline{padding-block:6px}
+.row{display:flex;align-items:flex-start;gap:4px;padding:7px 10px 7px calc(6px + var(--depth,0) * 18px);border-bottom:1px solid var(--line);cursor:pointer;min-height:44px}
+.row:last-child{border-bottom:0}
+.row.sel{background:var(--sel)}
+.row.inbox .title{color:var(--inbox);font-weight:600}
+.tw{flex:none;width:28px;height:28px;border:0;background:none;color:var(--muted);font-size:13px;cursor:pointer;border-radius:6px}
+.tw[hidden]{display:inline-block!important;visibility:hidden}
+.rbody{min-width:0;flex:1;padding-top:3px}
+.title{overflow-wrap:anywhere}
+.meta{display:inline-flex;flex-wrap:wrap;gap:4px;margin-inline-start:6px;vertical-align:1px}
+.tag{font-size:11px;line-height:1.3;border-radius:8px;padding:1px 6px;background:var(--sel);color:var(--accent-text);white-space:nowrap}
+.count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;margin-inline-start:6px}
+.crumb{font-size:12px;color:var(--muted);display:block;margin-bottom:2px}
+.page{padding:16px 18px 24px}
+.back{font:inherit;font-size:14px;border:0;background:none;color:var(--accent-text);padding:4px 0;cursor:pointer;margin-bottom:6px}
+.trail{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.trail a{color:var(--muted)}
+.page h2{font-size:21px;line-height:1.3;margin:0 0 8px;text-wrap:balance;overflow-wrap:anywhere}
+.note{max-width:68ch;overflow-wrap:anywhere}
+.note p{margin:0 0 10px}
+.note ul,.note ol{margin:0 0 10px;padding-inline-start:22px}
+.note li{margin-bottom:4px}
+.note code{font-family:var(--mono);font-size:.88em;background:var(--bg);border-radius:4px;padding:0 3px}
+.note blockquote{margin:0 0 10px;padding-inline-start:12px;border-inline-start:3px solid var(--line);color:var(--muted)}
+.tablebox{overflow-x:auto;margin:0 0 12px}
+.note table{border-collapse:collapse;font-size:14px}
+.note td,.note th{border:1px solid var(--line);padding:4px 8px;vertical-align:top;text-align:start}
+a{color:var(--accent-text)}
+.sect{margin-top:18px}
+.sect h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:600}
+.rels{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.rels .kind{color:var(--muted);font-size:14px;margin-inline-end:4px}
+.empty{color:var(--muted);font-size:14px;padding:14px}
+.results .row{padding-inline-start:12px}
+footer{margin-top:18px;color:var(--muted);font-size:13px;display:grid;gap:8px}
+footer .counts{font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 14px}
+.btn{font:inherit;font-size:14px;border-radius:8px;padding:6px 12px;background:var(--accent);color:var(--card);border:0;cursor:pointer;justify-self:start}
+@media (prefers-reduced-motion:no-preference){.row{transition:background .12s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1 id="treeName">ThoughtTree design</h1>
+    <p class="sub" id="sub">A tree replayed from its event log: the repository's architecture, ADRs, UX concept and open decisions, with the learning session's questions in the inbox.</p>
+    <label class="sub" for="q" hidden>Search</label>
+    <input id="q" class="search" type="search" placeholder="Search titles and notes" autocomplete="off">
+    <div class="chips" id="tagChips" role="group" aria-label="Filter by tag"></div>
+  </header>
+  <div class="layout" id="layout">
+    <section class="panel outline" id="outline" aria-label="Outline"><div class="empty">Replaying events&hellip;</div></section>
+    <article class="panel page" id="page" aria-live="polite"></article>
+  </div>
+  <footer>
+    <div><strong>Event log</strong> · replayed in this page, one device, plaintext (no envelope or encryption).</div>
+    <div class="counts" id="counts"></div>
+    <button class="btn" id="copy" type="button">Copy event log</button>
+    <span id="copyMsg" role="status"></span>
+  </footer>
+</div>
+
+<script>
+const state={items:new Map(),children:new Map(),tags:new Map(),rels:[],types:new Map(),inbox:null,tagsRoot:null,typesRoot:null,events:[],open:new Set(),selected:null,filter:null,query:""};
+
+function replay(events){
+  const insert=(parent,id,after)=>{const list=state.children.get(parent)||[];const at=after?list.indexOf(after)+1:0;list.splice(at<0?list.length:at,0,id);state.children.set(parent,list)};
+  for(const e of events){
+    switch(e.type){
+      case"item.created":state.items.set(e.itemId,{id:e.itemId,title:e.title,note:e.note||"",parent:e.parentId||""});insert(e.parentId||"",e.itemId,e.afterItemId);break;
+      case"item.moved":{const it=state.items.get(e.itemId);if(!it)break;const from=state.children.get(it.parent)||[];const at=from.indexOf(e.itemId);if(at>=0)from.splice(at,1);it.parent=e.parentId||"";insert(it.parent,e.itemId,e.afterItemId);break}
+      case"item.title-changed":{const it=state.items.get(e.itemId);if(it)it.title=e.title;break}
+      case"item.note-changed":{const it=state.items.get(e.itemId);if(it)it.note=e.note||"";break}
+      case"item.tagged":{const s=state.tags.get(e.itemId)||new Set();s.add(e.tagId);state.tags.set(e.itemId,s);break}
+      case"item.untagged":{state.tags.get(e.itemId)?.delete(e.tagId);break}
+      case"relation.added":state.rels.push({id:e.relationId,from:e.fromItemId,to:e.toItemId,type:e.typeId});break;
+      case"relation-type.set":state.types.set(e.itemId,{symmetric:e.symmetric,reverse:e.reverseName});break;
+      case"tree.inbox-set":state.inbox=e.itemId;break;
+      case"tree.tags-set":state.tagsRoot=e.itemId;break;
+      case"tree.relation-types-set":state.typesRoot=e.itemId;break;
+    }
+  }
+}
+const kids=id=>state.children.get(id)||[];
+function topLevel(){const special=[state.tagsRoot,state.typesRoot,state.inbox];return[...kids("").filter(i=>!special.includes(i)),state.tagsRoot,state.typesRoot,state.inbox].filter(Boolean)}
+const plain=t=>t.replace(/\[([^\]]+)\]\([^)]*\)/g,"$1").replace(/[*`]/g,"");
+const treeName=()=>{const f=kids("").find(i=>![state.tagsRoot,state.typesRoot,state.inbox].includes(i));return f?plain(state.items.get(f).title).replace(/^\p{Extended_Pictographic}\s*/u,""):"Untitled"};
+function path(id){const out=[];let c=state.items.get(id);while(c&&c.parent){c=state.items.get(c.parent);if(c)out.unshift(c)}return out}
+function tagsOf(id){const s=state.tags.get(id);return s?[...s].map(t=>state.items.get(t)).filter(Boolean):[]}
+function descendantsOf(tagId){const out=[tagId];for(const k of kids(tagId))out.push(...descendantsOf(k));return out}
+function hasTag(id,tagId){const s=state.tags.get(id);if(!s)return false;return descendantsOf(tagId).some(t=>s.has(t))}
+
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function inline(src){
+  const codes=[];let s=src.replace(/`([^`]+)`/g,(m,c)=>{codes.push(c);return`\u0000${codes.length-1}\u0000`});
+  s=esc(s);
+  s=s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,(m,label,url)=>{
+    if(url.startsWith("item:")){const id=url.slice(5);return`<a href="#" data-item="${esc(id)}">${label}</a>`}
+    if(/^https?:/.test(url))return`<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+    return label});
+  s=s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:]|$)/g,"$1<em>$2</em>");
+  return s.replace(/\u0000(\d+)\u0000/g,(m,i)=>`<code>${esc(codes[+i])}</code>`);
+}
+function md(src){
+  const lines=src.split("\n");let html="",i=0;
+  while(i<lines.length){
+    const line=lines[i];
+    if(!line.trim()){i++;continue}
+    if(/^\s*\|/.test(line)){
+      const rows=[];while(i<lines.length&&/^\s*\|/.test(lines[i])){rows.push(lines[i]);i++}
+      const cells=r=>r.trim().replace(/^\||\|$/g,"").split(/(?<!\\)\|/).map(c=>c.trim());
+      const body=rows.filter(r=>!/^\s*\|\s*:?-{3}/.test(r));
+      html+='<div class="tablebox"><table>'+body.map((r,n)=>"<tr>"+cells(r).map(c=>n===0?`<th>${inline(c)}</th>`:`<td>${inline(c)}</td>`).join("")+"</tr>").join("")+"</table></div>";continue}
+    if(/^\s*([-*]|\d+\.)\s+/.test(line)){
+      const ordered=/^\s*\d+\./.test(line);const items=[];
+      while(i<lines.length&&lines[i].trim()&&(/^\s*([-*]|\d+\.)\s+/.test(lines[i])||/^\s{2,}\S/.test(lines[i]))){
+        const m=lines[i].match(/^(\s*)([-*]|\d+\.)\s+(.*)$/);
+        if(m)items.push({depth:Math.floor(m[1].length/2),text:m[3]});else if(items.length)items[items.length-1].text+=" "+lines[i].trim();i++}
+      const tag=ordered?"ol":"ul";
+      html+=`<${tag}>`+items.map(it=>`<li style="margin-inline-start:${it.depth*16}px">${inline(it.text)}</li>`).join("")+`</${tag}>`;continue}
+    if(/^\s*>/.test(line)){const q=[];while(i<lines.length&&/^\s*>/.test(lines[i])){q.push(lines[i].replace(/^\s*>\s?/,""));i++}html+=`<blockquote>${inline(q.join(" "))}</blockquote>`;continue}
+    const p=[];while(i<lines.length&&lines[i].trim()&&!/^\s*(\||[-*]\s|\d+\.\s|>)/.test(lines[i])){p.push(lines[i]);i++}
+    html+=`<p>${inline(p.join(" "))}</p>`;
+  }
+  return html;
+}
+function chipsHtml(id){return tagsOf(id).map(t=>`<span class="tag">${esc(plain(t.title))}</span>`).join("")}
+
+function rowHtml(id,depth,crumb){
+  const it=state.items.get(id),n=kids(id).length,open=state.open.has(id);
+  const cls=["row",id===state.selected?"sel":"",id===state.inbox?"inbox":""].join(" ");
+  return`<div class="${cls}" style="--depth:${depth}" data-open="${id}" tabindex="0" role="treeitem" aria-expanded="${n?open:""}" aria-selected="${id===state.selected}">
+<button class="tw" type="button" data-toggle="${id}" aria-label="${open?"Collapse":"Expand"}" ${n?"":"hidden"}>${open?"\u25BE":"\u25B8"}</button>
+<div class="rbody">${crumb?`<span class="crumb">${esc(crumb)}</span>`:""}<span class="title">${inline(it.title).replace(/<a [^>]*>|<\/a>/g,"")}</span><span class="meta">${chipsHtml(id)}</span>${n?`<span class="count">${n}</span>`:""}</div></div>`;
+}
+function renderOutline(){
+  const box=document.getElementById("outline");
+  if(state.filter||state.query){
+    const q=state.query.toLowerCase();
+    const hits=[...state.items.values()].filter(it=>(!state.filter||hasTag(it.id,state.filter))&&(!q||it.title.toLowerCase().includes(q)||it.note.toLowerCase().includes(q)));
+    box.className="panel outline results";box.setAttribute("role","list");
+    box.innerHTML=`<div class="empty">${hits.length} thought${hits.length===1?"":"s"}</div>`+hits.slice(0,300).map(it=>rowHtml(it.id,0,path(it.id).map(p=>plain(p.title)).join(" \u203A "))).join("");
+    return}
+  box.className="panel outline";box.setAttribute("role","tree");
+  let html="";const walk=(id,d)=>{html+=rowHtml(id,d);if(state.open.has(id))for(const k of kids(id))walk(k,d+1)};
+  for(const id of topLevel())walk(id,0);
+  box.innerHTML=html;
+}
+function relLines(id){
+  const name=t=>plain(state.items.get(t)?.title||"related");
+  const out=[];
+  for(const r of state.rels){
+    const type=state.types.get(r.type)||{};
+    if(r.from===id)out.push([name(r.type),r.to]);
+    else if(r.to===id)out.push([type.symmetric?name(r.type):(type.reverse||name(r.type)),r.from]);
+  }
+  return out;
+}
+function renderPage(){
+  const page=document.getElementById("page");const id=state.selected;
+  if(!id){page.innerHTML=`<p class="empty">Choose a thought to see it as a page.</p>`;return}
+  const it=state.items.get(id);const rels=relLines(id);const ch=kids(id);
+  const tagged=id!==state.tagsRoot&&path(id).some(p=>p.id===state.tagsRoot)?[...state.items.values()].filter(x=>hasTag(x.id,id)).length:0;
+  page.innerHTML=`<button class="back" type="button" id="back">&lsaquo; Outline</button>
+<nav class="trail" aria-label="Path">${path(id).map(p=>`<a href="#" data-item="${p.id}">${esc(plain(p.title))}</a> &rsaquo;`).join(" ")}</nav>
+<h2>${inline(it.title)}</h2><div class="meta" style="margin:0 0 10px">${chipsHtml(id)}</div>
+<div class="note">${it.note?md(it.note):'<p class="empty" style="padding:0">No note.</p>'}</div>
+${tagged?`<div class="sect"><h3>Tagged</h3><p class="note"><a href="#" data-filter="${id}">${tagged} thoughts carry this tag</a></p></div>`:""}
+${rels.length?`<div class="sect"><h3>Relations</h3><ul class="rels">${rels.map(([k,t])=>`<li><span class="kind">${esc(k)}</span><a href="#" data-item="${t}">${esc(plain(state.items.get(t).title))}</a></li>`).join("")}</ul></div>`:""}
+${ch.length?`<div class="sect"><h3>Inside (${ch.length})</h3><ul class="rels">${ch.map(c=>`<li><a href="#" data-item="${c}">${esc(plain(state.items.get(c).title))}</a></li>`).join("")}</ul></div>`:""}`;
+}
+function select(id){
+  state.selected=id;for(const p of path(id))state.open.add(p.id);
+  document.getElementById("layout").classList.add("paged");
+  renderOutline();renderPage();
+  if(matchMedia("(max-width:899px)").matches)window.scrollTo({top:0});
+  else document.getElementById("page").scrollTop=0;
+}
+function renderTags(){
+  const wanted=["learning session","feature request","open","decided","ADR","constraint","bet","superseded","UX decision"];
+  const all=[...state.items.values()].filter(t=>path(t.id).some(p=>p.id===state.tagsRoot));
+  const tags=wanted.map(w=>all.find(t=>t.title===w)).filter(Boolean);
+  document.getElementById("tagChips").innerHTML=tags.map(t=>{const n=[...state.items.values()].filter(x=>hasTag(x.id,t.id)).length;return`<button class="chip" type="button" data-filter="${t.id}" aria-pressed="${state.filter===t.id}">${esc(t.title)}<small>${n}</small></button>`}).join("");
+}
+document.addEventListener("click",ev=>{
+  const tog=ev.target.closest("[data-toggle]");
+  if(tog){ev.stopPropagation();const id=tog.dataset.toggle;state.open.has(id)?state.open.delete(id):state.open.add(id);renderOutline();return}
+  const link=ev.target.closest("[data-item]");if(link){ev.preventDefault();clearFilter();select(link.dataset.item);return}
+  const f=ev.target.closest("[data-filter]");
+  if(f){ev.preventDefault();state.filter=state.filter===f.dataset.filter?null:f.dataset.filter;document.getElementById("layout").classList.remove("paged");renderTags();renderOutline();return}
+  if(ev.target.closest("#back")){document.getElementById("layout").classList.remove("paged");return}
+  const row=ev.target.closest("[data-open]");if(row)select(row.dataset.open);
+});
+document.addEventListener("keydown",ev=>{const row=ev.target.closest?.("[data-open]");if(row&&(ev.key==="Enter"||ev.key===" ")){ev.preventDefault();select(row.dataset.open)}});
+function clearFilter(){if(state.filter||state.query){state.filter=null;state.query="";document.getElementById("q").value="";renderTags()}}
+document.getElementById("q").addEventListener("input",ev=>{state.query=ev.target.value.trim();document.getElementById("layout").classList.remove("paged");renderOutline()});
+document.getElementById("copy").addEventListener("click",()=>{
+  const text=JSON.stringify(state.events,null,0);const msg=document.getElementById("copyMsg");
+  navigator.clipboard.writeText(text).then(()=>msg.textContent=`Copied ${state.events.length} events.`).catch(()=>msg.textContent="Copying is blocked here; the log is the file events.json beside this page.");
+});
+
+fetch("events.json").then(r=>r.json()).then(events=>{
+  state.events=events;replay(events);
+  document.getElementById("treeName").textContent=treeName();
+  const counts={};for(const e of events)counts[e.type]=(counts[e.type]||0)+1;
+  document.getElementById("counts").innerHTML=Object.entries(counts).map(([k,v])=>`<span>${esc(k)} ${v}</span>`).join("");
+  state.open.add(state.inbox);const learn=kids(state.inbox)[0];if(learn)state.open.add(learn);
+  renderTags();renderOutline();
+  state.selected=learn||null;renderPage();
+}).catch(()=>{document.getElementById("outline").innerHTML='<div class="empty">The event log could not be loaded.</div>'});
+</script>
+
+</body></html>
