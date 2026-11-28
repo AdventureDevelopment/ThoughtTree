@@ -25,7 +25,24 @@ public sealed record Projector
 
     private ImmutableList<Checkpoint> Checkpoints { get; init; }
 
-    public Projector Add(TreeEvent treeEvent) => this.AddRange([treeEvent]);
+    public Projector Add(TreeEvent treeEvent)
+    {
+        if (this.Ids.Contains(treeEvent.EventId))
+        {
+            return this;
+        }
+
+        var position = ~this.AppliedInAgreedOrder.BinarySearch(treeEvent, EventKey.AgreedOrder);
+        var withEvent = this with
+        {
+            Ids = this.Ids.Add(treeEvent.EventId),
+            AppliedInAgreedOrder = this.AppliedInAgreedOrder.Insert(position, treeEvent),
+        };
+
+        return position == this.AppliedInAgreedOrder.Count
+            ? withEvent.ApplyFrom(position, this.Tree)
+            : withEvent.RewindTo(this.Checkpoints.FindLast(kept => kept.Position <= position)!);
+    }
 
     /// <summary>Rebuilds once, from the earliest new event, however many of the events arrive late.</summary>
     public Projector AddRange(IEnumerable<TreeEvent> events)
@@ -62,17 +79,18 @@ public sealed record Projector
     private Projector ApplyFrom(int position, Tree tree)
     {
         var checkpoints = this.Checkpoints;
+        var builder = tree.ToBuilder();
         for (var next = position; next < this.AppliedInAgreedOrder.Count; next++)
         {
-            tree = Projection.Apply(tree, this.AppliedInAgreedOrder[next]);
+            Projection.Apply(builder, this.AppliedInAgreedOrder[next]);
             var applied = next + 1;
             if (applied % this.CheckpointInterval == 0)
             {
-                checkpoints = checkpoints.Add(new Checkpoint(applied, tree));
+                checkpoints = checkpoints.Add(new Checkpoint(applied, builder.ToImmutable()));
             }
         }
 
-        return this with { Tree = tree, Checkpoints = checkpoints };
+        return this with { Tree = builder.ToImmutable(), Checkpoints = checkpoints };
     }
 
     internal static Projector WithCheckpointInterval(int eventsPerCheckpoint) => new(eventsPerCheckpoint);

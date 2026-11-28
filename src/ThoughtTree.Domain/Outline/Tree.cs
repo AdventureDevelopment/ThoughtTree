@@ -3,25 +3,45 @@ using System.Collections.Immutable;
 
 namespace ThoughtTree.Domain.Outline;
 
-/// <summary>The tree as a projection of the event log, immutable (ADR-002).</summary>
+/// <summary>The tree as a projection of the event log, immutable (ADR-002); <see cref="TreeBuilder"/> makes the changes.</summary>
 public sealed record Tree
 {
+    private Tree()
+    {
+    }
+
+    internal Tree(
+        ImmutableDictionary<ItemId, Item> items,
+        ItemId? firstTopLevel,
+        ImmutableDictionary<ItemId, ItemId> firstChild,
+        ImmutableDictionary<ItemId, ItemId> nextSibling,
+        ImmutableDictionary<ItemId, ItemId> previousSibling,
+        ImmutableList<Anomaly> reports)
+    {
+        this.Items = items;
+        this.FirstTopLevel = firstTopLevel;
+        this.FirstChild = firstChild;
+        this.NextSibling = nextSibling;
+        this.PreviousSibling = previousSibling;
+        this.Reports = reports;
+    }
+
     public static Tree Empty { get; } = new();
 
     internal ImmutableDictionary<ItemId, Item> Items { get; private init; } = ImmutableDictionary<ItemId, Item>.Empty;
 
-    private ItemId? FirstTopLevel { get; init; }
+    internal ItemId? FirstTopLevel { get; private init; }
 
-    private ImmutableDictionary<ItemId, ItemId> FirstChild { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
+    internal ImmutableDictionary<ItemId, ItemId> FirstChild { get; private init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
 
-    private ImmutableDictionary<ItemId, ItemId> NextSibling { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
+    internal ImmutableDictionary<ItemId, ItemId> NextSibling { get; private init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
 
-    private ImmutableDictionary<ItemId, ItemId> PreviousSibling { get; init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
+    internal ImmutableDictionary<ItemId, ItemId> PreviousSibling { get; private init; } = ImmutableDictionary<ItemId, ItemId>.Empty;
 
     /// <summary>Grouped by item id, those without an item last; agreed order inside a group (model rules 18, 19).</summary>
     public IReadOnlyList<Anomaly> Anomalies => this.Reports;
 
-    private ImmutableList<Anomaly> Reports { get; init; } = [];
+    internal ImmutableList<Anomaly> Reports { get; private init; } = [];
 
     /// <summary>Deleted items included (INV-5).</summary>
     public IReadOnlyCollection<Item> AllItems => new ItemCollection(this.Items);
@@ -63,101 +83,12 @@ public sealed record Tree
 
     public override string ToString() => $"Tree with {this.Items.Count} items";
 
-    internal Tree WithItem(Item item) => this with { Items = this.Items.SetItem(item.Id, item) };
-
-    internal Tree WithAnomaly(AnomalyKind kind, TreeEvent treeEvent, ItemId? item) =>
-        this with { Reports = this.Reports.Insert(this.EndOfReportGroup(item), new Anomaly(kind, treeEvent.EventId, item)) };
-
-    internal bool IsSameOrDescendant(ItemId candidate, ItemId ancestor)
-    {
-        for (ItemId? current = candidate; current is { } id; current = this.Items[id].Parent)
-        {
-            if (id == ancestor)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    internal bool IsUnknownParent(ItemId? parent) => parent is { } parentId && !this.Items.ContainsKey(parentId);
-
-    internal bool IsUnusableAfter(ItemId? after, ItemId item) => after is { } afterId && (afterId == item || !this.Items.ContainsKey(afterId));
-
-    internal Tree RemoveChild(ItemId id)
-    {
-        var previous = this.PreviousOf(id);
-        var next = this.NextOf(id);
-        var tree = this with
-        {
-            NextSibling = this.NextSibling.Remove(id),
-            PreviousSibling = this.PreviousSibling.Remove(id),
-        };
-
-        tree = previous is { } before ? tree.LinkAfter(before, next) : tree.WithFirst(this.Items[id].Parent, next);
-        return next is { } following ? tree.LinkBefore(following, previous) : tree;
-    }
-
-    internal Tree InsertChild(ItemId? parent, ItemId id, ItemId? after)
-    {
-        if (after is { } before && this.Items[before].Parent == parent)
-        {
-            var next = this.NextOf(before);
-            var linked = this.LinkAfter(before, id).LinkBefore(id, before).LinkAfter(id, next);
-            return next is { } following ? linked.LinkBefore(following, id) : linked;
-        }
-
-        var first = this.FirstOf(parent);
-        var asFirst = this.WithFirst(parent, id).LinkAfter(id, first);
-        return first is { } oldFirst ? asFirst.LinkBefore(oldFirst, id) : asFirst;
-    }
-
-    private int EndOfReportGroup(ItemId? item)
-    {
-        var (low, high) = (0, this.Reports.Count);
-        while (low < high)
-        {
-            var middle = (low + high) / 2;
-            if (CompareReportGroups(this.Reports[middle].ItemId, item) <= 0)
-            {
-                low = middle + 1;
-            }
-            else
-            {
-                high = middle;
-            }
-        }
-
-        return low;
-    }
-
-    private static int CompareReportGroups(ItemId? first, ItemId? second) => (first, second) switch
-    {
-        (null, null) => 0,
-        (null, { }) => 1,
-        ({ }, null) => -1,
-        ({ } firstId, { } secondId) => string.CompareOrdinal(firstId.Value, secondId.Value),
-    };
+    internal TreeBuilder ToBuilder() => new(this);
 
     private ItemId? NextOf(ItemId id) => this.NextSibling.TryGetValue(id, out var next) ? next : null;
 
-    private ItemId? PreviousOf(ItemId id) => this.PreviousSibling.TryGetValue(id, out var previous) ? previous : null;
-
     private ItemId? FirstOf(ItemId? parent) =>
         parent is { } parentId ? (this.FirstChild.TryGetValue(parentId, out var first) ? first : null) : this.FirstTopLevel;
-
-    private Tree LinkAfter(ItemId item, ItemId? next) =>
-        this with { NextSibling = next is { } nextId ? this.NextSibling.SetItem(item, nextId) : this.NextSibling.Remove(item) };
-
-    private Tree LinkBefore(ItemId item, ItemId? previous) =>
-        this with { PreviousSibling = previous is { } previousId ? this.PreviousSibling.SetItem(item, previousId) : this.PreviousSibling.Remove(item) };
-
-    private Tree WithFirst(ItemId? parent, ItemId? first) => parent switch
-    {
-        null => this with { FirstTopLevel = first },
-        { } parentId => this with { FirstChild = first is { } firstId ? this.FirstChild.SetItem(parentId, firstId) : this.FirstChild.Remove(parentId) },
-    };
 
     private List<ItemId> SiblingsFrom(ItemId? first)
     {

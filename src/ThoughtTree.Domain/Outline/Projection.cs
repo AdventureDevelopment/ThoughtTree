@@ -10,78 +10,99 @@ public static class Projection
             .Order(EventKey.AgreedOrder)
             .ToList();
 
-        var tree = Tree.Empty;
+        var tree = Tree.Empty.ToBuilder();
         foreach (var treeEvent in ordered)
         {
-            tree = Apply(tree, treeEvent);
+            Apply(tree, treeEvent);
         }
 
-        return tree;
+        return tree.ToImmutable();
     }
 
-    internal static Tree Apply(Tree tree, TreeEvent treeEvent)
+    internal static void Apply(TreeBuilder tree, TreeEvent treeEvent)
     {
-        if (treeEvent is ItemEvent { ItemId: var id } and not ItemCreated && !tree.Items.ContainsKey(id))
+        if (treeEvent is ItemEvent { ItemId: var id } and not ItemCreated && !tree.Contains(id))
         {
-            return tree.WithAnomaly(AnomalyKind.UnknownItem, treeEvent, id);
+            tree.AddAnomaly(AnomalyKind.UnknownItem, treeEvent, id);
+            return;
         }
 
-        return treeEvent switch
+        switch (treeEvent)
         {
-            ItemCreated created when tree.Items.ContainsKey(created.ItemId) =>
-                tree.WithAnomaly(AnomalyKind.DuplicateCreate, treeEvent, created.ItemId),
-            ItemCreated created => CreateWithFallbackPlace(tree, created),
-            ItemTitleChanged titleChanged => titleChanged.Title is { } title
-                ? tree.WithItem(tree.Items[titleChanged.ItemId].WithTitle(title))
-                : tree,
-            ItemNoteChanged noteChanged => noteChanged.Note is { } note
-                ? tree.WithItem(tree.Items[noteChanged.ItemId].WithNote(note))
-                : tree,
-            ItemMoved moved => MoveUnlessImpossible(tree, moved),
-            ItemDeleted deleted => tree.WithItem(tree.Items[deleted.ItemId].WithDeleted(true)),
-            ItemRestored restored => tree.WithItem(tree.Items[restored.ItemId].WithDeleted(false)),
-            _ => tree.WithAnomaly(AnomalyKind.UnknownEventType, treeEvent, null),
-        };
+            case ItemCreated created when tree.Contains(created.ItemId):
+                tree.AddAnomaly(AnomalyKind.DuplicateCreate, treeEvent, created.ItemId);
+                break;
+            case ItemCreated created:
+                CreateWithFallbackPlace(tree, created);
+                break;
+            case ItemTitleChanged { Title: { } title } titleChanged:
+                tree.SetItem(tree[titleChanged.ItemId].WithTitle(title));
+                break;
+            case ItemTitleChanged:
+                break;
+            case ItemNoteChanged { Note: { } note } noteChanged:
+                tree.SetItem(tree[noteChanged.ItemId].WithNote(note));
+                break;
+            case ItemNoteChanged:
+                break;
+            case ItemMoved moved:
+                MoveUnlessImpossible(tree, moved);
+                break;
+            case ItemDeleted deleted:
+                tree.SetItem(tree[deleted.ItemId].WithDeleted(true));
+                break;
+            case ItemRestored restored:
+                tree.SetItem(tree[restored.ItemId].WithDeleted(false));
+                break;
+            default:
+                tree.AddAnomaly(AnomalyKind.UnknownEventType, treeEvent, null);
+                break;
+        }
     }
 
-    private static Tree CreateWithFallbackPlace(Tree tree, ItemCreated created)
+    private static void CreateWithFallbackPlace(TreeBuilder tree, ItemCreated created)
     {
         var parent = created.ParentId;
         if (tree.IsUnknownParent(parent))
         {
-            tree = tree.WithAnomaly(AnomalyKind.UnknownParent, created, created.ItemId);
+            tree.AddAnomaly(AnomalyKind.UnknownParent, created, created.ItemId);
             parent = null;
         }
 
         var after = created.AfterItemId;
         if (tree.IsUnusableAfter(after, created.ItemId))
         {
-            tree = tree.WithAnomaly(AnomalyKind.UnknownAfter, created, created.ItemId);
+            tree.AddAnomaly(AnomalyKind.UnknownAfter, created, created.ItemId);
             after = null;
         }
 
-        tree = tree.WithItem(new Item(created.ItemId, created.Title ?? default, created.Note ?? default).WithParent(parent));
-        return tree.InsertChild(parent, created.ItemId, after);
+        tree.SetItem(new Item(created.ItemId, created.Title ?? default, created.Note ?? default).WithParent(parent));
+        tree.InsertChild(parent, created.ItemId, after);
     }
 
-    private static Tree MoveUnlessImpossible(Tree tree, ItemMoved moved)
+    private static void MoveUnlessImpossible(TreeBuilder tree, ItemMoved moved)
     {
         if (tree.IsUnknownParent(moved.ParentId))
         {
-            return tree.WithAnomaly(AnomalyKind.UnknownParent, moved, moved.ItemId);
+            tree.AddAnomaly(AnomalyKind.UnknownParent, moved, moved.ItemId);
+            return;
         }
 
         if (tree.IsUnusableAfter(moved.AfterItemId, moved.ItemId))
         {
-            return tree.WithAnomaly(AnomalyKind.UnknownAfter, moved, moved.ItemId);
+            tree.AddAnomaly(AnomalyKind.UnknownAfter, moved, moved.ItemId);
+            return;
         }
 
         if (moved.ParentId is { } target && tree.IsSameOrDescendant(target, moved.ItemId))
         {
-            return tree.WithAnomaly(AnomalyKind.Cycle, moved, moved.ItemId);
+            tree.AddAnomaly(AnomalyKind.Cycle, moved, moved.ItemId);
+            return;
         }
 
-        var item = tree.Items[moved.ItemId].WithParent(moved.ParentId);
-        return tree.RemoveChild(moved.ItemId).WithItem(item).InsertChild(moved.ParentId, moved.ItemId, moved.AfterItemId);
+        var item = tree[moved.ItemId].WithParent(moved.ParentId);
+        tree.RemoveChild(moved.ItemId);
+        tree.SetItem(item);
+        tree.InsertChild(moved.ParentId, moved.ItemId, moved.AfterItemId);
     }
 }
