@@ -47,3 +47,6 @@ decisions in `docs/architecture.md` section 9. When an item is done, remove it; 
    model also (owner, 2026-11-26): `sb` written out, `IdOrNone` without `id.Value.Value`, `Quote` without its unreachable
    `null` branch, the `Report` field `Item` named `ItemId`; better names only, no restructuring towards the Domain's
    code, so the referee stays independent (ADR-035). Needs the owner's approval before it starts (ADR-035).
+9. **Sketch: archived trees page** (owner, 2026-11-28; open decision "Archive, content and erasure" in
+   `docs/architecture.md` section 9): More › Trees › Archived trees…, with restoring a tree (ADR-064). Before release 1,
+   not needed for the first preview deployment.
